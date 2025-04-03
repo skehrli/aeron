@@ -48,7 +48,7 @@ final class ClusterSession implements ClusterClientSession
 
     private boolean hasNewLeaderEventPending = false;
     private boolean hasOpenEventPending = true;
-    private long id = Aeron.NULL_VALUE;
+    private final long id;
     private long correlationId;
     private long openedLogPosition = AeronArchive.NULL_POSITION;
     private long closedLogPosition = AeronArchive.NULL_POSITION;
@@ -73,11 +73,6 @@ final class ClusterSession implements ClusterClientSession
         state(State.INIT);
     }
 
-    ClusterSession(final int responseStreamId, final String responseChannel)
-    {
-        this(Aeron.NULL_VALUE, responseStreamId, responseChannel);
-    }
-
     public void close(final Aeron aeron, final ErrorHandler errorHandler)
     {
         if (null == responsePublication)
@@ -91,14 +86,6 @@ final class ClusterSession implements ClusterClientSession
         }
 
         state(State.CLOSED);
-    }
-
-    public void id(final long sessionId)
-    {
-        if (Aeron.NULL_VALUE == id)
-        {
-            id = sessionId;
-        }
     }
 
     public long id()
@@ -303,14 +290,11 @@ final class ClusterSession implements ClusterClientSession
     {
         if (responsePublication.availableWindow() > 0)
         {
-            // need session id here...
             final long resultingPosition = logPublisher.appendSessionOpen(this, leadershipTermId, clusterTimestamp);
             if (resultingPosition > 0)
             {
                 open(resultingPosition);
                 timeOfLastActivityNs(nowNs);
-
-                // might increment counter here...
                 sendSessionOpenEvent(egressPublisher, leadershipTermId, memberId);
                 return true;
             }

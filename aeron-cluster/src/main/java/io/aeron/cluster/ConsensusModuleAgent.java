@@ -42,7 +42,11 @@ import org.agrona.collections.*;
 import org.agrona.concurrent.*;
 import org.agrona.concurrent.status.CountersReader;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.LongConsumer;
 
@@ -74,7 +78,7 @@ final class ConsensusModuleAgent
     private final long leaderHeartbeatTimeoutNs;
     private long unavailableCounterHandlerRegistrationId;
     private long nextSessionId = 1;
-    private LongHashSet rejectedSesssionIds = new LongHashSet();
+    private long nextCommittedSessionId = nextSessionId;
     private long leadershipTermId = NULL_VALUE;
     private long expectedAckPosition = 0;
     private long serviceAckId = 0;
@@ -594,6 +598,7 @@ final class ConsensusModuleAgent
         if (clusterSessionId >= nextSessionId)
         {
             nextSessionId = clusterSessionId + 1;
+            nextCommittedSessionId = nextSessionId;
         }
     }
 
@@ -607,6 +612,7 @@ final class ConsensusModuleAgent
         final int length)
     {
         this.nextSessionId = nextSessionId;
+        this.nextCommittedSessionId = nextSessionId;
         if (pendingServiceMessageTrackers.length > 0)
         {
             pendingServiceMessageTrackers[0].loadState(
@@ -653,17 +659,8 @@ final class ConsensusModuleAgent
         final String responseChannel,
         final byte[] encodedCredentials)
     {
-        // use null value always here.  create session id later
-        // after authentication
-        //final long clusterSessionId = Cluster.Role.LEADER == role ? nextSessionId++ : NULL_VALUE;
-        /**
-         * let's try a new strategy here.  set the session id here and increment the counter
-         * if the session is rejected, make this session id available again.  is it possible
-         * for several sessions to be in process of authentication at a time?  if so, then this
-         * gets more complicated.
-         */
-        final long sessionId = getNewSessionId();
-        final ClusterSession session = new ClusterSession(sessionId, responseStreamId,
+        final long clusterSessionId = Cluster.Role.LEADER == role ? nextSessionId++ : NULL_VALUE;
+        final ClusterSession session = new ClusterSession(clusterSessionId, responseStreamId,
             refineResponseChannel(responseChannel));
 
         session.asyncConnect(aeron);
@@ -693,29 +690,6 @@ final class ConsensusModuleAgent
                 authenticator.onConnectRequest(session.id(), encodedCredentials, NANOSECONDS.toMillis(nowNs));
                 pendingUserSessions.add(session);
             }
-        }
-    }
-
-    private long getNewSessionId()
-    {
-        if (rejectedSesssionIds.isEmpty())
-        {
-            return nextSessionId++;
-        }
-        else
-        {
-            long min = Long.MAX_VALUE;
-            final LongHashSet.LongIterator it = rejectedSesssionIds.iterator(); it.hasNext();
-            while (it.hasNext())
-            {
-                final long value = it.nextValue();
-                if (value < min)
-                {
-                    min = value;
-                }
-            }
-            rejectedSesssionIds.remove(min);
-            return min;
         }
     }
 
@@ -1177,6 +1151,7 @@ final class ConsensusModuleAgent
             if (state == ConsensusModule.State.ACTIVE || state == ConsensusModule.State.SUSPENDED)
             {
                 final ClusterSession session = new ClusterSession(
+                    Aeron.NULL_VALUE,
                     responseStreamId,
                     refineResponseChannel(responseChannel));
 
@@ -1213,6 +1188,7 @@ final class ConsensusModuleAgent
             if (state == ConsensusModule.State.ACTIVE || state == ConsensusModule.State.SUSPENDED)
             {
                 final ClusterSession session = new ClusterSession(
+                    Aeron.NULL_VALUE,
                     responseStreamId,
                     refineResponseChannel(responseChannel));
 
@@ -1257,6 +1233,7 @@ final class ConsensusModuleAgent
             if (state == ConsensusModule.State.ACTIVE || state == ConsensusModule.State.SUSPENDED)
             {
                 final ClusterSession session = new ClusterSession(
+                    Aeron.NULL_VALUE,
                     responseStreamId,
                     refineResponseChannel(responseChannel));
 
@@ -1530,6 +1507,7 @@ final class ConsensusModuleAgent
         if (clusterSessionId >= nextSessionId)
         {
             nextSessionId = clusterSessionId + 1;
+            nextCommittedSessionId = nextSessionId;
         }
 
         if (null != consensusModuleExtension)
@@ -2629,11 +2607,9 @@ final class ConsensusModuleAgent
                 {
                     case CLIENT:
                     {
-                        // next line tells everyone this session is open
-                        // TODO check if any session ID dependencies b/t original onSessionConnect() and here
-                        if (NULL_VALUE == session.id() && Cluster.Role.LEADER == role)
+                        if (Cluster.Role.LEADER == role)
                         {
-                            session.id(nextSessionId++);
+                            nextCommittedSessionId = Math.max(session.id() + 1, nextCommittedSessionId);
                         }
                         if (session.appendSessionToLogAndSendOpen(
                             logPublisher, egressPublisher, leadershipTermId,
@@ -2762,7 +2738,6 @@ final class ConsensusModuleAgent
             {
                 ArrayListUtil.fastUnorderedRemove(pendingSessions, i, lastIndex--);
                 rejectedSessions.add(session);
-                rejectedSesssionIds.add(session.id());
             }
         }
 
@@ -3432,15 +3407,17 @@ final class ConsensusModuleAgent
 
         snapshotTaker.markBegin(SNAPSHOT_TYPE_ID, logPosition, leadershipTermId, 0, clusterTimeUnit, ctx.appVersion());
 
+        final long actualNextSessionId = role == Cluster.Role.LEADER ? nextCommittedSessionId : nextSessionId;
         if (pendingServiceMessageTrackers.length > 0)
         {
             final PendingServiceMessageTracker trackerOne = pendingServiceMessageTrackers[0];
             snapshotTaker.snapshotConsensusModuleState(
-                nextSessionId, trackerOne.nextServiceSessionId(), trackerOne.logServiceSessionId(), trackerOne.size());
+                actualNextSessionId, trackerOne.nextServiceSessionId(),
+                trackerOne.logServiceSessionId(), trackerOne.size());
         }
         else
         {
-            snapshotTaker.snapshotConsensusModuleState(nextSessionId, 0, 0, 0);
+            snapshotTaker.snapshotConsensusModuleState(actualNextSessionId, 0, 0, 0);
         }
 
         for (int i = 0, size = sessions.size(); i < size; i++)

@@ -2622,6 +2622,7 @@ class ClusterTest
                     assertEquals(client1SessionId.get(), clusterSessionId);
                     clientResponsesCount1.getAndIncrement();
                 }));
+
                 AeronCluster client2 = AeronCluster.connect(new AeronCluster.Context()
                     .aeronDirectoryName(mediaDriver.aeronDirectoryName())
                     .ingressChannel("aeron:udp?term-length=128k")
@@ -2685,7 +2686,9 @@ class ClusterTest
     @Test
     void allNodesShouldHaveIdenticalSnapshots()
     {
-        cluster = aCluster(true)
+        final MutableInteger sessionCounter = new MutableInteger(0);
+
+        cluster = aCluster(false)
                 .withStaticNodes(3)
                 .withAuthenticationSupplier(() -> new Authenticator()
                 {
@@ -2693,6 +2696,7 @@ class ClusterTest
                     public void onConnectRequest(
                         final long sessionId, final byte[] encodedCredentials, final long nowMs)
                     {
+                        sessionCounter.increment();
                     }
 
                     @Override
@@ -2704,7 +2708,10 @@ class ClusterTest
                     @Override
                     public void onConnectedSession(final SessionProxy sessionProxy, final long nowMs)
                     {
-                        sessionProxy.reject();
+                        if (sessionCounter.get() > 1)
+                        {
+                            sessionProxy.reject();
+                        }
                     }
 
                     @Override
@@ -2713,18 +2720,61 @@ class ClusterTest
                     }
                 })
                 .start();
+
+//        try (Subscription subscription = aeron.addSubscription(replayChannel, streamId)) {
+//            final Image image = awaitImage(sessionId, subscription);
+//        }
+//        final ConsensusModuleSnapshotAdapter adapter =
+//              new ConsensusModuleSnapshotAdapter(cluster.node(0).consensusModule(),
+//              new ConsensusModuleSnapshotListener() {
+//            @Override
+//            public void onLoadBeginSnapshot(int appVersion, TimeUnit timeUnit,
+//              DirectBuffer buffer, int offset, int length) {
+//            }
+//
+//            @Override
+//            public void onLoadConsensusModuleState(long nextSessionId, long nextServiceSessionId,
+//            long logServiceSessionId, int pendingMessageCapacity, DirectBuffer buffer,
+//            int offset, int length) {
+//            }
+//
+//            @Override
+//            public void onLoadPendingMessage(long clusterSessionId, DirectBuffer buffer,
+//            int offset, int length) {
+//            }
+//
+//            @Override
+//            public void onLoadClusterSession(long clusterSessionId, long correlationId, long openedLogPosition,
+//              long timeOfLastActivity, CloseReason closeReason, int responseStreamId, String responseChannel,
+//              DirectBuffer buffer, int offset, int length) {
+//            }
+//
+//            @Override
+//            public void onLoadTimer(long correlationId, long deadline, DirectBuffer buffer,
+//            int offset, int length) {
+//
+//            }
+//
+//            @Override
+//            public void onLoadPendingMessageTracker(long nextServiceSessionId, long logServiceSessionId,
+//              int pendingMessageCapacity, int serviceId, DirectBuffer buffer, int offset, int length) {
+//            }
+//
+//            @Override
+//            public void onLoadEndSnapshot(DirectBuffer buffer, int offset, int length) {
+//            }
+//        });
         systemTestWatcher.cluster(cluster);
-
         final TestNode leader = cluster.awaitLeader();
+        // dont do this.  do AeronCluster.connect()
         assertThrowsExactly(AuthenticationException.class, () -> cluster.connectClient());
-
+        //AeronCluster myCluster = AeronCluster.connect();
         cluster.takeSnapshot(leader);
         cluster.awaitSnapshotCount(1);
 
         final List<byte[]> snapshots = IntStream.range(0, 3)
             .mapToObj(nodeIdx -> readLatestSnapshot(cluster.node(nodeIdx)))
             .toList();
-
         for (int nodeIdx = 1; nodeIdx < 3; nodeIdx++)
         {
             assertArrayEquals(snapshots.get(nodeIdx), snapshots.get(0));
