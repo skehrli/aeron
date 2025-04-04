@@ -2688,7 +2688,7 @@ class ClusterTest
     {
         final MutableInteger sessionCounter = new MutableInteger(0);
 
-        cluster = aCluster(false)
+        cluster = aCluster(true)
                 .withStaticNodes(3)
                 .withAuthenticationSupplier(() -> new Authenticator()
                 {
@@ -2708,7 +2708,7 @@ class ClusterTest
                     @Override
                     public void onConnectedSession(final SessionProxy sessionProxy, final long nowMs)
                     {
-                        if (sessionCounter.get() > 1)
+                        if (sessionCounter.get() > 0)
                         {
                             sessionProxy.reject();
                         }
