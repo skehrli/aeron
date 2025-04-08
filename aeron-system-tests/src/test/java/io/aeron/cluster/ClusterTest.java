@@ -67,15 +67,14 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 import java.util.zip.CRC32;
 
 import static io.aeron.archive.client.AeronArchive.NULL_POSITION;
@@ -2684,11 +2683,12 @@ class ClusterTest
 
 
     @Test
+    @InterruptAfter(4)
     void allNodesShouldHaveIdenticalSnapshots()
     {
         final MutableInteger sessionCounter = new MutableInteger(0);
 
-        cluster = aCluster(true)
+        cluster = aCluster()
                 .withStaticNodes(3)
                 .withAuthenticationSupplier(() -> new Authenticator()
                 {
@@ -2708,10 +2708,15 @@ class ClusterTest
                     @Override
                     public void onConnectedSession(final SessionProxy sessionProxy, final long nowMs)
                     {
-                        if (sessionCounter.get() > 0)
+                        if (sessionCounter.get() > 1)
                         {
                             sessionProxy.reject();
                         }
+                        else
+                        {
+                            sessionProxy.authenticate("admin".getBytes(StandardCharsets.US_ASCII));
+                        }
+
                     }
 
                     @Override
@@ -2721,74 +2726,43 @@ class ClusterTest
                 })
                 .start();
 
-//        try (Subscription subscription = aeron.addSubscription(replayChannel, streamId)) {
-//            final Image image = awaitImage(sessionId, subscription);
-//        }
-//        final ConsensusModuleSnapshotAdapter adapter =
-//              new ConsensusModuleSnapshotAdapter(cluster.node(0).consensusModule(),
-//              new ConsensusModuleSnapshotListener() {
-//            @Override
-//            public void onLoadBeginSnapshot(int appVersion, TimeUnit timeUnit,
-//              DirectBuffer buffer, int offset, int length) {
-//            }
-//
-//            @Override
-//            public void onLoadConsensusModuleState(long nextSessionId, long nextServiceSessionId,
-//            long logServiceSessionId, int pendingMessageCapacity, DirectBuffer buffer,
-//            int offset, int length) {
-//            }
-//
-//            @Override
-//            public void onLoadPendingMessage(long clusterSessionId, DirectBuffer buffer,
-//            int offset, int length) {
-//            }
-//
-//            @Override
-//            public void onLoadClusterSession(long clusterSessionId, long correlationId, long openedLogPosition,
-//              long timeOfLastActivity, CloseReason closeReason, int responseStreamId, String responseChannel,
-//              DirectBuffer buffer, int offset, int length) {
-//            }
-//
-//            @Override
-//            public void onLoadTimer(long correlationId, long deadline, DirectBuffer buffer,
-//            int offset, int length) {
-//
-//            }
-//
-//            @Override
-//            public void onLoadPendingMessageTracker(long nextServiceSessionId, long logServiceSessionId,
-//              int pendingMessageCapacity, int serviceId, DirectBuffer buffer, int offset, int length) {
-//            }
-//
-//            @Override
-//            public void onLoadEndSnapshot(DirectBuffer buffer, int offset, int length) {
-//            }
-//        });
         systemTestWatcher.cluster(cluster);
+
+        // wait for cluster to hold election
         final TestNode leader = cluster.awaitLeader();
-        // dont do this.  do AeronCluster.connect()
+
+        // AeronCluster is a client of the cluster!
+        // the first client is successful
+        final AeronCluster client = cluster.connectClient();
+
+        // the second client fails
         assertThrowsExactly(AuthenticationException.class, () -> cluster.connectClient());
-        //AeronCluster myCluster = AeronCluster.connect();
+        assertThrowsExactly(AuthenticationException.class, () -> cluster.connectClient());
+
+
         cluster.takeSnapshot(leader);
         cluster.awaitSnapshotCount(1);
 
-        final List<byte[]> snapshots = IntStream.range(0, 3)
-            .mapToObj(nodeIdx -> readLatestSnapshot(cluster.node(nodeIdx)))
-            .toList();
-        for (int nodeIdx = 1; nodeIdx < 3; nodeIdx++)
+        final MutableLong[] sessionIdsByNode = new MutableLong[3];
+
+        for (int nodeIdx = 0; nodeIdx < 3; nodeIdx++)
         {
-            assertArrayEquals(snapshots.get(nodeIdx), snapshots.get(0));
+            sessionIdsByNode[nodeIdx] = new MutableLong();
+            readSnapshot(cluster.node(nodeIdx), sessionIdsByNode[nodeIdx]);
         }
+        assertEquals(sessionIdsByNode[0].get(), sessionIdsByNode[1].get());
+        assertEquals(sessionIdsByNode[1].get(), sessionIdsByNode[2].get());
     }
 
-    private byte[] readLatestSnapshot(final TestNode node)
+    private void readSnapshot(final TestNode node, final MutableLong sessionIdHolder)
     {
         final long recordingId;
-        try (RecordingLog recordingLog = new RecordingLog(node.consensusModule().context().clusterDir(), false))
+        final int nodeIndex = node.index();
+        try (RecordingLog recordingLog = new RecordingLog(node.consensusModule().context().clusterDir(),
+            false))
         {
             final RecordingLog.Entry snapshot = recordingLog.getLatestSnapshot(-1);
             assertNotNull(snapshot);
-
             recordingId = snapshot.recordingId;
         }
 
@@ -2800,7 +2774,8 @@ class ClusterTest
 
         try (
             AeronArchive archive = AeronArchive.connect(archiveCtx);
-            Subscription subscription = archive.replay(recordingId, NULL_POSITION, Long.MAX_VALUE, "aeron:ipc", 12345)
+            Subscription subscription = archive.replay(recordingId, NULL_POSITION, Long.MAX_VALUE,
+                "aeron:ipc", 12345)
         )
         {
             final ExpandableArrayBuffer destBuffer = new ExpandableArrayBuffer();
@@ -2813,27 +2788,94 @@ class ClusterTest
                 {
                     fail("interrupted");
                 }
-
                 idleStrategy.idle();
             }
             idleStrategy.reset();
-
             final Image image = subscription.imageAtIndex(0);
-            while (!image.isClosed())
+
+            final ConsensusModuleSnapshotAdapter adapter =
+                new ConsensusModuleSnapshotAdapter(image,
+                    new MyConsensusModuleSnapshotListener(sessionIdHolder));
+
+            while (true)
             {
-                if (Thread.interrupted())
+                final int fragments = adapter.poll();
+                if (adapter.isDone())
                 {
-                    fail("interrupted");
+                    break;
                 }
-
-                final long work = image.poll((srcBuffer, offset, length, header) ->
+                if (0 == fragments)
                 {
-                    destBuffer.putBytes(destOffset.getAndAdd(length), srcBuffer, offset, length);
-                }, Integer.MAX_VALUE);
-                idleStrategy.idle((int)work);
+                    if (image.isClosed())
+                    {
+                        throw new ClusterException("snapshot ended unexpectedly: " + image);
+                    }
+                    archive.checkForErrorResponse();
+                    Thread.yield();
+                }
             }
+        }
+    }
 
-            return Arrays.copyOf(destBuffer.byteArray(), destOffset.get());
+    private class MyConsensusModuleSnapshotListener implements ConsensusModuleSnapshotListener
+    {
+        private final MutableLong sessionIdHolder;
+
+        MyConsensusModuleSnapshotListener(final MutableLong sessionIdHolder)
+        {
+            this.sessionIdHolder = sessionIdHolder;
+        }
+
+        @Override
+        public void onLoadBeginSnapshot(final int appVersion, final TimeUnit timeUnit,
+            final DirectBuffer buffer, final int offset, final int length)
+        {
+        }
+
+        @Override
+        public void onLoadConsensusModuleState(final long nextSessionId,
+            final long nextServiceSessionId, final long logServiceSessionId,
+            final int pendingMessageCapacity, final DirectBuffer buffer,
+            final int offset, final int length)
+        {
+            sessionIdHolder.set(nextSessionId);
+        }
+
+        @Override
+        public void onLoadPendingMessage(final long clusterSessionId, final DirectBuffer buffer,
+            final int offset, final int length)
+        {
+        }
+
+        @Override
+        public void onLoadClusterSession(final long clusterSessionId, final long correlationId,
+            final long openedLogPosition,
+            final long timeOfLastActivity,
+            final CloseReason closeReason,
+            final int responseStreamId, final String responseChannel,
+            final DirectBuffer buffer, final int offset, final int length)
+        {
+        }
+
+        @Override
+        public void onLoadTimer(final long correlationId, final long deadline, final DirectBuffer buffer,
+            final int offset, final int length)
+        {
+        }
+
+        @Override
+        public void onLoadPendingMessageTracker(final long nextServiceSessionId,
+            final long logServiceSessionId,
+            final int pendingMessageCapacity,
+            final int serviceId,
+            final DirectBuffer buffer,
+            final int offset, final int length)
+        {
+        }
+
+        @Override
+        public void onLoadEndSnapshot(final DirectBuffer buffer, final int offset, final int length)
+        {
         }
     }
 
