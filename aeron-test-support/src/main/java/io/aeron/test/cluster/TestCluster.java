@@ -26,7 +26,17 @@ import io.aeron.archive.client.AeronArchive;
 import io.aeron.archive.client.RecordingSignalConsumer;
 import io.aeron.archive.codecs.RecordingSignal;
 import io.aeron.archive.status.RecordingPos;
-import io.aeron.cluster.*;
+import io.aeron.cluster.ClusterBackup;
+import io.aeron.cluster.ClusterBackupEventsListener;
+import io.aeron.cluster.ClusterControl;
+import io.aeron.cluster.ClusterMember;
+import io.aeron.cluster.ClusterMembership;
+import io.aeron.cluster.ClusterTool;
+import io.aeron.cluster.ConsensusModule;
+import io.aeron.cluster.ElectionState;
+import io.aeron.cluster.NodeControl;
+import io.aeron.cluster.RecordingLog;
+import io.aeron.cluster.TimerServiceSupplier;
 import io.aeron.cluster.client.AeronCluster;
 import io.aeron.cluster.client.ClusterException;
 import io.aeron.cluster.client.ControlledEgressListener;
@@ -2053,10 +2063,6 @@ public final class TestCluster implements AutoCloseable
             CLUSTER_BASE_DIR_PROP_NAME, CommonContext.getAeronDirectoryName());
         private boolean useResponseChannels = false;
 
-        public Builder()
-        {
-        }
-
         public Builder withStaticNodes(final int nodeCount)
         {
             this.nodeCount = nodeCount;
@@ -2325,7 +2331,7 @@ public final class TestCluster implements AutoCloseable
         private long keepAliveDeadlineMs;
         private EpochClock epochClock;
 
-        public void init()
+        private void init()
         {
             this.epochClock = requireNonNull(client, "client is not connected")
                 .context().aeron().context().epochClock();
