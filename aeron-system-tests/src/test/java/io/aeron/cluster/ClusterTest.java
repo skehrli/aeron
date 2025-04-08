@@ -2735,9 +2735,8 @@ class ClusterTest
         // wait for cluster to hold election
         final TestNode leader = cluster.awaitLeader();
 
-        // AeronCluster is a client of the cluster!
         // the first client is successful
-        final AeronCluster client = cluster.connectClient();
+        cluster.connectClient();
 
         // the second client fails
         assertThrowsExactly(AuthenticationException.class, () -> cluster.connectClient());
@@ -2761,7 +2760,6 @@ class ClusterTest
     private void readSnapshot(final TestNode node, final MutableLong sessionIdHolder)
     {
         final long recordingId;
-        final int nodeIndex = node.index();
         try (RecordingLog recordingLog = new RecordingLog(node.consensusModule().context().clusterDir(),
             false))
         {
@@ -2782,8 +2780,6 @@ class ClusterTest
                 "aeron:ipc", 12345)
         )
         {
-            final ExpandableArrayBuffer destBuffer = new ExpandableArrayBuffer();
-            final MutableInteger destOffset = new MutableInteger();
             final IdleStrategy idleStrategy = new BackoffIdleStrategy();
 
             while (subscription.imageCount() == 0)
@@ -2821,7 +2817,7 @@ class ClusterTest
         }
     }
 
-    private class MyConsensusModuleSnapshotListener implements ConsensusModuleSnapshotListener
+    private static class MyConsensusModuleSnapshotListener implements ConsensusModuleSnapshotListener
     {
         private final MutableLong sessionIdHolder;
 
