@@ -2607,10 +2607,7 @@ final class ConsensusModuleAgent
                 {
                     case CLIENT:
                     {
-                        if (Cluster.Role.LEADER == role)
-                        {
-                            nextCommittedSessionId = Math.max(session.id() + 1, nextCommittedSessionId);
-                        }
+                        nextCommittedSessionId = session.id() + 1;
                         if (session.appendSessionToLogAndSendOpen(
                             logPublisher, egressPublisher, leadershipTermId,
                             memberId, nowNs, clusterClock.time()))
@@ -3407,17 +3404,15 @@ final class ConsensusModuleAgent
 
         snapshotTaker.markBegin(SNAPSHOT_TYPE_ID, logPosition, leadershipTermId, 0, clusterTimeUnit, ctx.appVersion());
 
-        final long actualNextSessionId = role == Cluster.Role.LEADER ? nextCommittedSessionId : nextSessionId;
         if (pendingServiceMessageTrackers.length > 0)
         {
             final PendingServiceMessageTracker trackerOne = pendingServiceMessageTrackers[0];
-            snapshotTaker.snapshotConsensusModuleState(
-                actualNextSessionId, trackerOne.nextServiceSessionId(),
+            snapshotTaker.snapshotConsensusModuleState(nextCommittedSessionId, trackerOne.nextServiceSessionId(),
                 trackerOne.logServiceSessionId(), trackerOne.size());
         }
         else
         {
-            snapshotTaker.snapshotConsensusModuleState(actualNextSessionId, 0, 0, 0);
+            snapshotTaker.snapshotConsensusModuleState(nextCommittedSessionId, 0, 0, 0);
         }
 
         for (int i = 0, size = sessions.size(); i < size; i++)

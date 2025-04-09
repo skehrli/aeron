@@ -187,7 +187,6 @@ public final class TestCluster implements AutoCloseable
         this.appointedLeaderId = appointedLeaderId;
         this.byHostInvalidInitialResolutions = byHostInvalidInitialResolutions;
 
-        clientKeepAlive = new KeepAlive();
     }
 
     public static void awaitElectionClosed(final TestNode follower)
@@ -1370,7 +1369,7 @@ public final class TestCluster implements AutoCloseable
         awaitServiceMessagePredicate(node, service, countPredicate);
     }
 
-    private final KeepAlive clientKeepAlive;
+    private final KeepAlive clientKeepAlive = new KeepAlive();
 
     public void awaitServiceMessageCount(
         final TestNode node, final TestNode.TestService service, final int messageCount)
