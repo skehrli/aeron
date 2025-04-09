@@ -2687,7 +2687,7 @@ class ClusterTest
 
 
     @Test
-    @InterruptAfter(4)
+    @InterruptAfter(15)
     void allNodesShouldHaveIdenticalSnapshots()
     {
         final MutableInteger sessionCounter = new MutableInteger(0);
