@@ -2607,11 +2607,11 @@ final class ConsensusModuleAgent
                 {
                     case CLIENT:
                     {
-                        nextCommittedSessionId = session.id() + 1;
                         if (session.appendSessionToLogAndSendOpen(
                             logPublisher, egressPublisher, leadershipTermId,
                             memberId, nowNs, clusterClock.time()))
                         {
+                            nextCommittedSessionId = session.id() + 1;
                             ArrayListUtil.fastUnorderedRemove(pendingSessions, i, lastIndex--);
                             addSession(session);
                             workCount += 1;
