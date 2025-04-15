@@ -2712,7 +2712,7 @@ class ClusterTest
                     @Override
                     public void onConnectedSession(final SessionProxy sessionProxy, final long nowMs)
                     {
-                        if (sessionCounter.get() > 1)
+                        if (sessionCounter.get() > 2)
                         {
                             sessionProxy.reject();
                         }
@@ -2735,12 +2735,25 @@ class ClusterTest
         // wait for cluster to hold election
         final TestNode leader = cluster.awaitLeader();
 
-        // the first client is successful
-        cluster.connectClient();
+        // Original client - should always be allowed
+        final AeronCluster client = cluster.connectClient();
 
-        // the second client fails
-        assertThrowsExactly(AuthenticationException.class, () -> cluster.connectClient());
-        assertThrowsExactly(AuthenticationException.class, () -> cluster.connectClient());
+        final AeronCluster.Context clientContext = new AeronCluster.Context()
+            .aeronDirectoryName(client.context().aeronDirectoryName())
+            .aeron(client.context().aeron())
+            .ingressChannel(client.context().ingressChannel())
+            .egressChannel(client.context().egressChannel())
+            .ingressEndpoints(client.context().ingressEndpoints());
+
+        // Another session -> also OK
+        try (AeronCluster client2 = AeronCluster.connect(clientContext.clone()))
+        {
+            assertNotEquals(client2, null);
+        }
+
+        // Any further connections are rejected
+        assertThrowsExactly(AuthenticationException.class, () -> AeronCluster.connect(clientContext.clone()));
+        assertThrowsExactly(AuthenticationException.class, () -> AeronCluster.connect(clientContext.clone()));
 
 
         cluster.takeSnapshot(leader);

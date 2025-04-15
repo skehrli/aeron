@@ -2611,7 +2611,10 @@ final class ConsensusModuleAgent
                             logPublisher, egressPublisher, leadershipTermId,
                             memberId, nowNs, clusterClock.time()))
                         {
-                            nextCommittedSessionId = Math.max(session.id(), nextCommittedSessionId) + 1;
+                            if (session.id() >= nextCommittedSessionId)
+                            {
+                                nextCommittedSessionId = session.id() + 1;
+                            }
                             ArrayListUtil.fastUnorderedRemove(pendingSessions, i, lastIndex--);
                             addSession(session);
                             workCount += 1;
