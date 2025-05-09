@@ -83,6 +83,7 @@ final class ConsensusModuleAgent
     private long expectedAckPosition = 0;
     private long serviceAckId = 0;
     private long terminationPosition = NULL_POSITION;
+    private long terminationLeadershipTermId = NULL_VALUE;
     private long notifiedCommitPosition = 0;
     private long lastAppendPosition = NULL_POSITION;
     private long timeOfLastLogUpdateNs = 0;
@@ -1113,6 +1114,7 @@ final class ConsensusModuleAgent
         if (leadershipTermId == this.leadershipTermId && Cluster.Role.FOLLOWER == role)
         {
             terminationPosition = logPosition;
+            terminationLeadershipTermId = leadershipTermId;
             timeOfLastLogUpdateNs = clusterClock.timeNanos();
         }
     }
@@ -2476,6 +2478,7 @@ final class ConsensusModuleAgent
                             leadershipTermId,
                             position);
                         terminationPosition = position;
+                        terminationLeadershipTermId = leadershipTermId;
 
                         state(ConsensusModule.State.SNAPSHOT);
                         totalSnapshotDurationTracker.onSnapshotBegin(nowNs);
@@ -2495,7 +2498,11 @@ final class ConsensusModuleAgent
                     clusterTermination.terminationPosition(
                         errorHandler, consensusPublisher, activeMembers, thisMember, leadershipTermId, position);
                     terminationPosition = position;
-                    serviceProxy.terminationPosition(terminationPosition, errorHandler);
+                    terminationLeadershipTermId = leadershipTermId;
+                    if (serviceCount > 0)
+                    {
+                        serviceProxy.terminationPosition(terminationPosition, errorHandler);
+                    }
                     state(ConsensusModule.State.TERMINATING);
                     break;
                 }
@@ -3284,7 +3291,10 @@ final class ConsensusModuleAgent
 
         if (null != clusterTermination)
         {
-            serviceProxy.terminationPosition(terminationPosition, ctx.countedErrorHandler());
+            if (serviceCount > 0)
+            {
+                serviceProxy.terminationPosition(terminationPosition, ctx.countedErrorHandler());
+            }
             clusterTermination.deadlineNs(clusterClock.timeNanos() + ctx.terminationTimeoutNs());
             state(ConsensusModule.State.TERMINATING);
         }
@@ -3437,7 +3447,8 @@ final class ConsensusModuleAgent
 
     private void onUnavailableIngressImage(final Image image)
     {
-        ingressAdapter.freeSessionBuffer(image.sessionId());
+        final boolean isIpc = image.subscription().channel().startsWith(IPC_CHANNEL);
+        ingressAdapter.freeSessionBuffer(image.sessionId(), isIpc);
     }
 
     private void onUnavailableCounter(final CountersReader counters, final long registrationId, final int counterId)
@@ -3486,8 +3497,16 @@ final class ConsensusModuleAgent
     {
         if (null == clusterTermination)
         {
-            consensusPublisher.terminationAck(
-                leaderMember.publication(), leadershipTermId, logPosition, memberId);
+            if (terminationLeadershipTermId == leadershipTermId)
+            {
+                consensusPublisher.terminationAck(
+                    leaderMember.publication(), leadershipTermId, logPosition, memberId);
+            }
+            else
+            {
+                final String message = "termination ack not sent - different leadership term to request";
+                ctx.countedErrorHandler().onError(new ClusterEvent(message, AeronException.Category.ERROR));
+            }
             recordingLog.commitLogPosition(leadershipTermId, logPosition);
             closeAndTerminate();
         }
