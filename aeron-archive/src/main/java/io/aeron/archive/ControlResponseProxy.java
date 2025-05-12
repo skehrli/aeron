@@ -48,6 +48,7 @@ class ControlResponseProxy
         new RecordingSubscriptionDescriptorEncoder();
     private final RecordingSignalEventEncoder recordingSignalEventEncoder = new RecordingSignalEventEncoder();
     private final ChallengeEncoder challengeEncoder = new ChallengeEncoder();
+    private final PingEncoder pingEncoder = new PingEncoder();
 
     boolean sendDescriptor(
         final long controlSessionId,
@@ -109,9 +110,9 @@ class ControlResponseProxy
         final long controlSessionId,
         final long correlationId,
         final long relevantId,
-        final ControlResponseCode code,
+        final ControlResponseCode code, // OK for Hb
         final String errorMessage,
-        final ControlSession session)
+        final ControlSession session) // session = this
     {
         responseEncoder
             .wrapAndApplyHeader(buffer, 0, messageHeaderEncoder)
@@ -242,4 +243,34 @@ class ControlResponseProxy
     private void logSendSignal(final DirectBuffer buffer, final int offset, final int length)
     {
     }
+
+    public boolean sendPing(final long controlSessionId, final Publication controlPublication)
+    {
+        final int length = MESSAGE_HEADER_LENGTH + PingEncoder.BLOCK_LENGTH;
+
+        int attempts = SEND_ATTEMPTS;
+        do
+        {
+            final long result = controlPublication.tryClaim(length, bufferClaim);
+            if (result > 0)
+            {
+                final MutableDirectBuffer buffer = bufferClaim.buffer();
+                final int offset = bufferClaim.offset();
+                pingEncoder.wrapAndApplyHeader(buffer, offset, messageHeaderEncoder)
+                        .controlSessionId(controlSessionId);
+                bufferClaim.commit();
+
+                logPing(buffer, offset, length);
+                return true;
+            }
+        }
+        while (--attempts > 0);
+
+        return false;
+    }
+
+    private void logPing(final DirectBuffer buffer, final int offset, final int length)
+    {
+    }
+
 }

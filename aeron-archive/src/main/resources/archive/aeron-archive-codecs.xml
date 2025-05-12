@@ -631,4 +631,11 @@
         <field name="recordingId"          id="3" type="int64"/>
     </sbe:message>
 
+    <sbe:message name="Ping"
+                 id="106"
+                 sinceVersion="10"
+                 description="Ping for heartbeat.">
+        <field name="controlSessionId"     id="1" type="int64"/>
+    </sbe:message>
+
 </sbe:messageSchema>

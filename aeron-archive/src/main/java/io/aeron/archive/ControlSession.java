@@ -903,7 +903,8 @@ final class ControlSession implements Session
         if (sessionLivenessCheckDeadlineMs - nowMs < 0)
         {
             sessionLivenessCheckDeadlineMs = nowMs + sessionLivenessCheckIntervalMs;
-            sendOkResponse(Aeron.NULL_VALUE, Aeron.NULL_VALUE);
+            final boolean success = controlResponseProxy.sendPing(controlSessionId, controlPublication);
+            // TODO what do we do if it is NOT successful?
             return 1;
         }
         return 0;
