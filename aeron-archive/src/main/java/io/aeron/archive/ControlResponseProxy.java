@@ -110,9 +110,9 @@ class ControlResponseProxy
         final long controlSessionId,
         final long correlationId,
         final long relevantId,
-        final ControlResponseCode code, // OK for Hb
+        final ControlResponseCode code,
         final String errorMessage,
-        final ControlSession session) // session = this
+        final ControlSession session)
     {
         responseEncoder
             .wrapAndApplyHeader(buffer, 0, messageHeaderEncoder)
