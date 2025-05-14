@@ -29,6 +29,7 @@ import static io.aeron.CommonContext.*;
 
 final class PublicationParams
 {
+    long untetheredLingerTimeoutNs;
     long lingerTimeoutNs;
     long entityTag = ChannelUri.INVALID_TAG;
     long untetheredWindowLimitTimeoutNs;
@@ -486,6 +487,12 @@ final class PublicationParams
     {
         untetheredWindowLimitTimeoutNs = getTimeoutNs(
             channelUri, UNTETHERED_WINDOW_LIMIT_TIMEOUT_PARAM_NAME, ctx.untetheredWindowLimitTimeoutNs());
+    }
+
+    private void getUntetheredLingerTimeout(final ChannelUri channelUri, final MediaDriver.Context ctx)
+    {
+        untetheredLingerTimeoutNs = getTimeoutNs(
+            channelUri, UNTETHERED_LINGER_TIMEOUT_PARAM_NAME, ctx.untetheredLingerTimeoutNs());
     }
 
     private void getUntetheredRestingTimeout(final ChannelUri channelUri, final MediaDriver.Context ctx)

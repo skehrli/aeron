@@ -464,6 +464,7 @@ public final class MediaDriver implements AutoCloseable
         private long publicationConnectionTimeoutNs = Configuration.publicationConnectionTimeoutNs();
         private long publicationLingerTimeoutNs = Configuration.publicationLingerTimeoutNs();
         private long untetheredWindowLimitTimeoutNs = Configuration.untetheredWindowLimitTimeoutNs();
+        private long untetheredLingerTimeoutNs = Configuration.untetheredLingerTimeoutNs();
         private long untetheredRestingTimeoutNs = Configuration.untetheredRestingTimeoutNs();
         private long statusMessageTimeoutNs = Configuration.statusMessageTimeoutNs();
         private long counterFreeToReuseTimeoutNs = Configuration.counterFreeToReuseTimeoutNs();
@@ -1211,6 +1212,18 @@ public final class MediaDriver implements AutoCloseable
         public long untetheredWindowLimitTimeoutNs()
         {
             return untetheredWindowLimitTimeoutNs;
+        }
+
+        /**
+         * The linger timeout for an untethered subscription.
+         *
+         * @return timeout that an untethered subscription will linger.
+         * @see Configuration#UNTETHERED_LINGER_TIMEOUT_PROP_NAME
+         */
+        @Config
+        public long untetheredLingerTimeoutNs()
+        {
+            return untetheredLingerTimeoutNs;
         }
 
         /**

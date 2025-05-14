@@ -838,6 +838,12 @@ public final class Configuration
     public static final String UNTETHERED_WINDOW_LIMIT_TIMEOUT_PROP_NAME = "aeron.untethered.window.limit.timeout";
 
     /**
+     * Property name of the timeout for an untethered subscription to stay in the linger state.
+     */
+    @Config
+    public static final String UNTETHERED_LINGER_TIMEOUT_PROP_NAME = "aeron.untethered.linger.timeout";
+
+    /**
      * Default timeout for when an untethered subscription that is outside the window limit will participate in
      * local flow control.
      */
@@ -846,6 +852,15 @@ public final class Configuration
         defaultLong = 5_000_000_000L,
         expectedCDefaultFieldName = "AERON_UNTETHERED_WINDOW_LIMIT_TIMEOUT_NS_DEFAULT")
     public static final long UNTETHERED_WINDOW_LIMIT_TIMEOUT_DEFAULT_NS = TimeUnit.SECONDS.toNanos(5);
+
+    /**
+     * Default timeout for an untethered subscription to stay in the linger state.
+     */
+    @Config(
+        defaultType = DefaultType.LONG,
+        defaultLong = 5_000_000_000L,
+        expectedCDefaultFieldName = "AERON_UNTETHERED_LINGER_TIMEOUT_NS_DEFAULT")
+    public static final long UNTETHERED_LINGER_TIMEOUT_DEFAULT_NS = TimeUnit.SECONDS.toNanos(5);
 
     /**
      * Property name of the timeout for when an untethered subscription is resting after not being able to keep up
@@ -1347,6 +1362,18 @@ public final class Configuration
     {
         return getDurationInNanos(
             UNTETHERED_WINDOW_LIMIT_TIMEOUT_PROP_NAME, UNTETHERED_WINDOW_LIMIT_TIMEOUT_DEFAULT_NS);
+    }
+
+    /**
+     * The timeout for an untethered subscription to remain in the linger state.
+     *
+     * @return the timeout for an untethered subscription to remain in the linger state.
+     * @see #UNTETHERED_LINGER_TIMEOUT_PROP_NAME
+     */
+    public static long untetheredLingerTimeoutNs()
+    {
+        return getDurationInNanos(
+            UNTETHERED_LINGER_TIMEOUT_PROP_NAME, UNTETHERED_LINGER_TIMEOUT_DEFAULT_NS);
     }
 
     /**
