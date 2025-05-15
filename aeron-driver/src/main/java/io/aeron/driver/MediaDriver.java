@@ -1215,6 +1215,20 @@ public final class MediaDriver implements AutoCloseable
         }
 
         /**
+         * The timeout for when an untethered subscription that is outside the window will participate
+         * in local flow control.
+         *
+         * @param timeoutNs that an untethered subscription outside the window limit will participate in flow control.
+         * @return this for a fluent API.
+         * @see Configuration#UNTETHERED_WINDOW_LIMIT_TIMEOUT_PROP_NAME
+         */
+        public Context untetheredWindowLimitTimeoutNs(final long timeoutNs)
+        {
+            this.untetheredWindowLimitTimeoutNs = timeoutNs;
+            return this;
+        }
+
+        /**
          * The linger timeout for an untethered subscription.
          *
          * @return timeout that an untethered subscription will linger.
@@ -1230,13 +1244,13 @@ public final class MediaDriver implements AutoCloseable
          * The timeout for when an untethered subscription that is outside the window will participate
          * in local flow control.
          *
-         * @param timeoutNs that an untethered subscription outside the window limit will participate in flow control.
+         * @param timeoutNs that an untethered subscription to linger.
          * @return this for a fluent API.
-         * @see Configuration#UNTETHERED_WINDOW_LIMIT_TIMEOUT_PROP_NAME
+         * @see Configuration#UNTETHERED_LINGER_TIMEOUT_PROP_NAME
          */
-        public Context untetheredWindowLimitTimeoutNs(final long timeoutNs)
+        public Context untetheredLingerTimeoutNs(final long timeoutNs)
         {
-            this.untetheredWindowLimitTimeoutNs = timeoutNs;
+            this.untetheredLingerTimeoutNs = timeoutNs;
             return this;
         }
 
