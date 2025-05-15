@@ -74,6 +74,7 @@ final class PublicationParams
         params.getSparse(channelUri, ctx);
         params.getSpiesSimulateConnection(channelUri, ctx);
         params.getUntetheredWindowLimitTimeout(channelUri, ctx);
+        params.getUntetheredLingerTimeout(channelUri, ctx);
         params.getUntetheredRestingTimeout(channelUri, ctx);
         params.getMaxResend(channelUri, ctx);
 
