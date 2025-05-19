@@ -496,18 +496,18 @@ final class PublicationParams
         final String timeoutString = channelUri.get(UNTETHERED_LINGER_TIMEOUT_PARAM_NAME);
         if (null != timeoutString)
         {
-            // linger timeout was explicitly set for the channel.  use the set value
+            // Linger timeout was explicitly set for the channel.  Use the set value.
             untetheredLingerTimeoutNs = SystemUtil.parseDuration(UNTETHERED_LINGER_TIMEOUT_PARAM_NAME, timeoutString);
         }
         else if (null != windowLimitTimeoutString)
         {
-            // window limit was explicitly set for the channel.  use it
+            // Window limit timeout was explicitly set for the channel.  Use it.
             untetheredLingerTimeoutNs = untetheredWindowLimitTimeoutNs;
         }
         else
         {
-            // neither value was explicitely set for the channel.  use the context value for linger
-            // context value for linger needs similar checks to default to window timeout if not set
+            // Neither Window Limit Timeout nor Linger Timeout was set for the channel.
+            // Use the Context value for Linger.
             untetheredLingerTimeoutNs = ctx.untetheredLingerTimeoutNs();
         }
     }

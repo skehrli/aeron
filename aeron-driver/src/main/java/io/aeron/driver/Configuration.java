@@ -843,7 +843,7 @@ public final class Configuration
     @Config
     public static final String UNTETHERED_LINGER_TIMEOUT_PROP_NAME = "aeron.untethered.linger.timeout";
 
-    private static final long DEFAULT_UNSET_VALUE_WINDOW_LIMIT_TIMEOUT_NS = TimeUnit.SECONDS.toNanos(5);
+//    private static final long DEFAULT_UNSET_VALUE_WINDOW_LIMIT_TIMEOUT_NS = TimeUnit.SECONDS.toNanos(5);
     /**
      * Default timeout for when an untethered subscription that is outside the window limit will participate in
      * local flow control.
@@ -852,16 +852,16 @@ public final class Configuration
         defaultType = DefaultType.LONG,
         defaultLong = 5_000_000_000L,
         expectedCDefaultFieldName = "AERON_UNTETHERED_WINDOW_LIMIT_TIMEOUT_NS_DEFAULT")
-    public static final long UNTETHERED_WINDOW_LIMIT_TIMEOUT_DEFAULT_NS = DEFAULT_UNSET_VALUE_WINDOW_LIMIT_TIMEOUT_NS;
+    public static final long UNTETHERED_WINDOW_LIMIT_TIMEOUT_DEFAULT_NS = TimeUnit.SECONDS.toNanos(5);
 
     /**
      * Default timeout for an untethered subscription to stay in the linger state.
      */
-    @Config(
-        defaultType = DefaultType.LONG,
-        defaultLong = 5_000_000_000L,
-        expectedCDefaultFieldName = "AERON_UNTETHERED_LINGER_TIMEOUT_NS_DEFAULT")
-    public static final long UNTETHERED_LINGER_TIMEOUT_DEFAULT_NS = DEFAULT_UNSET_VALUE_WINDOW_LIMIT_TIMEOUT_NS;
+//    @Config(
+//        defaultType = DefaultType.LONG,
+//        defaultLong = 5_000_000_000L,
+//        expectedCDefaultFieldName = "AERON_UNTETHERED_LINGER_TIMEOUT_NS_DEFAULT")
+//    public static final long UNTETHERED_LINGER_TIMEOUT_DEFAULT_NS = DEFAULT_UNSET_VALUE_WINDOW_LIMIT_TIMEOUT_NS;
 
     /**
      * Property name of the timeout for when an untethered subscription is resting after not being able to keep up
@@ -1373,16 +1373,7 @@ public final class Configuration
      */
     public static long untetheredLingerTimeoutNs()
     {
-        final String propertyValue = System.getProperty(UNTETHERED_LINGER_TIMEOUT_PROP_NAME);
-        if (null == propertyValue)
-        {
-            return untetheredWindowLimitTimeoutNs();
-        }
-        else
-        {
-            return getDurationInNanos(
-                UNTETHERED_LINGER_TIMEOUT_PROP_NAME, UNTETHERED_LINGER_TIMEOUT_DEFAULT_NS);
-        }
+        return getDurationInNanos(UNTETHERED_LINGER_TIMEOUT_PROP_NAME, untetheredWindowLimitTimeoutNs());
     }
 
     /**
