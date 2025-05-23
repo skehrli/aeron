@@ -56,7 +56,7 @@ class UntetheredSubscriptionTest
             "aeron-spy:aeron:udp?endpoint=localhost:24325|term-length=64k",
 
             "aeron:ipc?term-length=64k|untethered-window-limit-timeout=50ms|" +
-            "untethered-resting-timeout=50ms|untethered-linger-timeout=50ms",
+            "untethered-resting-timeout=50ms|untethered-linger-timeout=25ms",
 
             "aeron:udp?endpoint=localhost:24325|term-length=64k|" +
             "untethered-window-limit-timeout=50ms|untethered-resting-timeout=50ms|" +
@@ -103,6 +103,10 @@ class UntetheredSubscriptionTest
         if (!channelUri.containsKey("untethered-window-limit-timeout"))
         {
             context.untetheredWindowLimitTimeoutNs(TimeUnit.MILLISECONDS.toNanos(50));
+        }
+        if (!channelUri.containsKey("untethered-linger-timeout"))
+        {
+            context.untetheredWindowLimitTimeoutNs(TimeUnit.MILLISECONDS.toNanos(25));
         }
 
         if (!channelUri.containsKey("untethered-resting-timeout"))

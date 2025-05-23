@@ -586,7 +586,6 @@ public final class MediaDriver implements AutoCloseable
         private PortManager senderPortManager;
         private PortManager receiverPortManager;
         private int streamSessionLimit = Configuration.streamSessionLimit();
-        private boolean isUntetheredLingerTimeoutOverridden = false;
 
         /**
          * Perform a shallow copy of the object.
@@ -1226,10 +1225,6 @@ public final class MediaDriver implements AutoCloseable
         public Context untetheredWindowLimitTimeoutNs(final long timeoutNs)
         {
             this.untetheredWindowLimitTimeoutNs = timeoutNs;
-            if (!isUntetheredLingerTimeoutOverridden)
-            {
-                this.untetheredLingerTimeoutNs = timeoutNs;
-            }
             return this;
         }
 
@@ -1256,7 +1251,6 @@ public final class MediaDriver implements AutoCloseable
         public Context untetheredLingerTimeoutNs(final long timeoutNs)
         {
             this.untetheredLingerTimeoutNs = timeoutNs;
-            isUntetheredLingerTimeoutOverridden = true;
             return this;
         }
 

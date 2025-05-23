@@ -15,6 +15,7 @@
  */
 package io.aeron.driver;
 
+import io.aeron.Aeron;
 import io.aeron.CncFileDescriptor;
 import io.aeron.CommonContext;
 import io.aeron.driver.MediaDriver.Context;
@@ -354,5 +355,51 @@ class MediaDriverContextTest
         final Field field = UdpTransportPoller.class.getDeclaredField("errorHandler");
         field.setAccessible(true);
         return (ErrorHandler)field.get(transportPoller);
+    }
+
+    @Test
+    void shouldTestDefaultUntetheredLingerTimeoutAndWindowTimeout()
+    {
+        assertEquals(UNTETHERED_WINDOW_LIMIT_TIMEOUT_DEFAULT_NS, context.untetheredWindowLimitTimeoutNs());
+        assertEquals(Aeron.NULL_VALUE, context.untetheredLingerTimeoutNs());
+    }
+
+    @Test
+    void shouldHonorSystemPropertyOverrideUntetheredLingerTimeoutAndWindowTimeout()
+    {
+        System.setProperty("aeron.untethered.linger.timeout", "222ms");
+        System.setProperty("aeron.untethered.window.limit.timeout", "444ms");
+
+        final MediaDriver.Context ctx = new MediaDriver.Context();
+        try
+        {
+            assertEquals(TimeUnit.MILLISECONDS.toNanos(222), ctx.untetheredLingerTimeoutNs());
+            assertEquals(TimeUnit.MILLISECONDS.toNanos(444), ctx.untetheredWindowLimitTimeoutNs());
+        }
+        finally
+        {
+            ctx.close();
+            System.clearProperty("aeron.untethered.linger.timeout");
+            System.clearProperty("aeron.untethered.window.limit.timeout");
+        }
+    }
+
+    @Test
+    void shouldUseNullForUntetheredLingerTimeoutEvenIfWindowIsSet()
+    {
+        System.setProperty("aeron.untethered.window.limit.timeout", "444ms");
+
+        final MediaDriver.Context ctx = new MediaDriver.Context();
+        try
+        {
+            assertEquals(Aeron.NULL_VALUE, ctx.untetheredLingerTimeoutNs());
+            assertEquals(TimeUnit.MILLISECONDS.toNanos(444), ctx.untetheredWindowLimitTimeoutNs());
+        }
+        finally
+        {
+            ctx.close();
+            System.clearProperty("aeron.untethered.linger.timeout");
+            System.clearProperty("aeron.untethered.window.limit.timeout");
+        }
     }
 }

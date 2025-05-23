@@ -492,23 +492,19 @@ final class PublicationParams
 
     private void getUntetheredLingerTimeout(final ChannelUri channelUri, final MediaDriver.Context ctx)
     {
-        final String windowLimitTimeoutString = channelUri.get(UNTETHERED_WINDOW_LIMIT_TIMEOUT_PARAM_NAME);
         final String timeoutString = channelUri.get(UNTETHERED_LINGER_TIMEOUT_PARAM_NAME);
         if (null != timeoutString)
         {
             // Linger timeout was explicitly set for the channel.  Use the set value.
             untetheredLingerTimeoutNs = SystemUtil.parseDuration(UNTETHERED_LINGER_TIMEOUT_PARAM_NAME, timeoutString);
         }
-        else if (null != windowLimitTimeoutString)
+        else if (Aeron.NULL_VALUE != ctx.untetheredLingerTimeoutNs())
         {
-            // Window limit timeout was explicitly set for the channel.  Use it.
-            untetheredLingerTimeoutNs = untetheredWindowLimitTimeoutNs;
+            untetheredLingerTimeoutNs = ctx.untetheredLingerTimeoutNs();
         }
         else
         {
-            // Neither Window Limit Timeout nor Linger Timeout was set for the channel.
-            // Use the Context value for Linger.
-            untetheredLingerTimeoutNs = ctx.untetheredLingerTimeoutNs();
+            untetheredLingerTimeoutNs = untetheredWindowLimitTimeoutNs;
         }
     }
 

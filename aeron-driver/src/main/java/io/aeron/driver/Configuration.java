@@ -1363,7 +1363,7 @@ public final class Configuration
      */
     public static long untetheredLingerTimeoutNs()
     {
-        return getDurationInNanos(UNTETHERED_LINGER_TIMEOUT_PROP_NAME, untetheredWindowLimitTimeoutNs());
+        return getDurationInNanos(UNTETHERED_LINGER_TIMEOUT_PROP_NAME, Aeron.NULL_VALUE);
     }
 
     /**
