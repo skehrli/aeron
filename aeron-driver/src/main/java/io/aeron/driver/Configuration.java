@@ -1360,6 +1360,7 @@ public final class Configuration
      *
      * @return the timeout for an untethered subscription to remain in the linger state.
      * @see #UNTETHERED_LINGER_TIMEOUT_PROP_NAME
+     * @since 1.48.0
      */
     public static long untetheredLingerTimeoutNs()
     {

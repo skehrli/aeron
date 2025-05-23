@@ -100,16 +100,16 @@ class UntetheredSubscriptionTest
             .threadingMode(ThreadingMode.SHARED);
 
         final ChannelUri channelUri = ChannelUri.parse(channel);
-        if (!channelUri.containsKey("untethered-window-limit-timeout"))
+        if (!channelUri.containsKey(CommonContext.UNTETHERED_WINDOW_LIMIT_TIMEOUT_PARAM_NAME))
         {
             context.untetheredWindowLimitTimeoutNs(TimeUnit.MILLISECONDS.toNanos(50));
         }
-        if (!channelUri.containsKey("untethered-linger-timeout"))
+        if (!channelUri.containsKey(CommonContext.UNTETHERED_LINGER_TIMEOUT_PARAM_NAME))
         {
             context.untetheredWindowLimitTimeoutNs(TimeUnit.MILLISECONDS.toNanos(25));
         }
 
-        if (!channelUri.containsKey("untethered-resting-timeout"))
+        if (!channelUri.containsKey(CommonContext.UNTETHERED_RESTING_TIMEOUT_PARAM_NAME))
         {
             context.untetheredRestingTimeoutNs(TimeUnit.MILLISECONDS.toNanos(50));
         }

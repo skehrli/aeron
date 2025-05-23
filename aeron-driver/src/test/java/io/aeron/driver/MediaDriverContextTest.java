@@ -358,17 +358,56 @@ class MediaDriverContextTest
     }
 
     @Test
-    void shouldTestDefaultUntetheredLingerTimeoutAndWindowTimeout()
+    void shouldTestDefaultUntetheredWindowLimitTimeout()
     {
         assertEquals(UNTETHERED_WINDOW_LIMIT_TIMEOUT_DEFAULT_NS, context.untetheredWindowLimitTimeoutNs());
+    }
+
+    @Test
+    void shouldTestDefaultUntetheredLingerTimeout()
+    {
         assertEquals(Aeron.NULL_VALUE, context.untetheredLingerTimeoutNs());
     }
 
     @Test
+    void shouldHonorSystemPropertyUntetheredLingerTimeout()
+    {
+        System.setProperty(UNTETHERED_LINGER_TIMEOUT_PROP_NAME, "222ms");
+
+        final MediaDriver.Context ctx = new MediaDriver.Context();
+        try
+        {
+            assertEquals(TimeUnit.MILLISECONDS.toNanos(222), ctx.untetheredLingerTimeoutNs());
+        }
+        finally
+        {
+            System.clearProperty(UNTETHERED_LINGER_TIMEOUT_PROP_NAME);
+        }
+    }
+
+    @Test
+    void shouldHonorSystemPropertyWindowLimitTimeout()
+    {
+        System.setProperty(UNTETHERED_WINDOW_LIMIT_TIMEOUT_PROP_NAME, "444ms");
+
+        final MediaDriver.Context ctx = new MediaDriver.Context();
+
+        try
+        {
+            assertEquals(TimeUnit.MILLISECONDS.toNanos(444), ctx.untetheredWindowLimitTimeoutNs());
+        }
+        finally
+        {
+            System.clearProperty(UNTETHERED_WINDOW_LIMIT_TIMEOUT_PROP_NAME);
+        }
+    }
+
+
+    @Test
     void shouldHonorSystemPropertyOverrideUntetheredLingerTimeoutAndWindowTimeout()
     {
-        System.setProperty("aeron.untethered.linger.timeout", "222ms");
-        System.setProperty("aeron.untethered.window.limit.timeout", "444ms");
+        System.setProperty(UNTETHERED_LINGER_TIMEOUT_PROP_NAME, "222ms");
+        System.setProperty(UNTETHERED_WINDOW_LIMIT_TIMEOUT_PROP_NAME, "444ms");
 
         final MediaDriver.Context ctx = new MediaDriver.Context();
         try
@@ -378,16 +417,15 @@ class MediaDriverContextTest
         }
         finally
         {
-            ctx.close();
-            System.clearProperty("aeron.untethered.linger.timeout");
-            System.clearProperty("aeron.untethered.window.limit.timeout");
+            System.clearProperty(UNTETHERED_LINGER_TIMEOUT_PROP_NAME);
+            System.clearProperty(UNTETHERED_WINDOW_LIMIT_TIMEOUT_PROP_NAME);
         }
     }
 
     @Test
     void shouldUseNullForUntetheredLingerTimeoutEvenIfWindowIsSet()
     {
-        System.setProperty("aeron.untethered.window.limit.timeout", "444ms");
+        System.setProperty(UNTETHERED_WINDOW_LIMIT_TIMEOUT_PROP_NAME, "444ms");
 
         final MediaDriver.Context ctx = new MediaDriver.Context();
         try
@@ -397,9 +435,8 @@ class MediaDriverContextTest
         }
         finally
         {
-            ctx.close();
-            System.clearProperty("aeron.untethered.linger.timeout");
-            System.clearProperty("aeron.untethered.window.limit.timeout");
+            System.clearProperty(UNTETHERED_LINGER_TIMEOUT_PROP_NAME);
+            System.clearProperty(UNTETHERED_RESTING_TIMEOUT_PROP_NAME);
         }
     }
 }

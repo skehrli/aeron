@@ -1233,6 +1233,7 @@ public final class MediaDriver implements AutoCloseable
          *
          * @return timeout that an untethered subscription will linger.
          * @see Configuration#UNTETHERED_LINGER_TIMEOUT_PROP_NAME
+         * @since 1.48.0
          */
         @Config
         public long untetheredLingerTimeoutNs()
