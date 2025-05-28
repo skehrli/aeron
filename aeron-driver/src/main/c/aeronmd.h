@@ -596,7 +596,7 @@ uint64_t aeron_driver_context_get_untethered_window_limit_timeout_ns(aeron_drive
 
 
 int aeron_driver_context_set_untethered_linger_timeout_ns(aeron_driver_context_t *context, uint64_t value);
-uint64_t aeron_driver_context_get_untethered_linger_timeout_ns(aeron_driver_context_t *context);
+int64_t aeron_driver_context_get_untethered_linger_timeout_ns(aeron_driver_context_t *context);
 
 /**
  * Untethered subscriptions resting timeout before they are allowed to re join an active stream.

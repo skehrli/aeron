@@ -2448,7 +2448,7 @@ int aeron_driver_context_set_untethered_linger_timeout_ns(aeron_driver_context_t
     return 0;
 }
 
-uint64_t aeron_driver_context_get_untethered_linger_timeout_ns(aeron_driver_context_t *context)
+int64_t aeron_driver_context_get_untethered_linger_timeout_ns(aeron_driver_context_t *context)
 {
     return NULL != context ?
         context->untethered_linger_timeout_ns : AERON_NULL_VALUE;

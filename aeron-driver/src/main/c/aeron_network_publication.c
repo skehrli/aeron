@@ -308,7 +308,7 @@ int aeron_network_publication_create(
     _pub->term_window_length = params->publication_window_length;
     _pub->linger_timeout_ns = (int64_t)params->linger_timeout_ns;
     _pub->untethered_window_limit_timeout_ns = (int64_t)params->untethered_window_limit_timeout_ns;
-    _pub->untethered_linger_timeout_ns = (int64_t)params->untethered_linger_timeout_ns;
+    _pub->untethered_linger_timeout_ns = params->untethered_linger_timeout_ns;
     _pub->untethered_resting_timeout_ns = (int64_t)params->untethered_resting_timeout_ns;
     _pub->unblock_timeout_ns = (int64_t)context->publication_unblock_timeout_ns;
     _pub->connection_timeout_ns = (int64_t)context->publication_connection_timeout_ns;
