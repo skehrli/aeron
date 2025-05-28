@@ -422,16 +422,21 @@ int aeron_diver_uri_publication_params(
         return -1;
     }
 
+    uint64_t cur_val = 0;
     if (aeron_uri_get_timeout(
             uri_params,
             AERON_URI_UNTETHERED_LINGER_TIMEOUT_KEY,
-            &params->untethered_linger_timeout_ns) < 0)
+            &cur_val) < 0)
     {
         AERON_APPEND_ERR("%s", "");
         return -1;
     }
 
-    if (params->untethered_linger_timeout_ns == AERON_NULL_VALUE)
+    if (cur_val > 0)
+    {
+        params->untethered_linger_timeout_ns = cur_val;
+    }
+    else if (params->untethered_linger_timeout_ns == AERON_NULL_VALUE)
     {
         params->untethered_linger_timeout_ns = params->untethered_window_limit_timeout_ns;
     }

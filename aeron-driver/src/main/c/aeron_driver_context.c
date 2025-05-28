@@ -1397,8 +1397,8 @@ int aeron_driver_validate_untethered_timeouts(aeron_driver_context_t *context)
         return -1;
     }
 
-    if (context->untethered_linger_timeout_ns != AERON_NULL_VALUE &&
-        context->untethered_linger_timeout_ns <= context->timer_interval_ns)
+    if (context->untethered_linger_timeout_ns > AERON_NULL_VALUE &&
+        (uint64_t)context->untethered_linger_timeout_ns <= context->timer_interval_ns)
     {
         errno = EINVAL;
         AERON_SET_ERR(
