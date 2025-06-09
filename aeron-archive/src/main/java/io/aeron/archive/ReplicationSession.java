@@ -239,7 +239,6 @@ class ReplicationSession implements Session, RecordingDescriptorConsumer
 
                 case REPLICATE:
                     workCount += replicate();
-
                     break;
 
                 case CATCHUP:

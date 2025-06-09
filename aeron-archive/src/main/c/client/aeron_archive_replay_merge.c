@@ -225,10 +225,37 @@ int aeron_archive_replay_merge_init(
 
 int aeron_archive_replay_merge_close(aeron_archive_replay_merge_t *replay_merge)
 {
-    if (CLOSED != replay_merge->state)
+    if (!aeron_is_closed(replay_merge->aeron))
     {
-        if (!aeron_is_closed(replay_merge->aeron))
+        if (aeron_archive_replay_merge_handle_async_destination(replay_merge) < 0)
         {
+            AERON_APPEND_ERR("%s", "");
+            return -1;
+        }
+
+        while (NULL != replay_merge->async_destination)
+        {
+            aeron_archive_idle(replay_merge->aeron_archive);
+
+            if (aeron_archive_replay_merge_handle_async_destination(replay_merge) < 0)
+            {
+                AERON_APPEND_ERR("%s", "");
+                return -1;
+            }
+        }
+
+        if (MERGED != replay_merge->state)
+        {
+            if (aeron_subscription_async_remove_destination(
+                &replay_merge->async_destination,
+                replay_merge->aeron,
+                replay_merge->subscription,
+                replay_merge->replay_destination) < 0)
+            {
+                AERON_APPEND_ERR("%s", "");
+                return -1;
+            }
+
             if (aeron_archive_replay_merge_handle_async_destination(replay_merge) < 0)
             {
                 AERON_APPEND_ERR("%s", "");
@@ -245,51 +272,21 @@ int aeron_archive_replay_merge_close(aeron_archive_replay_merge_t *replay_merge)
                     return -1;
                 }
             }
-
-            if (MERGED != replay_merge->state)
-            {
-                if (aeron_subscription_async_remove_destination(
-                    &replay_merge->async_destination,
-                    replay_merge->aeron,
-                    replay_merge->subscription,
-                    replay_merge->replay_destination) < 0)
-                {
-                    AERON_APPEND_ERR("%s", "");
-                    return -1;
-                }
-
-                if (aeron_archive_replay_merge_handle_async_destination(replay_merge) < 0)
-                {
-                    AERON_APPEND_ERR("%s", "");
-                    return -1;
-                }
-
-                while (NULL != replay_merge->async_destination)
-                {
-                    aeron_archive_idle(replay_merge->aeron_archive);
-
-                    if (aeron_archive_replay_merge_handle_async_destination(replay_merge) < 0)
-                    {
-                        AERON_APPEND_ERR("%s", "");
-                        return -1;
-                    }
-                }
-            }
-
-            if (replay_merge->is_replay_active)
-            {
-                aeron_archive_replay_merge_stop_replay(replay_merge);
-            }
         }
 
-        aeron_uri_string_builder_close(&replay_merge->replay_channel_builder);
-        aeron_free(replay_merge->replay_destination);
-        aeron_free(replay_merge->live_destination);
-        aeron_free(replay_merge->replay_endpoint);
-        aeron_free(replay_merge);
-
-        aeron_archive_replay_merge_set_state(replay_merge, CLOSED);
+        if (replay_merge->is_replay_active)
+        {
+            aeron_archive_replay_merge_stop_replay(replay_merge);
+        }
     }
+
+    aeron_uri_string_builder_close(&replay_merge->replay_channel_builder);
+    aeron_free(replay_merge->replay_destination);
+    aeron_free(replay_merge->live_destination);
+    aeron_free(replay_merge->replay_endpoint);
+    aeron_free(replay_merge);
+
+    aeron_archive_replay_merge_set_state(replay_merge, CLOSED);
 
     return 0;
 }
@@ -299,7 +296,6 @@ int aeron_archive_replay_merge_do_work(int *work_count_p, aeron_archive_replay_m
     if (aeron_archive_replay_merge_handle_async_destination(replay_merge) < 0)
     {
         AERON_APPEND_ERR("%s", "");
-        aeron_archive_replay_merge_set_state(replay_merge, FAILED);
         return -1;
     }
 
