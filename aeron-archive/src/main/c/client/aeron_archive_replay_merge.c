@@ -22,6 +22,7 @@
 #include "util/aeron_error.h"
 #include "uri/aeron_uri_string_builder.h"
 #include "aeron_archive_client.h"
+#include "command/aeron_control_protocol.h"
 
 #define REPLAY_MERGE_LIVE_ADD_MAX_WINDOW (32 * 1024 * 1024)
 #define REPLAY_MERGE_REPLAY_REMOVE_THRESHOLD (0)
@@ -807,7 +808,7 @@ static int aeron_archive_replay_merge_poll_for_response(bool *found_response_p, 
 
         if (poll_count == 0 && !aeron_subscription_is_connected(poller->subscription))
         {
-            AERON_APPEND_ERR("%s", "");
+            AERON_SET_ERR(-AERON_ERROR_CODE_GENERIC_ERROR, "%s", "subscription to archive is not connected");
             return -1;
         }
     }
