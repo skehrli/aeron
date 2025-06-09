@@ -808,7 +808,7 @@ static int aeron_archive_replay_merge_poll_for_response(bool *found_response_p, 
 
         if (poll_count == 0 && !aeron_subscription_is_connected(poller->subscription))
         {
-            AERON_SET_ERR(-AERON_ERROR_CODE_GENERIC_ERROR, "%s", "subscription to archive is not connected");
+            AERON_SET_ERR(-AERON_ERROR_CODE_GENERIC_ERROR, "%s", "archive is not connected");
             return -1;
         }
     }
