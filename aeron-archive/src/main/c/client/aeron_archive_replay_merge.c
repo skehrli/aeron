@@ -287,8 +287,6 @@ int aeron_archive_replay_merge_close(aeron_archive_replay_merge_t *replay_merge)
     aeron_free(replay_merge->replay_endpoint);
     aeron_free(replay_merge);
 
-    aeron_archive_replay_merge_set_state(replay_merge, CLOSED);
-
     return 0;
 }
 
