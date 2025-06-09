@@ -406,6 +406,7 @@ public final class ReplayMerge implements AutoCloseable
             isReplayActive = true;
             replaySessionId = polledRelevantId(archive);
             timeOfLastProgressMs = nowMs;
+            activeCorrelationId = Aeron.NULL_VALUE;
 
             // reset getRecordingPosition backoff when moving to CATCHUP state
             getMaxRecordedPositionBackoffMs = INITIAL_GET_MAX_RECORDED_POSITION_BACKOFF_MS;
@@ -573,12 +574,19 @@ public final class ReplayMerge implements AutoCloseable
             throw new TimeoutException(
                 "ReplayMerge no progress: state=" + state + ", activeTransportCount=" + transportCount);
         }
+
+        if (activeCorrelationId == Aeron.NULL_VALUE)
+        {
+            pollForResponse(archive, Aeron.NULL_VALUE);
+        }
     }
 
     private static boolean pollForResponse(final AeronArchive archive, final long correlationId)
     {
         final ControlResponsePoller poller = archive.controlResponsePoller();
-        if (poller.poll() > 0 && poller.isPollComplete())
+
+        final int pollCount = poller.poll();
+        if (poller.isPollComplete())
         {
             if (poller.controlSessionId() == archive.controlSessionId())
             {
@@ -592,6 +600,10 @@ public final class ReplayMerge implements AutoCloseable
 
                 return poller.correlationId() == correlationId;
             }
+        }
+        else if (pollCount == 0 && !poller.subscription().isConnected())
+        {
+            throw new ArchiveException("archive is not connected");
         }
 
         return false;
