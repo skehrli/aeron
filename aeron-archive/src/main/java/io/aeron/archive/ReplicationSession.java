@@ -219,6 +219,7 @@ class ReplicationSession implements Session, RecordingDescriptorConsumer
 
                 case EXTEND:
                     workCount += extend();
+                    workCount += pollSourceArchiveEvents();
                     break;
 
                 case REPLAY_TOKEN:
@@ -227,6 +228,7 @@ class ReplicationSession implements Session, RecordingDescriptorConsumer
 
                 case GET_ARCHIVE_PROXY:
                     workCount += getArchiveProxy();
+                    workCount += pollSourceArchiveEvents();
                     break;
 
                 case REPLAY:
@@ -235,14 +237,17 @@ class ReplicationSession implements Session, RecordingDescriptorConsumer
 
                 case AWAIT_IMAGE:
                     workCount += awaitImage();
+                    workCount += pollSourceArchiveEvents();
                     break;
 
                 case REPLICATE:
                     workCount += replicate();
+                    workCount += pollSourceArchiveEvents();
                     break;
 
                 case CATCHUP:
                     workCount += catchup();
+                    workCount += pollSourceArchiveEvents();
                     break;
 
                 case ATTEMPT_LIVE_JOIN:
@@ -953,6 +958,34 @@ class ReplicationSession implements Session, RecordingDescriptorConsumer
         state = newState;
         activeCorrelationId = NULL_VALUE;
         timeOfLastActionMs = epochClock.time();
+    }
+
+    private int pollSourceArchiveEvents()
+    {
+        if (srcArchive != null && activeCorrelationId == NULL_VALUE)
+        {
+            final ControlResponsePoller poller = srcArchive.controlResponsePoller();
+
+            final int pollCount = poller.poll();
+            if (poller.isPollComplete())
+            {
+                if (poller.controlSessionId() == srcArchive.controlSessionId())
+                {
+                    if (ControlResponseCode.ERROR == poller.code())
+                    {
+                        throw new ArchiveException("replication source archive error: " + poller.errorMessage());
+                    }
+                }
+            }
+            else if (pollCount == 0 && !poller.subscription().isConnected())
+            {
+                throw new ArchiveException("replication source archive is not connected");
+            }
+
+            return pollCount;
+        }
+
+        return 0;
     }
 
     @SuppressWarnings("unused")
