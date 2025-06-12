@@ -38,6 +38,7 @@ class ReplicationSession implements Session, RecordingDescriptorConsumer
 {
     private static final int REPLAY_REMOVE_THRESHOLD = 0;
     private static final int RETRY_ATTEMPTS = 3;
+    private static final int SOURCE_ARCHIVE_POLL_INTERVAL_MS = 100;
     private final int replicationSessionId;
 
     @SuppressWarnings("JavadocVariable")
@@ -95,6 +96,7 @@ class ReplicationSession implements Session, RecordingDescriptorConsumer
     private long responsePublicationRegistrationId = NULL_VALUE;
     private ExclusivePublication responsePublication = null;
     private ArchiveProxy responseArchiveProxy = null;
+    private long timeOfLastScheduledSourceArchivePollMs;
 
     ReplicationSession(
         final long srcRecordingId,
@@ -211,49 +213,57 @@ class ReplicationSession implements Session, RecordingDescriptorConsumer
 
                 case REPLICATE_DESCRIPTOR:
                     workCount += replicateDescriptor();
+                    pollSourceArchiveEvents();
                     break;
 
                 case SRC_RECORDING_POSITION:
                     workCount += srcRecordingPosition();
+                    pollSourceArchiveEvents();
                     break;
 
                 case EXTEND:
                     workCount += extend();
+                    pollSourceArchiveEvents();
                     break;
 
                 case REPLAY_TOKEN:
                     workCount += replayToken();
+                    pollSourceArchiveEvents();
                     break;
 
                 case GET_ARCHIVE_PROXY:
                     workCount += getArchiveProxy();
+                    pollSourceArchiveEvents();
                     break;
 
                 case REPLAY:
                     workCount += replay();
+                    pollSourceArchiveEvents();
                     break;
 
                 case AWAIT_IMAGE:
                     workCount += awaitImage();
+                    pollSourceArchiveEvents();
                     break;
 
                 case REPLICATE:
                     workCount += replicate();
+                    pollSourceArchiveEvents();
                     break;
 
                 case CATCHUP:
                     workCount += catchup();
+                    pollSourceArchiveEvents();
                     break;
 
                 case ATTEMPT_LIVE_JOIN:
                     workCount += attemptLiveJoin();
+                    pollSourceArchiveEvents();
                     break;
 
                 case DONE:
                     break;
             }
-
-            workCount += pollSourceArchiveEvents();
         }
         catch (final Exception ex)
         {
@@ -957,32 +967,21 @@ class ReplicationSession implements Session, RecordingDescriptorConsumer
         timeOfLastActionMs = epochClock.time();
     }
 
-    private int pollSourceArchiveEvents()
+    private void pollSourceArchiveEvents()
     {
-        if (srcArchive != null && activeCorrelationId == NULL_VALUE)
+        final long nowMs = epochClock.time();
+
+        if (activeCorrelationId == Aeron.NULL_VALUE &&
+            (nowMs > (timeOfLastScheduledSourceArchivePollMs + SOURCE_ARCHIVE_POLL_INTERVAL_MS)))
         {
-            final ControlResponsePoller poller = srcArchive.controlResponsePoller();
+            timeOfLastScheduledSourceArchivePollMs = nowMs;
 
-            final int pollCount = poller.poll();
-            if (poller.isPollComplete())
+            final String errorMessage = srcArchive.pollForErrorResponse();
+            if (null != errorMessage)
             {
-                if (poller.controlSessionId() == srcArchive.controlSessionId())
-                {
-                    if (ControlResponseCode.ERROR == poller.code())
-                    {
-                        throw new ArchiveException("replication source archive error: " + poller.errorMessage());
-                    }
-                }
+                throw new ArchiveException(errorMessage);
             }
-            else if (pollCount == 0 && !poller.subscription().isConnected())
-            {
-                throw new ArchiveException("replication source archive is not connected");
-            }
-
-            return pollCount;
         }
-
-        return 0;
     }
 
     @SuppressWarnings("unused")
