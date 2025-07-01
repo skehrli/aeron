@@ -5,6 +5,7 @@ repositories {
 def asciidoctorjVersion = '2.5.13'
 def jgitVersion = '6.10.0.202406032230-r'
 def asmVersion = '9.7'
+def json = "20250517"
 
 configurations.configureEach {
     resolutionStrategy.eachDependency { details ->
@@ -17,6 +18,7 @@ configurations.configureEach {
 dependencies {
     implementation "org.asciidoctor:asciidoctorj:${asciidoctorjVersion}"
     implementation "org.eclipse.jgit:org.eclipse.jgit:${jgitVersion}"
+    implementation "org.json:json:${json}"
 }
 
 tasks.withType(JavaCompile).configureEach {
