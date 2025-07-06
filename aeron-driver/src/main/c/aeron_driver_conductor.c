@@ -1912,7 +1912,8 @@ aeron_ipc_publication_t *aeron_driver_conductor_get_or_add_ipc_publication(
         if (stream_id == pub_entry->stream_id)
         {
             if (AERON_IPC_PUBLICATION_STATE_ACTIVE == pub_entry->conductor_fields.state &&
-                NULL == publication && !is_exclusive && !pub_entry->is_exclusive)
+                NULL == publication && !is_exclusive && !pub_entry->is_exclusive &&
+                pub_entry->conductor_fields.response_correlation_id == params->response_correlation_id)
             {
                 publication = pub_entry;
             }
@@ -2040,6 +2041,32 @@ aeron_ipc_publication_t *aeron_driver_conductor_get_or_add_ipc_publication(
                     conductor->ipc_publications.array[conductor->ipc_publications.length++].publication = publication;
                     publication->conductor_fields.managed_resource.time_of_last_state_change_ns =
                         aeron_clock_cached_nano_time(conductor->context->cached_clock);
+
+                    for (size_t i = 0, pub_n = conductor->ipc_publications.length; i < pub_n; i++)
+                    {
+                        aeron_ipc_publication_t *candidate_pub = conductor->ipc_publications.array[i].publication;
+                        int64_t ipc_registration_id = candidate_pub->conductor_fields.managed_resource.registration_id;
+
+                        if (ipc_registration_id == publication->conductor_fields.response_correlation_id)
+                        {
+                            int64_t candidate_response_correlation_id =
+                                candidate_pub->conductor_fields.response_correlation_id;
+
+                            for (size_t j = 0, sub_n = conductor->ipc_subscriptions.length; j < sub_n; j++)
+                            {
+                                aeron_subscription_link_t *candidate_link = &conductor->ipc_subscriptions.array[j];
+                                if (candidate_response_correlation_id == candidate_link->registration_id)
+                                {
+                                    candidate_link->has_session_id = true;
+                                    candidate_link->session_id = publication->session_id;
+
+                                    break;
+                                }
+                            }
+
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -4341,7 +4368,7 @@ int aeron_driver_conductor_on_add_ipc_subscription(
     link->registration_id = command->correlated.correlation_id;
     link->is_reliable = true;
     link->is_rejoin = true;
-    link->is_response = false;
+    link->is_response = params.is_response;
     link->group = AERON_INFER;
     link->is_sparse = params.is_sparse;
     link->is_tether = params.is_tether;
