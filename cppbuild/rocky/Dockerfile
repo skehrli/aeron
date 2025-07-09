@@ -1,7 +1,5 @@
 FROM rockylinux:8
 
-ARG USER_ID
-ARG GROUP_ID
 ARG CMAKE_VERSION=3.14.7
 ARG GCC_VERSION
 
@@ -28,6 +26,10 @@ ENV PATH="$PATH:/opt/tools/cmake-${CMAKE_VERSION}-Linux-x86_64/bin" \
     GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.java.installations.auto-detect=false -Dorg.gradle.warning.mode=fail" \
     GCC_VERSION=${GCC_VERSION}
 
+ARG USER_ID="1000"
+ARG GROUP_ID="1000"
+RUN groupadd --gid $GROUP_ID --non-unique --system athena
+RUN adduser --uid $USER_ID --system --create-home --gid $GROUP_ID athena
 USER athena
 
 WORKDIR /opt/aeron
