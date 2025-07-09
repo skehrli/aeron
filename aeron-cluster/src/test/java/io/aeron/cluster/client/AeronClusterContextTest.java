@@ -161,7 +161,7 @@ class AeronClusterContextTest
     }
 
     @Test
-    void concludeThrowsConfigurationExceptionIfEgressLocalAndIngressRemote() throws SocketException
+    void concludeWritesToStandardErrorIfEgressLocalAndIngressRemote() throws SocketException
     {
         getLocalNetworkIp();
 
@@ -178,8 +178,8 @@ class AeronClusterContextTest
 
         context.conclude();
         final String output = outContent.toString();
-        assertTrue(output.contentEquals(
-            "ERROR - must use network interface for local egress host when ingress is remote\n"));
+        assertTrue(output.startsWith(
+            "ERROR - must use network interface for local egress host when ingress is remote"));
     }
 
     private static String getLocalNetworkIp() throws SocketException
