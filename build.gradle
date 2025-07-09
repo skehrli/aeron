@@ -198,7 +198,6 @@ subprojects {
         toolchain {
             languageVersion = JavaLanguageVersion.of(buildJavaVersion)
         }
-        sourceCompatibility = JavaVersion.VERSION_1_8
     }
 
     group = aeronGroup
