@@ -46,9 +46,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static io.aeron.Aeron.NULL_VALUE;
-import static io.aeron.CommonContext.ENDPOINT_PARAM_NAME;
 import static io.aeron.CommonContext.REJOIN_PARAM_NAME;
-import static java.util.Objects.requireNonNull;
 import static org.agrona.SystemUtil.getDurationInNanos;
 
 /**
@@ -1498,14 +1496,18 @@ public final class AeronCluster implements AutoCloseable
 
         private void checkEgressIngressHostMatch(final ChannelUri egressChannelUri)
         {
-            final String endpoint = egressChannelUri.get(ENDPOINT_PARAM_NAME);
             if (egressChannelUri.isIpc())
             {
                 return; // don't check hostnames if ipc
             }
+            final String endpoint = egressChannelUri.get(CommonContext.ENDPOINT_PARAM_NAME);
 
-            final int portSeparatorIndex =
-                requireNonNull(endpoint, "resolvedEndpoint is null").lastIndexOf(':');
+            if (null == endpoint)
+            {
+                throw new ConfigurationException("Egress channel endpoint must be specified");
+            }
+
+            final int portSeparatorIndex = endpoint.indexOf(':');
             final String endpointHost = endpoint.substring(0, portSeparatorIndex);
 
             if (null == ingressEndpoints)
