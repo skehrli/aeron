@@ -3,9 +3,6 @@ FROM rockylinux:8
 ARG CMAKE_VERSION=3.14.7
 ARG GCC_VERSION
 
-RUN groupadd --gid $GROUP_ID --non-unique --system athena
-RUN adduser --uid $USER_ID --system --gid $GROUP_ID athena
-
 # Install dev tools
 RUN yum install -y scl-utils && \
     yum install -y "gcc-toolset-${GCC_VERSION}-gcc" "gcc-toolset-${GCC_VERSION}-gcc-c++" make findutils git
@@ -30,6 +27,7 @@ ARG USER_ID="1000"
 ARG GROUP_ID="1000"
 RUN groupadd --gid $GROUP_ID --non-unique --system athena
 RUN adduser --uid $USER_ID --system --create-home --gid $GROUP_ID athena
+
 USER athena
 
 WORKDIR /opt/aeron
