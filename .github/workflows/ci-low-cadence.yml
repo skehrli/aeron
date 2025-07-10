@@ -22,11 +22,12 @@ jobs:
   java-slow-tests:
     name: Java Slow Tests (JDK ${{ matrix.java }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
         java: [ '8', '17', '21' ]
-        os: [ 'ubuntu-22.04', 'windows-latest', 'macos-14' ]
+        os: [ 'ubuntu-24.04', 'windows-latest', 'macos-latest' ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -136,11 +137,12 @@ jobs:
 
   cpp-slow-tests-gcc:
     name: C++ Slow System Tests GCC ${{ matrix.version }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
-        version: [ '13' ]
+        version: [ '14' ]
     env:
       CC: gcc-${{ matrix.version }}
       CXX: g++-${{ matrix.version }}
@@ -194,11 +196,12 @@ jobs:
 
   cpp-slow-tests-clang:
     name: C++ Slow System Tests Clang ${{ matrix.version }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
-        version: [ '18' ]
+        version: [ '19' ]
     env:
       CC: clang-${{ matrix.version }}
       CXX: clang++-${{ matrix.version }}
@@ -255,6 +258,7 @@ jobs:
   cpp-slow-tests-msvc:
     name: C++ Slow System Tests MSVC
     runs-on: windows-latest
+    timeout-minutes: 120
     env:
       CC: cl
       CXX: cl
@@ -302,11 +306,12 @@ jobs:
 
   cpp-sanitize-gcc:
     name: C++ Sanitise Build GCC ${{ matrix.version }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
-        version: [ '13' ]
+        version: [ '14' ]
     env:
       CC: gcc-${{ matrix.version }}
       CXX: g++-${{ matrix.version }}
@@ -360,11 +365,12 @@ jobs:
 
   cpp-sanitize-clang:
     name: C++ Sanitise Build Clang ${{ matrix.version }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
-        version: [ '18' ]
+        version: [ '19' ]
     env:
       CC: clang-${{ matrix.version }}
       CXX: clang++-${{ matrix.version }}
