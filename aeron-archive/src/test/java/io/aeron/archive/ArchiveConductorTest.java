@@ -31,17 +31,16 @@ class ArchiveConductorTest
     @Test
     void strippedChannelBuilderShouldCopyKeyParameters() throws ReflectiveOperationException
     {
-        final ChannelUri uri = ChannelUri.parse("""
-            aeron:udp?term-length=1g|mtu=2048|session-id=tag:424242424242|rcv-wnd=32k|so-sndbuf=2m|so-rcvbuf=1m|\
-            endpoint=some-host:7777|interface=192.168.0.1/24|control-mode=dynamic|control=localhost:5555|\
-            tether=false|reliable=false|linger=1321ms|sparse=false|cc=cubic|alias=test-stripped-channel|\
-            fc=tagged,g:1111/3,t:4s|gtag=2222|tags=17,432|tag=5|ttl=3|eos=true|rejoin=false|ssc=true|group=true|\
-            response-correlation-id=88888888881|response-endpoint=publisher:10101|\
-            media-rcv-ts-offset=reserved|channel-rcv-ts-offset=136|channel-snd-ts-offset=144|\
-            init-term-id=300|term-id=341|term-offset=4096|nak-delay=100ns|\
-            untethered-window-limit-timeout=3s|untethered-linger-timeout=2s|untethered-resting-timeout=1s|\
-            max-resend=13|stream-id=-654|pub-wnd=32m
-            """.stripIndent());
+        final ChannelUri uri = ChannelUri.parse(
+            "aeron:udp?term-length=1g|mtu=2048|session-id=tag:424242424242|rcv-wnd=32k|so-sndbuf=2m|so-rcvbuf=1m|" +
+            "endpoint=some-host:7777|interface=192.168.0.1/24|control-mode=dynamic|control=localhost:5555|" +
+            "tether=false|reliable=false|linger=1321ms|sparse=false|cc=cubic|alias=test-stripped-channel|" +
+            "fc=tagged,g:1111/3,t:4s|gtag=2222|tags=17,432|tag=5|ttl=3|eos=true|rejoin=false|ssc=true|group=true|" +
+            "response-correlation-id=88888888881|response-endpoint=publisher:10101|" +
+            "media-rcv-ts-offset=reserved|channel-rcv-ts-offset=136|channel-snd-ts-offset=144|" +
+            "init-term-id=300|term-id=341|term-offset=4096|nak-delay=100ns|" +
+            "untethered-window-limit-timeout=3s|untethered-linger-timeout=2s|untethered-resting-timeout=1s|" +
+            "max-resend=13|stream-id=-654|pub-wnd=32m");
 
         final ChannelUriStringBuilder builder = ArchiveConductor.strippedChannelBuilder(uri);
         assertNotNull(builder);
