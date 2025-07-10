@@ -64,7 +64,7 @@ class ArchiveConductorTest
         assertEquals("reserved", builder.mediaReceiveTimestampOffset());
         assertTrue(builder.isSessionIdTagged());
         final Field sessionIdField = builder.getClass().getDeclaredField("sessionId");
-        sessionIdField.trySetAccessible();
+        sessionIdField.setAccessible(true);
         assertEquals(424242424242L, sessionIdField.get(builder));
         assertEquals("test-stripped-channel", builder.alias());
         assertEquals(3, builder.ttl());
