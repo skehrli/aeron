@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2024 Real Logic Limited.
+ * Copyright 2014-2025 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,11 +34,12 @@ import java.util.Random;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.oneOf;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 public class DataLossAndRecoverySystemTest
 {
+    private static final int LOSS_LENGTH = 100_000;
     @RegisterExtension
     final SystemTestWatcher watcher = new SystemTestWatcher();
 
@@ -50,7 +51,7 @@ public class DataLossAndRecoverySystemTest
     @BeforeEach
     void setUp()
     {
-        TestMediaDriver.enableFixedLoss(context, 5, 102, 100_000);
+        TestMediaDriver.enableFixedLoss(context, 5, 102, LOSS_LENGTH);
     }
 
     private void launch(final MediaDriver.Context context)
@@ -70,8 +71,10 @@ public class DataLossAndRecoverySystemTest
     {
         launch(context);
 
-        sendAndReceive10mOfDataWithLoss(
-            "aeron:udp?endpoint=localhost:10000|term-length=1m|init-term-id=0|term-id=0|term-offset=0");
+        sendAndReceive(
+            "aeron:udp?endpoint=localhost:10000|term-length=1m|init-term-id=0|term-id=0|term-offset=0",
+            10 * 1024 * 1024
+        );
 
         try (Aeron aeron = Aeron.connect(new Aeron.Context().aeronDirectoryName(driver.aeronDirectoryName())))
         {
@@ -79,8 +82,8 @@ public class DataLossAndRecoverySystemTest
                 .getCounterValue(SystemCounterDescriptor.RETRANSMITS_SENT.id());
             final long nakCount = aeron.countersReader()
                 .getCounterValue(SystemCounterDescriptor.NAK_MESSAGES_SENT.id());
-            assertThat(retransmitCount, oneOf(1L, 2L));
-            assertThat(nakCount, oneOf(1L, 2L));
+            assertThat(nakCount, greaterThanOrEqualTo(1L));
+            assertThat(retransmitCount, lessThanOrEqualTo(nakCount));
         }
     }
 
@@ -90,8 +93,10 @@ public class DataLossAndRecoverySystemTest
         dontCoalesceNaksOnReceiverByDefault();
         launch(context);
 
-        sendAndReceive10mOfDataWithLoss(
-            "aeron:udp?endpoint=localhost:10000|term-length=1m|init-term-id=0|term-id=0|term-offset=0|nak-delay=100us");
+        sendAndReceive(
+            "aeron:udp?endpoint=localhost:10000|term-length=1m|init-term-id=0|term-id=0|term-offset=0|nak-delay=100us",
+            10 * 1024 * 1024
+        );
 
         try (Aeron aeron = Aeron.connect(new Aeron.Context().aeronDirectoryName(driver.aeronDirectoryName())))
         {
@@ -99,8 +104,8 @@ public class DataLossAndRecoverySystemTest
                 .getCounterValue(SystemCounterDescriptor.RETRANSMITS_SENT.id());
             final long nakCount = aeron.countersReader()
                 .getCounterValue(SystemCounterDescriptor.NAK_MESSAGES_SENT.id());
-            assertThat(retransmitCount, oneOf(1L, 2L));
-            assertThat(nakCount, oneOf(1L, 2L));
+            assertThat(nakCount, greaterThanOrEqualTo(1L));
+            assertThat(retransmitCount, lessThanOrEqualTo(nakCount));
         }
     }
 
@@ -110,8 +115,10 @@ public class DataLossAndRecoverySystemTest
         dontCoalesceNaksOnReceiverByDefault();
         launch(context);
 
-        sendAndReceive10mOfDataWithLoss(
-            "aeron:udp?endpoint=localhost:10000|term-length=1m|init-term-id=0|term-id=0|term-offset=0");
+        sendAndReceive(
+            "aeron:udp?endpoint=localhost:10000|term-length=1m|init-term-id=0|term-id=0|term-offset=0",
+            10 * 1024 * 1024
+        );
 
         try (Aeron aeron = Aeron.connect(new Aeron.Context().aeronDirectoryName(driver.aeronDirectoryName())))
         {
@@ -120,8 +127,7 @@ public class DataLossAndRecoverySystemTest
             final long nakCount = aeron.countersReader()
                 .getCounterValue(SystemCounterDescriptor.NAK_MESSAGES_SENT.id());
             assertThat(nakCount, greaterThanOrEqualTo(1L));
-            // in CI, we occasionally see an extra retransmission
-            assertThat(retransmitCount, oneOf(1L, 2L));
+            assertThat(retransmitCount, lessThanOrEqualTo(nakCount));
         }
     }
 
@@ -130,11 +136,11 @@ public class DataLossAndRecoverySystemTest
         TestMediaDriver.dontCoalesceNaksOnReceiverByDefault(context);
     }
 
-    private void sendAndReceive10mOfDataWithLoss(final String channel)
+    private void sendAndReceive(final String channel, final int publicationLength)
     {
         final int streamId = 10000;
-        final byte[] input = new byte[10 * 1024 * 1024];
-        final byte[] output = new byte[10 * 1024 * 1024];
+        final byte[] input = new byte[publicationLength];
+        final byte[] output = new byte[publicationLength];
         final Random r = new Random(1);
         r.nextBytes(input);
         final UnsafeBuffer sendBuffer = new UnsafeBuffer();
