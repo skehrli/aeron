@@ -1939,6 +1939,17 @@ public final class ChannelUriStringBuilder
      * Set the correlation id from the image received on the response "server's" subscription to be used by a response
      * publication.
      *
+     * @return correlation id of an image from the response "server's" subscription.
+     */
+    public Long responseCorrelationId()
+    {
+        return responseCorrelationId;
+    }
+
+    /**
+     * Set the correlation id from the image received on the response "server's" subscription to be used by a response
+     * publication.
+     *
      * @param responseCorrelationId correlation id of an image from the response "server's" subscription.
      * @return this for a fluent API.
      */
