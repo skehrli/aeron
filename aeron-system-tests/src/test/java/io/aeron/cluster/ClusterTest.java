@@ -33,6 +33,7 @@ import io.aeron.cluster.service.ClusteredServiceContainer;
 import io.aeron.cluster.service.SnapshotDurationTracker;
 import io.aeron.driver.MediaDriver;
 import io.aeron.driver.ThreadingMode;
+import io.aeron.exceptions.TimeoutException;
 import io.aeron.logbuffer.BufferClaim;
 import io.aeron.logbuffer.ControlledFragmentHandler;
 import io.aeron.logbuffer.Header;
@@ -131,6 +132,36 @@ class ClusterTest
         assertEquals(FOLLOWER, follower.role());
         assertEquals(1 /* new counter */, follower.consensusModule().context().electionCounter().get());
         assertEquals(1, leader.consensusModule().context().electionCounter().get());
+    }
+
+    @Test
+    void shouldThrowTimeoutExceptionWhenIngressIsUnreachable()
+    {
+        final TimeoutException thrown = assertThrows(TimeoutException.class, () ->
+        {
+            final TestCluster cluster = aCluster().withInvalidNameResolution(0).start();
+            cluster.connectClient();
+        });
+
+        System.out.println("thrown message: " + thrown.getMessage());
+        assertTrue(thrown.getMessage().contains("couldn't connect to any of the cluster endpoints"));
+    }
+
+    @Test
+    void shouldThrowTimeoutExceptionWhenIngressIsPartiallyUnreachable()
+    {
+        final TimeoutException thrown = assertThrows(TimeoutException.class, () ->
+        {
+            final TestCluster cluster = aCluster().withStaticNodes(3)
+                .withEgressChannel("aeron:udp?endpoint=localhost:8081")
+                .withIngressChannel("aeron:udp")
+                .withIngressEndpoints("localhost","badhost","badhost2")
+                .start();
+            cluster.connectClient();
+        });
+
+        System.out.println("thrown message: " + thrown.getMessage());
+        assertTrue(thrown.getMessage().contains("couldn't connect to any of the cluster endpoints"));
     }
 
     @Test
