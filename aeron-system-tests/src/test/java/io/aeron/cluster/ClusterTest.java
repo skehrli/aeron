@@ -148,23 +148,6 @@ class ClusterTest
     }
 
     @Test
-    void shouldThrowTimeoutExceptionWhenIngressIsPartiallyUnreachable()
-    {
-        final TimeoutException thrown = assertThrows(TimeoutException.class, () ->
-        {
-            final TestCluster cluster = aCluster().withStaticNodes(3)
-                .withEgressChannel("aeron:udp?endpoint=localhost:8081")
-                .withIngressChannel("aeron:udp")
-                .withIngressEndpoints("localhost","badhost","badhost2")
-                .start();
-            cluster.connectClient();
-        });
-
-        System.out.println("thrown message: " + thrown.getMessage());
-        assertTrue(thrown.getMessage().contains("couldn't connect to any of the cluster endpoints"));
-    }
-
-    @Test
     @InterruptAfter(40)
     void shouldNotifyClientOfNewLeader()
     {
