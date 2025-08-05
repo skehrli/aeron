@@ -2198,76 +2198,76 @@ public final class AeronCluster implements AutoCloseable
                     egressSubscription.tryResolveChannelEndpointPort() : "<unknown>";
 
                 final StringBuffer errorMessage = new StringBuffer("cluster connect timeout: ");
-                try
+                if (state == State.AWAIT_PUBLICATION_CONNECTED)
                 {
-                    if (state == State.AWAIT_PUBLICATION_CONNECTED)
+                    if (null == ingressPublication)
                     {
-                        if (null == ingressPublication)
-                        {
-                            errorMessage.append("couldn't connect to any of the cluster endpoints! ");
-                        }
-                        else
-                        {
-                            final String ingressChannel = ingressPublication.channel();
-                            final String[] channelParts = ingressChannel.split("\\?");
-                            final String[] ingressEndpointParts = channelParts[1].split("=");
-
-                            errorMessage.append("couldn't connect to ingress at " + ingressEndpointParts[1]);
-                        }
+                        errorMessage.append("couldn't connect to any of the cluster endpoints! ");
                     }
-                    else if (state == State.POLL_RESPONSE)
+                    else
                     {
-                        final ChannelUri egressChannelUri = ChannelUri.parse(ctx.egressChannel);
-                        if (egressChannelUri.isUdp())
-                        {
-                            final String endpoint = egressChannelUri.get(CommonContext.ENDPOINT_PARAM_NAME);
-                            final String egressHost = endpoint.split(":")[0];
-                            final String ingressChannel = ingressPublication.channel();
-                            if (null != ingressChannel)
-                            {
-                                final String[] channelParts = ingressChannel.split("\\?");
-                                final String[] ingressEndpointParts = channelParts[1].split("=");
-                                final String ingressEndpoint = ingressEndpointParts[1].split(":")[0];
+                        final String ingressChannel = ingressPublication.channel();
+                        final String[] channelParts = ingressChannel.split("\\?");
+                        final String[] ingressEndpointParts = channelParts[1].split("=");
 
-                                errorMessage.append(" - Connected to cluster at " + ingressEndpoint +
-                                    ", but the cluster node cannot connect to you at " + egressHost);
-                                if (endpoint.startsWith("localhost") || endpoint.startsWith("127."))
+                        errorMessage.append("couldn't connect to ingress at " + ingressEndpointParts[1]);
+                    }
+                }
+                else if (state == State.POLL_RESPONSE)
+                {
+                    final ChannelUri egressChannelUri = ChannelUri.parse(ctx.egressChannel);
+                    if (egressChannelUri.isUdp())
+                    {
+                        final String endpoint = egressChannelUri.get(CommonContext.ENDPOINT_PARAM_NAME);
+                        final String egressHost = endpoint.split(":")[0];
+                        final String ingressChannel = ingressPublication.channel();
+                        if (null != ingressChannel)
+                        {
+                            final String[] channelParts = ingressChannel.split("\\?");
+                            final String[] ingressParts = channelParts[1].split("\\|");
+                            for (int endpointIndex = 0; endpointIndex < ingressParts.length; endpointIndex++)
+                            {
+                                if (ingressParts[endpointIndex].startsWith("endpoint"))
                                 {
-                                    errorMessage.append(".  Cannot bind to localhost if cluster nodes are remote.");
+                                    final String[] ingressEndpointParts = ingressParts[endpointIndex].split("=");
+                                    final String ingressEndpointHost = ingressEndpointParts[1].split(":")[0];
+                                    errorMessage.append(" - Connected to cluster at " + ingressEndpointHost +
+                                        ", but the cluster node cannot connect to you at " + egressHost);
+                                    if (endpoint.startsWith("localhost") || endpoint.startsWith("127."))
+                                    {
+                                        errorMessage.append(".  Cannot bind to localhost if cluster nodes are remote.");
+                                    }
+                                    break;
                                 }
                             }
                         }
-                        else
-                        {
-                            errorMessage.append(".  ");  // log something special for ipc?
-                        }
                     }
-                    errorMessage.append(
-                        " state=" + state.name() +
-                        " messageTimeout=" + ctx.messageTimeoutNs() + "ns" +
-                        " ingressChannel=" + ctx.ingressChannel() +
-                        " ingressEndpoints=" + ctx.ingressEndpoints() +
-                        " ingressPublication=" + ingressPublication +
-                        " egress.isConnected=" + isConnected +
-                        " responseChannel=" + endpointPort);
-
-                    final TimeoutException ex = new TimeoutException(
-                        errorMessage.toString());
-
-                    for (final MemberIngress member : memberByIdMap.values())
+                    else
                     {
-                        if (null != member.publicationException)
-                        {
-                            ex.addSuppressed(member.publicationException);
-                        }
+                        errorMessage.append(".  ");  // log something special for ipc?
                     }
-                    throw ex;
                 }
-                catch (final Exception ex)
+                errorMessage.append(
+                    " state=" + state.name() +
+                    " messageTimeout=" + ctx.messageTimeoutNs() + "ns" +
+                    " ingressChannel=" + ctx.ingressChannel() +
+                    " ingressEndpoints=" + ctx.ingressEndpoints() +
+                    " ingressPublication=" + ingressPublication +
+                    " egress.isConnected=" + isConnected +
+                    " responseChannel=" + endpointPort);
+
+                final TimeoutException ex = new TimeoutException(
+                    errorMessage.toString());
+
+                for (final MemberIngress member : memberByIdMap.values())
                 {
-                    System.out.println("exception logging exception: " + ex.getMessage());
-                    ex.printStackTrace();
+                    if (null != member.publicationException)
+                    {
+                        ex.addSuppressed(member.publicationException);
+                    }
                 }
+
+                throw ex;
             }
 
             if (Thread.currentThread().isInterrupted())
