@@ -39,6 +39,7 @@ class DriverEventsAdapter implements MessageHandler
     private final CounterUpdateFlyweight counterUpdate = new CounterUpdateFlyweight();
     private final ClientTimeoutFlyweight clientTimeout = new ClientTimeoutFlyweight();
     private final StaticCounterFlyweight staticCounter = new StaticCounterFlyweight();
+    private final NextAvailableSessionIdFlyweight nextSessionId = new NextAvailableSessionIdFlyweight();
     private final CopyBroadcastReceiver receiver;
     private final ClientConductor conductor;
     private final LongHashSet asyncCommandIdSet;
@@ -221,7 +222,7 @@ class DriverEventsAdapter implements MessageHandler
 
                 final int counterId = counterUpdate.counterId();
                 final long correlationId = counterUpdate.correlationId();
-                if (correlationId == activeCorrelationId)
+                if (correlationId == activeCorrelationId || asyncCommandIdSet.remove(correlationId))
                 {
                     receivedCorrelationId = correlationId;
                     conductor.onNewCounter(correlationId, counterId);
@@ -257,7 +258,7 @@ class DriverEventsAdapter implements MessageHandler
                 staticCounter.wrap(buffer, index);
 
                 final long correlationId = staticCounter.correlationId();
-                if (correlationId == activeCorrelationId)
+                if (correlationId == activeCorrelationId || asyncCommandIdSet.remove(correlationId))
                 {
                     final int counterId = staticCounter.counterId();
                     receivedCorrelationId = correlationId;
@@ -271,6 +272,19 @@ class DriverEventsAdapter implements MessageHandler
                 publicationErrorFrame.wrap(buffer, index);
 
                 conductor.onPublicationError(publicationErrorFrame);
+                break;
+            }
+
+            case ON_NEXT_AVAILABLE_SESSION_ID:
+            {
+                nextSessionId.wrap(buffer, index);
+
+                final long correlationId = nextSessionId.correlationId();
+                if (correlationId == activeCorrelationId)
+                {
+                    receivedCorrelationId = correlationId;
+                    conductor.onNextAvailableSessionId(nextSessionId.nextSessionId());
+                }
                 break;
             }
         }

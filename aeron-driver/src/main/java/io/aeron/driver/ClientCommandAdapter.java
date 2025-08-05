@@ -49,6 +49,8 @@ final class ClientCommandAdapter implements ControlledMessageHandler
     private final RejectImageFlyweight rejectImageFlyweight = new RejectImageFlyweight();
     private final DestinationByIdMessageFlyweight destinationByIdMessageFlyweight =
         new DestinationByIdMessageFlyweight();
+    private final GetNextAvailableSessionIdMessageFlyweight getNextAvailableSessionIdMessageFlyweight =
+        new GetNextAvailableSessionIdMessageFlyweight();
     private final DriverConductor conductor;
     private final RingBuffer toDriverCommands;
     private final ClientProxy clientProxy;
@@ -299,7 +301,7 @@ final class ClientCommandAdapter implements ControlledMessageHandler
                     correlationId = rejectImageFlyweight.correlationId();
 
                     conductor.onRejectImage(
-                        rejectImageFlyweight.correlationId(),
+                        correlationId,
                         rejectImageFlyweight.imageCorrelationId(),
                         rejectImageFlyweight.position(),
                         rejectImageFlyweight.reason());
@@ -315,7 +317,19 @@ final class ClientCommandAdapter implements ControlledMessageHandler
                     conductor.onRemoveSendDestination(
                         destinationByIdMessageFlyweight.resourceRegistrationId(),
                         destinationByIdMessageFlyweight.destinationRegistrationId(),
-                        destinationByIdMessageFlyweight.correlationId());
+                        correlationId);
+
+                    break;
+                }
+
+                case GET_NEXT_AVAILABLE_SESSION_ID:
+                {
+                    getNextAvailableSessionIdMessageFlyweight.wrap(buffer, index);
+                    getNextAvailableSessionIdMessageFlyweight.validateLength(msgTypeId, length);
+
+                    correlationId = getNextAvailableSessionIdMessageFlyweight.correlationId();
+                    conductor.onNextAvailableSessionId(
+                        correlationId, getNextAvailableSessionIdMessageFlyweight.streamId());
 
                     break;
                 }

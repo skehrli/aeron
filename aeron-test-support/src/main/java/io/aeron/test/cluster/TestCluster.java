@@ -285,7 +285,7 @@ public final class TestCluster implements AutoCloseable
         final int index, final boolean cleanStart, final IntFunction<TestNode.TestService[]> serviceSupplier)
     {
         final String baseDirName = clusterBaseDir + "-" + index;
-        final String aeronDirName = CommonContext.getAeronDirectoryName() + "-" + index + "-driver";
+        final String aeronDirName = CommonContext.generateRandomDirName();
         final File markFileDir = null != markFileBaseDir ? new File(markFileBaseDir, "mark-" + index) : null;
         final TestNode.Context context = new TestNode.Context(serviceSupplier.apply(index), nodeNameMappings());
 
@@ -381,7 +381,7 @@ public final class TestCluster implements AutoCloseable
     {
         final int index = staticMemberCount;
         final String baseDirName = clusterBaseDir + "-" + index;
-        final String aeronDirName = CommonContext.getAeronDirectoryName() + "-" + index + "-driver";
+        final String aeronDirName = CommonContext.generateRandomDirName();
         final File markFileDir = null != markFileBaseDir ? new File(markFileBaseDir, "mark-" + index) : null;
         final TestBackupNode.Context context = new TestBackupNode.Context();
 
@@ -451,7 +451,7 @@ public final class TestCluster implements AutoCloseable
     public TestNode startStaticNodeFromBackup(final IntFunction<TestNode.TestService[]> serviceSupplier)
     {
         final String baseDirName = clusterBaseDir + "-" + backupNodeIndex;
-        final String aeronDirName = CommonContext.getAeronDirectoryName() + "-" + backupNodeIndex + "-driver";
+        final String aeronDirName = CommonContext.generateRandomDirName();
         final File markFileDir = null != markFileBaseDir ? new File(markFileBaseDir, "mark-" + backupNodeIndex) : null;
         final TestNode.Context context = new TestNode.Context(
             serviceSupplier.apply(backupNodeIndex),
@@ -654,10 +654,9 @@ public final class TestCluster implements AutoCloseable
     public AeronCluster connectClient(final AeronCluster.Context clientCtx, final NameResolver nameResolver,
         final boolean keepTryingAfterError, final boolean setIngressEndpoints)
     {
-        final String aeronDirName = CommonContext.getAeronDirectoryName();
-
         if (null == clientMediaDriver)
         {
+            final String aeronDirName = CommonContext.generateRandomDirName();
             dataCollector.add(Paths.get(aeronDirName));
 
             final MediaDriver.Context ctx = new MediaDriver.Context()
@@ -676,7 +675,7 @@ public final class TestCluster implements AutoCloseable
         }
 
         clientCtx
-            .aeronDirectoryName(aeronDirName)
+            .aeronDirectoryName(clientMediaDriver.aeronDirectoryName())
             .isIngressExclusive(true)
             .egressListener(egressListener)
             .controlledEgressListener(controlledEgressListener);
@@ -715,10 +714,9 @@ public final class TestCluster implements AutoCloseable
     {
         final AeronCluster.Context clientCtx = clientCtx();
 
-        final String aeronDirName = CommonContext.getAeronDirectoryName();
-
         if (null == clientMediaDriver)
         {
+            final String aeronDirName = CommonContext.generateRandomDirName();
             dataCollector.add(Paths.get(aeronDirName));
 
             final MediaDriver.Context ctx = new MediaDriver.Context()
@@ -736,7 +734,7 @@ public final class TestCluster implements AutoCloseable
 
         final Aeron aeron = Aeron.connect(new Aeron.Context()
             .useConductorAgentInvoker(true)
-            .aeronDirectoryName(aeronDirName));
+            .aeronDirectoryName(clientMediaDriver.aeronDirectoryName()));
 
         clientCtx
             .aeron(aeron)
@@ -2138,7 +2136,7 @@ public final class TestCluster implements AutoCloseable
         private ClusterBackup.Configuration.ReplayStart replayStart = ClusterBackup.Configuration.ReplayStart.BEGINNING;
         private File markFileBaseDir = null;
         private String clusterBaseDir = System.getProperty(
-            CLUSTER_BASE_DIR_PROP_NAME, CommonContext.getAeronDirectoryName());
+            CLUSTER_BASE_DIR_PROP_NAME, CommonContext.generateRandomDirName());
         private boolean useResponseChannels = false;
 
         public Builder withStaticNodes(final int nodeCount)

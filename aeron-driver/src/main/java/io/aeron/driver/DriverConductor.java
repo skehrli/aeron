@@ -121,7 +121,7 @@ public final class DriverConductor implements Agent
     private final ArrayList<SubscriptionLink> subscriptionLinks = new ArrayList<>();
     private final ArrayList<CounterLink> counterLinks = new ArrayList<>();
     private final ArrayList<AeronClient> clients = new ArrayList<>();
-    private final ArrayDeque<DriverManagedResource> endOfLiveResources = new ArrayDeque<>();
+    private final ArrayDeque<DriverManagedResource> endOfLifeResources = new ArrayDeque<>();
     private final ObjectHashSet<SessionKey> activeSessionSet = new ObjectHashSet<>();
     private final EpochClock epochClock;
     private final NanoClock nanoClock;
@@ -1556,20 +1556,31 @@ public final class DriverConductor implements Agent
         clientProxy.operationSucceeded(correlationId);
     }
 
+    void onNextAvailableSessionId(final long correlationId, final int streamId)
+    {
+        outer: while (true)
+        {
+            final int sessionId = advanceSessionId();
+
+            for (final SessionKey key : activeSessionSet)
+            {
+                if (streamId == key.streamId && sessionId == key.sessionId)
+                {
+                    continue outer;
+                }
+            }
+
+            clientProxy.onNextAvailableSessionId(correlationId, sessionId);
+            break;
+        }
+    }
+
     int nextAvailableSessionId(final int streamId, final String channel)
     {
         final SessionKey sessionKey = new SessionKey(streamId, channel);
-
         while (true)
         {
-            int sessionId = nextSessionId++;
-
-            if (ctx.publicationReservedSessionIdLow() <= sessionId &&
-                sessionId <= ctx.publicationReservedSessionIdHigh())
-            {
-                nextSessionId = ctx.publicationReservedSessionIdHigh() + 1;
-                sessionId = nextSessionId++;
-            }
+            final int sessionId = advanceSessionId();
 
             sessionKey.sessionId = sessionId;
             if (!activeSessionSet.contains(sessionKey))
@@ -1577,6 +1588,19 @@ public final class DriverConductor implements Agent
                 return sessionId;
             }
         }
+    }
+
+    private int advanceSessionId()
+    {
+        int sessionId = nextSessionId++;
+
+        if (ctx.publicationReservedSessionIdLow() <= sessionId &&
+            sessionId <= ctx.publicationReservedSessionIdHigh())
+        {
+            nextSessionId = ctx.publicationReservedSessionIdHigh() + 1;
+            sessionId = nextSessionId++;
+        }
+        return sessionId;
     }
 
     private void heartbeatAndCheckTimers(final long nowNs)
@@ -2664,7 +2688,7 @@ public final class DriverConductor implements Agent
             if (resource.hasReachedEndOfLife())
             {
                 CloseHelper.close(ctx.errorHandler(), resource::close);
-                endOfLiveResources.add(resource);
+                endOfLifeResources.add(resource);
                 fastUnorderedRemove(list, i, lastIndex--);
             }
         }
@@ -2676,7 +2700,7 @@ public final class DriverConductor implements Agent
 
         for (int i = 0; i < freeLimit; i++)
         {
-            final DriverManagedResource resource = endOfLiveResources.pollFirst();
+            final DriverManagedResource resource = endOfLifeResources.pollFirst();
             if (null == resource)
             {
                 break;
@@ -2689,7 +2713,7 @@ public final class DriverConductor implements Agent
             else
             {
                 ctx.systemCounters().get(FREE_FAILS).incrementRelease();
-                endOfLiveResources.addLast(resource);
+                endOfLifeResources.addLast(resource);
             }
         }
 
