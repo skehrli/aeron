@@ -647,7 +647,7 @@ public final class TestCluster implements AutoCloseable
 
     public AeronCluster connectClient(final AeronCluster.Context clientContext)
     {
-        return connectClient(clientCtx(), new RedirectingNameResolver(nodeNameMappings()),
+        return connectClient(clientContext, new RedirectingNameResolver(nodeNameMappings()),
             true, true);
     }
 
@@ -680,7 +680,6 @@ public final class TestCluster implements AutoCloseable
             .egressListener(egressListener)
             .controlledEgressListener(controlledEgressListener);
 
-//        if (null == clientCtx.ingressEndpoints() || clientCtx.ingressEndpoints().isEmpty())
         if (setIngressEndpoints)
         {
             setIngressEndpoints(clientCtx);

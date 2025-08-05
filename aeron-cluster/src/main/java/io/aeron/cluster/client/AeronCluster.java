@@ -2207,10 +2207,20 @@ public final class AeronCluster implements AutoCloseable
                     else
                     {
                         final String ingressChannel = ingressPublication.channel();
-                        final String[] channelParts = ingressChannel.split("\\?");
-                        final String[] ingressEndpointParts = channelParts[1].split("=");
-
-                        errorMessage.append("couldn't connect to ingress at " + ingressEndpointParts[1]);
+                        if (null != ingressChannel)
+                        {
+                            final String[] channelParts = ingressChannel.split("\\?");
+                            final String[] ingressParts = channelParts[1].split("\\|");
+                            for (int endpointIndex = 0; endpointIndex < ingressParts.length; endpointIndex++)
+                            {
+                                if (ingressParts[endpointIndex].startsWith("endpoint"))
+                                {
+                                    final String[] ingressEndpointParts = ingressParts[endpointIndex].split("=");
+                                    errorMessage.append(" - Cannot connect to cluster at " + ingressEndpointParts[1]);
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
                 else if (state == State.POLL_RESPONSE)
