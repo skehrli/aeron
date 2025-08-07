@@ -15,6 +15,9 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.DirectBuffer;
 
 import java.util.Arrays;
@@ -31,6 +34,7 @@ public final class DirectBufferVector
     /**
      * Default constructor so the fluent API can be used.
      */
+    @SideEffectFree
     public DirectBufferVector()
     {
     }
@@ -42,6 +46,7 @@ public final class DirectBufferVector
      * @param offset at which the vector begins.
      * @param length of the vector.
      */
+    @SideEffectFree
     public DirectBufferVector(final DirectBuffer buffer, final int offset, final int length)
     {
         this.buffer = buffer;
@@ -57,6 +62,7 @@ public final class DirectBufferVector
      * @param length of the vector.
      * @return this for a fluent API.
      */
+    @Impure
     public DirectBufferVector reset(final DirectBuffer buffer, final int offset, final int length)
     {
         this.buffer = buffer;
@@ -71,6 +77,7 @@ public final class DirectBufferVector
      *
      * @return buffer which the vector applies to.
      */
+    @Pure
     public DirectBuffer buffer()
     {
         return buffer;
@@ -82,6 +89,7 @@ public final class DirectBufferVector
      * @param buffer which the vector applies to.
      * @return this for a fluent API.
      */
+    @Impure
     public DirectBufferVector buffer(final DirectBuffer buffer)
     {
         this.buffer = buffer;
@@ -93,6 +101,7 @@ public final class DirectBufferVector
      *
      * @return offset in the buffer at which the vector starts.
      */
+    @Pure
     public int offset()
     {
         return offset;
@@ -104,6 +113,7 @@ public final class DirectBufferVector
      * @param offset in the buffer at which the vector starts.
      * @return this for a fluent API.
      */
+    @Impure
     public DirectBufferVector offset(final int offset)
     {
         this.offset = offset;
@@ -115,6 +125,7 @@ public final class DirectBufferVector
      *
      * @return length of the vector in the buffer starting at the offset.
      */
+    @Pure
     public int length()
     {
         return length;
@@ -126,6 +137,7 @@ public final class DirectBufferVector
      * @param length of the vector in the buffer starting at the offset.
      * @return this for a fluent API.
      */
+    @Impure
     public DirectBufferVector length(final int length)
     {
         this.length = length;
@@ -140,6 +152,7 @@ public final class DirectBufferVector
      * @throws IllegalArgumentException if the length is out of range for the buffer.
      * @return this for a fluent API.
      */
+    @Impure
     public DirectBufferVector validate()
     {
         final int capacity = buffer.capacity();
@@ -159,6 +172,7 @@ public final class DirectBufferVector
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "DirectBufferVector{" +
@@ -174,6 +188,7 @@ public final class DirectBufferVector
      * @param vectors to be validated summed.
      * @return the sum of the vector lengths.
      */
+    @Impure
     public static int validateAndComputeLength(final DirectBufferVector[] vectors)
     {
         int messageLength = 0;

@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.driver.media.DataTransportPoller;
 import io.aeron.driver.media.ReceiveChannelEndpoint;
 import io.aeron.driver.media.ReceiveDestinationTransport;
@@ -57,6 +59,7 @@ public final class Receiver implements Agent
     private final DriverConductorProxy conductorProxy;
     private final DutyCycleTracker dutyCycleTracker;
 
+    @Impure
     Receiver(final MediaDriver.Context ctx)
     {
         dataTransportPoller = ctx.dataTransportPoller();
@@ -73,6 +76,7 @@ public final class Receiver implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onStart()
     {
         final long nowNs = nanoClock.nanoTime();
@@ -94,6 +98,7 @@ public final class Receiver implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onClose()
     {
         dataTransportPoller.close();
@@ -102,6 +107,7 @@ public final class Receiver implements Agent
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String roleName()
     {
         return "receiver";
@@ -110,6 +116,7 @@ public final class Receiver implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int doWork()
     {
         final long nowNs = nanoClock.nanoTime();
@@ -153,6 +160,7 @@ public final class Receiver implements Agent
         return workCount + bytesReceived;
     }
 
+    @Impure
     void addPendingSetupMessage(
         final int sessionId,
         final int streamId,
@@ -168,11 +176,13 @@ public final class Receiver implements Agent
         pendingSetupMessages.add(cmd);
     }
 
+    @Impure
     void onAddSubscription(final ReceiveChannelEndpoint channelEndpoint, final int streamId)
     {
         channelEndpoint.dispatcher().addSubscription(streamId);
     }
 
+    @Impure
     void onAddSubscription(final ReceiveChannelEndpoint channelEndpoint, final int streamId, final int sessionId)
     {
         channelEndpoint.dispatcher().addSubscription(streamId, sessionId);
@@ -183,6 +193,7 @@ public final class Receiver implements Agent
         }
     }
 
+    @Impure
     void onRequestSetup(final ReceiveChannelEndpoint channelEndpoint, final int streamId, final int sessionId)
     {
         if (channelEndpoint.hasExplicitControl())
@@ -192,11 +203,13 @@ public final class Receiver implements Agent
         }
     }
 
+    @Impure
     void onRemoveSubscription(final ReceiveChannelEndpoint channelEndpoint, final int streamId)
     {
         channelEndpoint.dispatcher().removeSubscription(streamId);
     }
 
+    @Impure
     void onRemoveSubscription(final ReceiveChannelEndpoint channelEndpoint, final int streamId, final int sessionId)
     {
         channelEndpoint.dispatcher().removeSubscription(streamId, sessionId);
@@ -216,6 +229,7 @@ public final class Receiver implements Agent
         }
     }
 
+    @Impure
     void onNewPublicationImage(final ReceiveChannelEndpoint channelEndpoint, final PublicationImage image)
     {
         disconnectInactiveImage(channelEndpoint, image.streamId(), image.sessionId());
@@ -223,6 +237,7 @@ public final class Receiver implements Agent
         channelEndpoint.dispatcher().addPublicationImage(image);
     }
 
+    @Impure
     void onRegisterReceiveChannelEndpoint(final ReceiveChannelEndpoint channelEndpoint)
     {
         if (!channelEndpoint.hasDestinationControl())
@@ -237,6 +252,7 @@ public final class Receiver implements Agent
         }
     }
 
+    @Impure
     void onCloseReceiveChannelEndpoint(final ReceiveChannelEndpoint channelEndpoint)
     {
         final ArrayList<PendingSetupMessageFromSource> pendingSetupMessages = this.pendingSetupMessages;
@@ -256,11 +272,13 @@ public final class Receiver implements Agent
         channelEndpoint.closeMultiRcvDestinationIndicators(conductorProxy);
     }
 
+    @Impure
     void onRemoveCoolDown(final ReceiveChannelEndpoint channelEndpoint, final int sessionId, final int streamId)
     {
         channelEndpoint.dispatcher().removeCoolDown(sessionId, streamId);
     }
 
+    @Impure
     void onAddDestination(final ReceiveChannelEndpoint channelEndpoint, final ReceiveDestinationTransport transport)
     {
         final int transportIndex = channelEndpoint.addDestination(transport);
@@ -282,6 +300,7 @@ public final class Receiver implements Agent
         }
     }
 
+    @Impure
     void onRemoveDestination(final ReceiveChannelEndpoint channelEndpoint, final UdpChannel udpChannel)
     {
         final int transportIndex = channelEndpoint.destination(udpChannel);
@@ -306,6 +325,7 @@ public final class Receiver implements Agent
         }
     }
 
+    @Impure
     void onResolutionChange(
         final ReceiveChannelEndpoint channelEndpoint, final UdpChannel channel, final InetSocketAddress newAddress)
     {
@@ -327,6 +347,7 @@ public final class Receiver implements Agent
         channelEndpoint.updateControlAddress(transportIndex, newAddress);
     }
 
+    @Impure
     void onRejectImage(final long imageCorrelationId, final long position, final String reason)
     {
         for (final PublicationImage image : publicationImages)
@@ -339,6 +360,7 @@ public final class Receiver implements Agent
         }
     }
 
+    @Impure
     private void checkPendingSetupMessages(final long nowNs)
     {
         for (int lastIndex = pendingSetupMessages.size() - 1, i = lastIndex; i >= 0; i--)
@@ -362,6 +384,7 @@ public final class Receiver implements Agent
         }
     }
 
+    @Impure
     void disconnectInactiveImage(
         final ReceiveChannelEndpoint channelEndpoint,
         final int streamId,

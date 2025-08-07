@@ -15,6 +15,7 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.media.UdpChannel;
 import org.agrona.concurrent.NanoClock;
 import org.agrona.concurrent.status.CountersManager;
@@ -43,6 +44,7 @@ public interface CongestionControlSupplier
      * @param countersManager for the driver.
      * @return congestion control instance ready for immediate usage.
      */
+    @Impure
     CongestionControl newInstance(
         long registrationId,
         UdpChannel udpChannel,

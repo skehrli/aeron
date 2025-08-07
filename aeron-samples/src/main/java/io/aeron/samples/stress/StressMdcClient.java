@@ -15,6 +15,8 @@
  */
 package io.aeron.samples.stress;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.Aeron;
 import io.aeron.Counter;
 import io.aeron.FragmentAssembler;
@@ -85,6 +87,7 @@ public class StressMdcClient implements Agent
      * @param totalToSend   total number of messages to send.
      * @param mtu           the mtu to use.
      */
+    @Impure
     public StressMdcClient(
         final String serverAddress,
         final String clientAddress,
@@ -108,6 +111,7 @@ public class StressMdcClient implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onStart()
     {
         aeron = Aeron.connect(new Aeron.Context());
@@ -133,6 +137,7 @@ public class StressMdcClient implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int doWork()
     {
         if (!mdcSubscription1.isConnected() || !mdcSubscription2.isConnected())
@@ -177,6 +182,7 @@ public class StressMdcClient implements Agent
         return sendCount;
     }
 
+    @Impure
     private int poll(final int pollLimit)
     {
         int count = 0;
@@ -185,11 +191,13 @@ public class StressMdcClient implements Agent
         return count;
     }
 
+    @Impure
     private boolean isComplete()
     {
         return totalToSend <= correlationId && inflightMessages.isEmpty();
     }
 
+    @Impure
     private void mdcRspHandler(
         final DirectBuffer msg,
         final int offset,
@@ -209,11 +217,13 @@ public class StressMdcClient implements Agent
         }
     }
 
+    @Pure
     private long currentCorrelationId(final DirectBuffer message, final int offset, final int length)
     {
         return correlationId;
     }
 
+    @Impure
     void reset(final int messageLength)
     {
         this.messageLength = messageLength;
@@ -226,6 +236,7 @@ public class StressMdcClient implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onClose()
     {
         CloseHelper.quietCloseAll(aeron);
@@ -234,6 +245,7 @@ public class StressMdcClient implements Agent
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String roleName()
     {
         return null;
@@ -242,6 +254,7 @@ public class StressMdcClient implements Agent
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "StressClient{" +
@@ -258,6 +271,7 @@ public class StressMdcClient implements Agent
      *
      * @param args command line arguments.
      */
+    @Impure
     public static void main(final String[] args)
     {
         final IdleStrategy idleStrategy = new YieldingIdleStrategy();

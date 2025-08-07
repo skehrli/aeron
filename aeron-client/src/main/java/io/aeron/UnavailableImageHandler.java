@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.aeron;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 
 /**
  * Interface for delivery of inactive image notification to a {@link Subscription}.
@@ -29,5 +30,6 @@ public interface UnavailableImageHandler
      *
      * @param image that is no longer available for polling.
      */
+    @SideEffectFree
     void onUnavailableImage(Image image);
 }

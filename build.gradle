@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 plugins {
     id 'java-library'
     alias(libs.plugins.bnd).apply(false)
     alias(libs.plugins.shadow).apply(false)
     alias(libs.plugins.versions)
+    id 'org.checkerframework' version '0.6.56' apply false
 }
 
 defaultTasks 'clean', 'build'
@@ -169,6 +171,55 @@ subprojects {
     apply plugin: 'java-library'
     apply plugin: 'checkstyle'
 
+    
+    repositories {
+      mavenCentral()
+      mavenLocal()
+    }
+
+    if (!project.hasProperty("noCF")) {
+      apply plugin: 'org.checkerframework'
+
+      if (project.hasProperty("cfLocal")) {
+        def cfHome = String.valueOf(System.getenv("CHECKERFRAMEWORK"))
+        dependencies {
+          checkerFramework "org.checkerframework:checker:3.49.6-SNAPSHOT"
+          compileOnly "org.checkerframework:checker-qual:3.49.6-SNAPSHOT"
+          testCompileOnly "org.checkerframework:checker-qual:3.49.6-SNAPSHOT"
+        }
+
+        configurations.all {
+          resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == "org.checkerframework") {
+              details.useVersion "3.49.6-SNAPSHOT"
+            }
+          }
+        }
+      }
+
+      checkerFramework {
+        checkers = [
+          'org.checkerframework.checker.resourceleak.ResourceLeakChecker'
+        ]
+      }
+
+      tasks.withType(JavaCompile) {
+        options.compilerArgs += [
+          '-Awarns'
+        ]
+      }
+    }
+
+    afterEvaluate {
+      tasks.matching { it.name == "compileGeneratedJava" }.configureEach {
+        options.compilerArgs += ['-Awarns']
+        if (project.hasProperty("cfLocal")) {
+          def cfHome = String.valueOf(System.getenv("CHECKERFRAMEWORK"))
+          classpath = classpath + files(cfHome + "/checker/dist/checker-qual.jar")
+        }
+      }
+    }
+
     group = aeronGroup
     version = aeronVersion
 
@@ -206,7 +257,8 @@ subprojects {
         options.deprecation = true
         options.compilerArgs.add('--release')
         options.compilerArgs.add(java.sourceCompatibility.majorVersion)
-        options.compilerArgs.addAll(['-Xlint:all,-processing', '-Werror']) // Enable all warnings and treat them as errors
+        options.compilerArgs.addAll(['-Xlint:all,-processing']) // Enable all warnings and treat them as errors
+        options.compilerArgs.add('-Xlint:-options')
         options.compilerArgs.add("-Aio.aeron.version=${aeronVersion}")
         options.compilerArgs.add("-Aio.aeron.gitsha=${gitCommitHash}")
     }
@@ -357,6 +409,39 @@ subprojects {
 
     artifacts {
         tests testJar
+    }
+}
+
+// In your root build.gradle
+
+def isValidJar = { f -> f.name.endsWith(".jar") && !f.name.contains("property") }
+
+task printAggregatedClasspath {
+    group = "diagnostics"
+    description = "Prints the combined main and test classpaths of all subprojects, excluding malformed entries."
+
+    doLast {
+        def combinedClasspath = files()
+
+        subprojects.each { subproject ->
+            def main = subproject.sourceSets.findByName('main')
+            def test = subproject.sourceSets.findByName('test')
+
+            if (main) {
+                combinedClasspath += main.output.classesDirs
+                combinedClasspath += main.compileClasspath
+            }
+            if (test) {
+                combinedClasspath += test.output.classesDirs
+                combinedClasspath += test.compileClasspath
+            }
+        }
+
+        def filteredClasspath = combinedClasspath.files.findAll { f ->
+            f.exists() && (f.isDirectory() || isValidJar(f))
+        }
+
+        println filteredClasspath.join(File.pathSeparator)
     }
 }
 

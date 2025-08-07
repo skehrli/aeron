@@ -15,6 +15,8 @@
  */
 package io.aeron.logbuffer;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import static io.aeron.logbuffer.FrameDescriptor.FRAME_ALIGNMENT;
@@ -43,6 +45,7 @@ public class TermGapScanner
          * @param offset at which the gap begins.
          * @param length of the gap in bytes.
          */
+        @SideEffectFree
         void onGap(int termId, int offset, int length);
     }
 
@@ -56,6 +59,7 @@ public class TermGapScanner
      * @param handler     to call if a gap is found.
      * @return offset of last contiguous frame
      */
+    @Impure
     public static int scanForGap(
         final UnsafeBuffer termBuffer,
         final int termId,

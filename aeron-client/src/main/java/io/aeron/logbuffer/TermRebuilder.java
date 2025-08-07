@@ -15,6 +15,7 @@
  */
 package io.aeron.logbuffer;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import static io.aeron.protocol.DataHeaderFlyweight.HEADER_LENGTH;
@@ -35,6 +36,7 @@ public class TermRebuilder
      * @param packet     containing a sequence of frames.
      * @param length     of the packet of frames in bytes.
      */
+    @Impure
     public static void insert(
         final UnsafeBuffer termBuffer, final int termOffset, final UnsafeBuffer packet, final int length)
     {

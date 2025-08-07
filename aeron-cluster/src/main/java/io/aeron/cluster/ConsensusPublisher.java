@@ -15,6 +15,7 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.CommonContext;
 import io.aeron.ExclusivePublication;
 import io.aeron.Publication;
@@ -49,6 +50,7 @@ final class ConsensusPublisher
     private final ChallengeResponseEncoder challengeResponseEncoder = new ChallengeResponseEncoder();
     private final StandbySnapshotEncoder standbySnapshotEncoder = new StandbySnapshotEncoder();
 
+    @Impure
     void canvassPosition(
         final ExclusivePublication publication,
         final long logLeadershipTermId,
@@ -87,6 +89,7 @@ final class ConsensusPublisher
         while (--attempts > 0);
     }
 
+    @Impure
     boolean requestVote(
         final ExclusivePublication publication,
         final long logLeadershipTermId,
@@ -127,6 +130,7 @@ final class ConsensusPublisher
         return false;
     }
 
+    @Impure
     void placeVote(
         final ExclusivePublication publication,
         final long candidateTermId,
@@ -168,6 +172,7 @@ final class ConsensusPublisher
         while (--attempts > 0);
     }
 
+    @Impure
     void newLeadershipTerm(
         final ExclusivePublication publication,
         final long logLeadershipTermId,
@@ -228,6 +233,7 @@ final class ConsensusPublisher
         while (--attempts > 0);
     }
 
+    @Impure
     boolean appendPosition(
         final ExclusivePublication publication,
         final long leadershipTermId,
@@ -267,6 +273,7 @@ final class ConsensusPublisher
         return false;
     }
 
+    @Impure
     void commitPosition(
         final ExclusivePublication publication,
         final long leadershipTermId,
@@ -302,6 +309,7 @@ final class ConsensusPublisher
         while (--attempts > 0);
     }
 
+    @Impure
     boolean catchupPosition(
         final ExclusivePublication publication,
         final long leadershipTermId,
@@ -345,6 +353,7 @@ final class ConsensusPublisher
         return false;
     }
 
+    @Impure
     boolean stopCatchup(final ExclusivePublication publication, final long leadershipTermId, final int followerMemberId)
     {
         if (null == publication)
@@ -377,6 +386,7 @@ final class ConsensusPublisher
         return false;
     }
 
+    @Impure
     boolean terminationPosition(
         final ExclusivePublication publication, final long leadershipTermId, final long logPosition)
     {
@@ -411,6 +421,7 @@ final class ConsensusPublisher
         return false;
     }
 
+    @Impure
     boolean terminationAck(
         final ExclusivePublication publication, final long leadershipTermId, final long logPosition, final int memberId)
     {
@@ -446,6 +457,7 @@ final class ConsensusPublisher
         return false;
     }
 
+    @Impure
     boolean backupQuery(
         final ExclusivePublication publication,
         final long correlationId,
@@ -471,6 +483,7 @@ final class ConsensusPublisher
         return sendPublication(publication, buffer, length);
     }
 
+    @Impure
     boolean backupResponse(
         final ClusterSession session,
         final int commitPositionCounterId,
@@ -512,6 +525,7 @@ final class ConsensusPublisher
         return sendSession(session, buffer, length);
     }
 
+    @Impure
     boolean heartbeatRequest(
         final ExclusivePublication publication,
         final long correlationId,
@@ -535,6 +549,7 @@ final class ConsensusPublisher
         return sendPublication(publication, buffer, length);
     }
 
+    @Impure
     boolean heartbeatResponse(final ClusterSession session)
     {
         heartbeatResponseEncoder
@@ -545,6 +560,7 @@ final class ConsensusPublisher
         return sendSession(session, buffer, length);
     }
 
+    @Impure
     boolean challengeResponse(
         final ExclusivePublication publication,
         final long nextCorrelationId,
@@ -562,6 +578,7 @@ final class ConsensusPublisher
         return sendPublication(publication, buffer, length);
     }
 
+    @Impure
     boolean standbySnapshotTaken(
         final ExclusivePublication publication,
         final long correlationId,
@@ -607,6 +624,7 @@ final class ConsensusPublisher
         return sendPublication(publication, buffer, encodedLength);
     }
 
+    @Impure
     private static void checkResult(final long position, final Publication publication)
     {
         if (Publication.CLOSED == position)
@@ -620,6 +638,7 @@ final class ConsensusPublisher
         }
     }
 
+    @Impure
     private static boolean sendPublication(
         final ExclusivePublication publication,
         final ExpandableArrayBuffer buffer,
@@ -641,6 +660,7 @@ final class ConsensusPublisher
         return false;
     }
 
+    @Impure
     private static boolean sendSession(
         final ClusterSession session,
         final ExpandableArrayBuffer buffer,

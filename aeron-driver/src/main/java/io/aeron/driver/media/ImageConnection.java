@@ -15,6 +15,7 @@
  */
 package io.aeron.driver.media;
 
+import org.checkerframework.dataflow.qual.Impure;
 import java.net.InetSocketAddress;
 
 abstract class ImageConnectionLhsPadding
@@ -52,6 +53,7 @@ abstract class ImageConnectionFields extends ImageConnectionLhsPadding
      */
     public final InetSocketAddress controlAddress;
 
+    @Impure
     ImageConnectionFields(final InetSocketAddress controlAddress)
     {
         this.controlAddress = controlAddress;
@@ -74,6 +76,7 @@ public final class ImageConnection extends ImageConnectionFields
      * @param timeOfLastActivityNs seen on this image.
      * @param controlAddress       for the source of the image.
      */
+    @Impure
     public ImageConnection(final long timeOfLastActivityNs, final InetSocketAddress controlAddress)
     {
         super(controlAddress);

@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 package io.aeron;
+import org.checkerframework.dataflow.qual.Impure;
 
 /**
  * Default factory for mapping log buffers in the client.
  */
 class MappedLogBuffersFactory implements LogBuffersFactory
 {
+    @Impure
     public LogBuffers map(final String logFileName)
     {
         return new LogBuffers(logFileName);

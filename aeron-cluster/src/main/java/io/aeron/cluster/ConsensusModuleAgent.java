@@ -15,6 +15,10 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Deterministic;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.*;
 import io.aeron.archive.client.AeronArchive;
 import io.aeron.archive.client.ArchiveException;
@@ -167,6 +171,7 @@ final class ConsensusModuleAgent
     private StandbySnapshotReplicator standbySnapshotReplicator = null;
     private String localLogChannel;
 
+    @Impure
     ConsensusModuleAgent(final ConsensusModule.Context ctx)
     {
         this.ctx = ctx;
@@ -240,6 +245,7 @@ final class ConsensusModuleAgent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onClose()
     {
         if (!aeron.isClosed())
@@ -281,6 +287,7 @@ final class ConsensusModuleAgent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onStart()
     {
         archive = AeronArchive.connect(ctx.archiveContext().clone());
@@ -352,6 +359,7 @@ final class ConsensusModuleAgent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int doWork()
     {
         final long timestamp = clusterClock.time();
@@ -408,6 +416,7 @@ final class ConsensusModuleAgent
         return workCount;
     }
 
+    @Pure
     public ConsensusModule.Context context()
     {
         return ctx;
@@ -416,6 +425,7 @@ final class ConsensusModuleAgent
     /**
      * {@inheritDoc}
      */
+    @Pure
     public int memberId()
     {
         return memberId;
@@ -424,6 +434,7 @@ final class ConsensusModuleAgent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public String roleName()
     {
         return ctx.agentRoleName();
@@ -432,6 +443,7 @@ final class ConsensusModuleAgent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public long time()
     {
         return clusterClock.time();
@@ -440,6 +452,7 @@ final class ConsensusModuleAgent
     /**
      * {@inheritDoc}
      */
+    @Pure
     public TimeUnit timeUnit()
     {
         return clusterTimeUnit;
@@ -448,11 +461,13 @@ final class ConsensusModuleAgent
     /**
      * {@inheritDoc}
      */
+    @Pure
     public IdleStrategy idleStrategy()
     {
         return this;
     }
 
+    @Impure
     public void idle()
     {
         checkInterruptStatus();
@@ -466,6 +481,7 @@ final class ConsensusModuleAgent
         pollArchiveEvents();
     }
 
+    @Impure
     public void idle(final int workCount)
     {
         checkInterruptStatus();
@@ -483,6 +499,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     public void reset()
     {
         idleStrategy.reset();
@@ -491,6 +508,7 @@ final class ConsensusModuleAgent
     /**
      * {@inheritDoc}
      */
+    @Pure
     public Aeron aeron()
     {
         return aeron;
@@ -499,6 +517,7 @@ final class ConsensusModuleAgent
     /**
      * {@inheritDoc}
      */
+    @Pure
     public AeronArchive archive()
     {
         return extensionArchive;
@@ -507,6 +526,7 @@ final class ConsensusModuleAgent
     /**
      * {@inheritDoc}
      */
+    @Pure
     public AuthorisationService authorisationService()
     {
         return authorisationService;
@@ -515,6 +535,7 @@ final class ConsensusModuleAgent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public ClusterClientSession getClientSession(final long clusterSessionId)
     {
         return sessionByIdMap.get(clusterSessionId);
@@ -523,6 +544,7 @@ final class ConsensusModuleAgent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void closeClusterSession(final long clusterSessionId)
     {
         onServiceCloseSession(clusterSessionId);
@@ -531,6 +553,7 @@ final class ConsensusModuleAgent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int commitPositionCounterId()
     {
         return ctx.commitPositionCounter().id();
@@ -539,16 +562,19 @@ final class ConsensusModuleAgent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int clusterId()
     {
         return ctx.clusterId();
     }
 
+    @Pure
     public ClusterMember clusterMember()
     {
         return thisMember;
     }
 
+    @Impure
     public void onLoadBeginSnapshot(
         final int appVersion, final TimeUnit timeUnit, final DirectBuffer buffer, final int offset, final int length)
     {
@@ -567,6 +593,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     public ControlledFragmentHandler.Action onExtensionMessage(
         final int actingBlockLength,
         final int templateId,
@@ -591,10 +618,12 @@ final class ConsensusModuleAgent
         }
     }
 
+    @SideEffectFree
     public void onLoadEndSnapshot(final DirectBuffer buffer, final int offset, final int length)
     {
     }
 
+    @Impure
     public void onLoadClusterSession(
         final long clusterSessionId,
         final long correlationId,
@@ -620,6 +649,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     public void onLoadConsensusModuleState(
         final long nextSessionId,
         final long nextServiceSessionId,
@@ -638,6 +668,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     public void onLoadPendingMessageTracker(
         final long nextServiceSessionId,
         final long logServiceSessionId,
@@ -657,6 +688,7 @@ final class ConsensusModuleAgent
             nextServiceSessionId, logServiceSessionId, pendingMessageCapacity);
     }
 
+    @Impure
     public void onLoadPendingMessage(
         final long clusterSessionId, final DirectBuffer buffer, final int offset, final int length)
     {
@@ -664,12 +696,14 @@ final class ConsensusModuleAgent
         pendingServiceMessageTrackers[serviceId].appendMessage(buffer, offset, length);
     }
 
+    @Impure
     public void onLoadTimer(
         final long correlationId, final long deadline, final DirectBuffer buffer, final int offset, final int length)
     {
         onScheduleTimer(correlationId, deadline);
     }
 
+    @Impure
     public void onSessionConnect(
         final long correlationId,
         final int responseStreamId,
@@ -713,6 +747,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onSessionClose(final long leadershipTermId, final long clusterSessionId)
     {
         if (leadershipTermId == this.leadershipTermId && Cluster.Role.LEADER == role)
@@ -734,6 +769,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onAdminRequest(
         final long leadershipTermId,
         final long clusterSessionId,
@@ -810,6 +846,7 @@ final class ConsensusModuleAgent
         return ControlledFragmentHandler.Action.CONTINUE;
     }
 
+    @Impure
     void onSessionKeepAlive(final long leadershipTermId, final long clusterSessionId, final Header header)
     {
         if (leadershipTermId == this.leadershipTermId && Cluster.Role.LEADER == role)
@@ -823,6 +860,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onIngressChallengeResponse(
         final long correlationId, final long clusterSessionId, final byte[] encodedCredentials)
     {
@@ -837,12 +875,14 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onConsensusChallengeResponse(
         final long correlationId, final long clusterSessionId, final byte[] encodedCredentials)
     {
         onChallengeResponseForSession(pendingBackupSessions, correlationId, clusterSessionId, encodedCredentials);
     }
 
+    @Impure
     private void onChallengeResponseForSession(
         final ArrayList<ClusterSession> pendingSessions,
         final long correlationId,
@@ -863,6 +903,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     public boolean onTimerEvent(final long correlationId)
     {
         final long appendPosition = logPublisher.appendTimer(correlationId, leadershipTermId, clusterClock.time());
@@ -876,6 +917,7 @@ final class ConsensusModuleAgent
         return false;
     }
 
+    @Impure
     void onCanvassPosition(
         final long logLeadershipTermId,
         final long logPosition,
@@ -934,6 +976,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onRequestVote(
         final long logLeadershipTermId,
         final long logPosition,
@@ -952,6 +995,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onVote(
         final long candidateTermId,
         final long logLeadershipTermId,
@@ -967,6 +1011,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onNewLeadershipTerm(
         final long logLeadershipTermId,
         final long nextLeadershipTermId,
@@ -1041,6 +1086,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onAppendPosition(
         final long leadershipTermId,
         final long logPosition,
@@ -1065,6 +1111,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onCommitPosition(final long leadershipTermId, final long logPosition, final int leaderMemberId)
     {
         logOnCommitPosition(memberId, leadershipTermId, logPosition, leaderMemberId);
@@ -1092,6 +1139,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onCatchupPosition(
         final long leadershipTermId, final long logPosition, final int followerMemberId, final String catchupEndpoint)
     {
@@ -1114,6 +1162,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onStopCatchup(final long leadershipTermId, final int followerMemberId)
     {
         logOnStopCatchup(memberId, leadershipTermId, followerMemberId);
@@ -1127,6 +1176,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onTerminationPosition(final long leadershipTermId, final long logPosition)
     {
         logOnTerminationPosition(memberId, leadershipTermId, logPosition);
@@ -1139,6 +1189,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onTerminationAck(final long leadershipTermId, final long logPosition, final int memberId)
     {
         logOnTerminationAck(this.memberId, leadershipTermId, logPosition, memberId);
@@ -1161,6 +1212,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onBackupQuery(
         final long correlationId,
         final int responseStreamId,
@@ -1199,6 +1251,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     public void onHeartbeatRequest(
         final long correlationId,
         final int responseStreamId,
@@ -1226,6 +1279,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onClusterMembersQuery(final long correlationId, final boolean isExtendedRequest)
     {
         if (isExtendedRequest)
@@ -1242,6 +1296,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onStandbySnapshot(
         final long correlationId,
         final int version,
@@ -1282,6 +1337,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void state(final ConsensusModule.State newState)
     {
         if (newState != state)
@@ -1295,17 +1351,20 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Pure
     ConsensusModule.State state()
     {
         return state;
     }
 
+    @SideEffectFree
     private void logStateChange(
         final int memberId, final ConsensusModule.State oldState, final ConsensusModule.State newState)
     {
         //System.out.println("CM State memberId=" + memberId + " " + oldState + " -> " + newState);
     }
 
+    @Impure
     void role(final Cluster.Role newRole)
     {
         if (newRole != role)
@@ -1319,16 +1378,19 @@ final class ConsensusModuleAgent
         }
     }
 
+    @SideEffectFree
     private void logRoleChange(final int memberId, final Cluster.Role oldRole, final Cluster.Role newRole)
     {
         //System.out.println("CM Role memberId=" + memberId + " " + oldRole + " -> " + newRole);
     }
 
+    @Pure
     Cluster.Role role()
     {
         return role;
     }
 
+    @Impure
     long prepareForNewLeadership(final long logPosition, final long nowNs)
     {
         role(Cluster.Role.FOLLOWER);
@@ -1390,6 +1452,7 @@ final class ConsensusModuleAgent
         return lastAppendPosition;
     }
 
+    @Impure
     void onServiceCloseSession(final long clusterSessionId)
     {
         final ClusterSession session = sessionByIdMap.get(clusterSessionId);
@@ -1412,12 +1475,14 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onServiceMessage(final long clusterSessionId, final DirectBuffer buffer, final int offset, final int length)
     {
         final int serviceId = PendingServiceMessageTracker.serviceIdFromServiceMessage(clusterSessionId);
         pendingServiceMessageTrackers[serviceId].enqueueMessage((MutableDirectBuffer)buffer, offset, length);
     }
 
+    @Impure
     void onScheduleTimer(final long correlationId, final long deadline)
     {
         if (expiredTimerCountByCorrelationIdMap.get(correlationId) == 0)
@@ -1430,11 +1495,13 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onCancelTimer(final long correlationId)
     {
         timerService.cancelTimerByCorrelationId(correlationId);
     }
 
+    @Impure
     void onServiceAck(
         final long logPosition, final long timestamp, final long ackId, final long relevantId, final int serviceId)
     {
@@ -1464,6 +1531,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onReplaySessionMessage(final long clusterSessionId, final long timestamp)
     {
         final ClusterSession session = sessionByIdMap.get(clusterSessionId);
@@ -1478,6 +1546,8 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Deterministic
+    @Impure
     public ControlledFragmentHandler.Action onReplayExtensionMessage(
         final int actingBlockLength,
         final int templateId,
@@ -1507,6 +1577,7 @@ final class ConsensusModuleAgent
         throw new ClusterException("expected schemaId=" + MessageHeaderDecoder.SCHEMA_ID + ", actual=" + schemaId);
     }
 
+    @Impure
     void onReplayTimerEvent(final long correlationId)
     {
         if (!timerService.cancelTimerByCorrelationId(correlationId))
@@ -1515,6 +1586,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onReplaySessionOpen(
         final long logPosition,
         final long correlationId,
@@ -1540,6 +1612,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onReplaySessionClose(final long clusterSessionId, final CloseReason closeReason)
     {
         final ClusterSession session = sessionByIdMap.get(clusterSessionId);
@@ -1550,6 +1623,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onReplayClusterAction(
         final long leadershipTermId,
         final long logPosition,
@@ -1579,6 +1653,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void onReplayNewLeadershipTermEvent(
         final long leadershipTermId,
         final long logPosition,
@@ -1627,6 +1702,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     int addLogPublication(final long appendPosition)
     {
         final long logPublicationTag = aeron.nextCorrelationId();
@@ -1675,6 +1751,7 @@ final class ConsensusModuleAgent
         return publication.sessionId();
     }
 
+    @Impure
     void joinLogAsLeader(
         final long leadershipTermId, final long logPosition, final int logSessionId, final boolean isStartup)
     {
@@ -1700,26 +1777,31 @@ final class ConsensusModuleAgent
             Cluster.Role.LEADER);
     }
 
+    @Impure
     void liveLogDestination(final String liveLogDestination)
     {
         this.liveLogDestination = liveLogDestination;
     }
 
+    @Pure
     String liveLogDestination()
     {
         return liveLogDestination;
     }
 
+    @Impure
     void catchupLogDestination(final String catchupLogDestination)
     {
         this.catchupLogDestination = catchupLogDestination;
     }
 
+    @Pure
     String catchupLogDestination()
     {
         return catchupLogDestination;
     }
 
+    @Impure
     boolean tryJoinLogAsFollower(final Image image, final boolean isLeaderStartup, final long nowNs)
     {
         final Subscription logSubscription = image.subscription();
@@ -1750,6 +1832,7 @@ final class ConsensusModuleAgent
         return false;
     }
 
+    @Impure
     void awaitServicesReady(
         final String logChannel,
         final int streamId,
@@ -1783,11 +1866,13 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     LogReplay newLogReplay(final long logPosition, final long appendPosition)
     {
         return new LogReplay(archive, logRecordingId, logPosition, appendPosition, logAdapter, ctx);
     }
 
+    @Impure
     int replayLogPoll(final LogAdapter logAdapter, final long stopPosition)
     {
         int workCount = 0;
@@ -1813,11 +1898,13 @@ final class ConsensusModuleAgent
         return workCount;
     }
 
+    @Pure
     long logRecordingId()
     {
         return logRecordingId;
     }
 
+    @Impure
     void logRecordingId(final long recordingId)
     {
         if (NULL_VALUE != recordingId)
@@ -1826,6 +1913,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void truncateLogEntry(final long leadershipTermId, final long logPosition)
     {
         archive.stopAllReplays(logRecordingId);
@@ -1838,6 +1926,7 @@ final class ConsensusModuleAgent
         logRecordingStopPosition = logPosition;
     }
 
+    @Impure
     boolean appendNewLeadershipTermEvent(final long nowNs)
     {
         return logPublisher.appendNewLeadershipTermEvent(
@@ -1850,6 +1939,7 @@ final class ConsensusModuleAgent
             ctx.appVersion());
     }
 
+    @Impure
     void electionComplete(final long nowNs)
     {
         leadershipTermId(election.leadershipTermId());
@@ -1887,6 +1977,7 @@ final class ConsensusModuleAgent
         election = null;
     }
 
+    @Impure
     void trackCatchupCompletion(
         final ClusterMember follower, final long leadershipTermId, final short appendPositionFlags)
     {
@@ -1911,12 +2002,14 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     void catchupInitiated(final long nowNs)
     {
         timeOfLastAppendPositionUpdateNs = nowNs;
         timeOfLastAppendPositionSendNs = nowNs;
     }
 
+    @Impure
     int catchupPoll(final long limitPosition, final long nowNs)
     {
         int workCount = 0;
@@ -1952,6 +2045,7 @@ final class ConsensusModuleAgent
         return workCount;
     }
 
+    @Impure
     boolean isCatchupNearLive(final long position)
     {
         final Image image = logAdapter.image();
@@ -1966,6 +2060,7 @@ final class ConsensusModuleAgent
         return false;
     }
 
+    @Impure
     void stopAllCatchups()
     {
         for (final ClusterMember member : activeMembers)
@@ -1990,6 +2085,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     int pollArchiveEvents()
     {
         int workCount = 0;
@@ -2073,6 +2169,7 @@ final class ConsensusModuleAgent
         return workCount;
     }
 
+    @Impure
     void leadershipTermId(final long leadershipTermId)
     {
         this.leadershipTermId = leadershipTermId;
@@ -2083,6 +2180,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @SideEffectFree
     private static void logOnNewLeadershipTerm(
         final int memberId,
         final long logLeadershipTermId,
@@ -2101,6 +2199,7 @@ final class ConsensusModuleAgent
     {
     }
 
+    @SideEffectFree
     private static void logOnCommitPosition(
         final int memberId,
         final long leadershipTermId,
@@ -2109,6 +2208,7 @@ final class ConsensusModuleAgent
     {
     }
 
+    @SideEffectFree
     private static void logOnAddPassiveMember(
         final int memberId,
         final long correlationId,
@@ -2116,6 +2216,7 @@ final class ConsensusModuleAgent
     {
     }
 
+    @SideEffectFree
     private static void logOnReplayNewLeadershipTermEvent(
         final int memberId,
         final boolean isInElection,
@@ -2128,6 +2229,7 @@ final class ConsensusModuleAgent
     {
     }
 
+    @SideEffectFree
     private static void logOnRequestVote(
         final int memberId,
         final long logLeadershipTermId,
@@ -2138,6 +2240,7 @@ final class ConsensusModuleAgent
     {
     }
 
+    @SideEffectFree
     private static void logOnAppendPosition(
         final int memberId,
         final long leadershipTermId,
@@ -2147,6 +2250,7 @@ final class ConsensusModuleAgent
     {
     }
 
+    @SideEffectFree
     private static void logOnCanvassPosition(
         final int memberId,
         final long logLeadershipTermId,
@@ -2157,6 +2261,7 @@ final class ConsensusModuleAgent
     {
     }
 
+    @SideEffectFree
     private void logStandbySnapshotNotification(
         final int memberId,
         final long recordingId,
@@ -2170,10 +2275,12 @@ final class ConsensusModuleAgent
     {
     }
 
+    @SideEffectFree
     private static void logOnStopCatchup(final int memberId, final long leadershipTermId, final int followerMemberId)
     {
     }
 
+    @SideEffectFree
     private static void logOnCatchupPosition(
         final int memberId,
         final long leadershipTermId,
@@ -2183,6 +2290,7 @@ final class ConsensusModuleAgent
     {
     }
 
+    @SideEffectFree
     private static void logOnTerminationPosition(
         final int memberId,
         final long logLeadershipTermId,
@@ -2190,6 +2298,7 @@ final class ConsensusModuleAgent
     {
     }
 
+    @SideEffectFree
     private static void logOnTerminationAck(
         final int memberId,
         final long logLeadershipTermId,
@@ -2198,6 +2307,7 @@ final class ConsensusModuleAgent
     {
     }
 
+    @SideEffectFree
     private static void logOnServiceAck(
         final int memberId,
         final long logPosition,
@@ -2209,6 +2319,7 @@ final class ConsensusModuleAgent
     {
     }
 
+    @SideEffectFree
     private static void logNewElection(
         final int memberId,
         final long logLeadershipTermId,
@@ -2218,6 +2329,7 @@ final class ConsensusModuleAgent
     {
     }
 
+    @SideEffectFree
     static void logReplicationEnded(
         final int memberId,
         final String purpose,
@@ -2229,6 +2341,7 @@ final class ConsensusModuleAgent
     {
     }
 
+    @Impure
     private void startLogRecording(final String channel, final int streamId, final SourceLocation sourceLocation)
     {
         try
@@ -2251,6 +2364,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     private void prepareSessionsForNewTerm(final boolean isStartup)
     {
         if (isStartup)
@@ -2288,6 +2402,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     private void updateMemberDetails(final ClusterMember newLeader)
     {
         leaderMember = newLeader;
@@ -2300,6 +2415,7 @@ final class ConsensusModuleAgent
         ingressEndpoints = ClusterMember.ingressEndpoints(activeMembers);
     }
 
+    @Impure
     private int slowTickWork(final long nowNs)
     {
         int workCount = aeronClientInvoker.invoke();
@@ -2383,6 +2499,7 @@ final class ConsensusModuleAgent
         return workCount;
     }
 
+    @Impure
     private int consensusWork(final long timestamp, final long nowNs)
     {
         int workCount = 0;
@@ -2447,6 +2564,7 @@ final class ConsensusModuleAgent
         return workCount;
     }
 
+    @Impure
     @SuppressWarnings("MethodLength")
     private int checkClusterControlToggle(final long nowNs)
     {
@@ -2558,6 +2676,7 @@ final class ConsensusModuleAgent
         return 0;
     }
 
+    @Impure
     private int checkNodeControlToggle()
     {
         if (NodeControl.ToggleState.REPLICATE_STANDBY_SNAPSHOT == NodeControl.ToggleState.get(nodeControlToggle))
@@ -2584,11 +2703,13 @@ final class ConsensusModuleAgent
         return 0;
     }
 
+    @Impure
     private boolean appendAction(final ClusterAction action, final long timestamp, final int flags)
     {
         return logPublisher.appendClusterAction(leadershipTermId, timestamp, action, flags);
     }
 
+    @Impure
     @SuppressWarnings("checkstyle:methodlength")
     private int processPendingSessions(
         final ArrayList<ClusterSession> pendingSessions,
@@ -2775,6 +2896,7 @@ final class ConsensusModuleAgent
         return workCount;
     }
 
+    @Impure
     private int sendRejections(final ArrayList<ClusterSession> rejectedSessions, final long nowNs)
     {
         int workCount = 0;
@@ -2799,6 +2921,7 @@ final class ConsensusModuleAgent
         return workCount;
     }
 
+    @Impure
     private int sendRedirects(final ArrayList<ClusterSession> redirectSessions, final long nowNs)
     {
         int workCount = 0;
@@ -2823,6 +2946,7 @@ final class ConsensusModuleAgent
         return workCount;
     }
 
+    @Impure
     private int checkSessions(final ArrayList<ClusterSession> sessions, final long nowNs)
     {
         int workCount = 0;
@@ -2886,6 +3010,7 @@ final class ConsensusModuleAgent
         return workCount;
     }
 
+    @Impure
     private void captureServiceAck(final long logPosition, final long ackId, final long relevantId, final int serviceId)
     {
         if (0 == ackId && NULL_VALUE != serviceClientIds[serviceId])
@@ -2897,6 +3022,7 @@ final class ConsensusModuleAgent
         serviceAckQueues[serviceId].offerLast(new ServiceAck(ackId, logPosition, relevantId));
     }
 
+    @Impure
     private ServiceAck[] pollServiceAcks(final long logPosition, final int serviceId)
     {
         final ServiceAck[] serviceAcks = new ServiceAck[serviceAckQueues.length];
@@ -2915,6 +3041,7 @@ final class ConsensusModuleAgent
         return serviceAcks;
     }
 
+    @Impure
     private int sendNewLeaderEvent(final ClusterSession session)
     {
         if (egressPublisher.newLeader(session, leadershipTermId, leaderMember.id(), ingressEndpoints))
@@ -2926,6 +3053,7 @@ final class ConsensusModuleAgent
         return 0;
     }
 
+    @Impure
     private boolean tryCreateAppendPosition(final int logSessionId)
     {
         final CountersReader counters = aeron.countersReader();
@@ -2953,6 +3081,7 @@ final class ConsensusModuleAgent
         return true;
     }
 
+    @Impure
     private int updateFollowerPosition(final long nowNs)
     {
         final long recordedPosition = null != appendPosition ? appendPosition.get() : logRecordingStopPosition;
@@ -2960,6 +3089,7 @@ final class ConsensusModuleAgent
             leaderMember.publication(), nowNs, this.leadershipTermId, recordedPosition, APPEND_POSITION_FLAG_NONE);
     }
 
+    @Impure
     private int updateFollowerPosition(
         final ExclusivePublication publication,
         final long nowNs,
@@ -2987,6 +3117,7 @@ final class ConsensusModuleAgent
         return 0;
     }
 
+    @Impure
     private void loadSnapshot(final RecordingLog.Snapshot snapshot, final AeronArchive archive)
     {
         final String channel = ctx.replayChannel();
@@ -3037,6 +3168,7 @@ final class ConsensusModuleAgent
         expectedAckPosition = snapshot.logPosition;
     }
 
+    @Impure
     private Image awaitImage(final int sessionId, final Subscription subscription)
     {
         idleStrategy.reset();
@@ -3049,6 +3181,7 @@ final class ConsensusModuleAgent
         return image;
     }
 
+    @Impure
     private Counter addRecoveryStateCounter(final RecordingLog.RecoveryPlan plan)
     {
         final int snapshotsCount = plan.snapshots.size();
@@ -3076,6 +3209,7 @@ final class ConsensusModuleAgent
         return RecoveryState.allocate(aeron, leadershipTermId, 0, 0, ctx.clusterId());
     }
 
+    @Impure
     private void captureServiceClientIds()
     {
         for (int i = 0, length = serviceClientIds.length; i < length; i++)
@@ -3085,6 +3219,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     private int updateLeaderPosition(final long nowNs)
     {
         if (null != appendPosition)
@@ -3095,16 +3230,19 @@ final class ConsensusModuleAgent
         return 0;
     }
 
+    @Impure
     long quorumPosition()
     {
         return ClusterMember.quorumPosition(activeMembers, rankedPositions);
     }
 
+    @Pure
     long timeOfLastLeaderUpdateNs()
     {
         return timeOfLastLeaderUpdateNs;
     }
 
+    @Impure
     int updateLeaderPosition(final long nowNs, final long position)
     {
         thisMember.logPosition(position).timeOfLastAppendPositionNs(nowNs);
@@ -3125,6 +3263,7 @@ final class ConsensusModuleAgent
         return 0;
     }
 
+    @Impure
     void publishCommitPosition(final long commitPosition)
     {
         for (final ClusterMember member : activeMembers)
@@ -3136,6 +3275,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     RecordingReplication newLogReplication(
         final String leaderArchiveEndpoint,
         final String responseArchiveEndpoint,
@@ -3173,6 +3313,7 @@ final class ConsensusModuleAgent
             nowNs);
     }
 
+    @Impure
     void awaitLocalSocketsClosed(final long registrationId)
     {
         final CountersReader countersReader = aeron.countersReader();
@@ -3182,6 +3323,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     private void clearSessionsAfter(final long logPosition)
     {
         for (int i = sessions.size() - 1; i >= 0; i--)
@@ -3203,6 +3345,7 @@ final class ConsensusModuleAgent
         pendingUserSessions.clear();
     }
 
+    @Impure
     private void sweepUncommittedEntriesTo(final long commitPosition)
     {
         for (final PendingServiceMessageTracker tracker : pendingServiceMessageTrackers)
@@ -3228,6 +3371,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     private void restoreUncommittedEntries(final long commitPosition)
     {
         for (final LongArrayQueue.LongIterator i = uncommittedTimers.iterator(); i.hasNext(); )
@@ -3259,6 +3403,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     private void enterElection(final boolean isLogEndOfStream, final String reason)
     {
         if (null != election)
@@ -3296,6 +3441,7 @@ final class ConsensusModuleAgent
         election.doWork(clusterClock.timeNanos());
     }
 
+    @Impure
     private static void checkInterruptStatus()
     {
         if (Thread.currentThread().isInterrupted())
@@ -3304,6 +3450,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     private void snapshotOnServiceAck(final long logPosition, final long timestamp, final ServiceAck[] serviceAcks)
     {
         if (isSnapshotSetComplete(serviceAcks))
@@ -3336,6 +3483,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     private boolean isSnapshotSetComplete(final ServiceAck[] serviceAcks)
     {
         boolean isSetComplete = true;
@@ -3352,6 +3500,7 @@ final class ConsensusModuleAgent
         return isSetComplete;
     }
 
+    @Impure
     private void takeSnapshot(final long timestamp, final long logPosition, final ServiceAck[] serviceAcks)
     {
         final long recordingId;
@@ -3402,6 +3551,7 @@ final class ConsensusModuleAgent
         totalSnapshotDurationTracker.onSnapshotEnd(clusterClock.timeNanos());
     }
 
+    @Impure
     private void awaitRecordingComplete(
         final long recordingId, final long position, final CountersReader counters, final int counterId)
     {
@@ -3417,6 +3567,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     private int awaitRecordingCounter(final CountersReader counters, final int sessionId, final long archiveId)
     {
         idleStrategy.reset();
@@ -3430,6 +3581,7 @@ final class ConsensusModuleAgent
         return counterId;
     }
 
+    @Impure
     private void snapshotState(
         final ExclusivePublication publication, final long logPosition, final long leadershipTermId)
     {
@@ -3473,6 +3625,7 @@ final class ConsensusModuleAgent
         snapshotTaker.markEnd(SNAPSHOT_TYPE_ID, logPosition, leadershipTermId, 0, clusterTimeUnit, ctx.appVersion());
     }
 
+    @Impure
     private void onUnavailableIngressImage(final Image image)
     {
         if (Cluster.Role.LEADER == role && ConsensusModule.State.ACTIVE == state)
@@ -3492,6 +3645,7 @@ final class ConsensusModuleAgent
         ingressAdapter.freeSessionBuffer(image.sessionId(), isIpc);
     }
 
+    @Impure
     private void onUnavailableCounter(final CountersReader counters, final long registrationId, final int counterId)
     {
         if (ConsensusModule.State.TERMINATING != state && ConsensusModule.State.QUITTING != state)
@@ -3515,6 +3669,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     private void closeAndTerminate()
     {
         tryStopLogRecording();
@@ -3522,6 +3677,7 @@ final class ConsensusModuleAgent
         throw new ClusterTerminationException(true);
     }
 
+    @Impure
     private void unexpectedTermination()
     {
         aeron.removeUnavailableCounterHandler(unavailableCounterHandlerRegistrationId);
@@ -3534,6 +3690,7 @@ final class ConsensusModuleAgent
         throw new ClusterTerminationException(false);
     }
 
+    @Impure
     private void terminateOnServiceAck(final long logPosition)
     {
         if (null == clusterTermination)
@@ -3562,6 +3719,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     private void tryStopLogRecording()
     {
         appendPosition = null;
@@ -3592,6 +3750,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     private long getLastAppendedPosition()
     {
         idleStrategy.reset();
@@ -3607,6 +3766,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     private void connectIngress()
     {
         final ChannelUri ingressUri = ChannelUri.parse(ctx.ingressChannel());
@@ -3635,6 +3795,7 @@ final class ConsensusModuleAgent
         ingressAdapter.connect(subscription, ipcSubscription);
     }
 
+    @Impure
     private void ensureConsistentInitialTermId(final ChannelUri channelUri)
     {
         channelUri.put(INITIAL_TERM_ID_PARAM_NAME, "0");
@@ -3642,6 +3803,7 @@ final class ConsensusModuleAgent
         channelUri.put(TERM_OFFSET_PARAM_NAME, "0");
     }
 
+    @Impure
     private void checkFollowerForConsensusPublication(final int followerMemberId)
     {
         final ClusterMember follower = clusterMemberByIdMap.get(followerMemberId);
@@ -3652,6 +3814,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     private void runTerminationHook()
     {
         try
@@ -3664,6 +3827,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     private String refineResponseChannel(final String responseChannel)
     {
         if (null == responseChannelTemplate)
@@ -3682,6 +3846,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     private void stopExistingCatchupReplay(final ClusterMember follower)
     {
         if (NULL_VALUE != follower.catchupReplaySessionId())
@@ -3695,11 +3860,13 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Pure
     private static boolean isCatchupAppendPosition(final short flags)
     {
         return 0 != (APPEND_POSITION_FLAG_CATCHUP & flags);
     }
 
+    @Impure
     private void addSession(final ClusterSession session)
     {
         sessionByIdMap.put(session.id(), session);
@@ -3725,6 +3892,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     private void closeSession(final ClusterSession session)
     {
         final long sessionId = session.id();
@@ -3747,6 +3915,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     @SuppressWarnings("try")
     private RecordingLog.RecoveryPlan recoverFromSnapshotAndLog()
     {
@@ -3780,6 +3949,7 @@ final class ConsensusModuleAgent
         return recoveryPlan;
     }
 
+    @Impure
     private RecordingLog.RecoveryPlan recoverFromBootstrapState()
     {
         final ConsensusModuleStateExport boostrapState = ctx.boostrapState();
@@ -3853,6 +4023,7 @@ final class ConsensusModuleAgent
         return recoveryPlan;
     }
 
+    @Impure
     private void replicateStandbySnapshotsForStartup()
     {
         try (StandbySnapshotReplicator standbySnapshotReplicator = StandbySnapshotReplicator.newInstance(
@@ -3888,6 +4059,7 @@ final class ConsensusModuleAgent
         }
     }
 
+    @Impure
     private int pollStandbySnapshotReplication(final long nowNs)
     {
         int workCount = 0;
@@ -3916,6 +4088,7 @@ final class ConsensusModuleAgent
         return workCount;
     }
 
+    @Pure
     public String toString()
     {
         return "ConsensusModuleAgent{" +

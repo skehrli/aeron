@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.ErrorCode;
 import io.aeron.command.*;
 import io.aeron.exceptions.ControlProtocolException;
@@ -57,6 +59,7 @@ final class ClientCommandAdapter implements ControlledMessageHandler
     private final AtomicCounter errors;
     private final ErrorHandler errorHandler;
 
+    @SideEffectFree
     ClientCommandAdapter(
         final AtomicCounter errors,
         final ErrorHandler errorHandler,
@@ -71,6 +74,7 @@ final class ClientCommandAdapter implements ControlledMessageHandler
         this.conductor = driverConductor;
     }
 
+    @Impure
     int receive()
     {
         return toDriverCommands.controlledRead(this, Configuration.COMMAND_DRAIN_LIMIT);
@@ -79,6 +83,7 @@ final class ClientCommandAdapter implements ControlledMessageHandler
     /**
      * {@inheritDoc}
      */
+    @Impure
     @SuppressWarnings("MethodLength")
     public ControlledMessageHandler.Action onMessage(
         final int msgTypeId, final MutableDirectBuffer buffer, final int index, final int length)
@@ -351,6 +356,7 @@ final class ClientCommandAdapter implements ControlledMessageHandler
         return Action.CONTINUE;
     }
 
+    @Impure
     private void addPublication(final long correlationId, final boolean isExclusive)
     {
         final long clientId = publicationMsgFlyweight.clientId();
@@ -367,6 +373,7 @@ final class ClientCommandAdapter implements ControlledMessageHandler
         }
     }
 
+    @Impure
     void onError(final long correlationId, final Exception error)
     {
         if (!errors.isClosed())

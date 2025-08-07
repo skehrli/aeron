@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.driver.media.ReceiveChannelEndpoint;
 
 class NetworkSubscriptionLink extends SubscriptionLink
@@ -23,6 +25,7 @@ class NetworkSubscriptionLink extends SubscriptionLink
     private final boolean isRejoin;
     private final ReceiveChannelEndpoint channelEndpoint;
 
+    @Impure
     NetworkSubscriptionLink(
         final long registrationId,
         final ReceiveChannelEndpoint channelEndpoint,
@@ -38,21 +41,26 @@ class NetworkSubscriptionLink extends SubscriptionLink
         this.channelEndpoint = channelEndpoint;
     }
 
+    @Pure
     boolean isReliable()
     {
         return isReliable;
     }
 
+    @Pure
     boolean isRejoin()
     {
         return isRejoin;
     }
 
+    @Pure
     ReceiveChannelEndpoint channelEndpoint()
     {
         return channelEndpoint;
     }
 
+    @Pure
+    @Impure
     boolean matches(final PublicationImage image)
     {
         return image.channelEndpoint() == this.channelEndpoint &&
@@ -60,6 +68,8 @@ class NetworkSubscriptionLink extends SubscriptionLink
             isWildcardOrSessionIdMatch(image.sessionId());
     }
 
+    @Pure
+    @Impure
     boolean matches(final ReceiveChannelEndpoint channelEndpoint, final int streamId, final SubscriptionParams params)
     {
         return channelEndpoint == this.channelEndpoint &&
@@ -68,6 +78,8 @@ class NetworkSubscriptionLink extends SubscriptionLink
             isWildcardOrSessionIdMatch(params.sessionId);
     }
 
+    @Pure
+    @Impure
     boolean matches(final ReceiveChannelEndpoint channelEndpoint, final int streamId, final int sessionId)
     {
         return channelEndpoint == this.channelEndpoint &&
@@ -75,6 +87,8 @@ class NetworkSubscriptionLink extends SubscriptionLink
             isWildcardOrSessionIdMatch(sessionId);
     }
 
+    @Pure
+    @Impure
     boolean supportsMds()
     {
         return channelEndpoint.hasDestinationControl();

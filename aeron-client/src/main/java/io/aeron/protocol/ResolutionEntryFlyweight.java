@@ -15,6 +15,8 @@
  */
 package io.aeron.protocol;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.LangUtil;
 import org.agrona.concurrent.UnsafeBuffer;
 
@@ -91,6 +93,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
     /**
      * Default constructor which can later be used to wrap a frame.
      */
+    @Impure
     public ResolutionEntryFlyweight()
     {
     }
@@ -100,6 +103,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      *
      * @param buffer containing the frame.
      */
+    @Impure
     public ResolutionEntryFlyweight(final UnsafeBuffer buffer)
     {
         super(buffer);
@@ -110,6 +114,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      *
      * @param buffer containing the frame.
      */
+    @Impure
     public ResolutionEntryFlyweight(final ByteBuffer buffer)
     {
         super(buffer);
@@ -123,6 +128,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      * @see #RES_TYPE_NAME_TO_IP4_MD
      * @see #RES_TYPE_NAME_TO_IP4_MD
      */
+    @Impure
     public ResolutionEntryFlyweight resType(final byte type)
     {
         putByte(RES_TYPE_FIELD_OFFSET, type);
@@ -136,6 +142,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      * @see #RES_TYPE_NAME_TO_IP4_MD
      * @see #RES_TYPE_NAME_TO_IP4_MD
      */
+    @Impure
     public byte resType()
     {
         return getByte(RES_TYPE_FIELD_OFFSET);
@@ -148,6 +155,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      * @return this for a fluent API.
      * @see #SELF_FLAG
      */
+    @Impure
     public ResolutionEntryFlyweight flags(final short flags)
     {
         putByte(RES_FLAGS_FIELD_OFFSET, (byte)flags);
@@ -159,6 +167,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      *
      * @return the flags for the resolution entry.
      */
+    @Impure
     public short flags()
     {
         return (short)(getByte(RES_FLAGS_FIELD_OFFSET) & 0xFF);
@@ -170,6 +179,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      * @param udpPort of the resolver with a given name.
      * @return this for a fluent API.
      */
+    @Impure
     public ResolutionEntryFlyweight udpPort(final int udpPort)
     {
         putShort(UDP_PORT_FIELD_OFFSET, (short)udpPort, LITTLE_ENDIAN);
@@ -181,6 +191,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      *
      * @return the UDP port of the resolver with a given name.
      */
+    @Impure
     public int udpPort()
     {
         return getShort(UDP_PORT_FIELD_OFFSET, LITTLE_ENDIAN) & 0xFFFF;
@@ -192,6 +203,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      * @param ageInMs of the entry based on last observed activity.
      * @return this for a fluent API.
      */
+    @Impure
     public ResolutionEntryFlyweight ageInMs(final int ageInMs)
     {
         putInt(AGE_IN_MS_FIELD_OFFSET, ageInMs, LITTLE_ENDIAN);
@@ -203,6 +215,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      *
      * @return the age of the entry based on last observed activity.
      */
+    @Impure
     public int ageInMs()
     {
         return getInt(AGE_IN_MS_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -214,6 +227,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      * @param address to be written for the resolution entry.
      * @return this for a fluent API.
      */
+    @Impure
     public ResolutionEntryFlyweight putAddress(final byte[] address)
     {
         switch (resType())
@@ -247,6 +261,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      * @param dstBuffer into which the address will be copied.
      * @return length of the address copied.
      */
+    @Impure
     public int getAddress(final byte[] dstBuffer)
     {
         switch (resType())
@@ -276,6 +291,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      *
      * @param appendable to which the address will be appended.
      */
+    @Impure
     public void appendAddress(final Appendable appendable)
     {
         try
@@ -334,6 +350,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      * @param name for the resolution entry.
      * @return this for a fluent API.
      */
+    @Impure
     public ResolutionEntryFlyweight putName(final byte[] name)
     {
         final int nameOffset = nameOffset(resType());
@@ -349,6 +366,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      * @param dstBuffer into which the name will be copied.
      * @return the number of bytes copied.
      */
+    @Impure
     public int getName(final byte[] dstBuffer)
     {
         final int nameOffset = nameOffset(resType());
@@ -368,6 +386,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      *
      * @param appendable to which the name will be appended.
      */
+    @Impure
     public void appendName(final StringBuilder appendable)
     {
         final int nameOffset = nameOffset(resType());
@@ -381,6 +400,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      *
      * @return total length of the entry in bytes.
      */
+    @Impure
     public int entryLength()
     {
         final int nameOffset = nameOffset(resType());
@@ -394,6 +414,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      * @param resType for the protocol family.
      * @return offset in the entry at which the name field begins.
      */
+    @Pure
     public static int nameOffset(final byte resType)
     {
         switch (resType)
@@ -415,6 +436,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      * @param nameLength of the name in the entry.
      * @return the required length of the entry in bytes.
      */
+    @Impure
     public static int entryLengthRequired(final byte resType, final int nameLength)
     {
         return align(nameOffset(resType) + SIZE_OF_SHORT + nameLength, SIZE_OF_LONG);
@@ -426,6 +448,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      * @param resType to lookup address length for.
      * @return the length of the address given a resolution type.
      */
+    @Pure
     public static int addressLength(final byte resType)
     {
         switch (resType)
@@ -447,6 +470,7 @@ public class ResolutionEntryFlyweight extends HeaderFlyweight
      * @param addressLength of the address in bytes.
      * @return true if address is an ANY match otherwise false.
      */
+    @Pure
     public static boolean isAnyLocalAddress(final byte[] address, final int addressLength)
     {
         if (addressLength == ADDRESS_LENGTH_IP4)

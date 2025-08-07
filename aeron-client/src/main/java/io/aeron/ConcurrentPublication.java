@@ -15,6 +15,7 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.logbuffer.BufferClaim;
 import org.agrona.DirectBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
@@ -43,6 +44,7 @@ import static org.agrona.BitUtil.align;
  */
 public final class ConcurrentPublication extends Publication
 {
+    @Impure
     ConcurrentPublication(
         final ClientConductor clientConductor,
         final String channel,
@@ -69,6 +71,7 @@ public final class ConcurrentPublication extends Publication
     /**
      * {@inheritDoc}
      */
+    @Impure
     public long availableWindow()
     {
         if (isClosed)
@@ -89,6 +92,7 @@ public final class ConcurrentPublication extends Publication
      * @return The new stream position, otherwise a negative error value of {@link #NOT_CONNECTED},
      * {@link #BACK_PRESSURED}, {@link #ADMIN_ACTION}, {@link #CLOSED}, or {@link #MAX_POSITION_EXCEEDED}.
      */
+    @Impure
     public long offer(
         final DirectBuffer buffer,
         final int offset,
@@ -151,6 +155,7 @@ public final class ConcurrentPublication extends Publication
      * @return The new stream position, otherwise a negative error value of {@link #NOT_CONNECTED},
      * {@link #BACK_PRESSURED}, {@link #ADMIN_ACTION}, {@link #CLOSED}, or {@link #MAX_POSITION_EXCEEDED}.
      */
+    @Impure
     public long offer(
         final DirectBuffer bufferOne,
         final int offsetOne,
@@ -227,6 +232,7 @@ public final class ConcurrentPublication extends Publication
      * @return The new stream position, otherwise a negative error value of {@link #NOT_CONNECTED},
      * {@link #BACK_PRESSURED}, {@link #ADMIN_ACTION}, {@link #CLOSED}, or {@link #MAX_POSITION_EXCEEDED}.
      */
+    @Impure
     public long offer(final DirectBufferVector[] vectors, final ReservedValueSupplier reservedValueSupplier)
     {
         final int length = DirectBufferVector.validateAndComputeLength(vectors);
@@ -308,6 +314,7 @@ public final class ConcurrentPublication extends Publication
      * @see BufferClaim#commit()
      * @see BufferClaim#abort()
      */
+    @Impure
     public long tryClaim(final int length, final BufferClaim bufferClaim)
     {
         checkPayloadLength(length);
@@ -344,6 +351,7 @@ public final class ConcurrentPublication extends Publication
         return newPosition;
     }
 
+    @Impure
     private long appendUnfragmentedMessage(
         final UnsafeBuffer termBuffer,
         final int tailCounterOffset,
@@ -383,6 +391,7 @@ public final class ConcurrentPublication extends Publication
         return position;
     }
 
+    @Impure
     private long appendFragmentedMessage(
         final UnsafeBuffer termBuffer,
         final int tailCounterOffset,
@@ -448,6 +457,7 @@ public final class ConcurrentPublication extends Publication
         return position;
     }
 
+    @Impure
     private long appendUnfragmentedMessage(
         final UnsafeBuffer termBuffer,
         final int tailCounterOffset,
@@ -491,6 +501,7 @@ public final class ConcurrentPublication extends Publication
         return position;
     }
 
+    @Impure
     private long appendFragmentedMessage(
         final UnsafeBuffer termBuffer,
         final int tailCounterOffset,
@@ -583,6 +594,7 @@ public final class ConcurrentPublication extends Publication
         return position;
     }
 
+    @Impure
     private long appendUnfragmentedMessage(
         final UnsafeBuffer termBuffer,
         final int tailCounterOffset,
@@ -627,6 +639,7 @@ public final class ConcurrentPublication extends Publication
         return position;
     }
 
+    @Impure
     private long appendFragmentedMessage(
         final UnsafeBuffer termBuffer,
         final int tailCounterOffset,
@@ -710,6 +723,7 @@ public final class ConcurrentPublication extends Publication
         return position;
     }
 
+    @Impure
     private long claim(
         final UnsafeBuffer termBuffer,
         final int tailCounterOffset,
@@ -739,6 +753,7 @@ public final class ConcurrentPublication extends Publication
         return position;
     }
 
+    @Impure
     private long handleEndOfLog(
         final UnsafeBuffer termBuffer,
         final int termLength,

@@ -15,6 +15,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.Publication;
 import io.aeron.driver.MediaDriver;
@@ -49,6 +50,7 @@ public class BasicPublisher
      * @param args passed to the process.
      * @throws InterruptedException if the thread sleep delay is interrupted.
      */
+    @Impure
     public static void main(final String[] args) throws InterruptedException
     {
         System.out.println("Publishing to " + CHANNEL + " on stream id " + STREAM_ID);

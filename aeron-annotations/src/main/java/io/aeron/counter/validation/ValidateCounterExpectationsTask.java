@@ -15,6 +15,7 @@
  */
 package io.aeron.counter.validation;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.utility.ElementIO;
 
 /**
@@ -28,6 +29,7 @@ public class ValidateCounterExpectationsTask
      * Arg 1 should be the location of the C source code
      * @throws Exception on IO failure.
      */
+    @Impure
     public static void main(final String[] args) throws Exception
     {
         Validator.validate(ElementIO.read(args[0]), args[1]).printFailuresOn(System.err);

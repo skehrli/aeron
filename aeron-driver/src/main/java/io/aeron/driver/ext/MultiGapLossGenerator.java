@@ -15,6 +15,8 @@
  */
 package io.aeron.driver.ext;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.BitUtil;
 import org.agrona.collections.BiInt2ObjectMap;
 import org.agrona.collections.MutableInteger;
@@ -43,6 +45,7 @@ public class MultiGapLossGenerator implements LossGenerator
      * @param gapLength  length of each gap
      * @param totalGaps  the total number of gaps
      */
+    @Impure
     public MultiGapLossGenerator(
         final int termId,
         final int gapRadix,
@@ -66,6 +69,7 @@ public class MultiGapLossGenerator implements LossGenerator
     /**
      * {@inheritDoc}
      */
+    @Pure
     public boolean shouldDropFrame(final InetSocketAddress address, final UnsafeBuffer buffer, final int length)
     {
         return false;
@@ -74,6 +78,7 @@ public class MultiGapLossGenerator implements LossGenerator
     /**
      * {@inheritDoc}
      */
+    @Impure
     public boolean shouldDropFrame(
         final InetSocketAddress address,
         final UnsafeBuffer buffer,

@@ -15,6 +15,8 @@
  */
 package io.aeron.driver.reports;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.BitUtil;
 import org.agrona.concurrent.AtomicBuffer;
 
@@ -54,6 +56,7 @@ public final class LossReportReader
          * @param channel                   to which the stream belongs.
          * @param source                    of the stream.
          */
+        @SideEffectFree
         void accept(
             long observationCount,
             long totalBytesLost,
@@ -71,6 +74,7 @@ public final class LossReportReader
      * @param out to write entries to.
      * @return a new {@link EntryConsumer} which outputs to a provided {@link PrintStream}.
      */
+    @Impure
     public static EntryConsumer defaultEntryConsumer(final PrintStream out)
     {
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
@@ -105,6 +109,7 @@ public final class LossReportReader
      * @param entryConsumer to be called to accept each entry in the report.
      * @return the number of entries read.
      */
+    @Impure
     public static int read(final AtomicBuffer buffer, final EntryConsumer entryConsumer)
     {
         final int capacity = buffer.capacity();

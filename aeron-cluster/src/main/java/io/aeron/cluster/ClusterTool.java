@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import static io.aeron.cluster.ClusterToolCommand.*;
 import static io.aeron.cluster.ClusterToolOperator.*;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
@@ -227,6 +229,7 @@ public class ClusterTool
      *
      * @param args passed to the process.
      */
+    @Impure
     @SuppressWarnings("methodlength")
     public static void main(final String[] args)
     {
@@ -267,6 +270,7 @@ public class ClusterTool
      * @param out        to print the output to.
      * @param clusterDir where the cluster is running.
      */
+    @Impure
     public static void describe(final PrintStream out, final File clusterDir)
     {
         BACKWARD_COMPATIBLE_OPERATIONS.describeClusterMarkFile(clusterDir, out);
@@ -278,6 +282,7 @@ public class ClusterTool
      * @param out        to print the output to.
      * @param clusterDir where the cluster is running.
      */
+    @Impure
     public static void pid(final PrintStream out, final File clusterDir)
     {
         BACKWARD_COMPATIBLE_OPERATIONS.pid(clusterDir, out);
@@ -290,6 +295,7 @@ public class ClusterTool
      * @param clusterDir   where the cluster is running.
      * @param serviceCount of services running in the containers.
      */
+    @Impure
     public static void recoveryPlan(final PrintStream out, final File clusterDir, final int serviceCount)
     {
         BACKWARD_COMPATIBLE_OPERATIONS.recoveryPlan(out, clusterDir, serviceCount);
@@ -301,6 +307,7 @@ public class ClusterTool
      * @param out        to print the output to.
      * @param clusterDir where the cluster is running.
      */
+    @Impure
     public static void recordingLog(final PrintStream out, final File clusterDir)
     {
         BACKWARD_COMPATIBLE_OPERATIONS.recordingLog(clusterDir, out);
@@ -312,6 +319,7 @@ public class ClusterTool
      * @param clusterDir where the cluster is running.
      * @return {@code true} if file contents was changed or {@code false} if it was already in the correct order.
      */
+    @Impure
     public static boolean sortRecordingLog(final File clusterDir)
     {
         return BACKWARD_COMPATIBLE_OPERATIONS.sortRecordingLog(clusterDir) == SUCCESS;
@@ -323,6 +331,7 @@ public class ClusterTool
      *
      * @param clusterDir where the cluster is running.
      */
+    @Impure
     public static void seedRecordingLogFromSnapshot(final File clusterDir)
     {
         BACKWARD_COMPATIBLE_OPERATIONS.seedRecordingLogFromSnapshot(clusterDir);
@@ -334,6 +343,7 @@ public class ClusterTool
      * @param out        to print the output to.
      * @param clusterDir where the cluster is running.
      */
+    @Impure
     public static void errors(final PrintStream out, final File clusterDir)
     {
         BACKWARD_COMPATIBLE_OPERATIONS.errors(clusterDir, out);
@@ -345,6 +355,7 @@ public class ClusterTool
      * @param out        to print the output to.
      * @param clusterDir where the cluster is running.
      */
+    @Impure
     public static void listMembers(final PrintStream out, final File clusterDir)
     {
         BACKWARD_COMPATIBLE_OPERATIONS.listMembers(clusterDir, out);
@@ -356,6 +367,7 @@ public class ClusterTool
      * @param out        to print the output to.
      * @param clusterDir where the cluster backup is running.
      */
+    @Impure
     public static void printNextBackupQuery(final PrintStream out, final File clusterDir)
     {
         BACKWARD_COMPATIBLE_OPERATIONS.printNextBackupQuery(clusterDir, out);
@@ -368,6 +380,7 @@ public class ClusterTool
      * @param clusterDir where the cluster is running.
      * @param delayMs    from the current time for the next backup query.
      */
+    @Impure
     public static void nextBackupQuery(final PrintStream out, final File clusterDir, final long delayMs)
     {
         BACKWARD_COMPATIBLE_OPERATIONS.nextBackupQuery(clusterDir, out, delayMs);
@@ -379,6 +392,7 @@ public class ClusterTool
      * @param out              to print the output to.
      * @param serviceMarkFiles to query.
      */
+    @Impure
     public static void describe(final PrintStream out, final ClusterMarkFile[] serviceMarkFiles)
     {
         BACKWARD_COMPATIBLE_OPERATIONS.describe(out, serviceMarkFiles);
@@ -392,6 +406,7 @@ public class ClusterTool
      * @return 0 if the node is an active leader in a closed election, 1 if not,
      * -1 if the mark file does not exist.
      */
+    @Impure
     public static int isLeader(final PrintStream out, final File clusterDir)
     {
         return BACKWARD_COMPATIBLE_OPERATIONS.isLeader(clusterDir, out);
@@ -403,6 +418,8 @@ public class ClusterTool
      * @param clusterDir to check for if a mark file exists.
      * @return true if the cluster mark file exists.
      */
+    @SideEffectFree
+    @Impure
     public static boolean markFileExists(final File clusterDir)
     {
         return BACKWARD_COMPATIBLE_OPERATIONS.markFileExists(clusterDir);
@@ -416,6 +433,7 @@ public class ClusterTool
      * @param timeoutMs         to wait on the query completing.
      * @return true if successful.
      */
+    @Impure
     public static boolean listMembers(
         final ClusterMembership clusterMembership, final File clusterDir, final long timeoutMs)
     {
@@ -430,6 +448,7 @@ public class ClusterTool
      * @param clusterMembership to populate.
      * @return true if the query was successful.
      */
+    @Impure
     public static boolean queryClusterMembers(
         final ClusterMarkFile markFile, final long timeoutMs, final ClusterMembership clusterMembership)
     {
@@ -444,6 +463,7 @@ public class ClusterTool
      * @param clusterMembership to populate.
      * @return true if the query was successful.
      */
+    @Impure
     public static boolean queryClusterMembers(
         final ClusterNodeControlProperties controlProperties,
         final long timeoutMs,
@@ -458,6 +478,7 @@ public class ClusterTool
      * @param clusterDir where the cluster component is running.
      * @return the deadline time (MS) for the next cluster backup query, or {@link Aeron#NULL_VALUE} not available.
      */
+    @Impure
     public static long nextBackupQueryDeadlineMs(final File clusterDir)
     {
         return BACKWARD_COMPATIBLE_OPERATIONS.nextBackupQueryDeadlineMs(clusterDir);
@@ -469,6 +490,7 @@ public class ClusterTool
      * @param markFile for the cluster component.
      * @return the deadline time (MS) for the next cluster backup query, or {@link Aeron#NULL_VALUE} not available.
      */
+    @Impure
     public static long nextBackupQueryDeadlineMs(final ClusterMarkFile markFile)
     {
         return BACKWARD_COMPATIBLE_OPERATIONS.nextBackupQueryDeadlineMs(markFile);
@@ -481,6 +503,7 @@ public class ClusterTool
      * @param timeMs     to set for the next deadline.
      * @return true if successful, otherwise false.
      */
+    @Impure
     public static boolean nextBackupQueryDeadlineMs(final File clusterDir, final long timeMs)
     {
         return BACKWARD_COMPATIBLE_OPERATIONS.nextBackupQueryDeadlineMs(clusterDir, timeMs);
@@ -493,6 +516,7 @@ public class ClusterTool
      * @param timeMs   to set for the next deadline.
      * @return true if successful, otherwise false.
      */
+    @Impure
     public static boolean nextBackupQueryDeadlineMs(final ClusterMarkFile markFile, final long timeMs)
     {
         return BACKWARD_COMPATIBLE_OPERATIONS.nextBackupQueryDeadlineMs(markFile, timeMs);
@@ -505,6 +529,7 @@ public class ClusterTool
      * @param clusterDir where the cluster component is running.
      * @return true if the latest snapshot was invalidated.
      */
+    @Impure
     public static boolean invalidateLatestSnapshot(final PrintStream out, final File clusterDir)
     {
         return BACKWARD_COMPATIBLE_OPERATIONS.invalidateLatestSnapshot(clusterDir, out) == SUCCESS;
@@ -517,6 +542,7 @@ public class ClusterTool
      * @param clusterDir where the cluster is running.
      * @return <code>true</code> if the snapshot was successfully described <code>false</code> otherwise.
      */
+    @Impure
     public static boolean describeLatestConsensusModuleSnapshot(final PrintStream out, final File clusterDir)
     {
         return BACKWARD_COMPATIBLE_OPERATIONS.describeLatestConsensusModuleSnapshot(clusterDir, out, null) == SUCCESS;
@@ -530,6 +556,7 @@ public class ClusterTool
      * @param postConsensusImageDescriber describe the data after the snapshot used for extensions.
      * @return <code>true</code> if the snapshot was successfully described <code>false</code> otherwise.
      */
+    @Impure
     public static boolean describeLatestConsensusModuleSnapshot(
         final PrintStream out,
         final File clusterDir,
@@ -545,6 +572,7 @@ public class ClusterTool
      * @param out        to print the result of the operation.
      * @return true is the operation was successfully requested.
      */
+    @Impure
     public static boolean snapshot(final File clusterDir, final PrintStream out)
     {
         return BACKWARD_COMPATIBLE_OPERATIONS.snapshot(clusterDir, out) == SUCCESS;
@@ -557,6 +585,7 @@ public class ClusterTool
      * @param out        to print the result of the operation.
      * @return true is the operation was successfully requested.
      */
+    @Impure
     public static boolean suspend(final File clusterDir, final PrintStream out)
     {
         return BACKWARD_COMPATIBLE_OPERATIONS.suspend(clusterDir, out) == SUCCESS;
@@ -569,6 +598,7 @@ public class ClusterTool
      * @param out        to print the result of the operation.
      * @return true is the operation was successfully requested.
      */
+    @Impure
     public static boolean resume(final File clusterDir, final PrintStream out)
     {
         return BACKWARD_COMPATIBLE_OPERATIONS.resume(clusterDir, out) == SUCCESS;
@@ -581,6 +611,7 @@ public class ClusterTool
      * @param out        to print the result of the operation.
      * @return true is the operation was successfully requested.
      */
+    @Impure
     public static boolean shutdown(final File clusterDir, final PrintStream out)
     {
         return BACKWARD_COMPATIBLE_OPERATIONS.shutdown(clusterDir, out) == SUCCESS;
@@ -593,6 +624,7 @@ public class ClusterTool
      * @param out        to print the result of the operation.
      * @return true is the operation was successfully requested.
      */
+    @Impure
     public static boolean abort(final File clusterDir, final PrintStream out)
     {
         return BACKWARD_COMPATIBLE_OPERATIONS.abort(clusterDir, out) == SUCCESS;
@@ -604,6 +636,7 @@ public class ClusterTool
      * @param clusterDir where the cluster node is running.
      * @return entry or {@code null} if not found.
      */
+    @Impure
     static RecordingLog.Entry findLatestValidSnapshot(final File clusterDir)
     {
         return BACKWARD_COMPATIBLE_OPERATIONS.findLatestValidSnapshot(clusterDir);
@@ -615,6 +648,7 @@ public class ClusterTool
      * @param clusterDir where the cluster node is running.
      * @return control properties.
      */
+    @Impure
     static ClusterNodeControlProperties loadControlProperties(final File clusterDir)
     {
         return BACKWARD_COMPATIBLE_OPERATIONS.loadControlProperties(clusterDir);
@@ -630,6 +664,7 @@ public class ClusterTool
      *
      * @return a clone of Cluster Tool commands map
      */
+    @Impure
     public static Map<String, ClusterToolCommand> commands()
     {
         return new Object2ObjectHashMap<>(COMMANDS);

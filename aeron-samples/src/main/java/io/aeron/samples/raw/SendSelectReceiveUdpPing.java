@@ -15,6 +15,7 @@
  */
 package io.aeron.samples.raw;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.Configuration;
 import org.HdrHistogram.Histogram;
 import org.agrona.SystemUtil;
@@ -51,6 +52,7 @@ public class SendSelectReceiveUdpPing
      * @param args passed to the process.
      * @throws IOException if an error occurs with the channel.
      */
+    @Impure
     public static void main(final String[] args) throws IOException
     {
         if (SystemUtil.isWindows())
@@ -114,6 +116,7 @@ public class SendSelectReceiveUdpPing
         }
     }
 
+    @Impure
     private static void measureRoundTrip(
         final Histogram histogram,
         final InetSocketAddress sendAddress,

@@ -15,6 +15,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.Configuration;
 import org.agrona.SystemUtil;
 import org.agrona.concurrent.IdleStrategy;
@@ -87,6 +88,7 @@ public class SampleConfiguration
      *
      * @return a new {@link IdleStrategy} based on the {@link #IDLE_STRATEGY_NAME}.
      */
+    @Impure
     public static IdleStrategy newIdleStrategy()
     {
         return Configuration.agentIdleStrategy(IDLE_STRATEGY_NAME, null);

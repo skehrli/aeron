@@ -15,6 +15,8 @@
  */
 package io.aeron.driver.status;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.Aeron;
 import io.aeron.AeronCounters;
 import io.aeron.driver.MediaDriverVersion;
@@ -356,6 +358,7 @@ public enum SystemCounterDescriptor
      * @param id for the descriptor.
      * @return the descriptor if found otherwise null.
      */
+    @Impure
     public static SystemCounterDescriptor get(final int id)
     {
         return DESCRIPTOR_BY_ID_MAP.get(id);
@@ -364,6 +367,7 @@ public enum SystemCounterDescriptor
     private final int id;
     private final String label;
 
+    @Impure
     SystemCounterDescriptor(final int id, final String label)
     {
         this.id = id;
@@ -375,6 +379,7 @@ public enum SystemCounterDescriptor
      *
      * @return the unique identity for the system counter.
      */
+    @Pure
     public int id()
     {
         return id;
@@ -385,6 +390,7 @@ public enum SystemCounterDescriptor
      *
      * @return the human-readable label to identify a system counter.
      */
+    @Pure
     public String label()
     {
         return label;
@@ -396,6 +402,7 @@ public enum SystemCounterDescriptor
      * @param countersManager for managing the underlying storage.
      * @return a new counter for the enumerated descriptor.
      */
+    @Impure
     public AtomicCounter newCounter(final CountersManager countersManager)
     {
         final AtomicCounter counter =

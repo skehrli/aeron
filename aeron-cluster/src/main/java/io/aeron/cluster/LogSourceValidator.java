@@ -15,17 +15,21 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import static io.aeron.Aeron.NULL_VALUE;
 
 class LogSourceValidator
 {
     private final ClusterBackup.SourceType sourceType;
 
+    @SideEffectFree
     LogSourceValidator(final ClusterBackup.SourceType sourceType)
     {
         this.sourceType = sourceType;
     }
 
+    @Pure
     boolean isAcceptable(final long leaderMemberId, final long memberId)
     {
         switch (sourceType)

@@ -15,6 +15,9 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.logbuffer.ControlledFragmentHandler;
 import io.aeron.logbuffer.Header;
 import org.agrona.DirectBuffer;
@@ -51,6 +54,8 @@ public class ControlledFragmentAssembler implements ControlledFragmentHandler
      *
      * @param delegate onto which whole messages are forwarded.
      */
+    @SideEffectFree
+    @Impure
     public ControlledFragmentAssembler(final ControlledFragmentHandler delegate)
     {
         this(delegate, 0, false);
@@ -62,6 +67,8 @@ public class ControlledFragmentAssembler implements ControlledFragmentHandler
      * @param delegate            onto which whole messages are forwarded.
      * @param initialBufferLength to be used for each session.
      */
+    @SideEffectFree
+    @Impure
     public ControlledFragmentAssembler(final ControlledFragmentHandler delegate, final int initialBufferLength)
     {
         this(delegate, initialBufferLength, false);
@@ -74,6 +81,7 @@ public class ControlledFragmentAssembler implements ControlledFragmentHandler
      * @param initialBufferLength to be used for each session.
      * @param isDirectByteBuffer  is the underlying buffer to be a direct {@link java.nio.ByteBuffer}?
      */
+    @SideEffectFree
     public ControlledFragmentAssembler(
         final ControlledFragmentHandler delegate, final int initialBufferLength, final boolean isDirectByteBuffer)
     {
@@ -87,6 +95,7 @@ public class ControlledFragmentAssembler implements ControlledFragmentHandler
      *
      * @return the delegate unto which assembled messages are delegated.
      */
+    @Pure
     public ControlledFragmentHandler delegate()
     {
         return delegate;
@@ -97,6 +106,7 @@ public class ControlledFragmentAssembler implements ControlledFragmentHandler
      *
      * @return true if the underlying buffer used to assemble fragments is a direct {@link java.nio.ByteBuffer}
      */
+    @Pure
     public boolean isDirectByteBuffer()
     {
         return isDirectByteBuffer;
@@ -111,6 +121,7 @@ public class ControlledFragmentAssembler implements ControlledFragmentHandler
      * @param header representing the metadata for the data.
      * @return {@link io.aeron.logbuffer.ControlledFragmentHandler.Action} to be taken after processing fragment.
      */
+    @Impure
     public Action onFragment(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {
         final byte flags = header.flags();
@@ -175,6 +186,7 @@ public class ControlledFragmentAssembler implements ControlledFragmentHandler
      * @param sessionId to have its buffer freed
      * @return true if a buffer has been freed otherwise false.
      */
+    @Impure
     public boolean freeSessionBuffer(final int sessionId)
     {
         return null != builderBySessionIdMap.remove(sessionId);
@@ -183,11 +195,13 @@ public class ControlledFragmentAssembler implements ControlledFragmentHandler
     /**
      * Clear down the cache of buffers by session for reassembling messages.
      */
+    @Impure
     public void clear()
     {
         builderBySessionIdMap.clear();
     }
 
+    @Impure
     private BufferBuilder getBufferBuilder(final int sessionId)
     {
         BufferBuilder bufferBuilder = builderBySessionIdMap.get(sessionId);

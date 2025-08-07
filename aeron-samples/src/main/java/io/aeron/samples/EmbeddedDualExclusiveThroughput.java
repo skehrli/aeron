@@ -15,6 +15,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.*;
 import io.aeron.driver.MediaDriver;
 import io.aeron.logbuffer.BufferClaim;
@@ -56,6 +57,7 @@ public class EmbeddedDualExclusiveThroughput
      * @param args passed to the process.
      * @throws InterruptedException if the thread sleep delay is interrupted.
      */
+    @Impure
     @SuppressWarnings("MethodLength")
     public static void main(final String[] args) throws InterruptedException
     {
@@ -165,6 +167,7 @@ public class EmbeddedDualExclusiveThroughput
         }
     }
 
+    @Impure
     private static void printRate(
         final double messagesPerSec, final double bytesPerSec, final long totalFragments, final long totalBytes)
     {

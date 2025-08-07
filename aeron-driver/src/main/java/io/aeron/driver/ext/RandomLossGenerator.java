@@ -15,6 +15,7 @@
  */
 package io.aeron.driver.ext;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import java.net.InetSocketAddress;
@@ -33,6 +34,7 @@ public class RandomLossGenerator implements LossGenerator
      *
      * @param lossRate for generating loss.
      */
+    @Impure
     public RandomLossGenerator(final double lossRate)
     {
         this(lossRate, -1);
@@ -44,6 +46,7 @@ public class RandomLossGenerator implements LossGenerator
      * @param lossRate for generating loss.
      * @param lossSeed for random seeding.
      */
+    @Impure
     public RandomLossGenerator(final double lossRate, final long lossSeed)
     {
         this.random = -1 == lossSeed ? new Random() : new Random(lossSeed);
@@ -53,6 +56,7 @@ public class RandomLossGenerator implements LossGenerator
     /**
      * {@inheritDoc}
      */
+    @Impure
     public boolean shouldDropFrame(final InetSocketAddress address, final UnsafeBuffer buffer, final int length)
     {
         return random.nextDouble() <= lossRate;

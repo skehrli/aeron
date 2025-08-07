@@ -15,6 +15,8 @@
  */
 package io.aeron.config.validation;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.config.ConfigInfo;
 import io.aeron.config.DefaultType;
 import io.aeron.config.ExpectedCConfig;
@@ -27,6 +29,7 @@ import java.util.regex.Pattern;
 
 final class Validator
 {
+    @Impure
     static ValidationReport validate(
         final Collection<ConfigInfo> configInfoCollection,
         final String sourceDir)
@@ -37,12 +40,15 @@ final class Validator
     private final String sourceDir;
     private final ValidationReport report;
 
+    @SideEffectFree
+    @Impure
     private Validator(final String sourceDir)
     {
         this.sourceDir = sourceDir;
         this.report = new ValidationReport();
     }
 
+    @Impure
     private Validator validate(final Collection<ConfigInfo> configInfoCollection)
     {
         configInfoCollection.forEach(this::validateCExpectations);
@@ -54,11 +60,13 @@ final class Validator
         return this;
     }
 
+    @Impure
     private void validateCExpectations(final ConfigInfo configInfo)
     {
         report.addEntry(configInfo, this::validateCEnvVar, this::validateCDefault);
     }
 
+    @Impure
     private void validateCEnvVar(final Validation validation, final ExpectedCConfig c)
     {
         if (Objects.isNull(c.envVarFieldName))
@@ -81,6 +89,7 @@ final class Validator
         }
     }
 
+    @Impure
     private void validateCDefault(final Validation validation, final ExpectedCConfig c)
     {
         if (Objects.isNull(c.defaultFieldName))
@@ -133,6 +142,7 @@ final class Validator
         }
     }
 
+    @Impure
     private void validateCDefaultString(
         final Validation validation,
         final ExpectedCConfig c,
@@ -156,6 +166,7 @@ final class Validator
         }
     }
 
+    @Impure
     private void validateCDefaultBoolean(
         final Validation validation,
         final ExpectedCConfig c,
@@ -176,6 +187,7 @@ final class Validator
         }
     }
 
+    @Impure
     private void validateCDefaultNumeric(
         final Validation validation,
         final ExpectedCConfig c,

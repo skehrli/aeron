@@ -15,6 +15,7 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.Strings;
 import org.agrona.concurrent.Agent;
 import org.agrona.concurrent.CompositeAgent;
@@ -25,18 +26,21 @@ class NamedCompositeAgent extends CompositeAgent
 {
     private final String name;
 
+    @Impure
     NamedCompositeAgent(final String name, final Agent... agents)
     {
         super(agents);
         this.name = name;
     }
 
+    @Impure
     NamedCompositeAgent(final String name, final List<? extends Agent> agents)
     {
         super(agents);
         this.name = name;
     }
 
+    @Impure
     public String roleName()
     {
         final String prefix = Strings.isEmpty(name) ? "" : name + " ";

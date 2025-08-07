@@ -15,6 +15,7 @@
  */
 package io.aeron.logbuffer;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import static io.aeron.logbuffer.FrameDescriptor.FRAME_ALIGNMENT;
@@ -42,6 +43,7 @@ public class TermBlockScanner
      * @param limitOffset at which the scan should stop.
      * @return the offset at which the scan terminated.
      */
+    @Impure
     public static int scan(final UnsafeBuffer termBuffer, final int termOffset, final int limitOffset)
     {
         int offset = termOffset;

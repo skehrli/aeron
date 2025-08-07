@@ -15,6 +15,7 @@
  */
 package io.aeron.logbuffer;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import java.nio.channels.FileChannel;
@@ -37,6 +38,7 @@ public interface RawBlockHandler
      * @param sessionId   of the stream of fragments.
      * @param termId      of the stream of fragments.
      */
+    @SideEffectFree
     void onBlock(
         FileChannel fileChannel,
         long fileOffset,

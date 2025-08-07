@@ -15,6 +15,8 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.MutableDirectBuffer;
 
 import java.time.ZoneId;
@@ -32,10 +34,12 @@ final class CommonEventDissector
 {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = ofPattern("uuuu-MM-dd HH:mm:ss.SSSZ");
 
+    @SideEffectFree
     private CommonEventDissector()
     {
     }
 
+    @Impure
     static void dissectLogStartMessage(
         final long timestampNs, final long timestampMs, final ZoneId zone, final StringBuilder builder)
     {
@@ -44,6 +48,7 @@ final class CommonEventDissector
             .append(DATE_TIME_FORMATTER.format(ofInstant(ofEpochMilli(timestampMs), zone)));
     }
 
+    @Impure
     static int dissectLogHeader(
         final String context,
         final Enum<?> code,
@@ -75,6 +80,7 @@ final class CommonEventDissector
         return encodedLength;
     }
 
+    @Impure
     static int dissectSocketAddress(final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
         int encodedLength = 0;
@@ -88,6 +94,7 @@ final class CommonEventDissector
         return encodedLength;
     }
 
+    @Impure
     static int dissectInetAddress(final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
         int encodedLength = 0;

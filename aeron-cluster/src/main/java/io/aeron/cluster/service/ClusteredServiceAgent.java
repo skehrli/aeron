@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster.service;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.*;
 import io.aeron.archive.client.AeronArchive;
 import io.aeron.archive.client.ArchiveException;
@@ -67,6 +70,7 @@ abstract class ClusteredServiceAgentHotFields extends ClusteredServiceAgentLhsPa
     static final int LIFECYCLE_CALLBACK_ON_ROLE_CHANGE = 3;
     static final int LIFECYCLE_CALLBACK_DO_BACKGROUND_WORK = 4;
 
+    @Pure
     static String lifecycleName(final int activeLifecycleCallback)
     {
         switch (activeLifecycleCallback)
@@ -147,6 +151,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
     private TimeUnit timeUnit = null;
     private long requestedAckPosition = NULL_POSITION;
 
+    @Impure
     ClusteredServiceAgent(final ClusteredServiceContainer.Context ctx)
     {
         logAdapter = new BoundedLogAdapter(this, ctx.logFragmentLimit());
@@ -172,6 +177,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
             CLUSTER_ACTION_FLAGS_DEFAULT;
     }
 
+    @Impure
     public void onStart()
     {
         closeHandlerRegistrationId = aeron.addCloseHandler(this::abort);
@@ -184,6 +190,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         isServiceActive = true;
     }
 
+    @Impure
     public void onClose()
     {
         aeron.removeCloseHandler(closeHandlerRegistrationId);
@@ -223,6 +230,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         ctx.close();
     }
 
+    @Impure
     public int doWork()
     {
         int workCount = 0;
@@ -259,46 +267,55 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         return workCount;
     }
 
+    @Impure
     public String roleName()
     {
         return ctx.serviceName();
     }
 
+    @Pure
     public Cluster.Role role()
     {
         return role;
     }
 
+    @Pure
     public int memberId()
     {
         return memberId;
     }
 
+    @Pure
     public Aeron aeron()
     {
         return aeron;
     }
 
+    @Pure
     public ClusteredServiceContainer.Context context()
     {
         return ctx;
     }
 
+    @Impure
     public ClientSession getClientSession(final long clusterSessionId)
     {
         return sessionByIdMap.get(clusterSessionId);
     }
 
+    @Pure
     public Collection<ClientSession> clientSessions()
     {
         return unmodifiableClientSessions;
     }
 
+    @Impure
     public void forEachClientSession(final Consumer<? super ClientSession> action)
     {
         sessions.forEach(action);
     }
 
+    @Impure
     public boolean closeClientSession(final long clusterSessionId)
     {
         checkForValidInvocation();
@@ -329,21 +346,25 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         return false;
     }
 
+    @Pure
     public TimeUnit timeUnit()
     {
         return timeUnit;
     }
 
+    @Pure
     public long time()
     {
         return clusterTime;
     }
 
+    @Pure
     public long logPosition()
     {
         return logPosition;
     }
 
+    @Impure
     public boolean scheduleTimer(final long correlationId, final long deadline)
     {
         checkForValidInvocation();
@@ -351,6 +372,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         return consensusModuleProxy.scheduleTimer(correlationId, deadline);
     }
 
+    @Impure
     public boolean cancelTimer(final long correlationId)
     {
         checkForValidInvocation();
@@ -358,6 +380,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         return consensusModuleProxy.cancelTimer(correlationId);
     }
 
+    @Impure
     public long offer(final DirectBuffer buffer, final int offset, final int length)
     {
         checkForValidInvocation();
@@ -366,6 +389,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         return consensusModuleProxy.offer(headerBuffer, 0, SESSION_HEADER_LENGTH, buffer, offset, length);
     }
 
+    @Impure
     public long offer(final DirectBufferVector[] vectors)
     {
         checkForValidInvocation();
@@ -375,6 +399,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         return consensusModuleProxy.offer(vectors);
     }
 
+    @Impure
     public long tryClaim(final int length, final BufferClaim bufferClaim)
     {
         checkForValidInvocation();
@@ -383,22 +408,26 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         return consensusModuleProxy.tryClaim(length + SESSION_HEADER_LENGTH, bufferClaim, headerBuffer);
     }
 
+    @Pure
     public IdleStrategy idleStrategy()
     {
         return this;
     }
 
+    @Impure
     public void reset()
     {
         idleStrategy.reset();
     }
 
+    @Impure
     public void idle()
     {
         idleStrategy.idle();
         doIdleWork();
     }
 
+    @Impure
     public void idle(final int workCount)
     {
         idleStrategy.idle(workCount);
@@ -408,6 +437,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         }
     }
 
+    @Impure
     private void doIdleWork()
     {
         if (Thread.currentThread().isInterrupted())
@@ -425,6 +455,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         }
     }
 
+    @Impure
     void onJoinLog(
         final long logPosition,
         final long maxLogPosition,
@@ -447,16 +478,19 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
             logChannel);
     }
 
+    @Impure
     void onServiceTerminationPosition(final long logPosition)
     {
         terminationPosition = logPosition;
     }
 
+    @Impure
     void onRequestServiceAck(final long logPosition)
     {
         requestedAckPosition = logPosition;
     }
 
+    @Impure
     void onSessionMessage(
         final long logPosition,
         final long clusterSessionId,
@@ -473,6 +507,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         service.onSessionMessage(clientSession, timestamp, buffer, offset, length, header);
     }
 
+    @Impure
     void onTimerEvent(final long logPosition, final long correlationId, final long timestamp)
     {
         this.logPosition = logPosition;
@@ -480,6 +515,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         service.onTimerEvent(correlationId, timestamp);
     }
 
+    @Impure
     void onSessionOpen(
         final long leadershipTermId,
         final long logPosition,
@@ -510,6 +546,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         service.onSessionOpen(session, timestamp);
     }
 
+    @Impure
     void onSessionClose(
         final long leadershipTermId,
         final long logPosition,
@@ -543,6 +580,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         }
     }
 
+    @Impure
     void onServiceAction(
         final long leadershipTermId,
         final long logPosition,
@@ -555,6 +593,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         executeAction(action, logPosition, leadershipTermId, flags);
     }
 
+    @Impure
     void onNewLeadershipTermEvent(
         final long leadershipTermId,
         final long logPosition,
@@ -589,6 +628,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
             appVersion);
     }
 
+    @Impure
     void addSession(
         final long clusterSessionId,
         final int responseStreamId,
@@ -601,6 +641,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         addSession(session);
     }
 
+    @Impure
     private void addSession(final ContainerClientSession session)
     {
         final long clusterSessionId = session.id();
@@ -627,11 +668,13 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         }
     }
 
+    @Impure
     void handleError(final Throwable ex)
     {
         ctx.countedErrorHandler().onError(ex);
     }
 
+    @Impure
     long offer(
         final long clusterSessionId,
         final Publication publication,
@@ -658,6 +701,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         return publication.offer(headerBuffer, 0, SESSION_HEADER_LENGTH, buffer, offset, length, null);
     }
 
+    @Impure
     long offer(final long clusterSessionId, final Publication publication, final DirectBufferVector[] vectors)
     {
         checkForValidInvocation();
@@ -681,6 +725,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         return publication.offer(vectors, null);
     }
 
+    @Impure
     long tryClaim(
         final long clusterSessionId,
         final Publication publication,
@@ -721,6 +766,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         return offset;
     }
 
+    @Impure
     private void role(final Role newRole)
     {
         if (newRole != role)
@@ -738,6 +784,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         }
     }
 
+    @Impure
     private void recoverState(final CountersReader counters)
     {
         final int recoveryCounterId = awaitRecoveryCounter(counters);
@@ -770,6 +817,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         }
     }
 
+    @Impure
     private int awaitRecoveryCounter(final CountersReader counters)
     {
         idleStrategy.reset();
@@ -783,6 +831,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         return counterId;
     }
 
+    @Impure
     private void closeLog()
     {
         logPosition = Math.max(logAdapter.image().position(), logPosition);
@@ -791,6 +840,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         role(Role.FOLLOWER);
     }
 
+    @Impure
     private void disconnectEgress(final CountedErrorHandler errorHandler)
     {
         for (int i = 0, size = sessions.size(); i < size; i++)
@@ -799,6 +849,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         }
     }
 
+    @Impure
     private void joinActiveLog(final ActiveLogEvent activeLog)
     {
         if (Role.LEADER != activeLog.role)
@@ -862,6 +913,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         role(activeLog.role);
     }
 
+    @Impure
     private Image awaitImage(final int sessionId, final Subscription subscription)
     {
         idleStrategy.reset();
@@ -874,6 +926,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         return image;
     }
 
+    @Impure
     private ReadableCounter awaitCommitPositionCounter(final CountersReader counters, final int clusterId)
     {
         idleStrategy.reset();
@@ -887,6 +940,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         return new ReadableCounter(counters, counters.getCounterRegistrationId(counterId), counterId);
     }
 
+    @Impure
     private void loadSnapshot(final long recordingId)
     {
         try (AeronArchive archive = AeronArchive.connect(ctx.archiveContext().clone()))
@@ -905,6 +959,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         }
     }
 
+    @Impure
     private void loadState(final Image image, final AeronArchive archive)
     {
         final ServiceSnapshotLoader snapshotLoader = new ServiceSnapshotLoader(image, this);
@@ -939,6 +994,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         timeUnit = snapshotLoader.timeUnit();
     }
 
+    @Impure
     private long onTakeSnapshot(final long logPosition, final long leadershipTermId)
     {
         try (AeronArchive archive = AeronArchive.connect(ctx.archiveContext().clone());
@@ -974,6 +1030,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         }
     }
 
+    @Impure
     private void awaitRecordingComplete(
         final long recordingId,
         final long position,
@@ -994,6 +1051,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         }
     }
 
+    @Impure
     private void snapshotState(
         final ExclusivePublication publication, final long logPosition, final long leadershipTermId)
     {
@@ -1010,6 +1068,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         snapshotTaker.markEnd(SNAPSHOT_TYPE_ID, logPosition, leadershipTermId, 0, timeUnit, ctx.appVersion());
     }
 
+    @Impure
     private void executeAction(
         final ClusterAction action,
         final long logPosition,
@@ -1042,11 +1101,13 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         }
     }
 
+    @Pure
     private boolean shouldSnapshot(final int flags)
     {
         return CLUSTER_ACTION_FLAGS_DEFAULT == flags || 0 != (flags & standbySnapshotFlags);
     }
 
+    @Impure
     private int awaitRecordingCounter(final int sessionId, final CountersReader counters, final AeronArchive archive)
     {
         idleStrategy.reset();
@@ -1062,6 +1123,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         return counterId;
     }
 
+    @Impure
     private boolean checkForClockTick(final long nowNs)
     {
         if (isAbort || aeron.isClosed())
@@ -1105,6 +1167,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         return false;
     }
 
+    @Impure
     private int pollServiceAdapter()
     {
         int workCount = 0;
@@ -1149,6 +1212,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         return workCount;
     }
 
+    @Impure
     private void terminate(final boolean isTerminationExpected)
     {
         isServiceActive = false;
@@ -1188,6 +1252,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         throw new ClusterTerminationException(isTerminationExpected);
     }
 
+    @Impure
     private void checkForValidInvocation()
     {
         if (LIFECYCLE_CALLBACK_NONE != activeLifecycleCallback)
@@ -1197,6 +1262,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         }
     }
 
+    @Impure
     private void abort()
     {
         isAbort = true;
@@ -1215,6 +1281,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         }
     }
 
+    @Impure
     private void counterUnavailable(final CountersReader countersReader, final long registrationId, final int counterId)
     {
         final ReadableCounter commitPosition = this.commitPosition;
@@ -1226,6 +1293,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         }
     }
 
+    @Impure
     private int invokeBackgroundWork(final long nowNs)
     {
         activeLifecycleCallback = LIFECYCLE_CALLBACK_DO_BACKGROUND_WORK;
@@ -1239,6 +1307,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         }
     }
 
+    @Impure
     private void runTerminationHook()
     {
         try
@@ -1251,6 +1320,7 @@ final class ClusteredServiceAgent extends ClusteredServiceAgentRhsPadding implem
         }
     }
 
+    @SideEffectFree
     private void logAck(
         final int memberId,
         final long logPosition,

@@ -15,6 +15,7 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.DeadlineTimerWheel;
 import org.agrona.collections.Long2LongHashMap;
 
@@ -43,6 +44,7 @@ final class WheelTimerService extends DeadlineTimerWheel implements DeadlineTime
     private final Long2LongHashMap correlationIdByTimerIdMap = new Long2LongHashMap(Long.MAX_VALUE);
     private boolean isAbort;
 
+    @Impure
     WheelTimerService(
         final TimerService.TimerHandler timerHandler,
         final TimeUnit timeUnit,
@@ -54,6 +56,7 @@ final class WheelTimerService extends DeadlineTimerWheel implements DeadlineTime
         this.timerHandler = Objects.requireNonNull(timerHandler);
     }
 
+    @Impure
     public int poll(final long now)
     {
         int expired = 0;
@@ -73,6 +76,7 @@ final class WheelTimerService extends DeadlineTimerWheel implements DeadlineTime
         return expired;
     }
 
+    @Impure
     public boolean onTimerExpiry(final TimeUnit timeUnit, final long now, final long timerId)
     {
         final long correlationId = correlationIdByTimerIdMap.get(timerId);
@@ -92,6 +96,7 @@ final class WheelTimerService extends DeadlineTimerWheel implements DeadlineTime
         }
     }
 
+    @Impure
     public void scheduleTimerForCorrelationId(final long correlationId, final long deadline)
     {
         cancelTimerByCorrelationId(correlationId);
@@ -101,6 +106,7 @@ final class WheelTimerService extends DeadlineTimerWheel implements DeadlineTime
         correlationIdByTimerIdMap.put(timerId, correlationId);
     }
 
+    @Impure
     public boolean cancelTimerByCorrelationId(final long correlationId)
     {
         final long timerId = timerIdByCorrelationIdMap.remove(correlationId);
@@ -115,6 +121,7 @@ final class WheelTimerService extends DeadlineTimerWheel implements DeadlineTime
         return false;
     }
 
+    @Impure
     public void snapshot(final TimerSnapshotTaker snapshotTaker)
     {
         final Long2LongHashMap.EntryIterator iter = timerIdByCorrelationIdMap.entrySet().iterator();
@@ -130,6 +137,7 @@ final class WheelTimerService extends DeadlineTimerWheel implements DeadlineTime
         }
     }
 
+    @Impure
     public void currentTime(final long now)
     {
         currentTickTime(now);

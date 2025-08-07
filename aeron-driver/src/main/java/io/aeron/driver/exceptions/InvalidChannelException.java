@@ -15,6 +15,7 @@
  */
 package io.aeron.driver.exceptions;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.ErrorCode;
 import io.aeron.exceptions.ControlProtocolException;
 
@@ -30,6 +31,7 @@ public class InvalidChannelException extends ControlProtocolException
      *
      * @param message to detail the exception.
      */
+    @Impure
     public InvalidChannelException(final String message)
     {
         super(ErrorCode.INVALID_CHANNEL, message);
@@ -40,6 +42,7 @@ public class InvalidChannelException extends ControlProtocolException
      *
      * @param cause of the exception.
      */
+    @Impure
     public InvalidChannelException(final Exception cause)
     {
         super(ErrorCode.INVALID_CHANNEL, cause);
@@ -51,6 +54,7 @@ public class InvalidChannelException extends ControlProtocolException
      * @param message to detail the exception.
      * @param cause of the exception.
      */
+    @Impure
     public InvalidChannelException(final String message, final Exception cause)
     {
         super(ErrorCode.INVALID_CHANNEL, message, cause);

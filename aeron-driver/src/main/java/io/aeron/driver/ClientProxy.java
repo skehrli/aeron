@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.ErrorCode;
 import io.aeron.command.*;
@@ -47,6 +49,7 @@ final class ClientProxy
     private final StaticCounterFlyweight staticCounter = new StaticCounterFlyweight();
     private final NextAvailableSessionIdFlyweight nextSessionId = new NextAvailableSessionIdFlyweight();
 
+    @Impure
     ClientProxy(final BroadcastTransmitter transmitter)
     {
         this.transmitter = transmitter;
@@ -64,6 +67,7 @@ final class ClientProxy
         nextSessionId.wrap(buffer, 0);
     }
 
+    @Impure
     void onError(final long correlationId, final ErrorCode errorCode, final String errorMessage)
     {
         errorResponse
@@ -74,6 +78,7 @@ final class ClientProxy
         transmit(ON_ERROR, buffer, 0, errorResponse.length());
     }
 
+    @Impure
     void onPublicationErrorFrame(
         final long registrationId,
         final long destinationRegistrationId, final int sessionId,
@@ -98,6 +103,7 @@ final class ClientProxy
         transmit(ON_PUBLICATION_ERROR, buffer, 0, publicationErrorFrame.length());
     }
 
+    @Impure
     void onAvailableImage(
         final long correlationId,
         final int streamId,
@@ -119,6 +125,7 @@ final class ClientProxy
         transmit(ON_AVAILABLE_IMAGE, buffer, 0, imageReady.length());
     }
 
+    @Impure
     void onPublicationReady(
         final long correlationId,
         final long registrationId,
@@ -142,6 +149,7 @@ final class ClientProxy
         transmit(msgTypeId, buffer, 0, publicationReady.length());
     }
 
+    @Impure
     void onSubscriptionReady(final long correlationId, final int channelStatusCounterId)
     {
         subscriptionReady
@@ -151,6 +159,7 @@ final class ClientProxy
         transmit(ON_SUBSCRIPTION_READY, buffer, 0, SubscriptionReadyFlyweight.LENGTH);
     }
 
+    @Impure
     void operationSucceeded(final long correlationId)
     {
         operationSucceeded.correlationId(correlationId);
@@ -158,6 +167,7 @@ final class ClientProxy
         transmit(ON_OPERATION_SUCCESS, buffer, 0, OperationSucceededFlyweight.LENGTH);
     }
 
+    @Impure
     void onUnavailableImage(
         final long correlationId, final long subscriptionRegistrationId, final int streamId, final String channel)
     {
@@ -170,6 +180,7 @@ final class ClientProxy
         transmit(ON_UNAVAILABLE_IMAGE, buffer, 0, imageMessage.length());
     }
 
+    @Impure
     void onCounterReady(final long correlationId, final int counterId)
     {
         counterUpdate
@@ -179,6 +190,7 @@ final class ClientProxy
         transmit(ON_COUNTER_READY, buffer, 0, CounterUpdateFlyweight.LENGTH);
     }
 
+    @Impure
     void onStaticCounter(final long correlationId, final int counterId)
     {
         staticCounter
@@ -188,6 +200,7 @@ final class ClientProxy
         transmit(ON_STATIC_COUNTER, buffer, 0, StaticCounterFlyweight.LENGTH);
     }
 
+    @Impure
     void onUnavailableCounter(final long registrationId, final int counterId)
     {
         counterUpdate
@@ -197,6 +210,7 @@ final class ClientProxy
         transmit(ON_UNAVAILABLE_COUNTER, buffer, 0, CounterUpdateFlyweight.LENGTH);
     }
 
+    @Impure
     void onClientTimeout(final long clientId)
     {
         clientTimeout.clientId(clientId);
@@ -204,6 +218,7 @@ final class ClientProxy
         transmit(ON_CLIENT_TIMEOUT, buffer, 0, ClientTimeoutFlyweight.LENGTH);
     }
 
+    @Impure
     void onNextAvailableSessionId(final long correlationId, final int sessionId)
     {
         nextSessionId
@@ -213,6 +228,7 @@ final class ClientProxy
         transmit(ON_NEXT_AVAILABLE_SESSION_ID, buffer, 0, NextAvailableSessionIdFlyweight.LENGTH);
     }
 
+    @Impure
     private void transmit(final int msgTypeId, final DirectBuffer buffer, final int index, final int length)
     {
         transmitter.transmit(msgTypeId, buffer, index, length);
@@ -221,6 +237,7 @@ final class ClientProxy
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "ClientProxy{}";

@@ -15,6 +15,8 @@
  */
 package io.aeron.samples.echo;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.Aeron;
 import io.aeron.CommonContext;
 import io.aeron.driver.MediaDriver;
@@ -42,6 +44,7 @@ public final class ProvisioningServerMain implements Agent, AutoCloseable
     private final AgentRunner runner;
     private volatile ObjectName beanName = null;
 
+    @Impure
     private ProvisioningServerMain(final MediaDriver driver, final Aeron aeron)
     {
         this.driver = driver;
@@ -55,6 +58,7 @@ public final class ProvisioningServerMain implements Agent, AutoCloseable
      *
      * @param args command line arguments.
      */
+    @Impure
     @SuppressWarnings("try")
     public static void main(final String[] args)
     {
@@ -73,6 +77,7 @@ public final class ProvisioningServerMain implements Agent, AutoCloseable
      * @param context Aeron client context to connect to the local media driver.
      * @return new ProvisionServerMain instance.
      */
+    @Impure
     public static ProvisioningServerMain launch(final Aeron.Context context)
     {
         MediaDriver driver = null;
@@ -92,6 +97,7 @@ public final class ProvisioningServerMain implements Agent, AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onStart()
     {
         try
@@ -112,6 +118,7 @@ public final class ProvisioningServerMain implements Agent, AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int doWork()
     {
         return provisioning.doWork();
@@ -120,6 +127,7 @@ public final class ProvisioningServerMain implements Agent, AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String roleName()
     {
         return "EchoProvisioningServer";
@@ -128,6 +136,7 @@ public final class ProvisioningServerMain implements Agent, AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         if (null != beanName)

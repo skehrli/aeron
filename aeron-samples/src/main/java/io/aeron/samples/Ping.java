@@ -15,6 +15,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.Image;
 import io.aeron.ImageFragmentAssembler;
@@ -69,6 +70,7 @@ public class Ping
      * @param args passed to the process.
      * @throws InterruptedException if the thread is interrupted.
      */
+    @Impure
     public static void main(final String[] args) throws InterruptedException
     {
         final MediaDriver driver = EMBEDDED_MEDIA_DRIVER ? MediaDriver.launchEmbedded() : null;
@@ -127,6 +129,7 @@ public class Ping
         CloseHelper.close(driver);
     }
 
+    @Impure
     private static void roundTripMessages(
         final FragmentHandler fragmentHandler,
         final Publication publication,
@@ -159,6 +162,7 @@ public class Ping
         }
     }
 
+    @Impure
     private static void pongHandler(
         final DirectBuffer buffer,
         final int offset,
@@ -171,6 +175,7 @@ public class Ping
         HISTOGRAM.recordValue(rttNs);
     }
 
+    @Impure
     private static void availablePongImageHandler(final Image image)
     {
         final Subscription subscription = image.subscription();

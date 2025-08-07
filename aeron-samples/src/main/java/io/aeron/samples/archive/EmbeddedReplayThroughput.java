@@ -15,6 +15,7 @@
  */
 package io.aeron.samples.archive;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.*;
 import io.aeron.archive.Archive;
 import io.aeron.archive.ArchivingMediaDriver;
@@ -87,6 +88,7 @@ public class EmbeddedReplayThroughput extends EmbeddedReplayThroughputRhsPadding
      *
      * @param args passed to the process.
      */
+    @Impure
     public static void main(final String[] args)
     {
         loadPropertiesFiles(args);
@@ -121,6 +123,7 @@ public class EmbeddedReplayThroughput extends EmbeddedReplayThroughputRhsPadding
         }
     }
 
+    @Impure
     EmbeddedReplayThroughput()
     {
         final String archiveDirName = Archive.Configuration.archiveDirName();
@@ -144,6 +147,7 @@ public class EmbeddedReplayThroughput extends EmbeddedReplayThroughputRhsPadding
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         CloseHelper.closeAll(
@@ -154,6 +158,7 @@ public class EmbeddedReplayThroughput extends EmbeddedReplayThroughputRhsPadding
             () -> archivingMediaDriver.mediaDriver().context().deleteDirectory());
     }
 
+    @Impure
     void onMessage(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {
         final long count = buffer.getLong(offset);
@@ -165,6 +170,7 @@ public class EmbeddedReplayThroughput extends EmbeddedReplayThroughputRhsPadding
         messageCount++;
     }
 
+    @Impure
     private long makeRecording()
     {
         try (Publication publication = aeron.addExclusivePublication(CHANNEL, STREAM_ID))
@@ -237,6 +243,7 @@ public class EmbeddedReplayThroughput extends EmbeddedReplayThroughputRhsPadding
         }
     }
 
+    @Impure
     private void awaitRecordingComplete(final int counterId, final long position, final IdleStrategy idleStrategy)
     {
         final CountersReader counters = aeron.countersReader();
@@ -247,6 +254,7 @@ public class EmbeddedReplayThroughput extends EmbeddedReplayThroughputRhsPadding
         }
     }
 
+    @Impure
     private void replayRecording(final long recordingLength, final long recordingId)
     {
         try (Subscription subscription = aeronArchive.replay(
@@ -276,6 +284,7 @@ public class EmbeddedReplayThroughput extends EmbeddedReplayThroughputRhsPadding
         }
     }
 
+    @Impure
     private long findRecordingId(final String expectedChannel)
     {
         final MutableLong foundRecordingId = new MutableLong();

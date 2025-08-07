@@ -15,6 +15,8 @@
  */
 package io.aeron.driver.buffer;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.exceptions.AeronException;
 import io.aeron.exceptions.StorageSpaceException;
 import org.agrona.ErrorHandler;
@@ -57,6 +59,7 @@ public class FileStoreLogFactory implements LogFactory
      * @param errorHandler               to call when an error is encountered.
      * @param mappedBytesCounter         used to keep track of how many bytes are mapped by the driver.
      */
+    @Impure
     public FileStoreLogFactory(
         final String dataDirectoryName,
         final int filePageSize,
@@ -92,6 +95,7 @@ public class FileStoreLogFactory implements LogFactory
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
     public void close()
     {
     }
@@ -104,6 +108,7 @@ public class FileStoreLogFactory implements LogFactory
      * @param useSparseFiles   for the log buffer.
      * @return the newly allocated {@link RawLog}
      */
+    @Impure
     public RawLog newPublication(final long correlationId, final int termBufferLength, final boolean useSparseFiles)
     {
         return newInstance(publicationsDir, correlationId, termBufferLength, useSparseFiles);
@@ -117,11 +122,13 @@ public class FileStoreLogFactory implements LogFactory
      * @param useSparseFiles   for the log buffer.
      * @return the newly allocated {@link RawLog}
      */
+    @Impure
     public RawLog newImage(final long correlationId, final int termBufferLength, final boolean useSparseFiles)
     {
         return newInstance(imagesDir, correlationId, termBufferLength, useSparseFiles);
     }
 
+    @Impure
     private RawLog newInstance(
         final File rootDir,
         final long correlationId,
@@ -137,6 +144,7 @@ public class FileStoreLogFactory implements LogFactory
             location, useSparseFiles, logLength, termLength, filePageSize, errorHandler, mappedBytesCounter);
     }
 
+    @Impure
     private void checkStorage(final long logLength)
     {
         if (checkStorage)
@@ -161,6 +169,7 @@ public class FileStoreLogFactory implements LogFactory
         }
     }
 
+    @Impure
     private long getUsableSpace()
     {
         long usableSpace = 0;
@@ -177,6 +186,7 @@ public class FileStoreLogFactory implements LogFactory
         return usableSpace;
     }
 
+    @SideEffectFree
     private static File streamLocation(final File rootDir, final long correlationId)
     {
         final String fileName = correlationId + ".logbuffer";

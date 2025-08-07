@@ -15,6 +15,7 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Impure;
 import net.bytebuddy.asm.Advice;
 import org.agrona.DirectBuffer;
 
@@ -54,6 +55,7 @@ class CmdInterceptor
         CMD_IN_REMOVE_DESTINATION_BY_ID,
         CMD_IN_REJECT_IMAGE);
 
+    @Impure
     @SuppressWarnings("methodlength")
     @Advice.OnMethodEnter
     static void logCmd(final int msgTypeId, final DirectBuffer buffer, final int index, final int length)

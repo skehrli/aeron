@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package io.aeron.cluster.service;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 
 /**
  * Event to signal a change of active log to follow.
@@ -29,6 +31,7 @@ class ActiveLogEvent
     final Cluster.Role role;
     final String channel;
 
+    @SideEffectFree
     ActiveLogEvent(
         final long logPosition,
         final long maxLogPosition,
@@ -49,6 +52,7 @@ class ActiveLogEvent
         this.channel = channel;
     }
 
+    @Pure
     public String toString()
     {
         return "ActiveLogEvent{" +

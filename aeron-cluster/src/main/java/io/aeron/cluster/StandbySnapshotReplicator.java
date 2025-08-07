@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.ChannelUri;
 import io.aeron.Counter;
 import io.aeron.archive.client.AeronArchive;
@@ -49,6 +52,7 @@ class StandbySnapshotReplicator implements AutoCloseable
     private SnapshotReplicationEntry currentSnapshotToReplicate;
     private boolean isComplete = false;
 
+    @SideEffectFree
     StandbySnapshotReplicator(
         final int memberId,
         final AeronArchive archive,
@@ -71,6 +75,7 @@ class StandbySnapshotReplicator implements AutoCloseable
         this.snapshotCounter = snapshotCounter;
     }
 
+    @Impure
     static StandbySnapshotReplicator newInstance(
         final int memberId,
         final AeronArchive.Context archiveCtx,
@@ -96,6 +101,7 @@ class StandbySnapshotReplicator implements AutoCloseable
         return standbySnapshotReplicator;
     }
 
+    @Impure
     int poll(final long nowNs)
     {
         int workCount = 0;
@@ -185,6 +191,7 @@ class StandbySnapshotReplicator implements AutoCloseable
         return workCount;
     }
 
+    @Impure
     private ArrayList<SnapshotReplicationEntry> computeSnapshotsToReplicate()
     {
         final Map<String, List<RecordingLog.Entry>> snapshotsByEndpoint = filterByExistingRecordingLogEntries(
@@ -212,6 +219,7 @@ class StandbySnapshotReplicator implements AutoCloseable
         return orderedSnapshotToReplicate;
     }
 
+    @Pure
     private static int compareTo(final SnapshotReplicationEntry a, final SnapshotReplicationEntry b)
     {
         final int descendingOrderCompare = -Long.compare(a.logPosition, b.logPosition);
@@ -223,11 +231,13 @@ class StandbySnapshotReplicator implements AutoCloseable
         return a.endpoint.compareTo(b.endpoint);
     }
 
+    @Pure
     boolean isComplete()
     {
         return isComplete;
     }
 
+    @Impure
     void onSignal(
         final long controlSessionId,
         final long correlationId,
@@ -242,6 +252,7 @@ class StandbySnapshotReplicator implements AutoCloseable
         }
     }
 
+    @Impure
     public void close()
     {
         CloseHelper.quietClose(archive);
@@ -253,6 +264,7 @@ class StandbySnapshotReplicator implements AutoCloseable
         private final long logPosition;
         private final List<RecordingLog.Entry> recordingLogEntries = new ArrayList<>();
 
+        @Impure
         private SnapshotReplicationEntry(
             final String endpoint,
             final long logPosition,
@@ -264,6 +276,8 @@ class StandbySnapshotReplicator implements AutoCloseable
         }
     }
 
+    @SideEffectFree
+    @Impure
     private void logReplicationEnded(
         final String controlUri,
         final long srcRecordingId,
@@ -275,6 +289,7 @@ class StandbySnapshotReplicator implements AutoCloseable
             memberId, "STANDBY_SNAPSHOT", controlUri, srcRecordingId, dstRecordingId, position, hasSynced);
     }
 
+    @Impure
     private Map<String, List<RecordingLog.Entry>> filterByExistingRecordingLogEntries(
         final Map<String, List<RecordingLog.Entry>> standbySnapshotsByEndpoint)
     {

@@ -15,9 +15,16 @@
  */
 package io.aeron.config.validation;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.checker.mustcall.qual.NotOwning;
+import org.checkerframework.checker.calledmethods.qual.EnsuresCalledMethods;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.checker.mustcall.qual.Owning;
+import org.checkerframework.checker.mustcall.qual.InheritableMustCall;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
+@InheritableMustCall("close")
 class Validation
 {
     private boolean valid = false;
@@ -26,13 +33,17 @@ class Validation
 
     private ByteArrayOutputStream baOut;
 
+    @Owning
     private PrintStream psOut;
 
+    @Pure
     boolean isValid()
     {
         return valid;
     }
 
+    @EnsuresCalledMethods(value="this.psOut", methods="close")
+    @Impure
     void close()
     {
         if (this.psOut != null)
@@ -41,18 +52,22 @@ class Validation
         }
     }
 
+    @Impure
     void valid(final String message)
     {
         this.valid = true;
         this.message = message;
     }
 
+    @Impure
     void invalid(final String message)
     {
         this.valid = false;
         this.message = message;
     }
 
+    @NotOwning
+    @Impure
     PrintStream out()
     {
         if (this.psOut == null)
@@ -64,6 +79,7 @@ class Validation
         return psOut;
     }
 
+    @Impure
     void printOn(final PrintStream out)
     {
         out.println(" " + (this.valid ? "+" : "-") + " " + this.message);

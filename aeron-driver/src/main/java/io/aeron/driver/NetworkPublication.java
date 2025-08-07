@@ -15,6 +15,9 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.Aeron;
 import io.aeron.CommonContext;
 import io.aeron.driver.buffer.RawLog;
@@ -190,6 +193,7 @@ public final class NetworkPublication
     private final AtomicCounter publicationsRevoked;
     private final ReceiverLivenessTracker livenessTracker = new ReceiverLivenessTracker();
 
+    @Impure
     NetworkPublication(
         final long registrationId,
         final MediaDriver.Context ctx,
@@ -287,6 +291,7 @@ public final class NetworkPublication
     /**
      * {@inheritDoc}
      */
+    @Impure
     public boolean free()
     {
         return rawLog.free();
@@ -295,6 +300,7 @@ public final class NetworkPublication
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         CloseHelper.close(errorHandler, publisherPos);
@@ -322,6 +328,7 @@ public final class NetworkPublication
      *
      * @return this of the last status message a from a receiver.
      */
+    @Pure
     public long timeOfLastStatusMessageNs()
     {
         return timeOfLastStatusMessageNs;
@@ -332,6 +339,7 @@ public final class NetworkPublication
      *
      * @return channel URI string for this publication.
      */
+    @Impure
     public String channel()
     {
         return channelEndpoint.originalUriString();
@@ -342,6 +350,7 @@ public final class NetworkPublication
      *
      * @return session id allocated to this stream.
      */
+    @Pure
     public int sessionId()
     {
         return sessionId;
@@ -352,6 +361,7 @@ public final class NetworkPublication
      *
      * @return stream id within the channel.
      */
+    @Pure
     public int streamId()
     {
         return streamId;
@@ -363,6 +373,7 @@ public final class NetworkPublication
      * @param msg        that triggers the SETUP.
      * @param srcAddress of the source that triggers the SETUP.
      */
+    @Impure
     public void triggerSendSetupFrame(final StatusMessageFlyweight msg, final InetSocketAddress srcAddress)
     {
         if (!isEndOfStream)
@@ -381,6 +392,7 @@ public final class NetworkPublication
     /**
      * {@inheritDoc}
      */
+    @Pure
     public long subscribableRegistrationId()
     {
         return registrationId;
@@ -389,6 +401,7 @@ public final class NetworkPublication
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void addSubscriber(
         final SubscriptionLink subscriptionLink, final ReadablePosition position, final long nowNs)
     {
@@ -410,6 +423,7 @@ public final class NetworkPublication
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void removeSubscriber(final SubscriptionLink subscriptionLink, final ReadablePosition position)
     {
         spyPositions = ArrayUtil.remove(spyPositions, position);
@@ -436,6 +450,7 @@ public final class NetworkPublication
      * @param termOffset at which the loss begins.
      * @param length     of the loss.
      */
+    @Impure
     public void onNak(final int termId, final int termOffset, final int length)
     {
         senderNaksReceived.incrementRelease();
@@ -449,6 +464,7 @@ public final class NetworkPublication
      * @param srcAddress     that the setup message has come from.
      * @param conductorProxy to send messages back to the conductor.
      */
+    @Impure
     public void onStatusMessage(
         final StatusMessageFlyweight msg,
         final InetSocketAddress srcAddress,
@@ -516,6 +532,7 @@ public final class NetworkPublication
      * @param destinationRegistrationId registrationId of the relevant MDC destination or {@link Aeron#NULL_VALUE}
      * @param conductorProxy            to send messages back to the conductor.
      */
+    @Impure
     public void onError(
         final ErrorFlyweight msg,
         final InetSocketAddress srcAddress,
@@ -544,6 +561,7 @@ public final class NetworkPublication
      * @param msg        flyweight over the network packet.
      * @param srcAddress that the RTT message has come from.
      */
+    @Impure
     public void onRttMeasurement(final RttMeasurementFlyweight msg, final InetSocketAddress srcAddress)
     {
         if (RttMeasurementFlyweight.REPLY_FLAG == (msg.flags() & RttMeasurementFlyweight.REPLY_FLAG))
@@ -567,6 +585,7 @@ public final class NetworkPublication
         // handling of RTT measurements would be done in an else clause here.
     }
 
+    @Impure
     private int doSend(final ByteBuffer message)
     {
         if (isResponse)
@@ -589,6 +608,7 @@ public final class NetworkPublication
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void resend(final int termId, final int termOffset, final int length)
     {
         channelEndpoint.resendHook(sessionId, streamId, termId, termOffset, length);
@@ -641,6 +661,7 @@ public final class NetworkPublication
         }
     }
 
+    @Impure
     int send(final long nowNs)
     {
         final long senderPosition = this.senderPosition.get();
@@ -677,66 +698,79 @@ public final class NetworkPublication
         return bytesSent;
     }
 
+    @Pure
     SendChannelEndpoint channelEndpoint()
     {
         return channelEndpoint;
     }
 
+    @Pure
     RawLog rawLog()
     {
         return rawLog;
     }
 
+    @Impure
     int publisherLimitId()
     {
         return publisherLimit.id();
     }
 
+    @Pure
     long tag()
     {
         return tag;
     }
 
+    @Pure
     int termBufferLength()
     {
         return termBufferLength;
     }
 
+    @Pure
     int mtuLength()
     {
         return mtuLength;
     }
 
+    @Pure
     long registrationId()
     {
         return registrationId;
     }
 
+    @Pure
     boolean isExclusive()
     {
         return isExclusive;
     }
 
+    @Pure
     boolean spiesSimulateConnection()
     {
         return spiesSimulateConnection;
     }
 
+    @Pure
     int initialTermId()
     {
         return initialTermId;
     }
 
+    @Pure
     int startingTermId()
     {
         return startingTermId;
     }
 
+    @Pure
     int startingTermOffset()
     {
         return startingTermOffset;
     }
 
+    @Impure
     boolean isAcceptingSubscriptions()
     {
         return State.ACTIVE == state ||
@@ -748,6 +782,7 @@ public final class NetworkPublication
      *
      * @return 1 if the limit has been updated otherwise 0.
      */
+    @Impure
     int updatePublisherPositionAndLimit()
     {
         int workCount = 0;
@@ -800,11 +835,13 @@ public final class NetworkPublication
         return workCount;
     }
 
+    @Pure
     boolean hasSpies()
     {
         return hasSpies;
     }
 
+    @Impure
     void updateHasReceivers(final long timeNs)
     {
         livenessTracker.onIdle(timeNs, connectionTimeoutNs);
@@ -818,6 +855,7 @@ public final class NetworkPublication
         timeOfLastUpdateReceivers = timeNs;
     }
 
+    @Impure
     private int sendData(final long nowNs, final long senderPosition, final int termOffset)
     {
         int bytesSent = 0;
@@ -867,6 +905,7 @@ public final class NetworkPublication
         return bytesSent;
     }
 
+    @Impure
     private void setupMessageCheck(final long nowNs, final int activeTermId, final int termOffset)
     {
         if ((timeOfLastSetupNs + PUBLICATION_SETUP_TIMEOUT_NS) - nowNs < 0)
@@ -906,6 +945,7 @@ public final class NetworkPublication
         }
     }
 
+    @Impure
     private int heartbeatMessageCheck(
         final long nowNs, final int activeTermId, final int termOffset)
     {
@@ -949,6 +989,7 @@ public final class NetworkPublication
         return bytesSent;
     }
 
+    @Impure
     private void cleanBufferTo(final long position)
     {
         final long cleanPosition = this.cleanPosition;
@@ -965,6 +1006,7 @@ public final class NetworkPublication
         }
     }
 
+    @Impure
     private void checkForBlockedPublisher(final long producerPosition, final long senderPosition, final long nowNs)
     {
         if (senderPosition == lastSenderPosition && isPossiblyBlocked(producerPosition, senderPosition))
@@ -984,6 +1026,7 @@ public final class NetworkPublication
         }
     }
 
+    @Impure
     private boolean isPossiblyBlocked(final long producerPosition, final long consumerPosition)
     {
         final int producerTermCount = activeTermCount(metaDataBuffer);
@@ -997,6 +1040,7 @@ public final class NetworkPublication
         return producerPosition > consumerPosition;
     }
 
+    @Impure
     private boolean spiesFinishedConsuming(final DriverConductor conductor, final long eosPosition)
     {
         if (spyPositions.length > 0)
@@ -1016,6 +1060,7 @@ public final class NetworkPublication
         return true;
     }
 
+    @Impure
     private long maxSpyPosition(final long senderPosition)
     {
         long position = senderPosition;
@@ -1028,6 +1073,7 @@ public final class NetworkPublication
         return position;
     }
 
+    @Impure
     private void updateConnectedStatus()
     {
         final boolean currentConnectedState =
@@ -1040,11 +1086,14 @@ public final class NetworkPublication
         }
     }
 
+    @Pure
+    @Impure
     private boolean hasRequiredReceivers()
     {
         return hasReceivers && flowControl.hasRequiredReceivers();
     }
 
+    @Impure
     private void checkUntetheredSubscriptions(final long nowNs, final DriverConductor conductor)
     {
         final ArrayList<UntetheredSubscription> untetheredSubscriptions = this.untetheredSubscriptions;
@@ -1101,6 +1150,7 @@ public final class NetworkPublication
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onTimeEvent(final long timeNs, final long timeMs, final DriverConductor conductor)
     {
         switch (state)
@@ -1187,6 +1237,7 @@ public final class NetworkPublication
     /**
      * {@inheritDoc}
      */
+    @Pure
     public boolean hasReachedEndOfLife()
     {
         return hasSenderReleased;
@@ -1197,16 +1248,19 @@ public final class NetworkPublication
      *
      * @return the response correlation id for the publication.
      */
+    @Pure
     public long responseCorrelationId()
     {
         return responseCorrelationId;
     }
 
+    @Impure
     void revoke()
     {
         LogBufferDescriptor.isPublicationRevoked(metaDataBuffer, true);
     }
 
+    @Impure
     void decRef()
     {
         if (0 == --refCount)
@@ -1227,21 +1281,25 @@ public final class NetworkPublication
         }
     }
 
+    @Impure
     void incRef()
     {
         ++refCount;
     }
 
+    @Pure
     State state()
     {
         return state;
     }
 
+    @Impure
     void senderRelease()
     {
         hasSenderReleased = true;
     }
 
+    @Impure
     long producerPosition()
     {
         final long rawTail = rawTailVolatile(metaDataBuffer);
@@ -1250,21 +1308,25 @@ public final class NetworkPublication
         return computePosition(termId(rawTail), termOffset, positionBitsToShift, initialTermId);
     }
 
+    @Impure
     long consumerPosition()
     {
         return senderPosition.getVolatile();
     }
 
+    @Pure
     private boolean isSendResponseSetupFlag()
     {
         return !isResponse && Aeron.NULL_VALUE != responseCorrelationId;
     }
 
+    @Impure
     private boolean hasGroupSemantics()
     {
         return channelEndpoint().udpChannel().hasGroupSemantics();
     }
 
+    @SideEffectFree
     private static void logRevoke(
         final long revokedPos,
         final int sessionId,

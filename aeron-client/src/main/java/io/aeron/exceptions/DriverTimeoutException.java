@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package io.aeron.exceptions;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 
 /**
  * A timeout has occurred while waiting on the media driver responding to an operation.
@@ -27,6 +29,8 @@ public class DriverTimeoutException extends TimeoutException
      *
      * @param message detail for the exception.
      */
+    @SideEffectFree
+    @Impure
     public DriverTimeoutException(final String message)
     {
         super(message, Category.FATAL);

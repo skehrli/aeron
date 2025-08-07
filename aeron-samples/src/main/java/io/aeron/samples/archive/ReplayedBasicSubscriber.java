@@ -15,6 +15,7 @@
  */
 package io.aeron.samples.archive;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.ChannelUri;
 import io.aeron.Subscription;
 import io.aeron.archive.client.AeronArchive;
@@ -45,6 +46,7 @@ public class ReplayedBasicSubscriber
      *
      * @param args passed to the process.
      */
+    @Impure
     public static void main(final String[] args)
     {
         System.out.println("Subscribing to " + CHANNEL + " on stream id " + STREAM_ID);
@@ -75,6 +77,7 @@ public class ReplayedBasicSubscriber
         }
     }
 
+    @Impure
     private static long findLatestRecording(final AeronArchive archive)
     {
         final MutableLong lastRecordingId = new MutableLong();

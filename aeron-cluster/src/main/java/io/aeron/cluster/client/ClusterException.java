@@ -15,6 +15,7 @@
  */
 package io.aeron.cluster.client;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.exceptions.AeronException;
 
 /**
@@ -27,6 +28,7 @@ public class ClusterException extends AeronException
     /**
      * Default Cluster exception as {@link io.aeron.exceptions.AeronException.Category#ERROR}.
      */
+    @Impure
     public ClusterException()
     {
     }
@@ -36,6 +38,7 @@ public class ClusterException extends AeronException
      *
      * @param message to detail the exception.
      */
+    @Impure
     public ClusterException(final String message)
     {
         super(message);
@@ -47,6 +50,7 @@ public class ClusterException extends AeronException
      * @param message  providing detail on the error.
      * @param category of the exception.
      */
+    @Impure
     public ClusterException(final String message, final Category category)
     {
         super(message, category);
@@ -58,6 +62,7 @@ public class ClusterException extends AeronException
      * @param message providing detail on the error.
      * @param cause   of the error.
      */
+    @Impure
     public ClusterException(final String message, final Throwable cause)
     {
         super(message, cause);
@@ -68,6 +73,7 @@ public class ClusterException extends AeronException
      *
      * @param cause of the error.
      */
+    @Impure
     public ClusterException(final Throwable cause)
     {
         super(cause);
@@ -79,6 +85,7 @@ public class ClusterException extends AeronException
      * @param cause    of the error.
      * @param category of the exception.
      */
+    @Impure
     public ClusterException(final Throwable cause, final Category category)
     {
         super(cause, category);
@@ -91,6 +98,7 @@ public class ClusterException extends AeronException
      * @param cause    of the error.
      * @param category of the exception.
      */
+    @Impure
     public ClusterException(final String message, final Throwable cause, final Category category)
     {
         super(message, cause, category);
@@ -106,6 +114,7 @@ public class ClusterException extends AeronException
      * @param enableSuppression  is suppression enabled or not.
      * @param writableStackTrace is the stack trace writable or not.
      */
+    @Impure
     public ClusterException(
         final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace)
     {

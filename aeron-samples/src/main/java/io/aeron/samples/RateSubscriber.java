@@ -15,6 +15,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.Subscription;
 import io.aeron.driver.MediaDriver;
@@ -43,6 +44,7 @@ public class RateSubscriber
      * @throws InterruptedException if the task is interrupted
      * @throws ExecutionException if the {@link Future} has an error.
      */
+    @Impure
     public static void main(final String[] args) throws InterruptedException, ExecutionException
     {
         System.out.println("Subscribing to " + CHANNEL + " on stream id " + STREAM_ID);

@@ -15,6 +15,7 @@
  */
 package io.aeron.command;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.MutableDirectBuffer;
 
 import static org.agrona.BitUtil.SIZE_OF_INT;
@@ -69,6 +70,7 @@ public class PublicationBuffersReadyFlyweight
      * @param offset at which the message begins.
      * @return this for a fluent API.
      */
+    @Impure
     public final PublicationBuffersReadyFlyweight wrap(final MutableDirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
@@ -82,6 +84,7 @@ public class PublicationBuffersReadyFlyweight
      *
      * @return correlation id field.
      */
+    @Impure
     public long correlationId()
     {
         return buffer.getLong(offset + CORRELATION_ID_OFFSET);
@@ -93,6 +96,7 @@ public class PublicationBuffersReadyFlyweight
      * @param correlationId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public PublicationBuffersReadyFlyweight correlationId(final long correlationId)
     {
         buffer.putLong(offset + CORRELATION_ID_OFFSET, correlationId);
@@ -105,6 +109,7 @@ public class PublicationBuffersReadyFlyweight
      *
      * @return registration id field.
      */
+    @Impure
     public long registrationId()
     {
         return buffer.getLong(offset + REGISTRATION_ID_OFFSET);
@@ -116,6 +121,7 @@ public class PublicationBuffersReadyFlyweight
      * @param registrationId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public PublicationBuffersReadyFlyweight registrationId(final long registrationId)
     {
         buffer.putLong(offset + REGISTRATION_ID_OFFSET, registrationId);
@@ -128,6 +134,7 @@ public class PublicationBuffersReadyFlyweight
      *
      * @return session id field.
      */
+    @Impure
     public int sessionId()
     {
         return buffer.getInt(offset + SESSION_ID_OFFSET);
@@ -139,6 +146,7 @@ public class PublicationBuffersReadyFlyweight
      * @param sessionId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public PublicationBuffersReadyFlyweight sessionId(final int sessionId)
     {
         buffer.putInt(offset + SESSION_ID_OFFSET, sessionId);
@@ -151,6 +159,7 @@ public class PublicationBuffersReadyFlyweight
      *
      * @return stream id field.
      */
+    @Impure
     public int streamId()
     {
         return buffer.getInt(offset + STREAM_ID_FIELD_OFFSET);
@@ -162,6 +171,7 @@ public class PublicationBuffersReadyFlyweight
      * @param streamId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public PublicationBuffersReadyFlyweight streamId(final int streamId)
     {
         buffer.putInt(offset + STREAM_ID_FIELD_OFFSET, streamId);
@@ -174,6 +184,7 @@ public class PublicationBuffersReadyFlyweight
      *
      * @return publication limit counter id.
      */
+    @Impure
     public int publicationLimitCounterId()
     {
         return buffer.getInt(offset + PUBLICATION_LIMIT_COUNTER_ID_OFFSET);
@@ -185,6 +196,7 @@ public class PublicationBuffersReadyFlyweight
      * @param positionCounterId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public PublicationBuffersReadyFlyweight publicationLimitCounterId(final int positionCounterId)
     {
         buffer.putInt(offset + PUBLICATION_LIMIT_COUNTER_ID_OFFSET, positionCounterId);
@@ -197,6 +209,7 @@ public class PublicationBuffersReadyFlyweight
      *
      * @return channel status counter id.
      */
+    @Impure
     public int channelStatusCounterId()
     {
         return buffer.getInt(offset + CHANNEL_STATUS_INDICATOR_ID_OFFSET);
@@ -208,6 +221,7 @@ public class PublicationBuffersReadyFlyweight
      * @param counterId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public PublicationBuffersReadyFlyweight channelStatusCounterId(final int counterId)
     {
         buffer.putInt(offset + CHANNEL_STATUS_INDICATOR_ID_OFFSET, counterId);
@@ -220,6 +234,7 @@ public class PublicationBuffersReadyFlyweight
      *
      * @return the log file name in ASCII.
      */
+    @Impure
     public String logFileName()
     {
         return buffer.getStringAscii(offset + LOGFILE_FIELD_OFFSET);
@@ -230,6 +245,7 @@ public class PublicationBuffersReadyFlyweight
      *
      * @param appendable to append log file name to.
      */
+    @Impure
     public void appendLogFileName(final Appendable appendable)
     {
         buffer.getStringAscii(offset + LOGFILE_FIELD_OFFSET, appendable);
@@ -241,6 +257,7 @@ public class PublicationBuffersReadyFlyweight
      * @param logFileName for the publication buffers.
      * @return the log file name in ASCII.
      */
+    @Impure
     public PublicationBuffersReadyFlyweight logFileName(final String logFileName)
     {
         buffer.putStringAscii(offset + LOGFILE_FIELD_OFFSET, logFileName);
@@ -254,6 +271,7 @@ public class PublicationBuffersReadyFlyweight
      *
      * @return the length of the current message
      */
+    @Impure
     public int length()
     {
         return buffer.getInt(offset + LOGFILE_FIELD_OFFSET) + LOGFILE_FIELD_OFFSET + SIZE_OF_INT;

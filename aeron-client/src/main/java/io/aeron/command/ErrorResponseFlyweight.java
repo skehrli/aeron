@@ -15,6 +15,7 @@
  */
 package io.aeron.command;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.ErrorCode;
 import org.agrona.*;
 
@@ -52,6 +53,7 @@ public class ErrorResponseFlyweight
      * @param offset at which the message begins.
      * @return this for a fluent API.
      */
+    @Impure
     public final ErrorResponseFlyweight wrap(final MutableDirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
@@ -65,6 +67,7 @@ public class ErrorResponseFlyweight
      *
      * @return correlation ID of the offending command
      */
+    @Impure
     public long offendingCommandCorrelationId()
     {
         return buffer.getLong(offset + OFFENDING_COMMAND_CORRELATION_ID_OFFSET);
@@ -76,6 +79,7 @@ public class ErrorResponseFlyweight
      * @param correlationId of the offending command.
      * @return this for a fluent API.
      */
+    @Impure
     public ErrorResponseFlyweight offendingCommandCorrelationId(final long correlationId)
     {
         buffer.putLong(offset + OFFENDING_COMMAND_CORRELATION_ID_OFFSET, correlationId);
@@ -87,6 +91,7 @@ public class ErrorResponseFlyweight
      *
      * @return error code for the command.
      */
+    @Impure
     public ErrorCode errorCode()
     {
         return ErrorCode.get(buffer.getInt(offset + ERROR_CODE_OFFSET));
@@ -97,6 +102,7 @@ public class ErrorResponseFlyweight
      *
      * @return error code value for the command.
      */
+    @Impure
     public int errorCodeValue()
     {
         return buffer.getInt(offset + ERROR_CODE_OFFSET);
@@ -108,6 +114,7 @@ public class ErrorResponseFlyweight
      * @param code for the error.
      * @return this for a fluent API.
      */
+    @Impure
     public ErrorResponseFlyweight errorCode(final ErrorCode code)
     {
         buffer.putInt(offset + ERROR_CODE_OFFSET, code.value());
@@ -119,6 +126,7 @@ public class ErrorResponseFlyweight
      *
      * @return error message
      */
+    @Impure
     public String errorMessage()
     {
         return buffer.getStringAscii(offset + ERROR_MESSAGE_OFFSET);
@@ -130,6 +138,7 @@ public class ErrorResponseFlyweight
      * @param appendable to append error message to.
      * @return number bytes copied.
      */
+    @Impure
     public int appendMessage(final Appendable appendable)
     {
         return buffer.getStringAscii(offset + ERROR_MESSAGE_OFFSET, appendable);
@@ -141,6 +150,7 @@ public class ErrorResponseFlyweight
      * @param message to associate with the error.
      * @return this for a fluent API.
      */
+    @Impure
     public ErrorResponseFlyweight errorMessage(final String message)
     {
         buffer.putStringAscii(offset + ERROR_MESSAGE_OFFSET, message);
@@ -152,6 +162,7 @@ public class ErrorResponseFlyweight
      *
      * @return length of the error response in bytes.
      */
+    @Impure
     public int length()
     {
         return ERROR_MESSAGE_OFFSET + BitUtil.SIZE_OF_INT + buffer.getInt(offset + ERROR_MESSAGE_OFFSET);

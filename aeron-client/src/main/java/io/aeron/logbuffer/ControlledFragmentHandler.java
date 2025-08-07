@@ -15,6 +15,7 @@
  */
 package io.aeron.logbuffer;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.DirectBuffer;
 
 /**
@@ -65,5 +66,6 @@ public interface ControlledFragmentHandler
      * @param header representing the metadata for the data.
      * @return The action to be taken with regard to the stream position after the callback.
      */
+    @Impure
     Action onFragment(DirectBuffer buffer, int offset, int length, Header header);
 }

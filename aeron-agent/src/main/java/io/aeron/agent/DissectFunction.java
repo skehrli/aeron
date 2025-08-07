@@ -15,6 +15,7 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.MutableDirectBuffer;
 
 /**
@@ -33,5 +34,6 @@ interface DissectFunction<T>
      * @param offset  at which the encoded event begins.
      * @param builder into which the event will be serialised.
      */
+    @SideEffectFree
     void dissect(T event, MutableDirectBuffer buffer, int offset, StringBuilder builder);
 }

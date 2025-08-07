@@ -15,6 +15,9 @@
  */
 package io.aeron.samples.echo;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Publication;
 import io.aeron.Subscription;
 import io.aeron.logbuffer.ControlledFragmentHandler;
@@ -50,6 +53,7 @@ public class EchoPair implements ControlledFragmentHandler, AutoCloseable
      * @param subscription  to read fragments from.
      * @param publication   to send fragments back to.
      */
+    @SideEffectFree
     public EchoPair(final long correlationId, final Subscription subscription, final Publication publication)
     {
         this.correlationId = correlationId;
@@ -60,6 +64,7 @@ public class EchoPair implements ControlledFragmentHandler, AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public Action onFragment(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {
         final long offerPosition = publication.offer(buffer, offset, length);
@@ -101,6 +106,7 @@ public class EchoPair implements ControlledFragmentHandler, AutoCloseable
      *
      * @return number of fragments processed.
      */
+    @Impure
     public int poll()
     {
         return subscription.controlledPoll(this, FRAGMENT_LIMIT);
@@ -111,6 +117,7 @@ public class EchoPair implements ControlledFragmentHandler, AutoCloseable
      *
      * @return user supplied correlationId.
      */
+    @Pure
     public long correlationId()
     {
         return correlationId;
@@ -121,6 +128,7 @@ public class EchoPair implements ControlledFragmentHandler, AutoCloseable
      *
      * @return An instance of the monitoring MBean that can be installed into a JMX container.
      */
+    @Impure
     public EchoMonitorMBean monitor()
     {
         return new EchoMonitor();
@@ -129,6 +137,7 @@ public class EchoPair implements ControlledFragmentHandler, AutoCloseable
     /**
      * Close the echo pair.
      */
+    @Impure
     public void close()
     {
         CloseHelper.quietCloseAll(publication, subscription);
@@ -141,6 +150,7 @@ public class EchoPair implements ControlledFragmentHandler, AutoCloseable
          *
          * @return correlationId.
          */
+        @Pure
         public long getCorrelationId()
         {
             return correlationId;
@@ -151,6 +161,7 @@ public class EchoPair implements ControlledFragmentHandler, AutoCloseable
          *
          * @return number of back pressure events.
          */
+        @Pure
         public long getBackPressureCount()
         {
             return backPressureCount;
@@ -161,6 +172,7 @@ public class EchoPair implements ControlledFragmentHandler, AutoCloseable
          *
          * @return number of fragments.
          */
+        @Pure
         public long getFragmentCount()
         {
             return fragmentCount;
@@ -171,6 +183,7 @@ public class EchoPair implements ControlledFragmentHandler, AutoCloseable
          *
          * @return number of bytes.
          */
+        @Pure
         public long getByteCount()
         {
             return byteCount;

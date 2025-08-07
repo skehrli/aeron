@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster.service;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Image;
 import io.aeron.ImageControlledFragmentAssembler;
 import io.aeron.cluster.client.ClusterException;
@@ -43,32 +46,38 @@ final class ServiceSnapshotLoader implements ControlledFragmentHandler
     private final Image image;
     private final ClusteredServiceAgent agent;
 
+    @SideEffectFree
     ServiceSnapshotLoader(final Image image, final ClusteredServiceAgent agent)
     {
         this.image = image;
         this.agent = agent;
     }
 
+    @Pure
     boolean isDone()
     {
         return isDone;
     }
 
+    @Pure
     int appVersion()
     {
         return appVersion;
     }
 
+    @Pure
     TimeUnit timeUnit()
     {
         return timeUnit;
     }
 
+    @Impure
     int poll()
     {
         return image.controlledPoll(fragmentAssembler, FRAGMENT_LIMIT);
     }
 
+    @Impure
     public Action onFragment(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {
         messageHeaderDecoder.wrap(buffer, offset);

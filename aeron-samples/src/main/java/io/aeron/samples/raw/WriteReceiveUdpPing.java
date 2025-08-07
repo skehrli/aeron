@@ -14,6 +14,7 @@
  */
 package io.aeron.samples.raw;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.HdrHistogram.Histogram;
 import org.agrona.SystemUtil;
 import org.agrona.concurrent.HighResolutionTimer;
@@ -46,6 +47,7 @@ public class WriteReceiveUdpPing
      * @param args passed to the process.
      * @throws IOException if an error occurs with the channel.
      */
+    @Impure
     public static void main(final String[] args) throws IOException
     {
         int numChannels = 1;
@@ -87,6 +89,7 @@ public class WriteReceiveUdpPing
         }
     }
 
+    @Impure
     private static void measureRoundTrip(
         final Histogram histogram,
         final ByteBuffer buffer,

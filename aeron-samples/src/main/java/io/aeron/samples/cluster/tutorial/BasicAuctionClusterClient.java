@@ -15,6 +15,8 @@
  */
 package io.aeron.samples.cluster.tutorial;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.cluster.client.AeronCluster;
 import io.aeron.cluster.client.EgressListener;
 import io.aeron.cluster.codecs.EventCode;
@@ -57,6 +59,7 @@ public class BasicAuctionClusterClient implements EgressListener
      * @param numOfBids     to make as a client.
      * @param bidIntervalMs between the bids.
      */
+    @SideEffectFree
     public BasicAuctionClusterClient(final long customerId, final int numOfBids, final int bidIntervalMs)
     {
         this.customerId = customerId;
@@ -68,6 +71,7 @@ public class BasicAuctionClusterClient implements EgressListener
      * {@inheritDoc}
      */
     // tag::response[]
+    @Impure
     public void onMessage(
         final long clusterSessionId,
         final long timestamp,
@@ -91,6 +95,7 @@ public class BasicAuctionClusterClient implements EgressListener
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onSessionEvent(
         final long correlationId,
         final long clusterSessionId,
@@ -107,6 +112,7 @@ public class BasicAuctionClusterClient implements EgressListener
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onNewLeader(
         final long clusterSessionId,
         final long leadershipTermId,
@@ -117,6 +123,7 @@ public class BasicAuctionClusterClient implements EgressListener
     }
     // end::response[]
 
+    @Impure
     private void bidInAuction(final AeronCluster aeronCluster)
     {
         long keepAliveDeadlineMs = 0;
@@ -158,6 +165,7 @@ public class BasicAuctionClusterClient implements EgressListener
     }
 
     // tag::publish[]
+    @Impure
     private long sendBid(final AeronCluster aeronCluster, final long price)
     {
         final long correlationId = nextCorrelationId++;
@@ -181,6 +189,7 @@ public class BasicAuctionClusterClient implements EgressListener
      * @param hostnames for the cluster members.
      * @return a formatted string of ingress endpoints for connecting to a cluster.
      */
+    @Impure
     public static String ingressEndpoints(final List<String> hostnames)
     {
         final StringBuilder sb = new StringBuilder();
@@ -197,6 +206,7 @@ public class BasicAuctionClusterClient implements EgressListener
         return sb.toString();
     }
 
+    @Impure
     private void printOutput(final String message)
     {
         System.out.println(message);
@@ -207,6 +217,7 @@ public class BasicAuctionClusterClient implements EgressListener
      *
      * @param args passed to the process.
      */
+    @Impure
     public static void main(final String[] args)
     {
         final int customerId = Integer.parseInt(System.getProperty("aeron.cluster.tutorial.customerId"));       // <1>

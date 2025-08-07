@@ -15,6 +15,7 @@
  */
 package io.aeron.cluster.client;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.Publication;
 import io.aeron.cluster.codecs.MessageHeaderEncoder;
@@ -44,6 +45,7 @@ public final class IngressSessionDecorator
     /**
      * Construct a new ingress session header wrapper that defaults all fields to {@link Aeron#NULL_VALUE}.
      */
+    @Impure
     public IngressSessionDecorator()
     {
         this(Aeron.NULL_VALUE, Aeron.NULL_VALUE);
@@ -55,6 +57,7 @@ public final class IngressSessionDecorator
      * @param clusterSessionId that has been allocated by the cluster.
      * @param leadershipTermId of the current leader.
      */
+    @Impure
     public IngressSessionDecorator(final long clusterSessionId, final long leadershipTermId)
     {
         sessionMessageHeaderEncoder
@@ -70,6 +73,7 @@ public final class IngressSessionDecorator
      * @param clusterSessionId to be set in the header.
      * @return this for a fluent API.
      */
+    @Impure
     public IngressSessionDecorator clusterSessionId(final long clusterSessionId)
     {
         sessionMessageHeaderEncoder.clusterSessionId(clusterSessionId);
@@ -82,6 +86,7 @@ public final class IngressSessionDecorator
      * @param leadershipTermId to be set in the header.
      * @return this for a fluent API.
      */
+    @Impure
     public IngressSessionDecorator leadershipTermId(final long leadershipTermId)
     {
         sessionMessageHeaderEncoder.leadershipTermId(leadershipTermId);
@@ -99,6 +104,7 @@ public final class IngressSessionDecorator
      * @param length      in bytes of the encoded message.
      * @return the same as {@link Publication#offer(DirectBuffer, int, int)}.
      */
+    @Impure
     public long offer(final Publication publication, final DirectBuffer buffer, final int offset, final int length)
     {
         return publication.offer(headerBuffer, 0, HEADER_LENGTH, buffer, offset, length, null);

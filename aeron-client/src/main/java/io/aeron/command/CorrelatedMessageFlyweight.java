@@ -15,6 +15,7 @@
  */
 package io.aeron.command;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.exceptions.ControlProtocolException;
 import org.agrona.MutableDirectBuffer;
 
@@ -53,6 +54,7 @@ public class CorrelatedMessageFlyweight
      * @param offset at which the message begins.
      * @return this for a fluent API.
      */
+    @Impure
     public CorrelatedMessageFlyweight wrap(final MutableDirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
@@ -66,6 +68,7 @@ public class CorrelatedMessageFlyweight
      *
      * @return client id field.
      */
+    @Impure
     public long clientId()
     {
         return buffer.getLong(offset + CLIENT_ID_FIELD_OFFSET);
@@ -77,6 +80,7 @@ public class CorrelatedMessageFlyweight
      * @param clientId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public CorrelatedMessageFlyweight clientId(final long clientId)
     {
         buffer.putLong(offset + CLIENT_ID_FIELD_OFFSET, clientId);
@@ -89,6 +93,7 @@ public class CorrelatedMessageFlyweight
      *
      * @return correlation id field.
      */
+    @Impure
     public long correlationId()
     {
         return buffer.getLong(offset + CORRELATION_ID_FIELD_OFFSET);
@@ -100,6 +105,7 @@ public class CorrelatedMessageFlyweight
      * @param correlationId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public CorrelatedMessageFlyweight correlationId(final long correlationId)
     {
         buffer.putLong(offset + CORRELATION_ID_FIELD_OFFSET, correlationId);
@@ -113,6 +119,7 @@ public class CorrelatedMessageFlyweight
      * @param msgTypeId type of message.
      * @param length of message in bytes to validate.
      */
+    @Impure
     public void validateLength(final int msgTypeId, final int length)
     {
         if (length < LENGTH)

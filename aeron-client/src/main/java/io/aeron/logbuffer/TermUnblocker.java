@@ -15,6 +15,7 @@
  */
 package io.aeron.logbuffer;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import static io.aeron.logbuffer.FrameDescriptor.*;
@@ -70,6 +71,7 @@ public class TermUnblocker
      * @param termId            for the current term.
      * @return whether unblocking was done, not done, or applied to end of term
      */
+    @Impure
     public static Status unblock(
         final UnsafeBuffer logMetaDataBuffer,
         final UnsafeBuffer termBuffer,
@@ -122,6 +124,7 @@ public class TermUnblocker
         return status;
     }
 
+    @Impure
     private static void resetHeader(
         final UnsafeBuffer logMetaDataBuffer,
         final UnsafeBuffer termBuffer,
@@ -136,6 +139,7 @@ public class TermUnblocker
         frameLengthOrdered(termBuffer, termOffset, frameLength);
     }
 
+    @Impure
     private static boolean scanBackToConfirmZeroed(final UnsafeBuffer buffer, final int from, final int limit)
     {
         int i = from - FRAME_ALIGNMENT;

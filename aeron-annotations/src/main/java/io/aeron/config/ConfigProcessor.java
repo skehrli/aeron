@@ -15,6 +15,9 @@
  */
 package io.aeron.config;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.utility.ElementIO;
 import io.aeron.utility.Processor;
 
@@ -39,18 +42,21 @@ public class ConfigProcessor extends Processor
 
     private final Map<String, Config> typeConfigMap = new HashMap<>();
 
+    @Pure
     @Override
     protected String getEnabledPropertyName()
     {
         return "aeron.build.configProcessor.enabled";
     }
 
+    @Pure
     @Override
     protected String getPrintNotesPropertyName()
     {
         return "aeron.build.configProcessor.printNotes";
     }
 
+    @Pure
     @Override
     protected String getFailOnErrorPropertyName()
     {
@@ -60,6 +66,7 @@ public class ConfigProcessor extends Processor
     /**
      * {@inheritDoc}
      */
+    @Impure
     @Override
     public void doProcess(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv)
     {
@@ -137,6 +144,7 @@ public class ConfigProcessor extends Processor
         }
     }
 
+    @Impure
     private ConfigInfo processElement(final Map<String, ConfigInfo> configInfoMap, final VariableElement element)
     {
         final Config config = element.getAnnotation(Config.class);
@@ -229,6 +237,7 @@ public class ConfigProcessor extends Processor
         return configInfo;
     }
 
+    @Impure
     private static void handleTimeValue(final Config config, final ConfigInfo configInfo, final String id)
     {
         switch (config.isTimeValue())
@@ -258,6 +267,7 @@ public class ConfigProcessor extends Processor
         }
     }
 
+    @Impure
     private void handleDefaultTypeOverride(
         final VariableElement element,
         final Config config,
@@ -301,6 +311,7 @@ public class ConfigProcessor extends Processor
         }
     }
 
+    @Impure
     private void handleCExpectations(final VariableElement element, final ConfigInfo configInfo, final Config config)
     {
         final ExpectedCConfig c = configInfo.expectations.c;
@@ -342,6 +353,7 @@ public class ConfigProcessor extends Processor
         }
     }
 
+    @Impure
     private ConfigInfo processExecutableElement(
         final Map<String, ConfigInfo> configInfoMap, final ExecutableElement element)
     {
@@ -373,6 +385,7 @@ public class ConfigProcessor extends Processor
         return configInfo;
     }
 
+    @Impure
     private void processTypeElement(final TypeElement element)
     {
         final Config config = element.getAnnotation(Config.class);
@@ -386,6 +399,8 @@ public class ConfigProcessor extends Processor
         typeConfigMap.put(element.getQualifiedName().toString(), config);
     }
 
+    @SideEffectFree
+    @Impure
     private Config.Type getConfigType(final VariableElement element, final Config config)
     {
         // use an explicitly configured type
@@ -407,6 +422,7 @@ public class ConfigProcessor extends Processor
         return Config.Type.UNDEFINED;
     }
 
+    @Impure
     private String getConfigId(final ExecutableElement element, final String id)
     {
         final StringBuilder builder = new StringBuilder();
@@ -442,6 +458,7 @@ public class ConfigProcessor extends Processor
         return calculatedId;
     }
 
+    @Impure
     private String getConfigId(final VariableElement element, final String[] suffixes, final String id)
     {
         if (null != id && !id.isEmpty())
@@ -465,6 +482,7 @@ public class ConfigProcessor extends Processor
         return fieldName;
     }
 
+    @Impure
     private void applyTypeDefaults(final String id, final ConfigInfo configInfo)
     {
         Optional.ofNullable(typeConfigMap.get(configInfo.propertyNameClassName))
@@ -472,6 +490,7 @@ public class ConfigProcessor extends Processor
             .ifPresent(config -> configInfo.expectations.c.exists = false);
     }
 
+    @Impure
     private void deriveCExpectations(final String id, final ConfigInfo configInfo)
     {
         if (!configInfo.expectations.c.exists)
@@ -530,6 +549,7 @@ public class ConfigProcessor extends Processor
         }
     }
 
+    @Impure
     private void sanityCheck(final String id, final ConfigInfo configInfo)
     {
         if (!configInfo.foundPropertyName)
@@ -550,6 +570,7 @@ public class ConfigProcessor extends Processor
         }
     }
 
+    @Impure
     private void insane(final String id, final String errMsg)
     {
         error("Configuration (" + id + "): " + errMsg);

@@ -15,6 +15,9 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.driver.media.UdpChannel;
 import org.agrona.concurrent.NanoClock;
 import org.agrona.concurrent.status.CountersManager;
@@ -49,6 +52,7 @@ public class StaticWindowCongestionControl implements CongestionControl
      * @param context         for configuration options applied in the driver.
      * @param countersManager for the driver.
      */
+    @Impure
     public StaticWindowCongestionControl(
         final long registrationId,
         final UdpChannel udpChannel,
@@ -72,6 +76,7 @@ public class StaticWindowCongestionControl implements CongestionControl
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
     public void close()
     {
     }
@@ -79,6 +84,7 @@ public class StaticWindowCongestionControl implements CongestionControl
     /**
      * {@inheritDoc}
      */
+    @Pure
     public boolean shouldMeasureRtt(final long nowNs)
     {
         return false;
@@ -87,6 +93,7 @@ public class StaticWindowCongestionControl implements CongestionControl
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
     public void onRttMeasurementSent(final long nowNs)
     {
     }
@@ -94,6 +101,7 @@ public class StaticWindowCongestionControl implements CongestionControl
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
     public void onRttMeasurement(final long nowNs, final long rttNs, final InetSocketAddress srcAddress)
     {
     }
@@ -101,6 +109,7 @@ public class StaticWindowCongestionControl implements CongestionControl
     /**
      * {@inheritDoc}
      */
+    @Pure
     public long onTrackRebuild(
         final long nowNs,
         final long newConsumptionPosition,
@@ -116,6 +125,8 @@ public class StaticWindowCongestionControl implements CongestionControl
     /**
      * {@inheritDoc}
      */
+    @Pure
+    @Impure
     public int initialWindowLength()
     {
         return CongestionControl.receiverWindowLength(ccOutcome);
@@ -124,6 +135,8 @@ public class StaticWindowCongestionControl implements CongestionControl
     /**
      * {@inheritDoc}
      */
+    @Pure
+    @Impure
     public int maxWindowLength()
     {
         return CongestionControl.receiverWindowLength(ccOutcome);

@@ -15,6 +15,7 @@
  */
 package io.aeron.driver.ext;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.config.Config;
 import io.aeron.config.DefaultType;
 
@@ -102,6 +103,7 @@ public class DebugChannelEndpointConfiguration
      * @param lossSeed to initialise.
      * @return a {@link LossGenerator}s with provided loss rate and seed.
      */
+    @Impure
     public static LossGenerator lossGeneratorSupplier(final double lossRate, final long lossSeed)
     {
         if (0 == lossRate)
@@ -117,6 +119,7 @@ public class DebugChannelEndpointConfiguration
      *
      * @return the supplier of {@link LossGenerator}s for the receiving end of a data stream.
      */
+    @Impure
     public static LossGenerator receiveDataLossGeneratorSupplier()
     {
         return lossGeneratorSupplier(RECEIVE_DATA_LOSS_RATE, RECEIVE_DATA_LOSS_SEED);
@@ -127,6 +130,7 @@ public class DebugChannelEndpointConfiguration
      *
      * @return the supplier of {@link LossGenerator}s for the receiving end of a control stream.
      */
+    @Impure
     public static LossGenerator receiveControlLossGeneratorSupplier()
     {
         return lossGeneratorSupplier(RECEIVE_CONTROL_LOSS_RATE, RECEIVE_CONTROL_LOSS_SEED);
@@ -137,6 +141,7 @@ public class DebugChannelEndpointConfiguration
      *
      * @return the supplier of {@link LossGenerator}s for the send end of a data stream.
      */
+    @Impure
     public static LossGenerator sendDataLossGeneratorSupplier()
     {
         return lossGeneratorSupplier(SEND_DATA_LOSS_RATE, SEND_DATA_LOSS_SEED);
@@ -147,6 +152,7 @@ public class DebugChannelEndpointConfiguration
      *
      * @return the supplier of {@link LossGenerator}s for the send end of a control stream.
      */
+    @Impure
     public static LossGenerator sendControlLossGeneratorSupplier()
     {
         return lossGeneratorSupplier(SEND_CONTROL_LOSS_RATE, SEND_CONTROL_LOSS_SEED);

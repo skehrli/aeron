@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.*;
 import io.aeron.cluster.client.ClusterException;
 import io.aeron.cluster.service.ClusterCounters;
@@ -86,6 +88,7 @@ public class ClusterControl
 
         private static final ToggleState[] STATES = values();
 
+        @Impure
         ToggleState(final int code)
         {
             if (code != ordinal())
@@ -101,6 +104,7 @@ public class ClusterControl
          *
          * @return code to be used as the indicator in the control toggle counter.
          */
+        @Pure
         public final int code()
         {
             return code;
@@ -115,6 +119,7 @@ public class ClusterControl
          * @param controlToggle to change to the trigger state.
          * @return true if the counter toggles or false if it is in a state other than {@link ToggleState#NEUTRAL}.
          */
+        @Impure
         public final boolean toggle(final AtomicCounter controlToggle)
         {
             if (code() == RESUME.code() && controlToggle.get() == SUSPEND.code())
@@ -130,6 +135,7 @@ public class ClusterControl
          *
          * @param controlToggle to be reset.
          */
+        @Impure
         public static void reset(final AtomicCounter controlToggle)
         {
             controlToggle.set(NEUTRAL.code());
@@ -140,6 +146,7 @@ public class ClusterControl
          *
          * @param controlToggle to be activated.
          */
+        @Impure
         public static void activate(final AtomicCounter controlToggle)
         {
             controlToggle.set(NEUTRAL.code());
@@ -150,6 +157,7 @@ public class ClusterControl
          *
          * @param controlToggle to be deactivated.
          */
+        @Impure
         public static void deactivate(final AtomicCounter controlToggle)
         {
             controlToggle.set(INACTIVE.code());
@@ -162,6 +170,7 @@ public class ClusterControl
          * @return the state for the current control toggle.
          * @throws ClusterException if the counter is not one of the valid values.
          */
+        @Impure
         public static ToggleState get(final AtomicCounter controlToggle)
         {
             if (controlToggle.isClosed())
@@ -190,6 +199,7 @@ public class ClusterControl
      * @param cncFile for the counters.
      * @return a {@link CountersReader} over the provided CnC file.
      */
+    @Impure
     public static CountersReader mapCounters(final File cncFile)
     {
         final MappedByteBuffer cncByteBuffer = IoUtil.mapExistingFile(cncFile, "cnc");
@@ -211,6 +221,7 @@ public class ClusterControl
      * @param clusterId to which the allocated counter belongs.
      * @return the control toggle counter or return null if not found.
      */
+    @Impure
     public static AtomicCounter findControlToggle(final CountersReader counters, final int clusterId)
     {
         final int counterId = ClusterCounters.find(counters, CONTROL_TOGGLE_TYPE_ID, clusterId);
@@ -227,6 +238,7 @@ public class ClusterControl
      *
      * @param args passed to the process.
      */
+    @Impure
     public static void main(final String[] args)
     {
         checkUsage(args);
@@ -256,6 +268,7 @@ public class ClusterControl
         }
     }
 
+    @Impure
     private static void checkUsage(final String[] args)
     {
         if (1 != args.length)

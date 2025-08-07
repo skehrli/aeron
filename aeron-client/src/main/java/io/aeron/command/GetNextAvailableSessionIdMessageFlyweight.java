@@ -15,6 +15,9 @@
  */
 package io.aeron.command;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.exceptions.ControlProtocolException;
 import org.agrona.MutableDirectBuffer;
 
@@ -53,6 +56,7 @@ public final class GetNextAvailableSessionIdMessageFlyweight extends CorrelatedM
      * @param offset at which the message begins.
      * @return this for a fluent API.
      */
+    @Impure
     public GetNextAvailableSessionIdMessageFlyweight wrap(final MutableDirectBuffer buffer, final int offset)
     {
         super.wrap(buffer, offset);
@@ -65,6 +69,7 @@ public final class GetNextAvailableSessionIdMessageFlyweight extends CorrelatedM
      *
      * @return the stream id.
      */
+    @Impure
     public int streamId()
     {
         return buffer.getInt(offset + STREAM_ID_OFFSET);
@@ -76,6 +81,7 @@ public final class GetNextAvailableSessionIdMessageFlyweight extends CorrelatedM
      * @param streamId the channel id.
      * @return this for a fluent API.
      */
+    @Impure
     public GetNextAvailableSessionIdMessageFlyweight streamId(final int streamId)
     {
         buffer.putInt(offset + STREAM_ID_OFFSET, streamId);
@@ -88,6 +94,7 @@ public final class GetNextAvailableSessionIdMessageFlyweight extends CorrelatedM
      *
      * @return length of the message in bytes.
      */
+    @Pure
     public int length()
     {
         return LENGTH;
@@ -99,6 +106,8 @@ public final class GetNextAvailableSessionIdMessageFlyweight extends CorrelatedM
      * @param msgTypeId type of message.
      * @param length of message in bytes to validate.
      */
+    @SideEffectFree
+    @Impure
     public void validateLength(final int msgTypeId, final int length)
     {
         if (length < LENGTH)

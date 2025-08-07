@@ -15,6 +15,8 @@
  */
 package io.aeron.command;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.exceptions.ControlProtocolException;
 import org.agrona.MutableDirectBuffer;
 
@@ -60,6 +62,7 @@ public class DestinationMessageFlyweight extends CorrelatedMessageFlyweight
      * @param offset at which the message begins.
      * @return this for a fluent API.
      */
+    @Impure
     public DestinationMessageFlyweight wrap(final MutableDirectBuffer buffer, final int offset)
     {
         super.wrap(buffer, offset);
@@ -72,6 +75,7 @@ public class DestinationMessageFlyweight extends CorrelatedMessageFlyweight
      *
      * @return correlation id field.
      */
+    @Impure
     public long registrationCorrelationId()
     {
         return buffer.getLong(offset + REGISTRATION_CORRELATION_ID_OFFSET);
@@ -83,6 +87,7 @@ public class DestinationMessageFlyweight extends CorrelatedMessageFlyweight
      * @param correlationId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public DestinationMessageFlyweight registrationCorrelationId(final long correlationId)
     {
         buffer.putLong(offset + REGISTRATION_CORRELATION_ID_OFFSET, correlationId);
@@ -95,6 +100,7 @@ public class DestinationMessageFlyweight extends CorrelatedMessageFlyweight
      *
      * @return channel field.
      */
+    @Impure
     public String channel()
     {
         return buffer.getStringAscii(offset + CHANNEL_OFFSET);
@@ -105,6 +111,7 @@ public class DestinationMessageFlyweight extends CorrelatedMessageFlyweight
      *
      * @param appendable to append channel to.
      */
+    @Impure
     public void appendChannel(final Appendable appendable)
     {
         buffer.getStringAscii(offset + CHANNEL_OFFSET, appendable);
@@ -116,6 +123,7 @@ public class DestinationMessageFlyweight extends CorrelatedMessageFlyweight
      * @param channel field value
      * @return this for a fluent API.
      */
+    @Impure
     public DestinationMessageFlyweight channel(final String channel)
     {
         lengthOfChannel = buffer.putStringAscii(offset + CHANNEL_OFFSET, channel);
@@ -128,6 +136,7 @@ public class DestinationMessageFlyweight extends CorrelatedMessageFlyweight
      *
      * @return length of the frame in bytes.
      */
+    @Pure
     public int length()
     {
         return CHANNEL_OFFSET + lengthOfChannel;
@@ -139,6 +148,7 @@ public class DestinationMessageFlyweight extends CorrelatedMessageFlyweight
      * @param msgTypeId type of message.
      * @param length of message in bytes to validate.
      */
+    @Impure
     public void validateLength(final int msgTypeId, final int length)
     {
         if (length < MINIMUM_LENGTH)
@@ -160,6 +170,7 @@ public class DestinationMessageFlyweight extends CorrelatedMessageFlyweight
      * @param channelLength to be appended to the header.
      * @return the length of the command message for a given channel length.
      */
+    @Pure
     public static int computeLength(final int channelLength)
     {
         return MINIMUM_LENGTH + channelLength;

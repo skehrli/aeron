@@ -15,6 +15,9 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import io.aeron.ChannelUri;
 import io.aeron.driver.buffer.RawLog;
@@ -69,6 +72,7 @@ final class PublicationParams
     boolean spiesSimulateConnection;
     boolean isResponse;
 
+    @Impure
     static PublicationParams getPublicationParams(
         final ChannelUri channelUri,
         final MediaDriver.Context ctx,
@@ -164,6 +168,7 @@ final class PublicationParams
         return params;
     }
 
+    @Impure
     private void getPublicationWindowLength(final ChannelUri channelUri, final MediaDriver.Context ctx)
     {
         final String pubWindowParam = channelUri.get(PUBLICATION_WINDOW_LENGTH_PARAM_NAME);
@@ -193,6 +198,7 @@ final class PublicationParams
         }
     }
 
+    @Impure
     private void getStreamId(final ChannelUri channelUri, final int streamId)
     {
         final String streamIdParam = channelUri.get(STREAM_ID_PARAM_NAME);
@@ -208,6 +214,7 @@ final class PublicationParams
         this.streamId = streamId;
     }
 
+    @Impure
     private void getEntityTag(final ChannelUri channelUri, final DriverConductor driverConductor)
     {
         final String tagParam = channelUri.entityTag();
@@ -217,6 +224,7 @@ final class PublicationParams
         }
     }
 
+    @Impure
     private void getTermBufferLength(final ChannelUri channelUri)
     {
         final String termLengthParam = channelUri.get(TERM_LENGTH_PARAM_NAME);
@@ -229,6 +237,7 @@ final class PublicationParams
         }
     }
 
+    @Impure
     private void getMtuLength(final ChannelUri channelUri)
     {
         final String mtuParam = channelUri.get(MTU_LENGTH_PARAM_NAME);
@@ -249,6 +258,7 @@ final class PublicationParams
         }
     }
 
+    @Impure
     static void validateTermLength(
         final PublicationParams params, final int explicitTermLength, final ChannelUri channelUri)
     {
@@ -260,6 +270,7 @@ final class PublicationParams
         }
     }
 
+    @Impure
     static void validateMtuLength(
         final PublicationParams params, final int explicitMtuLength, final ChannelUri channelUri)
     {
@@ -271,6 +282,7 @@ final class PublicationParams
         }
     }
 
+    @Pure
     private static String formatMatchError(
         final String paramName,
         final String existingValue,
@@ -283,6 +295,7 @@ final class PublicationParams
             " channel=" + newChannelUri;
     }
 
+    @Impure
     static void confirmMatch(
         final ChannelUri channelUri,
         final PublicationParams params,
@@ -355,6 +368,7 @@ final class PublicationParams
         }
     }
 
+    @SideEffectFree
     static void validateSpiesSimulateConnection(
         final PublicationParams params,
         final boolean existingSpiesSimulateConnection,
@@ -369,6 +383,7 @@ final class PublicationParams
         }
     }
 
+    @Impure
     static void validateMtuForSndbuf(
         final PublicationParams params,
         final int channelSocketSndbufLength,
@@ -394,6 +409,7 @@ final class PublicationParams
         }
     }
 
+    @Impure
     private void getLingerTimeoutNs(final ChannelUri channelUri, final MediaDriver.Context ctx)
     {
         final String lingerParam = channelUri.get(LINGER_PARAM_NAME);
@@ -407,6 +423,7 @@ final class PublicationParams
         }
     }
 
+    @Impure
     private void getSessionId(
         final ChannelUri channelUri,
         final DriverConductor driverConductor,
@@ -470,36 +487,42 @@ final class PublicationParams
         }
     }
 
+    @Impure
     private void getEos(final ChannelUri channelUri)
     {
         final String eosStr = channelUri.get(EOS_PARAM_NAME);
         signalEos = null == eosStr || "true".equals(eosStr);
     }
 
+    @Impure
     private void getSparse(final ChannelUri channelUri, final MediaDriver.Context ctx)
     {
         final String sparseStr = channelUri.get(SPARSE_PARAM_NAME);
         isSparse = null != sparseStr ? "true".equals(sparseStr) : ctx.termBufferSparseFile();
     }
 
+    @Impure
     private void getSpiesSimulateConnection(final ChannelUri channelUri, final MediaDriver.Context ctx)
     {
         final String sscStr = channelUri.get(SPIES_SIMULATE_CONNECTION_PARAM_NAME);
         spiesSimulateConnection = null != sscStr ? "true".equals(sscStr) : ctx.spiesSimulateConnection();
     }
 
+    @Impure
     private long getTimeoutNs(final ChannelUri channelUri, final String paramName, final long defaultValue)
     {
         final String timeoutString = channelUri.get(paramName);
         return null != timeoutString ? SystemUtil.parseDuration(paramName, timeoutString) : defaultValue;
     }
 
+    @Impure
     private void getUntetheredWindowLimitTimeout(final ChannelUri channelUri, final MediaDriver.Context ctx)
     {
         untetheredWindowLimitTimeoutNs = getTimeoutNs(
             channelUri, UNTETHERED_WINDOW_LIMIT_TIMEOUT_PARAM_NAME, ctx.untetheredWindowLimitTimeoutNs());
     }
 
+    @Impure
     private void getUntetheredLingerTimeout(final ChannelUri channelUri, final MediaDriver.Context ctx)
     {
         untetheredLingerTimeoutNs =
@@ -510,12 +533,14 @@ final class PublicationParams
         }
     }
 
+    @Impure
     private void getUntetheredRestingTimeout(final ChannelUri channelUri, final MediaDriver.Context ctx)
     {
         untetheredRestingTimeoutNs = getTimeoutNs(
             channelUri, UNTETHERED_RESTING_TIMEOUT_PARAM_NAME, ctx.untetheredRestingTimeoutNs());
     }
 
+    @Impure
     private void getMaxResend(final ChannelUri channelUri, final MediaDriver.Context ctx)
     {
         final String maxRetransmtsString = channelUri.get(MAX_RESEND_PARAM_NAME);
@@ -537,6 +562,7 @@ final class PublicationParams
         }
     }
 
+    @Impure
     private static int parseInt(final String value, final String paramName)
     {
         try
@@ -550,6 +576,7 @@ final class PublicationParams
         }
     }
 
+    @Impure
     private static long parseLong(final String value, final String paramName)
     {
         try
@@ -563,6 +590,7 @@ final class PublicationParams
         }
     }
 
+    @Impure
     private static long parseEntityTag(
         final String tagParam, final DriverConductor driverConductor, final ChannelUri channelUri)
     {
@@ -597,6 +625,7 @@ final class PublicationParams
         return entityTag;
     }
 
+    @Pure
     public String toString()
     {
         return "PublicationParams{" +

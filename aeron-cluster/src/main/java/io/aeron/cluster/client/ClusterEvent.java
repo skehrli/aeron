@@ -15,6 +15,7 @@
  */
 package io.aeron.cluster.client;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.exceptions.AeronEvent;
 import io.aeron.exceptions.AeronException;
 
@@ -31,6 +32,7 @@ public class ClusterEvent extends AeronEvent
      *
      * @param message to detail the event.
      */
+    @Impure
     public ClusterEvent(final String message)
     {
         super(message, AeronException.Category.WARN);
@@ -42,6 +44,7 @@ public class ClusterEvent extends AeronEvent
      * @param message  to detail the event.
      * @param category of the event.
      */
+    @Impure
     public ClusterEvent(final String message, final AeronException.Category category)
     {
         super(message, category);

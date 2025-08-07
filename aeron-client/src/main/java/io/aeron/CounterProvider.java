@@ -15,6 +15,7 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.DirectBuffer;
 import org.agrona.concurrent.status.AtomicCounter;
 
@@ -38,6 +39,7 @@ public interface CounterProvider
      * @param labelLength of the label in the labelBuffer.
      * @return the counter object.
      */
+    @Pure
     AtomicCounter newCounter(
         int typeId,
         DirectBuffer keyBuffer,

@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.archive.client.AeronArchive;
 import io.aeron.archive.client.ReplicationParams;
 import io.aeron.archive.codecs.RecordingSignal;
@@ -48,6 +50,7 @@ final class RecordingReplication implements AutoCloseable
     private boolean hasSynced = false;
     private boolean hasStopped = false;
 
+    @Impure
     RecordingReplication(
         final AeronArchive archive,
         final long srcRecordingId,
@@ -73,6 +76,7 @@ final class RecordingReplication implements AutoCloseable
             replicationParams);
     }
 
+    @Impure
     int poll(final long nowNs)
     {
         int workCount = 0;
@@ -123,26 +127,31 @@ final class RecordingReplication implements AutoCloseable
         }
     }
 
+    @Pure
     long position()
     {
         return position;
     }
 
+    @Pure
     long recordingId()
     {
         return recordingId;
     }
 
+    @Pure
     boolean hasReplicationEnded()
     {
         return hasReplicationEnded;
     }
 
+    @Pure
     boolean hasSynced()
     {
         return hasSynced;
     }
 
+    @Pure
     boolean hasStopped()
     {
         return hasStopped;
@@ -151,6 +160,7 @@ final class RecordingReplication implements AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         if (!hasReplicationEnded)
@@ -167,6 +177,7 @@ final class RecordingReplication implements AutoCloseable
         }
     }
 
+    @Impure
     void onSignal(final long correlationId, final long recordingId, final long position, final RecordingSignal signal)
     {
         if (correlationId == replicationId)
@@ -212,6 +223,7 @@ final class RecordingReplication implements AutoCloseable
         }
     }
 
+    @Impure
     private boolean pollDstRecordingPosition()
     {
         if (NULL_COUNTER_ID != recordingPositionCounterId)
@@ -230,11 +242,13 @@ final class RecordingReplication implements AutoCloseable
         return false;
     }
 
+    @Pure
     String srcArchiveChannel()
     {
         return srcArchiveChannel;
     }
 
+    @Pure
     public String toString()
     {
         return "RecordingReplication{" +

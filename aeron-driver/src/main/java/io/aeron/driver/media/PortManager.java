@@ -15,6 +15,7 @@
  */
 package io.aeron.driver.media;
 
+import org.checkerframework.dataflow.qual.Impure;
 import java.net.BindException;
 import java.net.InetSocketAddress;
 
@@ -31,6 +32,7 @@ public interface PortManager
      * @return InetSocketAddress to use for the bind.
      * @throws BindException if the bind should not be performed.
      */
+    @Impure
     InetSocketAddress getManagedPort(
         UdpChannel udpChannel,
         InetSocketAddress bindAddress) throws BindException;
@@ -40,5 +42,6 @@ public interface PortManager
      *
      * @param bindAddress used for the bind previously.
      */
+    @Impure
     void freeManagedPort(InetSocketAddress bindAddress);
 }

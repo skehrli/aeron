@@ -15,6 +15,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.CncFileDescriptor;
 import io.aeron.CommonContext;
 import org.agrona.IoUtil;
@@ -54,6 +55,7 @@ public class ErrorStat
      *
      * @param args passed to the process.
      */
+    @Impure
     public static void main(final String[] args)
     {
         final MappedByteBuffer errorMmap;
@@ -88,6 +90,7 @@ public class ErrorStat
         }
     }
 
+    @Impure
     private static void accept(
         final int observationCount,
         final long firstObservationTimestamp,

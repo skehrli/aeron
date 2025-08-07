@@ -15,6 +15,7 @@
  */
 package io.aeron.samples.archive;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.logbuffer.FrameDescriptor;
 import io.aeron.protocol.DataHeaderFlyweight;
 import io.aeron.samples.LogInspector;
@@ -42,6 +43,7 @@ public class SegmentInspector
      *
      * @param args passed to the process.
      */
+    @Impure
     public static void main(final String[] args)
     {
         final PrintStream out = System.out;
@@ -72,6 +74,7 @@ public class SegmentInspector
      * @param messageDumpLimit for the number of bytes per message fragment to dump.
      * @param buffer           the wraps the segment file.
      */
+    @Impure
     public static void dumpSegment(final PrintStream out, final int messageDumpLimit, final UnsafeBuffer buffer)
     {
         final DataHeaderFlyweight dataHeaderFlyweight = new DataHeaderFlyweight();

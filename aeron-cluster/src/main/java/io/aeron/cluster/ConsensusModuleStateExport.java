@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.cluster.codecs.CloseReason;
 import org.agrona.ExpandableRingBuffer;
 
@@ -33,6 +36,7 @@ class ConsensusModuleStateExport
     final List<ClusterSessionStateExport> sessions;
     final List<PendingServiceMessageTrackerStateExport> pendingMessageTrackers;
 
+    @Impure
     ConsensusModuleStateExport(
         final long logRecordingId,
         final long leadershipTermId,
@@ -53,6 +57,7 @@ class ConsensusModuleStateExport
         this.pendingMessageTrackers = unmodifiableList(pendingMessageTrackers);
     }
 
+    @Pure
     public String toString()
     {
         return "ConsensusModuleStateExport{" +
@@ -72,6 +77,7 @@ class ConsensusModuleStateExport
         final long correlationId;
         final long deadline;
 
+        @SideEffectFree
         TimerStateExport(final long correlationId, final long deadline)
         {
             this.correlationId = correlationId;
@@ -89,6 +95,7 @@ class ConsensusModuleStateExport
         final String responseChannel;
         final CloseReason closeReason;
 
+        @SideEffectFree
         ClusterSessionStateExport(
             final long id,
             final long correlationId,
@@ -116,6 +123,7 @@ class ConsensusModuleStateExport
         final int serviceId;
         final ExpandableRingBuffer pendingMessages;
 
+        @SideEffectFree
         PendingServiceMessageTrackerStateExport(
             final long nextServiceSessionId,
             final long logServiceSessionId,

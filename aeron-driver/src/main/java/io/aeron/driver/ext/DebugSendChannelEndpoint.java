@@ -15,6 +15,7 @@
  */
 package io.aeron.driver.ext;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.DriverConductorProxy;
 import io.aeron.driver.MediaDriver;
 import io.aeron.driver.media.UdpChannel;
@@ -44,6 +45,7 @@ public class DebugSendChannelEndpoint extends SendChannelEndpoint
      * @param statusIndicator for the endpoint for the channel.
      * @param context         for configuration.
      */
+    @Impure
     public DebugSendChannelEndpoint(
         final UdpChannel udpChannel, final AtomicCounter statusIndicator, final MediaDriver.Context context)
     {
@@ -64,6 +66,7 @@ public class DebugSendChannelEndpoint extends SendChannelEndpoint
      * @param dataLossGenerator    for the random loss on the data stream.
      * @param controlLossGenerator for the random loss on the control stream.
      */
+    @Impure
     public DebugSendChannelEndpoint(
         final UdpChannel udpChannel,
         final AtomicCounter statusIndicator,
@@ -80,6 +83,7 @@ public class DebugSendChannelEndpoint extends SendChannelEndpoint
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int send(final ByteBuffer buffer)
     {
         int count = buffer.remaining();
@@ -96,6 +100,7 @@ public class DebugSendChannelEndpoint extends SendChannelEndpoint
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onStatusMessage(
         final StatusMessageFlyweight msg,
         final UnsafeBuffer buffer,
@@ -111,6 +116,7 @@ public class DebugSendChannelEndpoint extends SendChannelEndpoint
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onNakMessage(
         final NakFlyweight msg,
         final UnsafeBuffer buffer,
@@ -126,6 +132,7 @@ public class DebugSendChannelEndpoint extends SendChannelEndpoint
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onRttMeasurement(
         final RttMeasurementFlyweight msg,
         final UnsafeBuffer buffer,

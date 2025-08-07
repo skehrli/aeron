@@ -15,6 +15,8 @@
  */
 package io.aeron.samples.cluster.tutorial;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.CommonContext;
 import io.aeron.ExclusivePublication;
 import io.aeron.Image;
@@ -76,6 +78,7 @@ public final class SingleNodeCluster implements AutoCloseable
         /**
          * {@inheritDoc}
          */
+        @Impure
         public void onMessage(
             final long clusterSessionId,
             final long timestamp,
@@ -90,6 +93,7 @@ public final class SingleNodeCluster implements AutoCloseable
         /**
          * {@inheritDoc}
          */
+        @Impure
         public void onNewLeader(
             final long clusterSessionId,
             final long leadershipTermId,
@@ -110,6 +114,7 @@ public final class SingleNodeCluster implements AutoCloseable
         /**
          * {@inheritDoc}
          */
+        @Impure
         public void onStart(final Cluster cluster, final Image snapshotImage)
         {
             this.cluster = cluster;
@@ -134,6 +139,7 @@ public final class SingleNodeCluster implements AutoCloseable
         /**
          * {@inheritDoc}
          */
+        @Impure
         public void onSessionOpen(final ClientSession session, final long timestamp)
         {
             System.out.println("onSessionOpen " + session.id());
@@ -142,6 +148,7 @@ public final class SingleNodeCluster implements AutoCloseable
         /**
          * {@inheritDoc}
          */
+        @Impure
         public void onSessionClose(final ClientSession session, final long timestamp, final CloseReason closeReason)
         {
             System.out.println("onSessionClose " + session.id() + " " + closeReason);
@@ -150,6 +157,7 @@ public final class SingleNodeCluster implements AutoCloseable
         /**
          * {@inheritDoc}
          */
+        @Impure
         public void onSessionMessage(
             final ClientSession session,
             final long timestamp,
@@ -179,6 +187,7 @@ public final class SingleNodeCluster implements AutoCloseable
         /**
          * {@inheritDoc}
          */
+        @Impure
         public void onTimerEvent(final long correlationId, final long timestamp)
         {
             System.out.println("onTimerEvent " + correlationId);
@@ -192,6 +201,7 @@ public final class SingleNodeCluster implements AutoCloseable
         /**
          * {@inheritDoc}
          */
+        @Impure
         public void onTakeSnapshot(final ExclusivePublication snapshotPublication)
         {
             System.out.println("onTakeSnapshot messageCount=" + messageCount);
@@ -207,6 +217,7 @@ public final class SingleNodeCluster implements AutoCloseable
         /**
          * {@inheritDoc}
          */
+        @Impure
         public void onRoleChange(final Cluster.Role newRole)
         {
             System.out.println("onRoleChange " + newRole);
@@ -215,6 +226,7 @@ public final class SingleNodeCluster implements AutoCloseable
         /**
          * {@inheritDoc}
          */
+        @SideEffectFree
         public void onTerminate(final Cluster cluster)
         {
         }
@@ -222,6 +234,7 @@ public final class SingleNodeCluster implements AutoCloseable
         /**
          * {@inheritDoc}
          */
+        @Impure
         public void onNewLeadershipTermEvent(
             final long leadershipTermId,
             final long logPosition,
@@ -235,11 +248,13 @@ public final class SingleNodeCluster implements AutoCloseable
             System.out.println("onNewLeadershipTermEvent");
         }
 
+        @Impure
         protected long serviceCorrelationId(final int correlationId)
         {
             return ((long)cluster.context().serviceId()) << 56 | correlationId;
         }
 
+        @Impure
         private void echoMessage(
             final ClientSession session, final DirectBuffer buffer, final int offset, final int length)
         {
@@ -264,6 +279,7 @@ public final class SingleNodeCluster implements AutoCloseable
      * @param externalService to run in the container.
      * @param isCleanStart    to indicate if a clean start should be made.
      */
+    @Impure
     public SingleNodeCluster(final ClusteredService externalService, final boolean isCleanStart)
     {
         final ClusteredService service = null == externalService ? new SingleNodeCluster.Service() : externalService;
@@ -287,6 +303,7 @@ public final class SingleNodeCluster implements AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         final ErrorHandler errorHandler = clusteredMediaDriver.mediaDriver().context().errorHandler();
@@ -297,6 +314,7 @@ public final class SingleNodeCluster implements AutoCloseable
         CloseHelper.close(clusteredMediaDriver); // ErrorHandler will be closed during that call so can't use it
     }
 
+    @Impure
     void connectClientToCluster()
     {
         final String aeronDirectoryName = CommonContext.getAeronDirectoryName() + "-client";
@@ -319,6 +337,7 @@ public final class SingleNodeCluster implements AutoCloseable
                     Collections.singletonList(config.ingressHostname()), PORT_BASE, CLIENT_FACING_PORT_OFFSET)));
     }
 
+    @Impure
     void sendMessageToCluster(final int id, final int messageLength)
     {
         msgBuffer.putInt(0, id);
@@ -329,11 +348,13 @@ public final class SingleNodeCluster implements AutoCloseable
         }
     }
 
+    @Impure
     int pollEgress()
     {
         return null == client ? 0 : client.pollEgress();
     }
 
+    @Impure
     void pollEgressUntilMessage()
     {
         idleStrategy.reset();
@@ -343,6 +364,7 @@ public final class SingleNodeCluster implements AutoCloseable
         }
     }
 
+    @Impure
     void takeSnapshot()
     {
         final ConsensusModule.Context consensusModuleContext = clusteredMediaDriver.consensusModule().context();
@@ -361,6 +383,7 @@ public final class SingleNodeCluster implements AutoCloseable
         }
     }
 
+    @Impure
     static void sendSingleMessageAndEchoBack()
     {
         try (SingleNodeCluster cluster = new SingleNodeCluster(null, true))
@@ -374,6 +397,7 @@ public final class SingleNodeCluster implements AutoCloseable
         }
     }
 
+    @Impure
     static void loadPreviousLogAndSendAnotherMessageAndEchoBack()
     {
         try (SingleNodeCluster cluster = new SingleNodeCluster(null, false))
@@ -392,6 +416,7 @@ public final class SingleNodeCluster implements AutoCloseable
      *
      * @param args passed to the process.
      */
+    @Impure
     public static void main(final String[] args)
     {
         sendSingleMessageAndEchoBack();

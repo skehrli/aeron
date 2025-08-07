@@ -15,6 +15,8 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.Strings;
 import org.agrona.concurrent.UnsafeBuffer;
 import org.agrona.concurrent.ringbuffer.ManyToOneRingBuffer;
@@ -67,10 +69,12 @@ final class EventConfiguration
             getSizeAsInt(BUFFER_LENGTH_PROP_NAME, BUFFER_LENGTH_DEFAULT) + TRAILER_LENGTH, CACHE_LINE_LENGTH)));
     }
 
+    @SideEffectFree
     private EventConfiguration()
     {
     }
 
+    @Impure
     static <E extends Enum<E>> EnumSet<E> parseEventCodes(
         final Class<E> eventCodeType,
         final String eventCodes,

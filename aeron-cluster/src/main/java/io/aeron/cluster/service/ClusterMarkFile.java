@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster.service;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import io.aeron.CommonContext;
 import io.aeron.cluster.client.ClusterException;
@@ -124,6 +127,7 @@ public final class ClusterMarkFile implements AutoCloseable
      * @param timeoutMs         for the activity check on an existing {@link MarkFile}.
      * @deprecated Use {@link #ClusterMarkFile(File, ClusterComponentType, int, EpochClock, long, int)} instead.
      */
+    @Impure
     @Deprecated(forRemoval = true)
     public ClusterMarkFile(
         final File file,
@@ -146,6 +150,7 @@ public final class ClusterMarkFile implements AutoCloseable
      * @param filePageSize      for aligning file length to.
      * @since 1.48.0
      */
+    @Impure
     public ClusterMarkFile(
         final File file,
         final ClusterComponentType type,
@@ -289,6 +294,7 @@ public final class ClusterMarkFile implements AutoCloseable
      * @param timeoutMs  to wait for file to exist.
      * @param logger     to which debug information will be written if an issue occurs.
      */
+    @Impure
     public ClusterMarkFile(
         final File directory,
         final String filename,
@@ -299,6 +305,7 @@ public final class ClusterMarkFile implements AutoCloseable
         this(openExistingMarkFile(directory, filename, epochClock, timeoutMs, logger));
     }
 
+    @Impure
     ClusterMarkFile(final MarkFile markFile)
     {
         this.markFile = markFile;
@@ -325,6 +332,7 @@ public final class ClusterMarkFile implements AutoCloseable
      * @return parent directory of the mark file.
      * @see MarkFile#parentDirectory()
      */
+    @Impure
     public File parentDirectory()
     {
         return markFile.parentDirectory();
@@ -337,6 +345,7 @@ public final class ClusterMarkFile implements AutoCloseable
      * @param attributes ignored, only needed for BiPredicate signature matching.
      * @return true if the name matches.
      */
+    @SideEffectFree
     public static boolean isServiceMarkFile(final Path path, final BasicFileAttributes attributes)
     {
         final String fileName = path.getFileName().toString();
@@ -350,6 +359,7 @@ public final class ClusterMarkFile implements AutoCloseable
      * @param attributes ignored, only needed for BiPredicate signature matching.
      * @return true if the name matches.
      */
+    @SideEffectFree
     public static boolean isConsensusModuleMarkFile(final Path path, final BasicFileAttributes attributes)
     {
         return path.getFileName().toString().equals(FILENAME);
@@ -358,6 +368,7 @@ public final class ClusterMarkFile implements AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         if (!markFile.isClosed())
@@ -374,6 +385,7 @@ public final class ClusterMarkFile implements AutoCloseable
      *
      * @return true if the {@link MarkFile} is closed.
      */
+    @Impure
     public boolean isClosed()
     {
         return markFile.isClosed();
@@ -385,6 +397,7 @@ public final class ClusterMarkFile implements AutoCloseable
      * @return the current candidate term id within an election after voting or {@link Aeron#NULL_VALUE} if
      * no voting phase of an election is currently active.
      */
+    @Impure
     public long candidateTermId()
     {
         return markFile.isClosed() ? Aeron.NULL_VALUE :
@@ -396,6 +409,7 @@ public final class ClusterMarkFile implements AutoCloseable
      *
      * @return cluster member id either assigned statically or as the result of dynamic membership join.
      */
+    @Impure
     public int memberId()
     {
         return markFile.isClosed() ? Aeron.NULL_VALUE : headerDecoder.memberId();
@@ -406,6 +420,7 @@ public final class ClusterMarkFile implements AutoCloseable
      *
      * @param memberId assigned as part of dynamic join of a cluster.
      */
+    @Impure
     public void memberId(final int memberId)
     {
         if (!markFile.isClosed())
@@ -419,6 +434,7 @@ public final class ClusterMarkFile implements AutoCloseable
      *
      * @return id of the cluster instance so multiple clusters can run on the same driver.
      */
+    @Impure
     public int clusterId()
     {
         return markFile.isClosed() ? Aeron.NULL_VALUE : headerDecoder.clusterId();
@@ -429,6 +445,7 @@ public final class ClusterMarkFile implements AutoCloseable
      *
      * @param clusterId of the cluster instance so multiple clusters can run on the same driver.
      */
+    @Impure
     public void clusterId(final int clusterId)
     {
         if (!markFile.isClosed())
@@ -440,6 +457,7 @@ public final class ClusterMarkFile implements AutoCloseable
     /**
      * Signal the cluster component has concluded successfully and ready to start.
      */
+    @Impure
     public void signalReady()
     {
         if (!markFile.isClosed())
@@ -451,6 +469,7 @@ public final class ClusterMarkFile implements AutoCloseable
     /**
      * Signal the cluster component has failed to conclude and cannot start.
      */
+    @Impure
     public void signalFailedStart()
     {
         if (!markFile.isClosed())
@@ -464,6 +483,7 @@ public final class ClusterMarkFile implements AutoCloseable
      *
      * @param nowMs activity timestamp as a proof of life.
      */
+    @Impure
     public void updateActivityTimestamp(final long nowMs)
     {
         if (!markFile.isClosed())
@@ -477,6 +497,7 @@ public final class ClusterMarkFile implements AutoCloseable
      *
      * @return the activity timestamp of the cluster component with volatile semantics.
      */
+    @Impure
     public long activityTimestampVolatile()
     {
         return markFile.isClosed() ? Aeron.NULL_VALUE : markFile.timestampVolatile();
@@ -487,6 +508,7 @@ public final class ClusterMarkFile implements AutoCloseable
      *
      * @return the encoder for writing the {@link MarkFile} header.
      */
+    @Pure
     public MarkFileHeaderEncoder encoder()
     {
         return headerEncoder;
@@ -497,6 +519,7 @@ public final class ClusterMarkFile implements AutoCloseable
      *
      * @return the decoder for reading the {@link MarkFile} header.
      */
+    @Pure
     public MarkFileHeaderDecoder decoder()
     {
         return headerDecoder;
@@ -507,6 +530,7 @@ public final class ClusterMarkFile implements AutoCloseable
      *
      * @return the direct buffer which wraps the region of the {@link MarkFile} which contains the error log.
      */
+    @Pure
     public AtomicBuffer errorBuffer()
     {
         return errorBuffer;
@@ -520,6 +544,7 @@ public final class ClusterMarkFile implements AutoCloseable
      * @param type        type of the mark file being checked.
      * @param logger      to which the existing errors will be printed.
      */
+    @Impure
     public static void saveExistingErrors(
         final File markFile,
         final AtomicBuffer errorBuffer,
@@ -538,6 +563,7 @@ public final class ClusterMarkFile implements AutoCloseable
      * @param serviceName    for the application service.
      * @param authenticator  for the application service.
      */
+    @Impure
     public static void checkHeaderLength(
         final String aeronDirectory,
         final String controlChannel,
@@ -568,6 +594,7 @@ public final class ClusterMarkFile implements AutoCloseable
      * @param serviceId of the service the {@link ClusterMarkFile} represents.
      * @return the filename to be used for the mark file given a service id.
      */
+    @Pure
     public static String markFilenameForService(final int serviceId)
     {
         return SERVICE_FILENAME_PREFIX + serviceId + FILE_EXTENSION;
@@ -579,6 +606,7 @@ public final class ClusterMarkFile implements AutoCloseable
      * @param serviceId of the service the {@link ClusterMarkFile} represents.
      * @return the filename to be used for the link file given a service id.
      */
+    @Pure
     public static String linkFilenameForService(final int serviceId)
     {
         return SERVICE_FILENAME_PREFIX + serviceId + LINK_FILE_EXTENSION;
@@ -590,6 +618,7 @@ public final class ClusterMarkFile implements AutoCloseable
      * @return the control properties for communicating between the consensus module and the services or {@code null}
      * if mark file was already closed.
      */
+    @Impure
     public ClusterNodeControlProperties loadControlProperties()
     {
         if (!markFile.isClosed())
@@ -611,6 +640,7 @@ public final class ClusterMarkFile implements AutoCloseable
      *
      * @since 1.44.0
      */
+    @Impure
     public void force()
     {
         if (!markFile.isClosed())
@@ -623,6 +653,7 @@ public final class ClusterMarkFile implements AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public String toString()
     {
         return "ClusterMarkFile{" +
@@ -631,6 +662,7 @@ public final class ClusterMarkFile implements AutoCloseable
             '}';
     }
 
+    @Impure
     private static int headerOffset(final File file)
     {
         final MappedByteBuffer mappedByteBuffer = IoUtil.mapExistingFile(file, FILENAME);
@@ -646,6 +678,7 @@ public final class ClusterMarkFile implements AutoCloseable
         }
     }
 
+    @Impure
     private static int headerOffset(final UnsafeBuffer headerBuffer)
     {
         final MessageHeaderDecoder decoder = new MessageHeaderDecoder();
@@ -654,6 +687,7 @@ public final class ClusterMarkFile implements AutoCloseable
             MarkFileHeaderDecoder.SCHEMA_ID == decoder.schemaId() ? HEADER_OFFSET : 0;
     }
 
+    @Impure
     private static MarkFile openExistingMarkFile(
         final File directory,
         final String filename,

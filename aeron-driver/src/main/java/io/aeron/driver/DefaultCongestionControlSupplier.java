@@ -15,6 +15,7 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.CommonContext;
 import io.aeron.driver.ext.CubicCongestionControl;
 import io.aeron.driver.media.UdpChannel;
@@ -32,6 +33,7 @@ public class DefaultCongestionControlSupplier implements CongestionControlSuppli
     /**
      * {@inheritDoc}
      */
+    @Impure
     public CongestionControl newInstance(
         final long registrationId,
         final UdpChannel udpChannel,

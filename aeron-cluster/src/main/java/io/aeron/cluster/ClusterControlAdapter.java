@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.FragmentAssembler;
 import io.aeron.Subscription;
 import io.aeron.cluster.client.ClusterException;
@@ -30,9 +32,11 @@ final class ClusterControlAdapter implements AutoCloseable
 {
     interface Listener
     {
+        @Impure
         void onClusterMembersResponse(
             long correlationId, int leaderMemberId, String activeMembers, String passiveMembers);
 
+        @Impure
         void onClusterMembersExtendedResponse(
             long correlationId,
             long currentTimeNs,
@@ -51,22 +55,26 @@ final class ClusterControlAdapter implements AutoCloseable
     private final ClusterMembersExtendedResponseDecoder clusterMembersExtendedResponseDecoder =
         new ClusterMembersExtendedResponseDecoder();
 
+    @SideEffectFree
     ClusterControlAdapter(final Subscription subscription, final Listener listener)
     {
         this.subscription = subscription;
         this.listener = listener;
     }
 
+    @Impure
     public void close()
     {
         CloseHelper.close(subscription);
     }
 
+    @Impure
     int poll()
     {
         return subscription.poll(fragmentAssembler, 1);
     }
 
+    @Impure
     @SuppressWarnings("MethodLength")
     private void onFragment(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {

@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster.client;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.FragmentAssembler;
 import io.aeron.Subscription;
 import io.aeron.cluster.codecs.*;
@@ -50,6 +52,8 @@ public final class EgressAdapter implements FragmentHandler
      * @param subscription     over the egress stream.
      * @param fragmentLimit    to poll on each {@link #poll()} operation.
      */
+    @SideEffectFree
+    @Impure
     public EgressAdapter(
         final EgressListener listener,
         final long clusterSessionId,
@@ -69,6 +73,7 @@ public final class EgressAdapter implements FragmentHandler
      * @param subscription      over the egress stream.
      * @param fragmentLimit     to poll on each {@link #poll()} operation.
      */
+    @SideEffectFree
     public EgressAdapter(
         final EgressListener listener,
         final EgressListenerExtension listenerExtension,
@@ -88,6 +93,7 @@ public final class EgressAdapter implements FragmentHandler
      *
      * @return the number of fragments consumed.
      */
+    @Impure
     public int poll()
     {
         return subscription.poll(fragmentAssembler, fragmentLimit);
@@ -96,6 +102,7 @@ public final class EgressAdapter implements FragmentHandler
     /**
      * {@inheritDoc}
      */
+    @Impure
     @SuppressWarnings("MethodLength")
     public void onFragment(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {

@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.ControlledFragmentAssembler;
 import io.aeron.Subscription;
 import io.aeron.cluster.client.AeronCluster;
@@ -40,12 +42,14 @@ class IngressAdapter implements AutoCloseable
     private Subscription subscription;
     private Subscription ipcSubscription;
 
+    @SideEffectFree
     IngressAdapter(final int fragmentPollLimit, final ConsensusModuleAgent consensusModuleAgent)
     {
         this.fragmentPollLimit = fragmentPollLimit;
         this.consensusModuleAgent = consensusModuleAgent;
     }
 
+    @Impure
     public void close()
     {
         final Subscription subscription = this.subscription;
@@ -68,6 +72,7 @@ class IngressAdapter implements AutoCloseable
         ipcFragmentAssembler.clear();
     }
 
+    @Impure
     @SuppressWarnings("MethodLength")
     public ControlledFragmentHandler.Action onMessage(
         final DirectBuffer buffer, final int offset, final int length, final Header header)
@@ -202,12 +207,14 @@ class IngressAdapter implements AutoCloseable
         return ControlledFragmentHandler.Action.CONTINUE;
     }
 
+    @Impure
     void connect(final Subscription subscription, final Subscription ipcSubscription)
     {
         this.subscription = subscription;
         this.ipcSubscription = ipcSubscription;
     }
 
+    @Impure
     int poll()
     {
         int fragmentsRead = 0;
@@ -225,6 +232,7 @@ class IngressAdapter implements AutoCloseable
         return fragmentsRead;
     }
 
+    @Impure
     void freeSessionBuffer(final int imageSessionId, final boolean isIpc)
     {
         if (isIpc)

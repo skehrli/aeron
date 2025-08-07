@@ -15,6 +15,7 @@
  */
 package io.aeron.config;
 
+import org.checkerframework.dataflow.qual.Pure;
 import java.lang.annotation.*;
 import java.util.concurrent.TimeUnit;
 
@@ -47,81 +48,97 @@ public @interface Config
     /**
      * @return what type of field is being annotated.
      */
+    @Pure
     Type configType() default Type.UNDEFINED;
 
     /**
      * @return the unique id that ties together all the usages of the annotation across fields/methods.
      */
+    @Pure
     String id() default "";
 
     /**
      * @return the uri parameter (if any) associated with this option.
      */
+    @Pure
     String uriParam() default "";
 
     /**
      * @return whether this config option exists in the C code.
      */
+    @Pure
     boolean existsInC() default true;
 
     /**
      * @return the expected C #define name that will be set with the env variable name for this option.
      */
+    @Pure
     String expectedCEnvVarFieldName() default "";
 
     /**
      * @return the expected C env variable name for this option.
      */
+    @Pure
     String expectedCEnvVar() default "";
 
     /**
      * @return the expected C #define name that will be set with the default value for this option.
      */
+    @Pure
     String expectedCDefaultFieldName() default "";
 
     /**
      * @return the expected C default value for this option.
      */
+    @Pure
     String expectedCDefault() default "";
 
     /**
      * @return whether to skip validation of the default in C.
      */
+    @Pure
     boolean skipCDefaultValidation() default false;
 
     /**
      * @return what's the type of default (string, int, etc...).
      */
+    @Pure
     DefaultType defaultType() default DefaultType.UNDEFINED;
 
     /**
      * @return specify the default boolean, if defaultType is BOOLEAN.
      */
+    @Pure
     boolean defaultBoolean() default false;
 
     /**
      * @return specify the default int, if defaultType is INT.
      */
+    @Pure
     int defaultInt() default 0;
 
     /**
      * @return specify the default long, if defaultType is LONG.
      */
+    @Pure
     long defaultLong() default 0;
 
     /**
      * @return specify the default double, if defaultType is DOUBLE.
      */
+    @Pure
     double defaultDouble() default 0.0;
 
     /**
      * @return specify the default string, if defaultType is STRING.
      */
+    @Pure
     String defaultString() default "";
 
     /**
      * @return specify a string that acts as a stand-in for the default value when generating documentation.
      */
+    @Pure
     String defaultValueString() default "";
 
     /**
@@ -146,15 +163,18 @@ public @interface Config
     /**
      * @return whether the default value is a time value.
      */
+    @Pure
     IsTimeValue isTimeValue() default IsTimeValue.UNDEFINED;
 
     /**
      * @return the time unit if the default value is a time value of some sort.
      */
+    @Pure
     TimeUnit timeUnit() default TimeUnit.NANOSECONDS;
 
     /**
      * @return whether this config option has a 'context'.
      */
+    @Pure
     boolean hasContext() default true;
 }

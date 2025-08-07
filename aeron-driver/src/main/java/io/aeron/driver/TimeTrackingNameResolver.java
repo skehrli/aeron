@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.CounterProvider;
 import org.agrona.CloseHelper;
 import org.agrona.concurrent.NanoClock;
@@ -30,6 +32,7 @@ final class TimeTrackingNameResolver implements NameResolver, AutoCloseable
     private final NanoClock clock;
     private final DutyCycleTracker maxTimeTracker;
 
+    @Impure
     TimeTrackingNameResolver(
         final NameResolver delegateResolver,
         final NanoClock clock,
@@ -43,6 +46,7 @@ final class TimeTrackingNameResolver implements NameResolver, AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public InetAddress resolve(final String name, final String uriParamName, final boolean isReResolution)
     {
         final long beginNs = clock.nanoTime();
@@ -64,6 +68,7 @@ final class TimeTrackingNameResolver implements NameResolver, AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public String lookup(final String name, final String uriParamName, final boolean isReLookup)
     {
         final long beginNs = clock.nanoTime();
@@ -85,6 +90,7 @@ final class TimeTrackingNameResolver implements NameResolver, AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void init(final CountersReader countersReader, final CounterProvider counterProvider)
     {
         delegateResolver.init(countersReader, counterProvider);
@@ -93,6 +99,7 @@ final class TimeTrackingNameResolver implements NameResolver, AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int doWork(final long nowMs)
     {
         return delegateResolver.doWork(nowMs);
@@ -101,6 +108,7 @@ final class TimeTrackingNameResolver implements NameResolver, AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         if (delegateResolver instanceof AutoCloseable)
@@ -112,15 +120,18 @@ final class TimeTrackingNameResolver implements NameResolver, AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public String name()
     {
         return "TimeTracking(" + delegateResolver.name() + ")";
     }
 
+    @SideEffectFree
     static void logHostName(final long durationNs, final String hostName)
     {
     }
 
+    @SideEffectFree
     private static void logResolve(
         final String resolverName,
         final long durationNs,
@@ -130,6 +141,7 @@ final class TimeTrackingNameResolver implements NameResolver, AutoCloseable
     {
     }
 
+    @SideEffectFree
     private static void logLookup(
         final String resolverName,
         final long durationNs,

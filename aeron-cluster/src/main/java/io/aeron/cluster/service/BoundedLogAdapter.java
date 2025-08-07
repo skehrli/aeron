@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster.service;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.BufferBuilder;
 import io.aeron.Image;
 import io.aeron.cluster.ConsensusModule;
@@ -45,12 +48,14 @@ final class BoundedLogAdapter implements ControlledFragmentHandler, AutoCloseabl
     private final NewLeadershipTermEventDecoder newLeadershipTermEventDecoder = new NewLeadershipTermEventDecoder();
     private final MembershipChangeEventDecoder membershipChangeEventDecoder = new MembershipChangeEventDecoder();
 
+    @SideEffectFree
     BoundedLogAdapter(final ClusteredServiceAgent agent, final int fragmentLimit)
     {
         this.agent = agent;
         this.fragmentLimit = fragmentLimit;
     }
 
+    @Impure
     public void close()
     {
         if (null != image)
@@ -60,6 +65,7 @@ final class BoundedLogAdapter implements ControlledFragmentHandler, AutoCloseabl
         }
     }
 
+    @Impure
     public Action onFragment(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {
         Action action = Action.CONTINUE;
@@ -108,31 +114,37 @@ final class BoundedLogAdapter implements ControlledFragmentHandler, AutoCloseabl
         return action;
     }
 
+    @Impure
     void maxLogPosition(final long position)
     {
         maxLogPosition = position;
     }
 
+    @Impure
     boolean isDone()
     {
         return image.position() >= maxLogPosition || image.isEndOfStream() || image.isClosed();
     }
 
+    @Impure
     void image(final Image image)
     {
         this.image = image;
     }
 
+    @Pure
     Image image()
     {
         return image;
     }
 
+    @Impure
     int poll(final long limit)
     {
         return image.boundedControlledPoll(this, limit, fragmentLimit);
     }
 
+    @Impure
     @SuppressWarnings("MethodLength")
     private Action onMessage(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {

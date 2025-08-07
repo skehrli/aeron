@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import java.net.InetSocketAddress;
 
 /**
@@ -34,6 +36,7 @@ public interface CongestionControl extends AutoCloseable
      * @param forceStatusMessage   to go in the higher bits.
      * @return the packed value.
      */
+    @Pure
     static long packOutcome(final int receiverWindowLength, final boolean forceStatusMessage)
     {
         final int flags = forceStatusMessage ? FORCE_STATUS_MESSAGE_BIT : 0x0;
@@ -47,6 +50,7 @@ public interface CongestionControl extends AutoCloseable
      * @param outcome as the packed value.
      * @return the receiver window length.
      */
+    @Pure
     static int receiverWindowLength(final long outcome)
     {
         return (int)(outcome & 0xFFFFFFFFL);
@@ -58,6 +62,7 @@ public interface CongestionControl extends AutoCloseable
      * @param outcome which is packed containing the force status message flag.
      * @return true if the force status message bit has been set.
      */
+    @Pure
     static boolean shouldForceStatusMessage(final long outcome)
     {
         return ((int)(outcome >>> 32) & FORCE_STATUS_MESSAGE_BIT) == FORCE_STATUS_MESSAGE_BIT;
@@ -69,6 +74,7 @@ public interface CongestionControl extends AutoCloseable
      * @param windowLength to calculate the threshold from.
      * @return the threshold in the window after which a status message should be scheduled.
      */
+    @Pure
     static int threshold(final int windowLength)
     {
         return windowLength >> 2;
@@ -80,6 +86,7 @@ public interface CongestionControl extends AutoCloseable
      * @param nowNs in nanoseconds
      * @return true for should measure RTT now or false for no measurement
      */
+    @Pure
     boolean shouldMeasureRtt(long nowNs);
 
     /**
@@ -87,6 +94,7 @@ public interface CongestionControl extends AutoCloseable
      *
      * @param nowNs in nanoseconds.
      */
+    @Impure
     void onRttMeasurementSent(long nowNs);
 
     /**
@@ -96,6 +104,7 @@ public interface CongestionControl extends AutoCloseable
      * @param rttNs      to the Sender in nanoseconds
      * @param srcAddress of the Sender
      */
+    @Impure
     void onRttMeasurement(long nowNs, long rttNs, InetSocketAddress srcAddress);
 
     /**
@@ -113,6 +122,7 @@ public interface CongestionControl extends AutoCloseable
      * @param lossOccurred            during rebuild
      * @return outcome of congestion control calculation containing window length and whether to force sending an SM.
      */
+    @Impure
     long onTrackRebuild(
         long nowNs,
         long newConsumptionPosition,
@@ -127,6 +137,8 @@ public interface CongestionControl extends AutoCloseable
      *
      * @return initial window length for flow and congestion control.
      */
+    @Pure
+    @Impure
     int initialWindowLength();
 
     /**
@@ -134,10 +146,13 @@ public interface CongestionControl extends AutoCloseable
      *
      * @return maximum window length for flow and congestion control.
      */
+    @Pure
+    @Impure
     int maxWindowLength();
 
     /**
      * {@inheritDoc}
      */
+    @Impure
     void close();
 }

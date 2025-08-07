@@ -15,6 +15,9 @@
  */
 package io.aeron.samples.security;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.security.AuthorisationService;
 import org.agrona.collections.BiInt2ObjectMap;
 import org.agrona.collections.Int2ObjectHashMap;
@@ -35,6 +38,7 @@ public final class SimpleAuthorisationService implements AuthorisationService
     private final Object2ObjectHashMap<ByteArrayAsKey, Principal> principalByKeyMap = new Object2ObjectHashMap<>();
     private final Principal defaultPrincipal;
 
+    @Impure
     private SimpleAuthorisationService(final Builder builder)
     {
         defaultAuthorisation = builder.defaultAuthorisation;
@@ -45,6 +49,7 @@ public final class SimpleAuthorisationService implements AuthorisationService
     /**
      * {@inheritDoc}
      */
+    @Impure
     public boolean isAuthorised(
         final int protocolId,
         final int actionId,
@@ -72,6 +77,7 @@ public final class SimpleAuthorisationService implements AuthorisationService
         return defaultAuthorisation.isAuthorised(protocolId, actionId, type, encodedPrincipal);
     }
 
+    @Impure
     private Boolean isAuthorised(
         final Principal principal,
         final int protocolId,
@@ -103,6 +109,7 @@ public final class SimpleAuthorisationService implements AuthorisationService
          * @see AuthorisationService#ALLOW_ALL
          * @see AuthorisationService#DENY_ALL
          */
+        @Impure
         public Builder defaultAuthorisation(final AuthorisationService defaultAuthorisation)
         {
             this.defaultAuthorisation = defaultAuthorisation;
@@ -120,6 +127,7 @@ public final class SimpleAuthorisationService implements AuthorisationService
          * @param isAllowed        If the rule should allow or deny access.
          * @return this for a fluent API.
          */
+        @Impure
         public Builder addPrincipalRule(
             final int protocolId,
             final int actionId,
@@ -147,6 +155,7 @@ public final class SimpleAuthorisationService implements AuthorisationService
          * @param isAllowed        If the rule should allow or deny access.
          * @return this for a fluent API.
          */
+        @Impure
         public Builder addPrincipalRule(
             final int protocolId,
             final int actionId,
@@ -168,6 +177,7 @@ public final class SimpleAuthorisationService implements AuthorisationService
          * @param isAllowed        If the rule should allow or deny access.
          * @return this for a fluent API.
          */
+        @Impure
         public Builder addPrincipalRule(
             final int protocolId,
             final byte[] encodedPrincipal,
@@ -190,6 +200,7 @@ public final class SimpleAuthorisationService implements AuthorisationService
          * @param isAllowed  If the rule should allow or deny access.
          * @return this for a fluent API.
          */
+        @Impure
         public Builder addGeneralRule(
             final int protocolId,
             final int actionId,
@@ -211,6 +222,7 @@ public final class SimpleAuthorisationService implements AuthorisationService
          * @param isAllowed  If the rule should allow or deny access.
          * @return this for a fluent API.
          */
+        @Impure
         public Builder addGeneralRule(final int protocolId, final int actionId, final boolean isAllowed)
         {
             defaultPrincipal.byProtocolAction.put(protocolId, actionId, isAllowed);
@@ -224,6 +236,7 @@ public final class SimpleAuthorisationService implements AuthorisationService
          * @param isAllowed  If the rule should allow or deny access.
          * @return this for a fluent API.
          */
+        @Impure
         public Builder addGeneralRule(final int protocolId, final boolean isAllowed)
         {
             defaultPrincipal.byProtocol.put(protocolId, (Boolean)isAllowed);
@@ -235,6 +248,7 @@ public final class SimpleAuthorisationService implements AuthorisationService
          *
          * @return new SimpleAuthorisationService.
          */
+        @Impure
         public SimpleAuthorisationService newInstance()
         {
             return new SimpleAuthorisationService(this);
@@ -249,11 +263,13 @@ public final class SimpleAuthorisationService implements AuthorisationService
         private final BiInt2ObjectMap<Set<Object>> byProtocolActionTypeDenied = new BiInt2ObjectMap<>();
         private final byte[] encodedPrincipal;
 
+        @SideEffectFree
         private Principal(final byte[] encodedPrincipal)
         {
             this.encodedPrincipal = encodedPrincipal;
         }
 
+        @Impure
         public Boolean isAuthorised(final int protocolId, final int actionId, final Object type)
         {
             final Set<Object> typesAllowed = byProtocolActionTypeAllowed.getOrDefault(
@@ -284,11 +300,13 @@ public final class SimpleAuthorisationService implements AuthorisationService
     {
         private final byte[] data;
 
+        @SideEffectFree
         private ByteArrayAsKey(final byte[] data)
         {
             this.data = data;
         }
 
+        @Pure
         public boolean equals(final Object o)
         {
             if (this == o)
@@ -303,6 +321,7 @@ public final class SimpleAuthorisationService implements AuthorisationService
             return Arrays.equals(data, that.data);
         }
 
+        @Pure
         public int hashCode()
         {
             return Arrays.hashCode(data);

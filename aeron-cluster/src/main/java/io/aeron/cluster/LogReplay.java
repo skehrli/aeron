@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.*;
 import io.aeron.archive.client.AeronArchive;
 import io.aeron.cluster.client.ClusterException;
@@ -31,6 +33,7 @@ final class LogReplay
     private final LogAdapter logAdapter;
     private final Subscription logSubscription;
 
+    @Impure
     LogReplay(
         final AeronArchive archive,
         final long recordingId,
@@ -52,12 +55,14 @@ final class LogReplay
         logSubscription = ctx.aeron().addSubscription(ChannelUri.addSessionId(channel, logSessionId), streamId);
     }
 
+    @Impure
     void close()
     {
         logAdapter.disconnect(ctx.countedErrorHandler());
         CloseHelper.close(ctx.countedErrorHandler(), logSubscription);
     }
 
+    @Impure
     int doWork()
     {
         int workCount = 0;
@@ -95,6 +100,7 @@ final class LogReplay
         return workCount;
     }
 
+    @Impure
     boolean isDone()
     {
         return logAdapter.image() != null &&
@@ -102,6 +108,7 @@ final class LogReplay
             consensusModuleAgent.state() != ConsensusModule.State.SNAPSHOT;
     }
 
+    @Pure
     public String toString()
     {
         return "LogReplay{" +

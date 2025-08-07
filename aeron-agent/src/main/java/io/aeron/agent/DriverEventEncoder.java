@@ -15,6 +15,10 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.checker.mustcall.qual.Owning;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.DirectBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
 
@@ -32,10 +36,12 @@ import static org.agrona.BitUtil.*;
  */
 final class DriverEventEncoder
 {
+    @SideEffectFree
     private DriverEventEncoder()
     {
     }
 
+    @Impure
     static void encode(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -54,6 +60,7 @@ final class DriverEventEncoder
         encodingBuffer.putBytes(offset + encodedLength, srcBuffer, srcOffset, bufferCaptureLength);
     }
 
+    @Impure
     static void encode(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -72,6 +79,7 @@ final class DriverEventEncoder
         encodingBuffer.putBytes(offset + encodedLength, srcBuffer, srcOffset, bufferCaptureLength);
     }
 
+    @Impure
     static void encode(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -90,6 +98,7 @@ final class DriverEventEncoder
         encodingBuffer.putBytes(offset + encodedLength, srcBuffer, srcOffset, bufferCaptureLength);
     }
 
+    @Impure
     public static void encode(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -101,6 +110,7 @@ final class DriverEventEncoder
         encodeTrailingString(encodingBuffer, offset + encodedLength, captureLength, value);
     }
 
+    @Impure
     static void encode(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -112,6 +122,7 @@ final class DriverEventEncoder
         encodeSocketAddress(encodingBuffer, offset + encodedLength, address);
     }
 
+    @Impure
     static void encodePublicationRemoval(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -132,6 +143,7 @@ final class DriverEventEncoder
         encodeTrailingString(encodingBuffer, offset + encodedLength, captureLength - SIZE_OF_INT * 2, channel);
     }
 
+    @Impure
     static void encodeSubscriptionRemoval(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -153,6 +165,7 @@ final class DriverEventEncoder
             encodingBuffer, offset + encodedLength, captureLength - SIZE_OF_INT - SIZE_OF_LONG, channel);
     }
 
+    @Impure
     static void encodeImageRemoval(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -178,18 +191,21 @@ final class DriverEventEncoder
             encodingBuffer, offset + encodedLength, captureLength - SIZE_OF_INT * 2 - SIZE_OF_LONG, channel);
     }
 
-    static <E extends Enum<E>> int untetheredSubscriptionStateChangeLength(final E from, final E to)
+    @Pure
+    @Impure
+    static <E extends Enum<E>> int untetheredSubscriptionStateChangeLength(final @Owning E from, final @Owning E to)
     {
         return stateTransitionStringLength(from, to) + SIZE_OF_LONG + 2 * SIZE_OF_INT;
     }
 
+    @Impure
     static <E extends Enum<E>> void encodeUntetheredSubscriptionStateChange(
         final UnsafeBuffer encodingBuffer,
         final int offset,
         final int captureLength,
         final int length,
-        final E from,
-        final E to,
+        final @Owning E from,
+        final @Owning E to,
         final long subscriptionId,
         final int streamId,
         final int sessionId)
@@ -208,6 +224,7 @@ final class DriverEventEncoder
         encodeTrailingStateChange(encodingBuffer, offset, encodedLength, captureLength, from, to);
     }
 
+    @Impure
     static void encodeFlowControlReceiver(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -237,6 +254,7 @@ final class DriverEventEncoder
             encodingBuffer, offset + encodedLength, captureLength - SIZE_OF_INT * 3 - SIZE_OF_LONG, channel);
     }
 
+    @Impure
     static void encodeResolve(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -265,6 +283,7 @@ final class DriverEventEncoder
         encodeInetAddress(encodingBuffer, offset + encodedLength, inetAddress);
     }
 
+    @Impure
     static void encodeLookup(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -294,6 +313,7 @@ final class DriverEventEncoder
             encodingBuffer, offset + encodedLength, SIZE_OF_INT + MAX_HOST_NAME_LENGTH, resolvedName);
     }
 
+    @Impure
     static void encodeHostName(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -311,6 +331,7 @@ final class DriverEventEncoder
             encodingBuffer, offset + encodedLength, SIZE_OF_INT + MAX_HOST_NAME_LENGTH, hostName);
     }
 
+    @Impure
     static void encodeNakMessage(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -342,6 +363,7 @@ final class DriverEventEncoder
         encodeTrailingString(encodingBuffer, bodyOffset + bodyLength, captureLength - bodyLength, channel);
     }
 
+    @Impure
     static void encodeResend(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -371,6 +393,7 @@ final class DriverEventEncoder
         encodeTrailingString(encodingBuffer, bodyOffset + bodyLength, captureLength - bodyLength, channel);
     }
 
+    @Impure
     static void encodePublicationRevoke(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -394,6 +417,7 @@ final class DriverEventEncoder
         encodeTrailingString(encodingBuffer, bodyOffset + bodyLength, captureLength - bodyLength, channel);
     }
 
+    @Impure
     static void encodePublicationImageRevoke(
         final UnsafeBuffer encodingBuffer,
         final int offset,

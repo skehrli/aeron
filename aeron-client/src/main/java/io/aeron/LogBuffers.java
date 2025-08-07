@@ -15,6 +15,9 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.checker.mustcall.qual.NotOwning;
 import io.aeron.logbuffer.LogBufferDescriptor;
 import org.agrona.BufferUtil;
 import org.agrona.CloseHelper;
@@ -56,6 +59,7 @@ public final class LogBuffers implements AutoCloseable
      *
      * @param logFileName to be mapped.
      */
+    @Impure
     public LogBuffers(final String logFileName)
     {
         int termLength = 0;
@@ -160,6 +164,7 @@ public final class LogBuffers implements AutoCloseable
      *
      * @return duplicates of the wrapped underlying {@link ByteBuffer}s.
      */
+    @Impure
     public UnsafeBuffer[] duplicateTermBuffers()
     {
         final UnsafeBuffer[] buffers = new UnsafeBuffer[PARTITION_COUNT];
@@ -177,6 +182,7 @@ public final class LogBuffers implements AutoCloseable
      *
      * @return the buffer which holds the log metadata.
      */
+    @Pure
     public UnsafeBuffer metaDataBuffer()
     {
         return logMetaDataBuffer;
@@ -187,6 +193,8 @@ public final class LogBuffers implements AutoCloseable
      *
      * @return the {@link FileChannel} for the mapped log.
      */
+    @NotOwning
+    @Pure
     public FileChannel fileChannel()
     {
         return fileChannel;
@@ -195,6 +203,7 @@ public final class LogBuffers implements AutoCloseable
     /**
      * Pre touch memory pages, so they are faulted in to be available before access.
      */
+    @Impure
     public void preTouch()
     {
         final int value = 0;
@@ -215,6 +224,7 @@ public final class LogBuffers implements AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         close(fileChannel, logMetaDataBuffer, mappedByteBuffers);
@@ -225,6 +235,7 @@ public final class LogBuffers implements AutoCloseable
      *
      * @return length of the term buffer in each log partition.
      */
+    @Pure
     public int termLength()
     {
         return termLength;
@@ -235,6 +246,7 @@ public final class LogBuffers implements AutoCloseable
      *
      * @return current reference count after increment.
      */
+    @Impure
     public int incRef()
     {
         return ++refCount;
@@ -245,6 +257,7 @@ public final class LogBuffers implements AutoCloseable
      *
      * @return current reference counter after decrement.
      */
+    @Impure
     public int decRef()
     {
         return --refCount;
@@ -255,6 +268,7 @@ public final class LogBuffers implements AutoCloseable
      *
      * @param timeNs the deadline for how long to linger around once unreferenced.
      */
+    @Impure
     public void lingerDeadlineNs(final long timeNs)
     {
         lingerDeadlineNs = timeNs;
@@ -265,11 +279,13 @@ public final class LogBuffers implements AutoCloseable
      *
      * @return the deadline for how long to linger around once unreferenced.
      */
+    @Pure
     public long lingerDeadlineNs()
     {
         return lingerDeadlineNs;
     }
 
+    @Impure
     private static void close(
         final FileChannel fileChannel, final UnsafeBuffer logMetaDataBuffer, final MappedByteBuffer[] mappedByteBuffers)
     {

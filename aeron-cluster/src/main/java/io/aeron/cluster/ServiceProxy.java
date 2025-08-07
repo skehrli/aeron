@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Publication;
 import io.aeron.cluster.client.ClusterEvent;
 import io.aeron.cluster.client.ClusterException;
@@ -40,16 +42,19 @@ final class ServiceProxy implements AutoCloseable
     private final ExpandableArrayBuffer expandableArrayBuffer = new ExpandableArrayBuffer();
     private final Publication publication;
 
+    @SideEffectFree
     ServiceProxy(final Publication publication)
     {
         this.publication = publication;
     }
 
+    @Impure
     public void close()
     {
         CloseHelper.close(publication);
     }
 
+    @Impure
     void joinLog(
         final long logPosition,
         final long maxLogPosition,
@@ -97,6 +102,7 @@ final class ServiceProxy implements AutoCloseable
         throw new ClusterException("failed to send join log request: " + Publication.errorString(position));
     }
 
+    @Impure
     void clusterMembersResponse(
         final long correlationId, final int leaderMemberId, final String activeMembers)
     {
@@ -134,6 +140,7 @@ final class ServiceProxy implements AutoCloseable
         throw new ClusterException("failed to send cluster members response: result=" + result);
     }
 
+    @Impure
     void clusterMembersExtendedResponse(
         final long correlationId,
         final long currentTimeNs,
@@ -188,6 +195,7 @@ final class ServiceProxy implements AutoCloseable
         throw new ClusterException("failed to send cluster members extended response: result=" + result);
     }
 
+    @Impure
     void terminationPosition(final long logPosition, final ErrorHandler errorHandler)
     {
         if (!publication.isClosed())
@@ -222,6 +230,7 @@ final class ServiceProxy implements AutoCloseable
         }
     }
 
+    @Impure
     void requestServiceAck(final long logPosition)
     {
         final int length = MessageHeaderEncoder.ENCODED_LENGTH + RequestServiceAckEncoder.BLOCK_LENGTH;
@@ -252,6 +261,7 @@ final class ServiceProxy implements AutoCloseable
         throw new ClusterException("failed to send request for service ack: result=" + Publication.errorString(result));
     }
 
+    @Impure
     private static void checkResult(final long position, final Publication publication)
     {
         if (Publication.NOT_CONNECTED == position)

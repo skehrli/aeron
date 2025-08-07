@@ -15,6 +15,7 @@
  */
 package io.aeron.cluster.client;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.cluster.codecs.AdminRequestType;
 import io.aeron.cluster.codecs.AdminResponseCode;
 import io.aeron.cluster.codecs.EventCode;
@@ -37,6 +38,7 @@ public interface EgressListener
      * @param length           of the message in bytes.
      * @param header           Aeron header associated with the message fragment.
      */
+    @SideEffectFree
     void onMessage(
         long clusterSessionId,
         long timestamp,
@@ -55,6 +57,7 @@ public interface EgressListener
      * @param code             to indicate the type of event.
      * @param detail           Textual detail to explain the event.
      */
+    @SideEffectFree
     default void onSessionEvent(
         long correlationId,
         long clusterSessionId,
@@ -73,6 +76,7 @@ public interface EgressListener
      * @param leaderMemberId   identity of the active leader.
      * @param ingressEndpoints for connecting to the cluster which can be updated due to dynamic membership.
      */
+    @SideEffectFree
     default void onNewLeader(long clusterSessionId, long leadershipTermId, int leaderMemberId, String ingressEndpoints)
     {
     }
@@ -89,6 +93,7 @@ public interface EgressListener
      * @param payloadOffset    into the payload buffer.
      * @param payloadLength    of the payload.
      */
+    @SideEffectFree
     default void onAdminResponse(
         long clusterSessionId,
         long correlationId,

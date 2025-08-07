@@ -15,6 +15,9 @@
  */
 package io.aeron.config.validation;
 
+import org.checkerframework.checker.mustcall.qual.Owning;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.config.ConfigInfo;
 import io.aeron.config.ExpectedCConfig;
 
@@ -27,11 +30,13 @@ final class ValidationReport
 {
     private final List<Entry> entries;
 
+    @SideEffectFree
     ValidationReport()
     {
         entries = new ArrayList<>();
     }
 
+    @Impure
     void addEntry(
         final ConfigInfo configInfo,
         final BiConsumer<Validation, ExpectedCConfig> validateCEnvVar,
@@ -55,9 +60,10 @@ final class ValidationReport
         entries.add(entry);
     }
 
+    @Impure
     private void validate(
         final BiConsumer<Validation, ExpectedCConfig> func,
-        final Validation validation,
+        final @Owning Validation validation,
         final ExpectedCConfig c)
     {
         try
@@ -75,11 +81,13 @@ final class ValidationReport
         }
     }
 
+    @Impure
     void printOn(final PrintStream out)
     {
         entries.forEach(entry -> entry.printOn(out));
     }
 
+    @Impure
     void printFailuresOn(final PrintStream out)
     {
         entries.forEach(entry -> entry.printFailuresOn(out));

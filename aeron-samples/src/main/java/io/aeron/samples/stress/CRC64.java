@@ -15,6 +15,8 @@
  */
 package io.aeron.samples.stress;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.DirectBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
 
@@ -56,11 +58,13 @@ public class CRC64
     /**
      * Construct new CRC.
      */
+    @SideEffectFree
     public CRC64()
     {
         this.value = 0;
     }
 
+    @Impure
     long recalculate(final byte[] b, final int offset, final int length)
     {
         value = 0;
@@ -68,6 +72,7 @@ public class CRC64
         return value;
     }
 
+    @Impure
     long recalculate(final DirectBuffer b, final int offset, final int length)
     {
         value = 0;
@@ -82,6 +87,7 @@ public class CRC64
      * @param offset    the position to read from.
      * @param len       length to process.
      */
+    @Impure
     public void update(final byte[] b, final int offset, final int len)
     {
         int remaining = len;
@@ -103,6 +109,7 @@ public class CRC64
      * @param offset    the position to read from.
      * @param len       length to process.
      */
+    @Impure
     public void update(final DirectBuffer b, final int offset, final int len)
     {
         int remaining = len;
@@ -117,6 +124,7 @@ public class CRC64
         this.value = ~this.value;
     }
 
+    @Impure
     private static void test(final byte[] b, final int len, final long crcValue) throws Exception
     {
         /* Test CRC64 default calculation. */
@@ -137,6 +145,7 @@ public class CRC64
      * @param args command line args.
      * @throws Exception on failure.
      */
+    @Impure
     public static void main(final String[] args) throws Exception
     {
         final byte[] test1 = "123456789".getBytes();

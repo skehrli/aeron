@@ -15,6 +15,9 @@
  */
 package io.aeron.counter.validation;
 
+import org.checkerframework.checker.mustcall.qual.Owning;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.counter.CounterInfo;
 
 import java.io.PrintStream;
@@ -26,11 +29,13 @@ final class ValidationReport
 {
     private final List<Validation> validations;
 
+    @SideEffectFree
     ValidationReport()
     {
         validations = new ArrayList<>();
     }
 
+    @Impure
     void addValidation(
         final CounterInfo counterInfo,
         final BiConsumer<Validation, CounterInfo> validateFunc)
@@ -40,6 +45,7 @@ final class ValidationReport
         validations.add(validation);
     }
 
+    @Impure
     void addValidation(
         final boolean valid,
         final String name,
@@ -57,9 +63,10 @@ final class ValidationReport
         validations.add(validation);
     }
 
+    @Impure
     private void validate(
         final BiConsumer<Validation, CounterInfo> func,
-        final Validation validation,
+        final @Owning Validation validation,
         final CounterInfo c)
     {
         try
@@ -77,11 +84,13 @@ final class ValidationReport
         }
     }
 
+    @Impure
     void printOn(final PrintStream out)
     {
         validations.forEach(validation -> validation.printOn(out));
     }
 
+    @Impure
     void printFailuresOn(final PrintStream out)
     {
         validations.stream().filter(validation -> !validation.isValid()).forEach(validation -> validation.printOn(out));

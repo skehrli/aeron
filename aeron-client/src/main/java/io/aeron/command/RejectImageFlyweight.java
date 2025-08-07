@@ -15,6 +15,8 @@
  */
 package io.aeron.command;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.exceptions.ControlProtocolException;
 import org.agrona.MutableDirectBuffer;
 
@@ -62,6 +64,7 @@ public class RejectImageFlyweight extends CorrelatedMessageFlyweight
      * @param offset at which the message begins.
      * @return this for a fluent API.
      */
+    @Impure
     public RejectImageFlyweight wrap(final MutableDirectBuffer buffer, final int offset)
     {
         super.wrap(buffer, offset);
@@ -73,6 +76,7 @@ public class RejectImageFlyweight extends CorrelatedMessageFlyweight
      *
      * @return image correlation id field.
      */
+    @Impure
     public long imageCorrelationId()
     {
         return buffer.getLong(offset + IMAGE_CORRELATION_ID_FIELD_OFFSET);
@@ -84,6 +88,7 @@ public class RejectImageFlyweight extends CorrelatedMessageFlyweight
      * @param position new image correlation id value.
      * @return this for a fluent API.
      */
+    @Impure
     public RejectImageFlyweight imageCorrelationId(final long position)
     {
         buffer.putLong(offset + IMAGE_CORRELATION_ID_FIELD_OFFSET, position);
@@ -95,6 +100,7 @@ public class RejectImageFlyweight extends CorrelatedMessageFlyweight
      *
      * @return position field.
      */
+    @Impure
     public long position()
     {
         return buffer.getLong(offset + POSITION_FIELD_OFFSET);
@@ -106,6 +112,7 @@ public class RejectImageFlyweight extends CorrelatedMessageFlyweight
      * @param position new position value.
      * @return this for a fluent API.
      */
+    @Impure
     public RejectImageFlyweight position(final long position)
     {
         buffer.putLong(offset + POSITION_FIELD_OFFSET, position);
@@ -118,6 +125,7 @@ public class RejectImageFlyweight extends CorrelatedMessageFlyweight
      * @param reason for invalidating the image.
      * @return this for a fluent API.
      */
+    @Impure
     public RejectImageFlyweight reason(final String reason)
     {
         buffer.putStringAscii(offset + REASON_FIELD_OFFSET, reason);
@@ -130,6 +138,7 @@ public class RejectImageFlyweight extends CorrelatedMessageFlyweight
      *
      * @return reason for invalidating the image.
      */
+    @Impure
     public String reason()
     {
         return buffer.getStringAscii(offset + REASON_FIELD_OFFSET);
@@ -140,6 +149,7 @@ public class RejectImageFlyweight extends CorrelatedMessageFlyweight
      *
      * @return length of the reason text.
      */
+    @Impure
     public int reasonBufferLength()
     {
         // This does make the assumption that the string is stored with the leading 4 bytes representing the length.
@@ -149,6 +159,7 @@ public class RejectImageFlyweight extends CorrelatedMessageFlyweight
     /**
      * {@inheritDoc}
      */
+    @Impure
     public RejectImageFlyweight clientId(final long clientId)
     {
         super.clientId(clientId);
@@ -158,6 +169,7 @@ public class RejectImageFlyweight extends CorrelatedMessageFlyweight
     /**
      * {@inheritDoc}
      */
+    @Impure
     public RejectImageFlyweight correlationId(final long correlationId)
     {
         super.correlationId(correlationId);
@@ -170,6 +182,7 @@ public class RejectImageFlyweight extends CorrelatedMessageFlyweight
      * @param reason message to be return to originator.
      * @return length of the message.
      */
+    @Pure
     public static int computeLength(final String reason)
     {
         return MINIMUM_SIZE + reason.length();
@@ -181,6 +194,7 @@ public class RejectImageFlyweight extends CorrelatedMessageFlyweight
      * @param msgTypeId type of message.
      * @param length of message in bytes to validate.
      */
+    @Impure
     public void validateLength(final int msgTypeId, final int length)
     {
         if (length < MINIMUM_SIZE)

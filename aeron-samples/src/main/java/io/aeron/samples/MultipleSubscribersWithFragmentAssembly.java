@@ -16,6 +16,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.FragmentAssembler;
 import io.aeron.Image;
@@ -49,6 +50,7 @@ public class MultipleSubscribersWithFragmentAssembly
      *
      * @param args passed to the process.
      */
+    @Impure
     public static void main(final String[] args)
     {
         System.out.format("Subscribing to %s on stream ID %d and stream ID %d%n",
@@ -97,6 +99,7 @@ public class MultipleSubscribersWithFragmentAssembly
      *
      * @param image that has been created.
      */
+    @Impure
     public static void eventAvailableImage(final Image image)
     {
         final Subscription subscription = image.subscription();
@@ -110,6 +113,7 @@ public class MultipleSubscribersWithFragmentAssembly
      *
      * @param image that has gone inactive.
      */
+    @Impure
     public static void eventUnavailableImage(final Image image)
     {
         final Subscription subscription = image.subscription();
@@ -124,6 +128,7 @@ public class MultipleSubscribersWithFragmentAssembly
      * @param streamId to show when printing.
      * @return subscription data handler function that prints the message contents.
      */
+    @Impure
     public static FragmentHandler reassembledMessage1(final int streamId)
     {
         return (buffer, offset, length, header) ->
@@ -148,6 +153,7 @@ public class MultipleSubscribersWithFragmentAssembly
      * @param streamId to show when printing.
      * @return subscription data handler function that prints the message contents.
      */
+    @Impure
     public static FragmentHandler reassembledMessage2(final int streamId)
     {
         return (buffer, offset, length, header) ->

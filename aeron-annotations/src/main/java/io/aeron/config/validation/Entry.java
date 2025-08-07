@@ -15,6 +15,7 @@
  */
 package io.aeron.config.validation;
 
+import org.checkerframework.dataflow.qual.Impure;
 import java.io.PrintStream;
 import io.aeron.config.ConfigInfo;
 
@@ -24,6 +25,7 @@ class Entry
     final Validation envVarValidation;
     final Validation defaultValidation;
 
+    @Impure
     Entry(final ConfigInfo configInfo)
     {
         this.configInfo = configInfo;
@@ -31,6 +33,7 @@ class Entry
         this.defaultValidation = new Validation();
     }
 
+    @Impure
     void printOn(final PrintStream out)
     {
         if (configInfo.expectations.c.exists)
@@ -45,6 +48,7 @@ class Entry
         }
     }
 
+    @Impure
     void printFailuresOn(final PrintStream out)
     {
         if (configInfo.expectations.c.exists && (!envVarValidation.isValid() || !defaultValidation.isValid()))

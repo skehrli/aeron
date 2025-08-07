@@ -15,6 +15,7 @@
  */
 package io.aeron.cluster.client;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.DirectBuffer;
 
 /**
@@ -34,6 +35,7 @@ public interface EgressListenerExtension
      * @param offset            message offset.
      * @param length            message length.
      */
+    @SideEffectFree
     void onExtensionMessage(
         int actingBlockLength,
         int templateId,

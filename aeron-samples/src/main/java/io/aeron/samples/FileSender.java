@@ -15,6 +15,8 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.Publication;
 import io.aeron.logbuffer.BufferClaim;
@@ -91,6 +93,7 @@ public class FileSender
      * @param args passed to the process.
      * @throws InterruptedException if the thread is interrupted when sleeping.
      */
+    @Impure
     public static void main(final String[] args) throws InterruptedException
     {
         if (args.length != 1)
@@ -116,6 +119,7 @@ public class FileSender
         }
     }
 
+    @Impure
     private static void sendFileCreate(
         final Publication publication, final long correlationId, final int length, final String filename)
     {
@@ -136,6 +140,7 @@ public class FileSender
         }
     }
 
+    @Impure
     private static void streamChunks(final Publication publication, final long correlationId, final UnsafeBuffer buffer)
     {
         final BufferClaim bufferClaim = new BufferClaim();
@@ -151,6 +156,7 @@ public class FileSender
         }
     }
 
+    @Impure
     private static void sendChunk(
         final Publication publication,
         final BufferClaim bufferClaim,
@@ -179,6 +185,7 @@ public class FileSender
         bufferClaim.commit();
     }
 
+    @SideEffectFree
     private static void checkResult(final long position)
     {
         if (position == Publication.CLOSED)

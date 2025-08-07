@@ -15,6 +15,9 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.config.Config;
 import io.aeron.config.DefaultType;
 import io.aeron.exceptions.AeronException;
@@ -114,6 +117,7 @@ public class CommonContext implements Cloneable
          * @param value to be parsed.
          * @return {@link InferableBoolean} which matches the string.
          */
+        @Pure
         public static InferableBoolean parse(final String value)
         {
             if (null == value || "infer".equals(value))
@@ -501,6 +505,7 @@ public class CommonContext implements Cloneable
      * @return {@code true} if the configuration should be printed on start.
      * @see #PRINT_CONFIGURATION_ON_START_PROP_NAME
      */
+    @Pure
     public static boolean shouldPrintConfigurationOnStart()
     {
         return "true".equals(getProperty(PRINT_CONFIGURATION_ON_START_PROP_NAME));
@@ -513,6 +518,7 @@ public class CommonContext implements Cloneable
      * @see #SECURE_RANDOM_ALGORITHM_PROP_NAME
      * @see #SECURE_RANDOM_ALGORITHM_DEFAULT
      */
+    @Pure
     public static String getSecureRandomAlgorithm()
     {
         return System.getProperty(SECURE_RANDOM_ALGORITHM_PROP_NAME, SECURE_RANDOM_ALGORITHM_DEFAULT);
@@ -523,6 +529,7 @@ public class CommonContext implements Cloneable
      *
      * @return the configured PrintStream.
      */
+    @Pure
     @Config
     public static PrintStream fallbackLogger()
     {
@@ -593,6 +600,7 @@ public class CommonContext implements Cloneable
      *
      * @return a shallow copy of the object.
      */
+    @SideEffectFree
     public CommonContext clone()
     {
         try
@@ -611,6 +619,7 @@ public class CommonContext implements Cloneable
      *
      * @return the default directory name to be used if {@link #aeronDirectoryName(String)} is not set.
      */
+    @Pure
     @Config(id = "AERON_DIR")
     public static String getAeronDirectoryName()
     {
@@ -622,6 +631,7 @@ public class CommonContext implements Cloneable
      *
      * @return random directory name with default directory name as base
      */
+    @Impure
     public static String generateRandomDirName()
     {
         return AERON_DIR_PROP_DEFAULT + "-" + UUID.randomUUID();
@@ -632,6 +642,7 @@ public class CommonContext implements Cloneable
      *
      * @return this Object for method chaining.
      */
+    @Impure
     public CommonContext conclude()
     {
         if ((boolean)IS_CONCLUDED_VH.getAndSet(this, true))
@@ -651,6 +662,7 @@ public class CommonContext implements Cloneable
      *
      * @return true of the {@link #conclude()} method has been called.
      */
+    @Pure
     public boolean isConcluded()
     {
         return isConcluded;
@@ -661,6 +673,7 @@ public class CommonContext implements Cloneable
      *
      * @return this for a fluent API.
      */
+    @Impure
     public CommonContext concludeAeronDirectory()
     {
         if (null == aeronDirectory)
@@ -684,6 +697,7 @@ public class CommonContext implements Cloneable
      *
      * @return The top level Aeron directory.
      */
+    @Pure
     public String aeronDirectoryName()
     {
         return aeronDirectoryName;
@@ -697,6 +711,7 @@ public class CommonContext implements Cloneable
      * @return the directory in which the aeron config files are stored.
      * @see #aeronDirectoryName()
      */
+    @Pure
     public File aeronDirectory()
     {
         return aeronDirectory;
@@ -709,6 +724,7 @@ public class CommonContext implements Cloneable
      * @param dirName New top level Aeron directory.
      * @return this for a fluent API.
      */
+    @Impure
     public CommonContext aeronDirectoryName(final String dirName)
     {
         this.aeronDirectoryName = dirName;
@@ -720,6 +736,7 @@ public class CommonContext implements Cloneable
      *
      * @return The newly created File.
      */
+    @SideEffectFree
     public static File newDefaultCncFile()
     {
         return new File(getProperty(AERON_DIR_PROP_NAME, AERON_DIR_PROP_DEFAULT), CncFileDescriptor.CNC_FILE);
@@ -731,6 +748,7 @@ public class CommonContext implements Cloneable
      * @param aeronDirectoryName name of the aeronDirectory that containing the cnc file.
      * @return The newly created File.
      */
+    @SideEffectFree
     public static File newCncFile(final String aeronDirectoryName)
     {
         return new File(aeronDirectoryName, CncFileDescriptor.CNC_FILE);
@@ -742,6 +760,7 @@ public class CommonContext implements Cloneable
      *
      * @return The buffer storing the counter metadata.
      */
+    @Pure
     public UnsafeBuffer countersMetaDataBuffer()
     {
         return countersMetaDataBuffer;
@@ -753,6 +772,7 @@ public class CommonContext implements Cloneable
      * @param countersMetaDataBuffer The new counter metadata buffer.
      * @return this for a fluent API.
      */
+    @Impure
     public CommonContext countersMetaDataBuffer(final UnsafeBuffer countersMetaDataBuffer)
     {
         this.countersMetaDataBuffer = countersMetaDataBuffer;
@@ -764,6 +784,7 @@ public class CommonContext implements Cloneable
      *
      * @return The buffer storing the counters.
      */
+    @Pure
     public UnsafeBuffer countersValuesBuffer()
     {
         return countersValuesBuffer;
@@ -775,6 +796,7 @@ public class CommonContext implements Cloneable
      * @param countersValuesBuffer The new counters buffer.
      * @return this for a fluent API.
      */
+    @Impure
     public CommonContext countersValuesBuffer(final UnsafeBuffer countersValuesBuffer)
     {
         this.countersValuesBuffer = countersValuesBuffer;
@@ -786,6 +808,7 @@ public class CommonContext implements Cloneable
      *
      * @return The command and control file.
      */
+    @Pure
     public File cncFile()
     {
         return cncFile;
@@ -797,6 +820,7 @@ public class CommonContext implements Cloneable
      * @param driverTimeoutMs to indicate liveness of driver
      * @return this for a fluent API.
      */
+    @Impure
     public CommonContext driverTimeoutMs(final long driverTimeoutMs)
     {
         this.driverTimeoutMs = driverTimeoutMs;
@@ -808,6 +832,7 @@ public class CommonContext implements Cloneable
      *
      * @return driver timeout in milliseconds.
      */
+    @Impure
     @Config(id = "DRIVER_TIMEOUT")
     public long driverTimeoutMs()
     {
@@ -821,6 +846,7 @@ public class CommonContext implements Cloneable
      * @see #enableExperimentalFeatures(boolean)
      * @since 1.44.0
      */
+    @Pure
     @Config
     public boolean enableExperimentalFeatures()
     {
@@ -836,6 +862,7 @@ public class CommonContext implements Cloneable
      * @see #enableExperimentalFeatures()
      * @since 1.44.0
      */
+    @Impure
     public CommonContext enableExperimentalFeatures(final boolean enableExperimentalFeatures)
     {
         this.enableExperimentalFeatures = enableExperimentalFeatures;
@@ -851,6 +878,7 @@ public class CommonContext implements Cloneable
      * @return The debug timeout if specified, and we are being debugged or the supplied value if not. Will be in
      * timeUnit units.
      */
+    @Impure
     public static long checkDebugTimeout(final long timeout, final TimeUnit timeUnit)
     {
         return checkDebugTimeout(timeout, timeUnit, 1.0);
@@ -867,6 +895,7 @@ public class CommonContext implements Cloneable
      * @return The debug timeout if specified, and we are being debugged or the supplied value if not. Will be in
      * timeUnit units.
      */
+    @Impure
     public static long checkDebugTimeout(final long timeout, final TimeUnit timeUnit, final double factor)
     {
         final String debugTimeoutString = getProperty(DEBUG_TIMEOUT_PROP_NAME);
@@ -912,6 +941,7 @@ public class CommonContext implements Cloneable
     /**
      * Delete the current Aeron directory, throwing errors if not possible.
      */
+    @Impure
     public void deleteAeronDirectory()
     {
         IoUtil.delete(aeronDirectory, false);
@@ -923,6 +953,7 @@ public class CommonContext implements Cloneable
      * @param logger for feedback
      * @return a new mapping for the file if it exists otherwise null;
      */
+    @Impure
     public MappedByteBuffer mapExistingCncFile(final Consumer<String> logger)
     {
         final File cncFile = new File(aeronDirectory, CncFileDescriptor.CNC_FILE);
@@ -948,6 +979,7 @@ public class CommonContext implements Cloneable
      * @param logger          for feedback as liveness checked.
      * @return true if a driver is active or false if not.
      */
+    @Impure
     public static boolean isDriverActive(
         final File directory, final long driverTimeoutMs, final Consumer<String> logger)
     {
@@ -978,6 +1010,7 @@ public class CommonContext implements Cloneable
      * @param logger          for feedback as liveness checked.
      * @return true if a driver is active or false if not.
      */
+    @Impure
     public boolean isDriverActive(final long driverTimeoutMs, final Consumer<String> logger)
     {
         final MappedByteBuffer cncByteBuffer = mapExistingCncFile(logger);
@@ -1000,6 +1033,7 @@ public class CommonContext implements Cloneable
      * @param cncByteBuffer   for the existing CnC file.
      * @return true if a driver is active or false if not.
      */
+    @Impure
     public static boolean isDriverActive(
         final long driverTimeoutMs, final Consumer<String> logger, final ByteBuffer cncByteBuffer)
     {
@@ -1045,6 +1079,7 @@ public class CommonContext implements Cloneable
      * @param tokenLength of the token in the tokenBuffer.
      * @return true if request was sent or false if request could not be sent.
      */
+    @Impure
     public static boolean requestDriverTermination(
         final File directory,
         final DirectBuffer tokenBuffer,
@@ -1088,6 +1123,7 @@ public class CommonContext implements Cloneable
      * @param out to write the error log contents to.
      * @return the number of observations from the error log.
      */
+    @Impure
     public int saveErrorLog(final PrintStream out)
     {
         final MappedByteBuffer cncByteBuffer = mapExistingCncFile(null);
@@ -1108,6 +1144,7 @@ public class CommonContext implements Cloneable
      * @param cncByteBuffer containing the error log.
      * @return the number of observations from the error log.
      */
+    @Impure
     public int saveErrorLog(final PrintStream out, final ByteBuffer cncByteBuffer)
     {
         if (null == cncByteBuffer)
@@ -1121,6 +1158,7 @@ public class CommonContext implements Cloneable
     /**
      * Release resources used by the CommonContext.
      */
+    @Impure
     public void close()
     {
     }
@@ -1132,6 +1170,7 @@ public class CommonContext implements Cloneable
      * @param out         print the errors to.
      * @return number of distinct errors observed.
      */
+    @Impure
     public static int printErrorLog(final AtomicBuffer errorBuffer, final PrintStream out)
     {
         int distinctErrorCount = 0;
@@ -1172,6 +1211,7 @@ public class CommonContext implements Cloneable
      * @param logger          to which the existing errors will be printed.
      * @param errorFilePrefix to add to the generated error file.
      */
+    @Impure
     public static void saveExistingErrors(
         final File markFile,
         final AtomicBuffer errorBuffer,
@@ -1211,6 +1251,7 @@ public class CommonContext implements Cloneable
      * @param cncByteBuffer which contains the error log.
      * @return an {@link AtomicBuffer} which wraps the error log in the CnC file.
      */
+    @Impure
     public static AtomicBuffer errorLogBuffer(final ByteBuffer cncByteBuffer)
     {
         final DirectBuffer cncMetaDataBuffer = CncFileDescriptor.createMetaDataBuffer(cncByteBuffer);
@@ -1228,6 +1269,7 @@ public class CommonContext implements Cloneable
      * @param errorLog         the configured errorLog, either the default or user supplied.
      * @return an error handler that will delegate to both the userErrorHandler and the errorLog.
      */
+    @Impure
     public static ErrorHandler setupErrorHandler(final ErrorHandler userErrorHandler, final DistinctErrorLog errorLog)
     {
         return setupErrorHandler(userErrorHandler, errorLog, fallbackLogger());
@@ -1242,6 +1284,7 @@ public class CommonContext implements Cloneable
      * @return file page size from running media driver or {@link LogBufferDescriptor#PAGE_MIN_SIZE} if driver is old.
      * @since 1.48.0
      */
+    @Impure
     public static int driverFilePageSize(final File aeronDirectory, final EpochClock clock, final long timeoutMs)
     {
         final UnsafeBuffer metadata =
@@ -1265,6 +1308,7 @@ public class CommonContext implements Cloneable
      * @return next correlation id.
      * @since 1.48.0
      */
+    @Impure
     public static long nextCorrelationId(final File aeronDirectory, final EpochClock clock, final long timeoutMs)
     {
         final UnsafeBuffer metadata =
@@ -1283,12 +1327,14 @@ public class CommonContext implements Cloneable
         }
     }
 
+    @Impure
     static int driverFilePageSize(final DirectBuffer metadata)
     {
         final int pageSize = CncFileDescriptor.filePageSize(metadata);
         return 0 != pageSize ? pageSize : LogBufferDescriptor.PAGE_MIN_SIZE;
     }
 
+    @Impure
     @SuppressWarnings("try")
     static UnsafeBuffer awaitCncFileCreation(
         final File cncFile, final EpochClock clock, final long deadlineMs)
@@ -1370,6 +1416,7 @@ public class CommonContext implements Cloneable
         }
     }
 
+    @Impure
     static ErrorHandler setupErrorHandler(
         final ErrorHandler userErrorHandler, final DistinctErrorLog errorLog, final PrintStream fallbackErrorStream)
     {
@@ -1384,6 +1431,7 @@ public class CommonContext implements Cloneable
         }
     }
 
+    @Impure
     static void sleep(final long durationMs)
     {
         try
@@ -1397,6 +1445,7 @@ public class CommonContext implements Cloneable
         }
     }
 
+    @SideEffectFree
     private static String cncFileErrorMessage(final File file, final Exception ex)
     {
         return "cannot open CnC file: " + file.getAbsolutePath() + " reason=" + ex;
@@ -1407,12 +1456,14 @@ public class CommonContext implements Cloneable
         private final LoggingErrorHandler loggingErrorHandler;
         private final ErrorHandler userErrorHandler;
 
+        @SideEffectFree
         private ErrorHandlerWrapper(final LoggingErrorHandler loggingErrorHandler, final ErrorHandler userErrorHandler)
         {
             this.loggingErrorHandler = loggingErrorHandler;
             this.userErrorHandler = userErrorHandler;
         }
 
+        @Impure
         public void close()
         {
             loggingErrorHandler.close();
@@ -1422,6 +1473,7 @@ public class CommonContext implements Cloneable
             }
         }
 
+        @Impure
         public void onError(final Throwable throwable)
         {
             loggingErrorHandler.onError(throwable);

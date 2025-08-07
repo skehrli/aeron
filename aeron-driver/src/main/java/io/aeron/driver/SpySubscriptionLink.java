@@ -15,12 +15,14 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.media.UdpChannel;
 
 class SpySubscriptionLink extends SubscriptionLink
 {
     private final UdpChannel udpChannel;
 
+    @Impure
     SpySubscriptionLink(
         final long registrationId,
         final UdpChannel spiedChannel,
@@ -33,6 +35,7 @@ class SpySubscriptionLink extends SubscriptionLink
         this.udpChannel = spiedChannel;
     }
 
+    @Impure
     boolean matches(final NetworkPublication publication)
     {
         final UdpChannel publicationChannel = publication.channelEndpoint().udpChannel();

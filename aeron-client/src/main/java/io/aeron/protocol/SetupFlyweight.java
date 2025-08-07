@@ -15,6 +15,7 @@
  */
 package io.aeron.protocol;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import java.nio.ByteBuffer;
@@ -87,6 +88,7 @@ public class SetupFlyweight extends HeaderFlyweight
     /**
      * Default constructor which can later be used to wrap a frame.
      */
+    @Impure
     public SetupFlyweight()
     {
     }
@@ -96,6 +98,7 @@ public class SetupFlyweight extends HeaderFlyweight
      *
      * @param buffer containing the frame.
      */
+    @Impure
     public SetupFlyweight(final UnsafeBuffer buffer)
     {
         super(buffer);
@@ -106,6 +109,7 @@ public class SetupFlyweight extends HeaderFlyweight
      *
      * @param buffer containing the frame.
      */
+    @Impure
     public SetupFlyweight(final ByteBuffer buffer)
     {
         super(buffer);
@@ -116,6 +120,7 @@ public class SetupFlyweight extends HeaderFlyweight
      *
      * @return term offset field.
      */
+    @Impure
     public int termOffset()
     {
         return getInt(TERM_OFFSET_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -127,6 +132,7 @@ public class SetupFlyweight extends HeaderFlyweight
      * @param termOffset field value.
      * @return this for a fluent API.
      */
+    @Impure
     public SetupFlyweight termOffset(final int termOffset)
     {
         putInt(TERM_OFFSET_FIELD_OFFSET, termOffset, LITTLE_ENDIAN);
@@ -139,6 +145,7 @@ public class SetupFlyweight extends HeaderFlyweight
      *
      * @return session id field.
      */
+    @Impure
     public int sessionId()
     {
         return getInt(SESSION_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -150,6 +157,7 @@ public class SetupFlyweight extends HeaderFlyweight
      * @param sessionId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public SetupFlyweight sessionId(final int sessionId)
     {
         putInt(SESSION_ID_FIELD_OFFSET, sessionId, LITTLE_ENDIAN);
@@ -162,6 +170,7 @@ public class SetupFlyweight extends HeaderFlyweight
      *
      * @return stream id field.
      */
+    @Impure
     public int streamId()
     {
         return getInt(STREAM_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -173,6 +182,7 @@ public class SetupFlyweight extends HeaderFlyweight
      * @param streamId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public SetupFlyweight streamId(final int streamId)
     {
         putInt(STREAM_ID_FIELD_OFFSET, streamId, LITTLE_ENDIAN);
@@ -185,6 +195,7 @@ public class SetupFlyweight extends HeaderFlyweight
      *
      * @return initial term id field.
      */
+    @Impure
     public int initialTermId()
     {
         return getInt(INITIAL_TERM_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -196,6 +207,7 @@ public class SetupFlyweight extends HeaderFlyweight
      * @param termId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public SetupFlyweight initialTermId(final int termId)
     {
         putInt(INITIAL_TERM_ID_FIELD_OFFSET, termId, LITTLE_ENDIAN);
@@ -208,6 +220,7 @@ public class SetupFlyweight extends HeaderFlyweight
      *
      * @return term id field.
      */
+    @Impure
     public int activeTermId()
     {
         return getInt(ACTIVE_TERM_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -219,6 +232,7 @@ public class SetupFlyweight extends HeaderFlyweight
      * @param termId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public SetupFlyweight activeTermId(final int termId)
     {
         putInt(ACTIVE_TERM_ID_FIELD_OFFSET, termId, LITTLE_ENDIAN);
@@ -231,6 +245,7 @@ public class SetupFlyweight extends HeaderFlyweight
      *
      * @return term length field value.
      */
+    @Impure
     public int termLength()
     {
         return getInt(TERM_LENGTH_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -242,6 +257,7 @@ public class SetupFlyweight extends HeaderFlyweight
      * @param termLength field value.
      * @return this for a fluent API.
      */
+    @Impure
     public SetupFlyweight termLength(final int termLength)
     {
         putInt(TERM_LENGTH_FIELD_OFFSET, termLength, LITTLE_ENDIAN);
@@ -254,6 +270,7 @@ public class SetupFlyweight extends HeaderFlyweight
      *
      * @return MTU length field value.
      */
+    @Impure
     public int mtuLength()
     {
         return getInt(MTU_LENGTH_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -265,6 +282,7 @@ public class SetupFlyweight extends HeaderFlyweight
      * @param mtuLength field value.
      * @return this for a fluent API.
      */
+    @Impure
     public SetupFlyweight mtuLength(final int mtuLength)
     {
         putInt(MTU_LENGTH_FIELD_OFFSET, mtuLength, LITTLE_ENDIAN);
@@ -277,6 +295,7 @@ public class SetupFlyweight extends HeaderFlyweight
      *
      * @return TTL field value.
      */
+    @Impure
     public int ttl()
     {
         return getInt(TTL_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -288,6 +307,7 @@ public class SetupFlyweight extends HeaderFlyweight
      * @param ttl field value.
      * @return this for a fluent API.
      */
+    @Impure
     public SetupFlyweight ttl(final int ttl)
     {
         putInt(TTL_FIELD_OFFSET, ttl, LITTLE_ENDIAN);
@@ -298,6 +318,7 @@ public class SetupFlyweight extends HeaderFlyweight
     /**
      * {@inheritDoc}
      */
+    @Impure
     public String toString()
     {
         return "SETUP{" +

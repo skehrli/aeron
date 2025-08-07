@@ -15,6 +15,8 @@
  */
 package io.aeron.command;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.exceptions.ControlProtocolException;
 import org.agrona.MutableDirectBuffer;
 
@@ -59,6 +61,7 @@ public class DestinationByIdMessageFlyweight extends CorrelatedMessageFlyweight
      * @param offset at which the message begins.
      * @return this for a fluent API.
      */
+    @Impure
     public DestinationByIdMessageFlyweight wrap(final MutableDirectBuffer buffer, final int offset)
     {
         super.wrap(buffer, offset);
@@ -72,6 +75,7 @@ public class DestinationByIdMessageFlyweight extends CorrelatedMessageFlyweight
      *
      * @return resource registration id field.
      */
+    @Impure
     public long resourceRegistrationId()
     {
         return buffer.getLong(offset + RESOURCE_REGISTRATION_ID_OFFSET);
@@ -84,6 +88,7 @@ public class DestinationByIdMessageFlyweight extends CorrelatedMessageFlyweight
      * @param registrationId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public DestinationByIdMessageFlyweight resourceRegistrationId(final long registrationId)
     {
         buffer.putLong(offset + RESOURCE_REGISTRATION_ID_OFFSET, registrationId);
@@ -96,6 +101,7 @@ public class DestinationByIdMessageFlyweight extends CorrelatedMessageFlyweight
      *
      * @return destination registration id.
      */
+    @Impure
     public long destinationRegistrationId()
     {
         return buffer.getLong(offset + DESTINATION_REGISTRATION_ID_OFFSET);
@@ -107,6 +113,7 @@ public class DestinationByIdMessageFlyweight extends CorrelatedMessageFlyweight
      * @param destinationRegistrationId to reference the destination.
      * @return this for a fluent API.
      */
+    @Impure
     public DestinationByIdMessageFlyweight destinationRegistrationId(final long destinationRegistrationId)
     {
         buffer.putLong(offset + DESTINATION_REGISTRATION_ID_OFFSET, destinationRegistrationId);
@@ -119,6 +126,8 @@ public class DestinationByIdMessageFlyweight extends CorrelatedMessageFlyweight
      * @param msgTypeId type of message.
      * @param length of message in bytes to validate.
      */
+    @SideEffectFree
+    @Impure
     public void validateLength(final int msgTypeId, final int length)
     {
         if (length < MESSAGE_LENGTH)

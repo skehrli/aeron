@@ -15,6 +15,7 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.DirectBuffer;
 
 import java.io.File;
@@ -27,6 +28,7 @@ public class DefaultDenyTerminationValidator implements TerminationValidator
     /**
      * {@inheritDoc}
      */
+    @Pure
     public boolean allowTermination(
         final File aeronDir, final DirectBuffer tokenBuffer, final int tokenOffset, final int tokenLength)
     {

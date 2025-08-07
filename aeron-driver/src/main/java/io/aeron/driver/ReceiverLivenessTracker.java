@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.collections.Long2LongHashMap;
 
 class ReceiverLivenessTracker
@@ -23,21 +25,25 @@ class ReceiverLivenessTracker
 
     private final Long2LongHashMap lastSmTimestampNsByReceiverIdMap = new Long2LongHashMap(MISSING_VALUE);
 
+    @Pure
     public boolean hasReceivers()
     {
         return !lastSmTimestampNsByReceiverIdMap.isEmpty();
     }
 
+    @Impure
     public void onStatusMessage(final long receiverId, final long nowNs)
     {
         lastSmTimestampNsByReceiverIdMap.put(receiverId, nowNs);
     }
 
+    @Impure
     public boolean onRemoteClose(final long receiverId)
     {
         return MISSING_VALUE != lastSmTimestampNsByReceiverIdMap.remove(receiverId);
     }
 
+    @Impure
     public void onIdle(final long nowNs, final long timeoutNs)
     {
         final long timeoutThresholdNs = nowNs - timeoutNs;

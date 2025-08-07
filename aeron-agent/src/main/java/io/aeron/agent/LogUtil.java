@@ -15,6 +15,7 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.AsciiEncoding;
 
 /**
@@ -31,6 +32,7 @@ public class LogUtil
      * @param builder       to render the timestamp too.
      * @param timestampNs   the nanosecond timestamp.
      */
+    @Impure
     public static void appendTimestamp(final StringBuilder builder, final long timestampNs)
     {
         final long seconds = timestampNs / NANOS_PER_SECOND;

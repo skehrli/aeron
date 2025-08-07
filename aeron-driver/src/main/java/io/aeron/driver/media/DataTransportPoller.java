@@ -15,6 +15,9 @@
  */
 package io.aeron.driver.media;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.Configuration;
 import io.aeron.driver.DriverConductorProxy;
 import io.aeron.protocol.DataHeaderFlyweight;
@@ -62,6 +65,7 @@ public final class DataTransportPoller extends UdpTransportPoller
      *
      * @param errorHandler which can be used to log errors and continue.
      */
+    @Impure
     public DataTransportPoller(final ErrorHandler errorHandler)
     {
         super(errorHandler);
@@ -70,6 +74,7 @@ public final class DataTransportPoller extends UdpTransportPoller
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         for (final ChannelAndTransport transport : channelAndTransports)
@@ -85,6 +90,7 @@ public final class DataTransportPoller extends UdpTransportPoller
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int pollTransports()
     {
         totalBytesReceived = 0;
@@ -114,6 +120,7 @@ public final class DataTransportPoller extends UdpTransportPoller
     /**
      * {@inheritDoc}
      */
+    @Impure
     public SelectionKey registerForRead(final UdpChannelTransport transport)
     {
         return registerForRead((ReceiveChannelEndpoint)transport, transport, 0);
@@ -127,6 +134,7 @@ public final class DataTransportPoller extends UdpTransportPoller
      * @param transportIndex  for the transport in the channel.
      * @return {@link SelectionKey} for registration to cancel.
      */
+    @Impure
     public SelectionKey registerForRead(
         final ReceiveChannelEndpoint channelEndpoint, final UdpChannelTransport transport, final int transportIndex)
     {
@@ -150,6 +158,7 @@ public final class DataTransportPoller extends UdpTransportPoller
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void cancelRead(final UdpChannelTransport transport)
     {
         cancelRead((ReceiveChannelEndpoint)transport, transport);
@@ -161,6 +170,7 @@ public final class DataTransportPoller extends UdpTransportPoller
      * @param channelEndpoint to which the transport belongs.
      * @param transport       transport which was previously registered.
      */
+    @Impure
     public void cancelRead(final ReceiveChannelEndpoint channelEndpoint, final UdpChannelTransport transport)
     {
         final ChannelAndTransport[] transports = channelAndTransports;
@@ -187,6 +197,7 @@ public final class DataTransportPoller extends UdpTransportPoller
      * @param nowNs          as the current time.
      * @param conductorProxy for sending re-resolution requests.
      */
+    @Impure
     public void checkForReResolutions(final long nowNs, final DriverConductorProxy conductorProxy)
     {
         for (final ChannelAndTransport channelAndTransport : channelAndTransports)
@@ -195,6 +206,7 @@ public final class DataTransportPoller extends UdpTransportPoller
         }
     }
 
+    @Impure
     private void poll(final ChannelAndTransport channelAndTransport)
     {
         try
@@ -207,6 +219,7 @@ public final class DataTransportPoller extends UdpTransportPoller
         }
     }
 
+    @Impure
     private void receive(final ChannelAndTransport channelAndTransport)
     {
         final InetSocketAddress srcAddress = channelAndTransport.transport.receive(byteBuffer);
@@ -244,6 +257,7 @@ public final class DataTransportPoller extends UdpTransportPoller
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "DataTransportPoller{}";
@@ -255,6 +269,7 @@ public final class DataTransportPoller extends UdpTransportPoller
         final UdpChannelTransport transport;
         final int transportIndex;
 
+        @SideEffectFree
         ChannelAndTransport(
             final ReceiveChannelEndpoint channelEndpoint, final UdpChannelTransport transport, final int transportIndex)
         {

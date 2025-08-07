@@ -15,6 +15,8 @@
  */
 package io.aeron.utility;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
@@ -37,6 +39,7 @@ public abstract class Processor extends AbstractProcessor
     /**
      * {@inheritDoc}
      */
+    @Impure
     public SourceVersion getSupportedSourceVersion()
     {
         return SourceVersion.latest();
@@ -45,6 +48,7 @@ public abstract class Processor extends AbstractProcessor
     /**
      * {@inheritDoc}
      */
+    @Impure
     public synchronized void init(final ProcessingEnvironment processingEnv)
     {
         enabled = System.getProperty(getEnabledPropertyName(), "true").equalsIgnoreCase("true");
@@ -61,6 +65,7 @@ public abstract class Processor extends AbstractProcessor
      *
      * @return enabled property name.
      */
+    @Pure
     protected abstract String getEnabledPropertyName();
 
     /**
@@ -68,6 +73,7 @@ public abstract class Processor extends AbstractProcessor
      *
      * @return print notes property name.
      */
+    @Pure
     protected abstract String getPrintNotesPropertyName();
 
     /**
@@ -75,6 +81,7 @@ public abstract class Processor extends AbstractProcessor
      *
      * @return fail on error property name.
      */
+    @Pure
     protected abstract String getFailOnErrorPropertyName();
 
     /**
@@ -83,11 +90,13 @@ public abstract class Processor extends AbstractProcessor
      * @param annotations to be processed.
      * @param roundEnv    environment info.
      */
+    @Impure
     protected abstract void doProcess(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv);
 
     /**
      * {@inheritDoc}
      */
+    @Impure
     public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv)
     {
         if (enabled)
@@ -104,6 +113,7 @@ public abstract class Processor extends AbstractProcessor
      * @param element element.
      * @return comment.
      */
+    @Impure
     protected String getDocComment(final Element element)
     {
         final String description = processingEnv.getElementUtils().getDocComment(element);
@@ -121,6 +131,7 @@ public abstract class Processor extends AbstractProcessor
      *
      * @param errMsg string.
      */
+    @Impure
     protected void error(final String errMsg)
     {
         error(errMsg, null);
@@ -132,6 +143,7 @@ public abstract class Processor extends AbstractProcessor
      * @param errMsg  message.
      * @param element element.
      */
+    @Impure
     protected void error(final String errMsg, final Element element)
     {
         printMessage(errorKind, errMsg, element);
@@ -142,6 +154,7 @@ public abstract class Processor extends AbstractProcessor
      *
      * @param msg note.
      */
+    @Impure
     protected void note(final String msg)
     {
         note(msg, null);
@@ -153,6 +166,7 @@ public abstract class Processor extends AbstractProcessor
      * @param msg     note.
      * @param element element.
      */
+    @Impure
     protected void note(final String msg, final Element element)
     {
         if (printNotes)
@@ -161,6 +175,7 @@ public abstract class Processor extends AbstractProcessor
         }
     }
 
+    @Impure
     private void printMessage(final Diagnostic.Kind kind, final String msg, final Element element)
     {
         processingEnv.getMessager().printMessage(kind, msg, element);

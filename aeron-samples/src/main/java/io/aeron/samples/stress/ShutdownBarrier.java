@@ -15,6 +15,7 @@
  */
 package io.aeron.samples.stress;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.CloseHelper;
 
 import java.util.concurrent.CountDownLatch;
@@ -25,6 +26,7 @@ class ShutdownBarrier
     private final CountDownLatch startCloseLatch = new CountDownLatch(1);
     private final CountDownLatch completeCloseLatch = new CountDownLatch(1);
 
+    @Impure
     ShutdownBarrier(final AutoCloseable closeable)
     {
         this.closeable = closeable;
@@ -32,6 +34,7 @@ class ShutdownBarrier
             new Thread(this::signal, "shutdown-thread"));
     }
 
+    @Impure
     private void signal()
     {
         startCloseLatch.countDown();
@@ -46,6 +49,7 @@ class ShutdownBarrier
         }
     }
 
+    @Impure
     public void run() throws InterruptedException
     {
         try
@@ -59,6 +63,7 @@ class ShutdownBarrier
         }
     }
 
+    @Impure
     public static void awaitAndCloseOnExit(final AutoCloseable closeable)
         throws InterruptedException
     {

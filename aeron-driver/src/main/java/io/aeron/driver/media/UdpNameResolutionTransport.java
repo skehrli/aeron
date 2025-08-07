@@ -15,6 +15,7 @@
  */
 package io.aeron.driver.media;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.CommonContext;
 import io.aeron.driver.MediaDriver;
 import io.aeron.driver.NameResolver;
@@ -47,6 +48,7 @@ public final class UdpNameResolutionTransport extends UdpChannelTransport
          * @param nowMs        current time.
          * @return the number of bytes received.
          */
+        @Impure
         int onFrame(UnsafeBuffer unsafeBuffer, int length, InetSocketAddress srcAddress, long nowMs);
     }
 
@@ -61,6 +63,7 @@ public final class UdpNameResolutionTransport extends UdpChannelTransport
      * @param unsafeBuffer    for reading frames.
      * @param context         for configuration.
      */
+    @Impure
     public UdpNameResolutionTransport(
         final UdpChannel udpChannel,
         final InetSocketAddress resolverAddress,
@@ -80,6 +83,7 @@ public final class UdpNameResolutionTransport extends UdpChannelTransport
      * @param nowMs   current time.
      * @return number of bytes received.
      */
+    @Impure
     public int poll(final UdpFrameHandler handler, final long nowMs)
     {
         int bytesReceived = 0;
@@ -106,6 +110,7 @@ public final class UdpNameResolutionTransport extends UdpChannelTransport
      * @param remoteAddress to send the payload to.
      * @return number of bytes sent.
      */
+    @Impure
     public int sendTo(final ByteBuffer buffer, final InetSocketAddress remoteAddress)
     {
         int bytesSent = 0;
@@ -133,6 +138,7 @@ public final class UdpNameResolutionTransport extends UdpChannelTransport
      *
      * @return the {@link InetSocketAddress} which the resolver is bound to for listening to requests.
      */
+    @Impure
     public InetSocketAddress boundAddress()
     {
         try
@@ -151,6 +157,7 @@ public final class UdpNameResolutionTransport extends UdpChannelTransport
      * @param addressAndPort for the endpoint.
      * @return the {@link InetSocketAddress} if successful or null if not.
      */
+    @Impure
     public static InetSocketAddress getInterfaceAddress(final String addressAndPort)
     {
         try
@@ -171,6 +178,7 @@ public final class UdpNameResolutionTransport extends UdpChannelTransport
      * @param nameResolver to resolve a name to an {@link InetAddress}.
      * @return the resolved {@link InetSocketAddress} if successful or null if not.
      */
+    @Impure
     public static InetSocketAddress getInetSocketAddress(final String hostAndPort, final NameResolver nameResolver)
     {
         InetSocketAddress address = null;

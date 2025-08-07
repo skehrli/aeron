@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster.service;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.concurrent.status.AtomicCounter;
 
 
@@ -36,6 +39,7 @@ public class SnapshotDurationTracker
      * @param snapshotDurationThresholdExceededCount counter for tracking.
      * @param durationThresholdNs                    to use for tracking breaches.
      */
+    @SideEffectFree
     public SnapshotDurationTracker(
         final AtomicCounter maxSnapshotDuration,
         final AtomicCounter snapshotDurationThresholdExceededCount,
@@ -51,6 +55,7 @@ public class SnapshotDurationTracker
      *
      * @return max snapshot duration counter.
      */
+    @Pure
     public AtomicCounter maxSnapshotDuration()
     {
         return maxSnapshotDuration;
@@ -61,6 +66,7 @@ public class SnapshotDurationTracker
      *
      * @return duration threshold exceeded counter.
      */
+    @Pure
     public AtomicCounter snapshotDurationThresholdExceededCount()
     {
         return snapshotDurationThresholdExceededCount;
@@ -71,6 +77,7 @@ public class SnapshotDurationTracker
      *
      * @param timeNanos snapshot start time in nanoseconds.
      */
+    @Impure
     public void onSnapshotBegin(final long timeNanos)
     {
         snapshotStartTimeNs = timeNanos;
@@ -81,6 +88,7 @@ public class SnapshotDurationTracker
      *
      * @param timeNanos snapshot end time in nanoseconds.
      */
+    @Impure
     public void onSnapshotEnd(final long timeNanos)
     {
         if (snapshotStartTimeNs != Long.MIN_VALUE)
@@ -99,6 +107,7 @@ public class SnapshotDurationTracker
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "SnapshotDurationTracker{" +

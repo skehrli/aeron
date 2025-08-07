@@ -15,6 +15,7 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.media.UdpChannel;
 
 /**
@@ -31,5 +32,6 @@ public interface FlowControlSupplier
      * @param registrationId for the publication.
      * @return flow control instance ready for immediate usage.
      */
+    @Impure
     FlowControl newInstance(UdpChannel udpChannel, int streamId, long registrationId);
 }

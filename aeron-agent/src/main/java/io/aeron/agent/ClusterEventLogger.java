@@ -15,6 +15,9 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.checker.mustcall.qual.Owning;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.cluster.ConsensusModule;
 import io.aeron.cluster.codecs.CloseReason;
 import org.agrona.concurrent.UnsafeBuffer;
@@ -42,6 +45,7 @@ public final class ClusterEventLogger
 
     private final ManyToOneRingBuffer ringBuffer;
 
+    @SideEffectFree
     ClusterEventLogger(final ManyToOneRingBuffer eventRingBuffer)
     {
         ringBuffer = eventRingBuffer;
@@ -65,6 +69,7 @@ public final class ClusterEventLogger
      * @param appVersion              associated with the recorded state.
      * @param isStartup               is the leader starting up fresh.
      */
+    @Impure
     public void logOnNewLeadershipTerm(
         final int memberId,
         final long logLeadershipTermId,
@@ -127,8 +132,9 @@ public final class ClusterEventLogger
      * @param oldState  before the change.
      * @param newState  after the change.
      */
+    @Impure
     public <E extends Enum<E>> void logStateChange(
-        final ClusterEventCode eventCode, final int memberId, final E oldState, final E newState)
+        final ClusterEventCode eventCode, final int memberId, final @Owning E oldState, final @Owning E newState)
     {
         final int length = stateChangeLength(oldState, newState);
         final int captureLength = captureLength(length);
@@ -173,10 +179,11 @@ public final class ClusterEventLogger
      * @param catchupPosition     of the node.
      * @param reason              for the state transition to occur.
      */
+    @Impure
     public <E extends Enum<E>> void logElectionStateChange(
         final int memberId,
-        final E oldState,
-        final E newState,
+        final @Owning E oldState,
+        final @Owning E newState,
         final int leaderId,
         final long candidateTermId,
         final long leadershipTermId,
@@ -230,6 +237,7 @@ public final class ClusterEventLogger
      * @param followerMemberId    follower node id.
      * @param protocolVersion     of the consensus module.
      */
+    @Impure
     public void logOnCanvassPosition(
         final int memberId,
         final long logLeadershipTermId,
@@ -277,6 +285,7 @@ public final class ClusterEventLogger
      * @param candidateId         id of the candidate node.
      * @param protocolVersion     from the request.
      */
+    @Impure
     public void logOnRequestVote(
         final int memberId,
         final long logLeadershipTermId,
@@ -323,6 +332,7 @@ public final class ClusterEventLogger
      * @param followerMemberId the id of the follower that is catching up
      * @param catchupEndpoint  the endpoint to send catchup messages
      */
+    @Impure
     public void logOnCatchupPosition(
         final int memberId,
         final long leadershipTermId,
@@ -365,6 +375,7 @@ public final class ClusterEventLogger
      * @param leadershipTermId current leadershipTermId.
      * @param followerMemberId id of follower currently catching up.
      */
+    @Impure
     public void logOnStopCatchup(
         final int memberId, final long leadershipTermId, final int followerMemberId)
     {
@@ -408,9 +419,10 @@ public final class ClusterEventLogger
      * @param oldPosition         truncated from.
      * @param newPosition         truncated to.
      */
+    @Impure
     public <E extends Enum<E>> void logOnTruncateLogEntry(
         final int memberId,
-        final E state,
+        final @Owning E state,
         final long logLeadershipTermId,
         final long leadershipTermId,
         final long candidateTermId,
@@ -465,6 +477,7 @@ public final class ClusterEventLogger
      * @param timeUnit            cluster time unit.
      * @param appVersion          version of the application.
      */
+    @Impure
     public void logOnReplayNewLeadershipTermEvent(
         final int memberId,
         final boolean isInElection,
@@ -515,6 +528,7 @@ public final class ClusterEventLogger
      * @param followerMemberId follower member sending the Append position.
      * @param flags            applied to append position by follower.
      */
+    @Impure
     public void logOnAppendPosition(
         final int memberId,
         final long leadershipTermId,
@@ -557,6 +571,7 @@ public final class ClusterEventLogger
      * @param logPosition      the current position in the log.
      * @param leaderId         leader member sending the commit position.
      */
+    @Impure
     public void logOnCommitPosition(
         final int memberId,
         final long leadershipTermId,
@@ -596,6 +611,7 @@ public final class ClusterEventLogger
      * @param correlationId   correlationId for responding to the addition of the passive member.
      * @param memberEndpoints the endpoints for the new member.
      */
+    @Impure
     public void logOnAddPassiveMember(final int memberId, final long correlationId, final String memberEndpoints)
     {
         final int length = addPassiveMemberLength(memberEndpoints);
@@ -634,6 +650,7 @@ public final class ClusterEventLogger
      * @param timestamp        the current timestamp.
      * @param timeUnit         units for the timestamp.
      */
+    @Impure
     public void logAppendSessionClose(
         final int memberId,
         final long sessionId,
@@ -678,6 +695,7 @@ public final class ClusterEventLogger
      * @param logLeadershipTermId leadership term for the supplied position.
      * @param logPosition         position to terminate at.
      */
+    @Impure
     public void logTerminationPosition(
         final int memberId,
         final long logLeadershipTermId,
@@ -717,6 +735,7 @@ public final class ClusterEventLogger
      * @param logPosition         position to terminate at.
      * @param senderMemberId      member sending the ack.
      */
+    @Impure
     public void logTerminationAck(
         final int memberId,
         final long logLeadershipTermId,
@@ -761,6 +780,7 @@ public final class ClusterEventLogger
      * @param relevantId  associated id used in the ack, e.g. recordingId for snapshot acks.
      * @param serviceId   the id of the service that sent the ack.
      */
+    @Impure
     public void logServiceAck(
         final int memberId,
         final long logPosition,
@@ -811,6 +831,7 @@ public final class ClusterEventLogger
      * @param position       the position where the recording ended.
      * @param hasSynced      was the sync event been received for the replication.
      */
+    @Impure
     public void logReplicationEnded(
         final int memberId,
         final String purpose,
@@ -863,6 +884,7 @@ public final class ClusterEventLogger
      * @param serviceId           the serviceId for the snapshot.
      * @param archiveEndpoint     the endpoint holding the standby snapshot.
      */
+    @Impure
     public void logStandbySnapshotNotification(
         final int memberId,
         final long recordingId,
@@ -915,6 +937,7 @@ public final class ClusterEventLogger
      * @param appendPosition   the append position.
      * @param reason           for election to be started.
      */
+    @Impure
     public void logNewElection(
         final int memberId,
         final long leadershipTermId,

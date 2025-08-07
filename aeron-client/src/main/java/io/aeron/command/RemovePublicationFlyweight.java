@@ -15,6 +15,8 @@
  */
 package io.aeron.command;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.MutableDirectBuffer;
 
 import static org.agrona.BitUtil.SIZE_OF_LONG;
@@ -52,6 +54,7 @@ public class RemovePublicationFlyweight extends RemoveMessageFlyweight
      * @param offset at which the message begins.
      * @return this for a fluent API.
      */
+    @Impure
     public RemovePublicationFlyweight wrap(final MutableDirectBuffer buffer, final int offset)
     {
         super.wrap(buffer, offset);
@@ -64,6 +67,8 @@ public class RemovePublicationFlyweight extends RemoveMessageFlyweight
      *
      * @return length of the message in bytes.
      */
+    @Pure
+    @Impure
     public static int length()
     {
         return RemoveMessageFlyweight.length() + SIZE_OF_LONG;
@@ -75,6 +80,7 @@ public class RemovePublicationFlyweight extends RemoveMessageFlyweight
      * @param messageLength the length of the message.
      * @return true if the flags field can be read.
      */
+    @Pure
     public boolean flagsFieldIsValid(final int messageLength)
     {
         return messageLength >= FLAGS_FIELD_OFFSET + SIZE_OF_LONG;
@@ -85,6 +91,7 @@ public class RemovePublicationFlyweight extends RemoveMessageFlyweight
      *
      * @return revoked.
      */
+    @Impure
     public boolean revoke()
     {
         return (buffer.getLong(offset + FLAGS_FIELD_OFFSET) & FLAG_REVOKE) > 0;
@@ -96,6 +103,7 @@ public class RemovePublicationFlyweight extends RemoveMessageFlyweight
      * @param messageLength the length of the message.
      * @return true if the flags field is present AND the revoked flag is set.
      */
+    @Impure
     public boolean revoke(final int messageLength)
     {
         return flagsFieldIsValid(messageLength) && revoke();
@@ -107,6 +115,7 @@ public class RemovePublicationFlyweight extends RemoveMessageFlyweight
      * @param revoke field value.
      * @return this for a fluent API.
      */
+    @Impure
     public RemovePublicationFlyweight revoke(final boolean revoke)
     {
         long flags = buffer.getLong(offset + FLAGS_FIELD_OFFSET);

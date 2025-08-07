@@ -15,6 +15,8 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import io.aeron.FragmentAssembler;
 import io.aeron.Subscription;
@@ -117,6 +119,7 @@ public class FileReceiver
     private final FragmentAssembler assembler = new FragmentAssembler(this::onFragment);
     private final Long2ObjectHashMap<UnsafeBuffer> fileSessionByIdMap = new Long2ObjectHashMap<>();
 
+    @SideEffectFree
     FileReceiver(final File storageDir, final Subscription subscription)
     {
         this.storageDir = storageDir;
@@ -128,6 +131,7 @@ public class FileReceiver
      *
      * @param args passed to the process.
      */
+    @Impure
     public static void main(final String[] args)
     {
         final File storageDir;
@@ -165,6 +169,7 @@ public class FileReceiver
         }
     }
 
+    @Impure
     private void onFragment(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {
         final int version = buffer.getInt(offset + VERSION_OFFSET, LITTLE_ENDIAN);
@@ -197,6 +202,7 @@ public class FileReceiver
         }
     }
 
+    @Impure
     private void createFile(final long correlationId, final long length, final String filename)
     {
         if (fileSessionByIdMap.containsKey(correlationId))
@@ -230,6 +236,7 @@ public class FileReceiver
         }
     }
 
+    @Impure
     private void fileChunk(
         final long correlationId,
         final long chunkOffset,
@@ -247,6 +254,7 @@ public class FileReceiver
         }
     }
 
+    @Impure
     private int doWork()
     {
         return subscription.poll(assembler, FRAGMENT_LIMIT);

@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.archive.client.RecordingDescriptorConsumer;
 
 /**
@@ -53,6 +55,7 @@ class RecordingExtent implements RecordingDescriptorConsumer
      */
     public int sessionId;
 
+    @Impure
     public void onRecordingDescriptor(
         final long controlSessionId,
         final long correlationId,
@@ -80,6 +83,7 @@ class RecordingExtent implements RecordingDescriptorConsumer
         this.sessionId = sessionId;
     }
 
+    @Pure
     public String toString()
     {
         return "RecordingExtent{" +

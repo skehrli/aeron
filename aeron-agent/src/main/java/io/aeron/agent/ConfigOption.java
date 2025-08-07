@@ -15,6 +15,7 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.Strings;
 import org.agrona.concurrent.Agent;
 
@@ -94,6 +95,7 @@ final class ConfigOption
     private static final char VALUE_SEPARATOR = '=';
     private static final char OPTION_SEPARATOR = '|';
 
+    @Impure
     static Map<String, String> fromSystemProperties()
     {
         final HashMap<String, String> result = new HashMap<>();
@@ -105,6 +107,7 @@ final class ConfigOption
         return result;
     }
 
+    @Impure
     static String buildAgentArgs(final Map<String, String> configOptions)
     {
         if (configOptions.isEmpty())
@@ -129,6 +132,7 @@ final class ConfigOption
         return builder.toString();
     }
 
+    @Impure
     static Map<String, String> parseAgentArgs(final String agentArgs)
     {
         if (Strings.isEmpty(agentArgs))

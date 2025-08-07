@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Counter;
 import io.aeron.cluster.client.ClusterException;
 import io.aeron.cluster.codecs.MessageHeaderDecoder;
@@ -49,6 +52,8 @@ final class PendingServiceMessageTracker
     private final ExpandableRingBuffer.MessageConsumer leaderMessageSweeper = this::leaderMessageSweeper;
     private final ExpandableRingBuffer.MessageConsumer followerMessageSweeper = this::followerMessageSweeper;
 
+    @SideEffectFree
+    @Impure
     PendingServiceMessageTracker(
         final int serviceId,
         final Counter commitPosition,
@@ -64,26 +69,31 @@ final class PendingServiceMessageTracker
         nextServiceSessionId = logServiceSessionId + 1;
     }
 
+    @Impure
     void leadershipTermId(final long leadershipTermId)
     {
         this.leadershipTermId = leadershipTermId;
     }
 
+    @Pure
     int serviceId()
     {
         return serviceId;
     }
 
+    @Pure
     long nextServiceSessionId()
     {
         return nextServiceSessionId;
     }
 
+    @Pure
     long logServiceSessionId()
     {
         return logServiceSessionId;
     }
 
+    @Impure
     void enqueueMessage(final MutableDirectBuffer buffer, final int offset, final int length)
     {
         final long clusterSessionId = nextServiceSessionId++;
@@ -104,12 +114,14 @@ final class PendingServiceMessageTracker
         }
     }
 
+    @Impure
     void sweepFollowerMessages(final long clusterSessionId)
     {
         logServiceSessionId = clusterSessionId;
         pendingMessages.consume(followerMessageSweeper, Integer.MAX_VALUE);
     }
 
+    @Impure
     void sweepLeaderMessages()
     {
         if (uncommittedMessages > 0)
@@ -119,6 +131,7 @@ final class PendingServiceMessageTracker
         }
     }
 
+    @Impure
     void restoreUncommittedMessages()
     {
         if (uncommittedMessages > 0)
@@ -130,11 +143,13 @@ final class PendingServiceMessageTracker
         }
     }
 
+    @Impure
     void appendMessage(final DirectBuffer buffer, final int offset, final int length)
     {
         pendingMessages.append(buffer, offset, length);
     }
 
+    @Impure
     void loadState(final long nextServiceSessionId, final long logServiceSessionId, final int pendingMessageCapacity)
     {
         this.nextServiceSessionId = nextServiceSessionId;
@@ -142,16 +157,19 @@ final class PendingServiceMessageTracker
         pendingMessages.reset(pendingMessageCapacity);
     }
 
+    @Impure
     int poll()
     {
         return pendingMessages.forEach(pendingMessageHeadOffset, messageAppender, SERVICE_MESSAGE_LIMIT);
     }
 
+    @Impure
     int size()
     {
         return pendingMessages.size();
     }
 
+    @Impure
     void verify()
     {
         final MutableInteger messageCount = new MutableInteger();
@@ -194,16 +212,19 @@ final class PendingServiceMessageTracker
         }
     }
 
+    @Impure
     void reset()
     {
         pendingMessages.forEach(PendingServiceMessageTracker::messageReset, Integer.MAX_VALUE);
     }
 
+    @Pure
     ExpandableRingBuffer pendingMessages()
     {
         return pendingMessages;
     }
 
+    @Impure
     private boolean messageAppender(
         final MutableDirectBuffer buffer, final int offset, final int length, final int headOffset)
     {
@@ -232,6 +253,7 @@ final class PendingServiceMessageTracker
         return false;
     }
 
+    @Impure
     private static boolean messageReset(
         final MutableDirectBuffer buffer, final int offset, final int length, final int headOffset)
     {
@@ -248,6 +270,7 @@ final class PendingServiceMessageTracker
         return false;
     }
 
+    @Impure
     private boolean leaderMessageSweeper(
         final MutableDirectBuffer buffer, final int offset, final int length, final int headOffset)
     {
@@ -267,6 +290,7 @@ final class PendingServiceMessageTracker
         return false;
     }
 
+    @Impure
     private boolean followerMessageSweeper(
         final MutableDirectBuffer buffer, final int offset, final int length, final int headOffset)
     {
@@ -276,6 +300,7 @@ final class PendingServiceMessageTracker
         return buffer.getLong(clusterSessionIdOffset, SessionMessageHeaderDecoder.BYTE_ORDER) <= logServiceSessionId;
     }
 
+    @Pure
     static int serviceIdFromLogMessage(final long clusterSessionId)
     {
         return ((int)(clusterSessionId >>> 56)) & 0x7F;
@@ -288,11 +313,13 @@ final class PendingServiceMessageTracker
      * @param clusterSessionId passed in on an inter-service message.
      * @return the associated serviceId.
      */
+    @Pure
     static int serviceIdFromServiceMessage(final long clusterSessionId)
     {
         return (int)clusterSessionId;
     }
 
+    @Pure
     static long serviceSessionId(final int serviceId, final long sessionId)
     {
         return ((long)serviceId << 56) | sessionId;

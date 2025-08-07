@@ -15,6 +15,7 @@
  */
 package io.aeron.command;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.MutableDirectBuffer;
 
 import static org.agrona.BitUtil.SIZE_OF_LONG;
@@ -50,6 +51,7 @@ public class ClientTimeoutFlyweight
      * @param offset at which the message begins.
      * @return this for a fluent API.
      */
+    @Impure
     public final ClientTimeoutFlyweight wrap(final MutableDirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
@@ -63,6 +65,7 @@ public class ClientTimeoutFlyweight
      *
      * @return client id field.
      */
+    @Impure
     public long clientId()
     {
         return buffer.getLong(offset + CLIENT_ID_FIELD_OFFSET);
@@ -74,6 +77,7 @@ public class ClientTimeoutFlyweight
      * @param clientId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public ClientTimeoutFlyweight clientId(final long clientId)
     {
         buffer.putLong(offset + CLIENT_ID_FIELD_OFFSET, clientId);

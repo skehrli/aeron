@@ -15,6 +15,8 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import org.agrona.PropertyAction;
 import org.agrona.Strings;
@@ -37,6 +39,7 @@ public class DynamicLoggingAgent
      *
      * @param args program arguments.
      */
+    @Impure
     public static void main(final String[] args)
     {
         if (args.length < 3)
@@ -86,6 +89,7 @@ public class DynamicLoggingAgent
         }
     }
 
+    @Impure
     private static void printHelp()
     {
         out.println("Usage: <agent-jar> <java-process-id> <command> [property files...]");
@@ -96,6 +100,7 @@ public class DynamicLoggingAgent
         out.println("Note: logging options can be specified either via system properties or the property files.");
     }
 
+    @Impure
     private static void attachAgent(
         final String command, final File agentJar, final String processId, final String agentArgs)
     {
@@ -110,6 +115,7 @@ public class DynamicLoggingAgent
         }
     }
 
+    @Pure
     private static Throwable getCause(final Throwable t)
     {
         Throwable cause = t;

@@ -15,6 +15,7 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -30,5 +31,6 @@ public interface TimerServiceSupplier
      * @param timerHandler  that must be invoked for each expired timer.
      * @return              timer service instance ready for immediate usage.
      */
+    @Impure
     TimerService newInstance(TimeUnit timeUnit, TimerService.TimerHandler timerHandler);
 }

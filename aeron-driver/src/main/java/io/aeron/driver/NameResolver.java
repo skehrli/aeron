@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.CounterProvider;
 import org.agrona.concurrent.status.CountersReader;
 
@@ -35,6 +37,7 @@ public interface NameResolver
      * @see io.aeron.CommonContext#ENDPOINT_PARAM_NAME
      * @see io.aeron.CommonContext#MDC_CONTROL_PARAM_NAME
      */
+    @Impure
     InetAddress resolve(String name, String uriParamName, boolean isReResolution);
 
     /**
@@ -46,6 +49,7 @@ public interface NameResolver
      * @param isReLookup   {@code true} if this is a re-lookup or {@code true} if initial lookup.
      * @return string in {@code name:port} form.
      */
+    @Impure
     default String lookup(String name, String uriParamName, boolean isReLookup)
     {
         return name;
@@ -59,6 +63,7 @@ public interface NameResolver
      * @deprecated Use {@link #init(CountersReader, CounterProvider)} instead.
      * @see #init(CountersReader, CounterProvider)
      */
+    @SideEffectFree
     @Deprecated
     default void init(MediaDriver.Context context)
     {
@@ -71,6 +76,7 @@ public interface NameResolver
      * @param countersReader for finding existing counters.
      * @param counterProvider for adding counters.
      */
+    @Impure
     default void init(final CountersReader countersReader, CounterProvider counterProvider)
     {
     }
@@ -81,6 +87,7 @@ public interface NameResolver
      * @param nowMs current epoch clock time in milliseconds
      * @return work count
      */
+    @Impure
     default int doWork(final long nowMs)
     {
         return 0;
@@ -91,6 +98,7 @@ public interface NameResolver
      *
      * @return name of the resolver, defaults to the qualified class name.
      */
+    @Impure
     default String name()
     {
         return this.getClass().getName();

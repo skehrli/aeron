@@ -15,6 +15,7 @@
  */
 package io.aeron.protocol;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import java.nio.ByteBuffer;
@@ -65,6 +66,7 @@ public class NakFlyweight extends HeaderFlyweight
     /**
      * Default constructor which can later be used to wrap a frame.
      */
+    @Impure
     public NakFlyweight()
     {
     }
@@ -74,6 +76,7 @@ public class NakFlyweight extends HeaderFlyweight
      *
      * @param buffer containing the frame.
      */
+    @Impure
     public NakFlyweight(final ByteBuffer buffer)
     {
         super(buffer);
@@ -84,6 +87,7 @@ public class NakFlyweight extends HeaderFlyweight
      *
      * @param buffer containing the frame.
      */
+    @Impure
     public NakFlyweight(final UnsafeBuffer buffer)
     {
         super(buffer);
@@ -94,6 +98,7 @@ public class NakFlyweight extends HeaderFlyweight
      *
      * @return session-id for the stream.
      */
+    @Impure
     public int sessionId()
     {
         return getInt(SESSION_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -105,6 +110,7 @@ public class NakFlyweight extends HeaderFlyweight
      * @param sessionId session-id for the stream.
      * @return this for a fluent API.
      */
+    @Impure
     public NakFlyweight sessionId(final int sessionId)
     {
         putInt(SESSION_ID_FIELD_OFFSET, sessionId, LITTLE_ENDIAN);
@@ -117,6 +123,7 @@ public class NakFlyweight extends HeaderFlyweight
      *
      * @return stream-id for the stream.
      */
+    @Impure
     public int streamId()
     {
         return getInt(STREAM_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -128,6 +135,7 @@ public class NakFlyweight extends HeaderFlyweight
      * @param streamId stream-id for the stream.
      * @return this for a fluent API.
      */
+    @Impure
     public NakFlyweight streamId(final int streamId)
     {
         putInt(STREAM_ID_FIELD_OFFSET, streamId, LITTLE_ENDIAN);
@@ -140,6 +148,7 @@ public class NakFlyweight extends HeaderFlyweight
      *
      * @return term-id for the stream.
      */
+    @Impure
     public int termId()
     {
         return getInt(TERM_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -151,6 +160,7 @@ public class NakFlyweight extends HeaderFlyweight
      * @param termId term-id for the stream.
      * @return this for a fluent API.
      */
+    @Impure
     public NakFlyweight termId(final int termId)
     {
         putInt(TERM_ID_FIELD_OFFSET, termId, LITTLE_ENDIAN);
@@ -163,6 +173,7 @@ public class NakFlyweight extends HeaderFlyweight
      *
      * @return term-offset for the stream.
      */
+    @Impure
     public int termOffset()
     {
         return getInt(TERM_OFFSET_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -174,6 +185,7 @@ public class NakFlyweight extends HeaderFlyweight
      * @param termOffset term-offset for the stream.
      * @return for a fluent API.
      */
+    @Impure
     public NakFlyweight termOffset(final int termOffset)
     {
         putInt(TERM_OFFSET_FIELD_OFFSET, termOffset, LITTLE_ENDIAN);
@@ -186,6 +198,7 @@ public class NakFlyweight extends HeaderFlyweight
      *
      * @return length of the encoded frame.
      */
+    @Impure
     public int length()
     {
         return getInt(LENGTH_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -197,6 +210,7 @@ public class NakFlyweight extends HeaderFlyweight
      * @param length of the encoded frame.
      * @return this for a fluent API.
      */
+    @Impure
     public NakFlyweight length(final int length)
     {
         putInt(LENGTH_FIELD_OFFSET, length, LITTLE_ENDIAN);
@@ -207,6 +221,7 @@ public class NakFlyweight extends HeaderFlyweight
     /**
      * {@inheritDoc}
      */
+    @Impure
     public String toString()
     {
         return "NAK{" +

@@ -15,6 +15,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.MediaDriver;
 import io.aeron.driver.ThreadingMode;
 import org.agrona.concurrent.BusySpinIdleStrategy;
@@ -34,6 +35,7 @@ public class LowLatencyMediaDriver
      *
      * @param args passed to the process which will be used for loading properties files.
      */
+    @Impure
     @SuppressWarnings("try")
     public static void main(final String[] args)
     {

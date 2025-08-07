@@ -15,6 +15,8 @@
  */
 package io.aeron.command;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.MutableDirectBuffer;
 
 import static org.agrona.BitUtil.SIZE_OF_INT;
@@ -59,6 +61,7 @@ public class ImageMessageFlyweight
      * @param offset at which the message begins.
      * @return this for a fluent API.
      */
+    @Impure
     public final ImageMessageFlyweight wrap(final MutableDirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
@@ -72,6 +75,7 @@ public class ImageMessageFlyweight
      *
      * @return correlation id field.
      */
+    @Impure
     public long correlationId()
     {
         return buffer.getLong(offset + CORRELATION_ID_OFFSET);
@@ -83,6 +87,7 @@ public class ImageMessageFlyweight
      * @param correlationId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public ImageMessageFlyweight correlationId(final long correlationId)
     {
         buffer.putLong(offset + CORRELATION_ID_OFFSET, correlationId);
@@ -95,6 +100,7 @@ public class ImageMessageFlyweight
      *
      * @return registration ID for the subscription.
      */
+    @Impure
     public long subscriptionRegistrationId()
     {
         return buffer.getLong(offset + SUBSCRIPTION_REGISTRATION_ID_OFFSET);
@@ -106,6 +112,7 @@ public class ImageMessageFlyweight
      * @param registrationId for the subscription.
      * @return this for a fluent API.
      */
+    @Impure
     public ImageMessageFlyweight subscriptionRegistrationId(final long registrationId)
     {
         buffer.putLong(offset + SUBSCRIPTION_REGISTRATION_ID_OFFSET, registrationId);
@@ -118,6 +125,7 @@ public class ImageMessageFlyweight
      *
      * @return stream id field.
      */
+    @Impure
     public int streamId()
     {
         return buffer.getInt(offset + STREAM_ID_FIELD_OFFSET);
@@ -129,6 +137,7 @@ public class ImageMessageFlyweight
      * @param streamId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public ImageMessageFlyweight streamId(final int streamId)
     {
         buffer.putInt(offset + STREAM_ID_FIELD_OFFSET, streamId);
@@ -141,6 +150,7 @@ public class ImageMessageFlyweight
      *
      * @return channel field.
      */
+    @Impure
     public String channel()
     {
         final int length = buffer.getInt(offset + CHANNEL_OFFSET);
@@ -154,6 +164,7 @@ public class ImageMessageFlyweight
      *
      * @param appendable to append channel to.
      */
+    @Impure
     public void appendChannel(final Appendable appendable)
     {
         final int length = buffer.getInt(offset + CHANNEL_OFFSET);
@@ -168,6 +179,7 @@ public class ImageMessageFlyweight
      * @param channel field value.
      * @return this for a fluent API.
      */
+    @Impure
     public ImageMessageFlyweight channel(final String channel)
     {
         lengthOfChannel = buffer.putStringAscii(offset + CHANNEL_OFFSET, channel);
@@ -182,6 +194,7 @@ public class ImageMessageFlyweight
      *
      * @return the length of the current message.
      */
+    @Pure
     public int length()
     {
         return CHANNEL_OFFSET + lengthOfChannel;

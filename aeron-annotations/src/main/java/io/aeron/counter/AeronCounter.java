@@ -15,6 +15,7 @@
  */
 package io.aeron.counter;
 
+import org.checkerframework.dataflow.qual.Pure;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,10 +31,12 @@ public @interface AeronCounter
     /**
      * @return whether this counter exists in the C code.
      */
+    @Pure
     boolean existsInC() default true;
 
     /**
      * @return the name of the #define in C.
      */
+    @Pure
     String expectedCName() default "";
 }

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.aeron;
+import org.checkerframework.dataflow.qual.Impure;
 
 
 /**
@@ -27,5 +28,6 @@ interface LogBuffersFactory
      * @param logFileName to be mapped into memory.
      * @return a representation of the mapped log buffer.
      */
+    @Impure
     LogBuffers map(String logFileName);
 }

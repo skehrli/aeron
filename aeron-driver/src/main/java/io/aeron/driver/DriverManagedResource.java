@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package io.aeron.driver;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 
 /**
  * Common behaviour supported for driver resources such as publications and images.
@@ -25,6 +27,7 @@ public interface DriverManagedResource
      *
      * @return true if successful and false if it should be attempted again later.
      */
+    @Impure
     default boolean free()
     {
         return true;
@@ -34,6 +37,7 @@ public interface DriverManagedResource
      * Close resources that are not external. This will not call {@link DriverManagedResource#free()}. That will
      * need to be called separately at the appropriate time.
      */
+    @Impure
     void close();
 
     /**
@@ -43,6 +47,7 @@ public interface DriverManagedResource
      * @param timeMs    now in milliseconds for epoch.
      * @param conductor to inform of any state transitions.
      */
+    @Impure
     void onTimeEvent(long timeNs, long timeMs, DriverConductor conductor);
 
     /**
@@ -50,5 +55,6 @@ public interface DriverManagedResource
      *
      * @return whether resource has reached end of life or not.
      */
+    @Pure
     boolean hasReachedEndOfLife();
 }

@@ -15,6 +15,7 @@
  */
 package io.aeron.driver.status;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.AeronCounters;
 import io.aeron.status.ChannelEndpointStatus;
 import org.agrona.MutableDirectBuffer;
@@ -45,6 +46,7 @@ public class ReceiveChannelStatus
      * @param channel         associated with the counter.
      * @return the allocated counter.
      */
+    @Impure
     public static AtomicCounter allocate(
         final MutableDirectBuffer tempBuffer,
         final CountersManager countersManager,

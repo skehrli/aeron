@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.cluster.client.ClusterEvent;
 import io.aeron.exceptions.AeronException;
 import org.agrona.ErrorHandler;
@@ -24,17 +27,21 @@ class ClusterTermination
     private long deadlineNs;
     private boolean haveServicesTerminated;
 
+    @SideEffectFree
     ClusterTermination(final long deadlineNs, final int serviceCount)
     {
         this.deadlineNs = deadlineNs;
         this.haveServicesTerminated = serviceCount <= 0;
     }
 
+    @Impure
     void deadlineNs(final long deadlineNs)
     {
         this.deadlineNs = deadlineNs;
     }
 
+    @Pure
+    @Impure
     boolean canTerminate(final ClusterMember[] members, final long nowNs)
     {
         if (haveServicesTerminated)
@@ -56,11 +63,13 @@ class ClusterTermination
         return false;
     }
 
+    @Impure
     void onServicesTerminated()
     {
         haveServicesTerminated = true;
     }
 
+    @Impure
     void terminationPosition(
         final ErrorHandler errorHandler,
         final ConsensusPublisher consensusPublisher,

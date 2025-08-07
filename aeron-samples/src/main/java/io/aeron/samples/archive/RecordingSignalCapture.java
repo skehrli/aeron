@@ -15,6 +15,8 @@
  */
 package io.aeron.samples.archive;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.archive.client.AeronArchive;
 import io.aeron.archive.client.RecordingSignalConsumer;
 import io.aeron.archive.codecs.RecordingSignal;
@@ -61,6 +63,7 @@ public final class RecordingSignalCapture implements RecordingSignalConsumer
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onSignal(
         final long controlSessionId,
         final long correlationId,
@@ -90,6 +93,7 @@ public final class RecordingSignalCapture implements RecordingSignalConsumer
      * @param expectedCorrelationId to match the signal.
      * @param expectedSignal        to await.
      */
+    @Impure
     public void awaitSignalForCorrelationId(
         final AeronArchive archive, final long expectedCorrelationId, final RecordingSignal expectedSignal)
     {
@@ -128,6 +132,7 @@ public final class RecordingSignalCapture implements RecordingSignalConsumer
      * @param expectedRecordingId that should be delivered with the signal.
      * @param expectedSignal      to await.
      */
+    @Impure
     public void awaitSignalForRecordingId(
         final AeronArchive archive, final long expectedRecordingId, final RecordingSignal expectedSignal)
     {
@@ -161,6 +166,7 @@ public final class RecordingSignalCapture implements RecordingSignalConsumer
     /**
      * Reset internal state before awaiting next signal.
      */
+    @Impure
     public void reset()
     {
         correlationId = NULL_VALUE;
@@ -178,6 +184,7 @@ public final class RecordingSignalCapture implements RecordingSignalConsumer
      * @return last captured control session id.
      * @see #onSignal(long, long, long, long, long, RecordingSignal)
      */
+    @Pure
     public long controlSessionId()
     {
         return controlSessionId;
@@ -190,6 +197,7 @@ public final class RecordingSignalCapture implements RecordingSignalConsumer
      * @return last captured correlation id.
      * @see #onSignal(long, long, long, long, long, RecordingSignal)
      */
+    @Pure
     public long correlationId()
     {
         return correlationId;
@@ -202,6 +210,7 @@ public final class RecordingSignalCapture implements RecordingSignalConsumer
      * @return last captured subscription id.
      * @see #onSignal(long, long, long, long, long, RecordingSignal)
      */
+    @Pure
     public long subscriptionId()
     {
         return subscriptionId;
@@ -213,6 +222,7 @@ public final class RecordingSignalCapture implements RecordingSignalConsumer
      * @return last captured recording id.
      * @see #onSignal(long, long, long, long, long, RecordingSignal)
      */
+    @Pure
     public long recordingId()
     {
         return recordingId;
@@ -225,6 +235,7 @@ public final class RecordingSignalCapture implements RecordingSignalConsumer
      * @return last captured recording position.
      * @see #onSignal(long, long, long, long, long, RecordingSignal)
      */
+    @Pure
     public long position()
     {
         return position;
@@ -237,6 +248,7 @@ public final class RecordingSignalCapture implements RecordingSignalConsumer
      * @return last captured recording signal.
      * @see #onSignal(long, long, long, long, long, RecordingSignal)
      */
+    @Pure
     public RecordingSignal signal()
     {
         return signal;

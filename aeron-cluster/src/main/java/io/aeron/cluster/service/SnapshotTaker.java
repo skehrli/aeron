@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster.service;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.ExclusivePublication;
 import io.aeron.Publication;
 import io.aeron.cluster.client.ClusterException;
@@ -66,6 +68,7 @@ public class SnapshotTaker
      * @param idleStrategy      to call when the publication is back pressured.
      * @param aeronAgentInvoker to call when idling so it stays active.
      */
+    @SideEffectFree
     public SnapshotTaker(
         final ExclusivePublication publication, final IdleStrategy idleStrategy, final AgentInvoker aeronAgentInvoker)
     {
@@ -84,6 +87,7 @@ public class SnapshotTaker
      * @param timeUnit         of the cluster timestamps stored in the snapshot.
      * @param appVersion       associated with the snapshot from {@link ClusteredServiceContainer.Context#appVersion()}.
      */
+    @Impure
     public void markBegin(
         final long snapshotTypeId,
         final long logPosition,
@@ -106,6 +110,7 @@ public class SnapshotTaker
      * @param timeUnit         of the cluster timestamps stored in the snapshot.
      * @param appVersion       associated with the snapshot from {@link ClusteredServiceContainer.Context#appVersion()}.
      */
+    @Impure
     public void markEnd(
         final long snapshotTypeId,
         final long logPosition,
@@ -129,6 +134,7 @@ public class SnapshotTaker
      * @param timeUnit         of the cluster timestamps stored in the snapshot.
      * @param appVersion       associated with the snapshot from {@link ClusteredServiceContainer.Context#appVersion()}.
      */
+    @Impure
     public void markSnapshot(
         final long snapshotTypeId,
         final long logPosition,
@@ -165,6 +171,7 @@ public class SnapshotTaker
     /**
      * Check for thread interrupt and throw an {@link AgentTerminationException} if interrupted.
      */
+    @Impure
     protected static void checkInterruptStatus()
     {
         if (Thread.currentThread().isInterrupted())
@@ -179,6 +186,7 @@ public class SnapshotTaker
      * @param position    of an offer or try claim to a publication.
      * @param publication on which the offer or try claim was attempted.
      */
+    @Impure
     protected static void checkResult(final long position, final Publication publication)
     {
         if (Publication.NOT_CONNECTED == position)
@@ -203,6 +211,7 @@ public class SnapshotTaker
      *
      * @param position of an offer or try claim to a publication.
      */
+    @Impure
     protected void checkResultAndIdle(final long position)
     {
         checkResult(position, publication);
@@ -214,6 +223,7 @@ public class SnapshotTaker
     /**
      * Invoke the Aeron client agent if necessary.
      */
+    @Impure
     protected void invokeAgentClient()
     {
         if (null != aeronAgentInvoker)
@@ -229,6 +239,7 @@ public class SnapshotTaker
      * @param offset at which the message begins.
      * @param length of the message.
      */
+    @Impure
     protected final void offer(final DirectBuffer buffer, final int offset, final int length)
     {
         idleStrategy.reset();

@@ -15,6 +15,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.LogBuffers;
 import io.aeron.logbuffer.FrameDescriptor;
 import io.aeron.logbuffer.LogBufferDescriptor;
@@ -75,6 +76,7 @@ public class LogInspector
      *
      * @param args passed to the process.
      */
+    @Impure
     @SuppressWarnings("methodLength")
     public static void main(final String[] args)
     {
@@ -188,6 +190,7 @@ public class LogInspector
      * @param length of the bytes in the buffer.
      * @return a char array of the formatted bytes.
      */
+    @Impure
     public static char[] formatBytes(final DirectBuffer buffer, final int offset, final int length)
     {
         switch (AERON_LOG_DATA_FORMAT)
@@ -202,6 +205,7 @@ public class LogInspector
         }
     }
 
+    @Impure
     private static char[] bytesToAscii(final DirectBuffer buffer, final int offset, final int length)
     {
         final char[] chars = new char[length];
@@ -229,6 +233,7 @@ public class LogInspector
      * @param length of the bytes in the buffer.
      * @return a char array of the formatted bytes in HEX.
      */
+    @Impure
     public static char[] bytesToHex(final DirectBuffer buffer, final int offset, final int length)
     {
         final char[] chars = new char[length * 2];

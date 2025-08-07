@@ -15,6 +15,9 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.collections.Object2ObjectHashMap;
@@ -48,6 +51,8 @@ public class DriverComponentLogger implements ComponentLogger
     /**
      * {@inheritDoc}
      */
+    @Pure
+    @Impure
     public int typeCode()
     {
         return EventCodeType.DRIVER.getTypeCode();
@@ -56,6 +61,8 @@ public class DriverComponentLogger implements ComponentLogger
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
+    @Impure
     public void decode(
         final MutableDirectBuffer buffer, final int offset, final int eventCodeId, final StringBuilder builder)
     {
@@ -65,6 +72,7 @@ public class DriverComponentLogger implements ComponentLogger
     /**
      * {@inheritDoc}
      */
+    @Impure
     public AgentBuilder addInstrumentation(final AgentBuilder agentBuilder, final Map<String, String> configOptions)
     {
         ENABLED_EVENTS.clear();
@@ -98,11 +106,13 @@ public class DriverComponentLogger implements ComponentLogger
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void reset()
     {
         ENABLED_EVENTS.clear();
     }
 
+    @Impure
     private static EnumSet<DriverEventCode> getDriverEventCodes(final String enabledEventCodes)
     {
         return EventConfiguration.parseEventCodes(
@@ -113,6 +123,7 @@ public class DriverComponentLogger implements ComponentLogger
             DriverEventCode::get);
     }
 
+    @Impure
     private static AgentBuilder addDriverConductorInstrumentation(final AgentBuilder agentBuilder)
     {
         final boolean hasImageHook = ENABLED_EVENTS.contains(REMOVE_IMAGE_CLEANUP);
@@ -149,6 +160,7 @@ public class DriverComponentLogger implements ComponentLogger
             });
     }
 
+    @Impure
     private static AgentBuilder addDriverCommandInstrumentation(final AgentBuilder agentBuilder)
     {
         if (CmdInterceptor.EVENTS.stream().noneMatch(ENABLED_EVENTS::contains))
@@ -167,6 +179,7 @@ public class DriverComponentLogger implements ComponentLogger
                     .on(named("transmit"))));
     }
 
+    @Impure
     private static AgentBuilder addDriverSenderProxyInstrumentation(final AgentBuilder agentBuilder)
     {
         AgentBuilder tempBuilder = agentBuilder;
@@ -187,6 +200,7 @@ public class DriverComponentLogger implements ComponentLogger
         return tempBuilder;
     }
 
+    @Impure
     private static AgentBuilder addDriverReceiverProxyInstrumentation(final AgentBuilder agentBuilder)
     {
         AgentBuilder tempBuilder = agentBuilder;
@@ -207,6 +221,7 @@ public class DriverComponentLogger implements ComponentLogger
         return tempBuilder;
     }
 
+    @Impure
     private static AgentBuilder addDriverUdpChannelTransportInstrumentation(final AgentBuilder agentBuilder)
     {
         AgentBuilder tempBuilder = agentBuilder;
@@ -234,6 +249,7 @@ public class DriverComponentLogger implements ComponentLogger
         return tempBuilder;
     }
 
+    @Impure
     private AgentBuilder addChannelEndpointInstrumentation(final AgentBuilder agentBuilder)
     {
         AgentBuilder tempBuilder = agentBuilder;
@@ -256,6 +272,7 @@ public class DriverComponentLogger implements ComponentLogger
     }
 
 
+    @Impure
     private static AgentBuilder addDriverNameResolutionInstrumentation(final AgentBuilder agentBuilder)
     {
         AgentBuilder tempBuilder = agentBuilder;
@@ -297,6 +314,7 @@ public class DriverComponentLogger implements ComponentLogger
         return tempBuilder;
     }
 
+    @Impure
     private static AgentBuilder addDriverFlowControlInstrumentation(final AgentBuilder agentBuilder)
     {
         AgentBuilder tempBuilder = agentBuilder;
@@ -317,6 +335,7 @@ public class DriverComponentLogger implements ComponentLogger
         return tempBuilder;
     }
 
+    @Impure
     private static AgentBuilder addPublicationRevokeInstrumentation(final AgentBuilder agentBuilder)
     {
         AgentBuilder tempBuilder = agentBuilder;
@@ -344,6 +363,7 @@ public class DriverComponentLogger implements ComponentLogger
         return tempBuilder;
     }
 
+    @Impure
     private static AgentBuilder addEventInstrumentation(
         final AgentBuilder agentBuilder,
         final DriverEventCode code,

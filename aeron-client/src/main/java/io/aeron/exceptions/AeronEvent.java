@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package io.aeron.exceptions;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 
 /**
  * A means to capture an event of significance that does not require a stack trace, so it can be lighter-weight
@@ -29,6 +31,7 @@ public class AeronEvent extends AeronException
      *
      * @param message to detail the event.
      */
+    @Impure
     public AeronEvent(final String message)
     {
         super(message, null, false, false, AeronException.Category.WARN);
@@ -40,6 +43,7 @@ public class AeronEvent extends AeronException
      * @param message  to detail the event.
      * @param category of the event.
      */
+    @Impure
     public AeronEvent(final String message, final AeronException.Category category)
     {
         super(message, null, false, false, category);
@@ -52,6 +56,7 @@ public class AeronEvent extends AeronException
      *
      * @return a reference to this {@link AeronEvent} instance.
      */
+    @Pure
     public synchronized Throwable fillInStackTrace()
     {
         return this;
@@ -62,6 +67,7 @@ public class AeronEvent extends AeronException
      *
      * @return empty stack trace.
      */
+    @Pure
     public StackTraceElement[] getStackTrace()
     {
         return EMPTY_STACK;

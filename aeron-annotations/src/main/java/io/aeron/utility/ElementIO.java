@@ -15,6 +15,7 @@
  */
 package io.aeron.utility;
 
+import org.checkerframework.dataflow.qual.Impure;
 import javax.tools.FileObject;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -34,6 +35,7 @@ public class ElementIO
      * @param <T> the type of elements - ConfigInfo or CounterInfo
      * @throws Exception on IO failure.
      */
+    @Impure
     @SuppressWarnings("unchecked")
     public static <T> List<T> read(final String elementsFilename) throws Exception
     {
@@ -48,6 +50,7 @@ public class ElementIO
      * @param elements a Collection of elements
      * @throws Exception on IO failure.
      */
+    @Impure
     public static void write(final FileObject resourceFile, final Collection<?> elements) throws Exception
     {
         try (ObjectOutputStream out = new ObjectOutputStream(resourceFile.openOutputStream()))

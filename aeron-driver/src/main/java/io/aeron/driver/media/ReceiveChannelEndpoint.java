@@ -15,6 +15,8 @@
  */
 package io.aeron.driver.media;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.CommonContext;
 import io.aeron.ErrorCode;
 import io.aeron.driver.DataPacketDispatcher;
@@ -55,6 +57,7 @@ abstract class ReceiveChannelEndpointLhsPadding extends UdpChannelTransport
     byte p032, p033, p034, p035, p036, p037, p038, p039, p040, p041, p042, p043, p044, p045, p046, p047;
     byte p048, p049, p050, p051, p052, p053, p054, p055, p056, p057, p058, p059, p060, p061, p062, p063;
 
+    @Impure
     ReceiveChannelEndpointLhsPadding(
         final UdpChannel udpChannel,
         final InetSocketAddress endPointAddress,
@@ -74,6 +77,7 @@ abstract class ReceiveChannelEndpointHotFields extends ReceiveChannelEndpointLhs
     protected final AtomicCounter errorFramesSent;
     long timeOfLastActivityNs;
 
+    @Impure
     ReceiveChannelEndpointHotFields(
         final UdpChannel udpChannel,
         final InetSocketAddress endPointAddress,
@@ -93,6 +97,7 @@ abstract class ReceiveChannelEndpointRhsPadding extends ReceiveChannelEndpointHo
     byte p096, p097, p098, p099, p100, p101, p102, p103, p104, p105, p106, p107, p108, p109, p110, p111;
     byte p112, p113, p114, p115, p116, p117, p118, p119, p120, p121, p122, p123, p124, p125, p126, p127;
 
+    @Impure
     ReceiveChannelEndpointRhsPadding(
         final UdpChannel udpChannel,
         final InetSocketAddress endPointAddress,
@@ -148,6 +153,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param statusIndicator to indicate the status of the channel endpoint.
      * @param context         for configuration.
      */
+    @Impure
     public ReceiveChannelEndpoint(
         final UdpChannel udpChannel,
         final DataPacketDispatcher dispatcher,
@@ -191,6 +197,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      *
      * @param counter to be set.
      */
+    @Impure
     public void localSocketAddressIndicator(final AtomicCounter counter)
     {
         if (null != multiRcvDestination)
@@ -208,6 +215,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param remoteAddress to send the payload to.
      * @return number of bytes sent.
      */
+    @Impure
     public int sendTo(final ByteBuffer buffer, final InetSocketAddress remoteAddress)
     {
         int bytesSent = 0;
@@ -238,6 +246,8 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      *
      * @return the original URI String used when a subscription was added.
      */
+    @Pure
+    @Impure
     public String originalUriString()
     {
         return subscriptionUdpChannel().originalUriString();
@@ -248,6 +258,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      *
      * @return counter which indicates the status of the channel.
      */
+    @Pure
     public AtomicCounter statusIndicatorCounter()
     {
         return statusIndicator;
@@ -256,6 +267,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
     /**
      * Indicate that the channel as active after successfully opening it.
      */
+    @Impure
     public void indicateActive()
     {
         final long currentStatus = statusIndicator.get();
@@ -278,6 +290,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
     /**
      * Close the counters used to indicate channel status.
      */
+    @Impure
     public void closeIndicators()
     {
         statusIndicator.close();
@@ -294,6 +307,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param poller associated with the {@link MultiRcvDestination} if present to be used for selecting without
      *              processing.
      */
+    @Impure
     public void closeMultiRcvDestinationTransports(final DataTransportPoller poller)
     {
         if (null != multiRcvDestination)
@@ -307,6 +321,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      *
      * @param conductorProxy for sending back counters to be closed.
      */
+    @Impure
     public void closeMultiRcvDestinationIndicators(final DriverConductorProxy conductorProxy)
     {
         if (null != multiRcvDestination)
@@ -320,6 +335,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      *
      * @param conductorProxy for notifying potential channel errors.
      */
+    @Impure
     public void openChannel(final DriverConductorProxy conductorProxy)
     {
         if (null == multiRcvDestination)
@@ -331,6 +347,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
     /**
      * Increment the {@link io.aeron.driver.status.SystemCounterDescriptor#POSSIBLE_TTL_ASYMMETRY} counter.
      */
+    @Impure
     public void possibleTtlAsymmetryEncountered()
     {
         possibleTtlAsymmetry.incrementRelease();
@@ -343,6 +360,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param streamId to increment the reference for.
      * @return current reference count after the increment.
      */
+    @Impure
     public int incRefToStream(final int streamId)
     {
         return refCountByStreamIdMap.incrementAndGet(streamId);
@@ -355,6 +373,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param streamId to decrement the reference for.
      * @return current reference count after the decrement.
      */
+    @Impure
     public int decRefToStream(final int streamId)
     {
         final int count = refCountByStreamIdMap.decrementAndGet(streamId);
@@ -376,6 +395,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param sessionId to increment the reference for.
      * @return current reference count after the increment.
      */
+    @Impure
     public long incRefToStreamAndSession(final int streamId, final int sessionId)
     {
         return refCountByStreamIdAndSessionIdMap.incrementAndGet(Hashing.compoundKey(streamId, sessionId));
@@ -389,6 +409,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param sessionId to increment the reference for.
      * @return current reference count after the decrement.
      */
+    @Impure
     public long decRefToStreamAndSession(final int streamId, final int sessionId)
     {
         final long key = Hashing.compoundKey(streamId, sessionId);
@@ -411,6 +432,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param streamId to increment the reference for.
      * @return current reference count after the increment.
      */
+    @Impure
     public int incResponseRefToStream(final int streamId)
     {
         return responseRefCountByStreamIdMap.incrementAndGet(streamId);
@@ -425,6 +447,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param streamId to decrement the reference for.
      * @return current reference count after the decrement.
      */
+    @Impure
     public int decResponseRefToStream(final int streamId)
     {
         final int count = responseRefCountByStreamIdMap.decrementAndGet(streamId);
@@ -443,6 +466,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      *
      * @return total count of distinct subscriptions to streams.
      */
+    @Impure
     public int distinctSubscriptionCount()
     {
         return refCountByStreamIdMap.size() + refCountByStreamIdAndSessionIdMap.size();
@@ -454,6 +478,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      *
      * @return true if the channel should be closed for cleanup.
      */
+    @Impure
     public boolean shouldBeClosed()
     {
         return refCountByStreamIdMap.isEmpty() &&
@@ -468,6 +493,8 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      *
      * @return does channel have an explicit control address or not?
      */
+    @Pure
+    @Impure
     public boolean hasExplicitControl()
     {
         return udpChannel.hasExplicitControl();
@@ -478,6 +505,8 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      *
      * @return does channel have an explicit control address or not?
      */
+    @Pure
+    @Impure
     public InetSocketAddress explicitControlAddress()
     {
         return udpChannel.hasExplicitControl() ? currentControlAddress : null;
@@ -488,6 +517,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      *
      * @return true if the channel got control of destinations for MDS.
      */
+    @Pure
     public boolean hasDestinationControl()
     {
         return null != multiRcvDestination;
@@ -498,6 +528,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * <p>
      * If not then a {@link ControlProtocolException} will be thrown.
      */
+    @Impure
     public void validateAllowsDestinationControl()
     {
         if (null == multiRcvDestination)
@@ -511,6 +542,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      *
      * @return true if the primary transport is multicast.
      */
+    @Impure
     public boolean isMulticast()
     {
         return isMulticast(0);
@@ -522,6 +554,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param transportIndex to check for multicast.
      * @return true if the transport index is multicast.
      */
+    @Impure
     public boolean isMulticast(final int transportIndex)
     {
         if (null != multiRcvDestination)
@@ -541,6 +574,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      *
      * @return {@link UdpChannel} for the Subscription channel.
      */
+    @Pure
     public UdpChannel subscriptionUdpChannel()
     {
         return super.udpChannel;
@@ -551,6 +585,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      *
      * @return the {@link UdpChannel} for the primary transport.
      */
+    @Impure
     public UdpChannel udpChannel()
     {
         return udpChannel(0);
@@ -562,6 +597,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param transportIndex to the {@link UdpChannel}.
      * @return the {@link UdpChannel} for the transport index.
      */
+    @Impure
     public UdpChannel udpChannel(final int transportIndex)
     {
         if (null != multiRcvDestination && multiRcvDestination.hasDestination(transportIndex))
@@ -581,6 +617,8 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      *
      * @return true if the channel has a tag identity.
      */
+    @Pure
+    @Impure
     public boolean hasTag()
     {
         return super.udpChannel.hasTag();
@@ -591,6 +629,8 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      *
      * @return the tag identity for the channel.
      */
+    @Pure
+    @Impure
     public long tag()
     {
         return super.udpChannel.tag();
@@ -602,6 +642,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param udpChannel with tag to match against.
      * @return true if the channel matches on tag identity.
      */
+    @Impure
     public boolean matchesTag(final UdpChannel udpChannel)
     {
         return udpChannel.matchesTag(super.udpChannel, currentControlAddress, null);
@@ -612,6 +653,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      *
      * @return the multicast TTL for the primary transport.
      */
+    @Impure
     public int multicastTtl()
     {
         return multicastTtl(0);
@@ -623,6 +665,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param transportIndex to get the multicast TTL for.
      * @return the multicast TTL for the transport index.
      */
+    @Impure
     public int multicastTtl(final int transportIndex)
     {
         if (null != multiRcvDestination)
@@ -643,6 +686,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param transport to add for the destination.
      * @return index for the transport.
      */
+    @Impure
     public int addDestination(final ReceiveDestinationTransport transport)
     {
         return multiRcvDestination.addDestination(transport);
@@ -653,6 +697,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      *
      * @param transportIndex to be removed.
      */
+    @Impure
     public void removeDestination(final int transportIndex)
     {
         multiRcvDestination.removeDestination(transportIndex);
@@ -664,6 +709,8 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param udpChannel to look up the transport index for.
      * @return the transport index if found otherwise {@link ArrayUtil#UNKNOWN_INDEX}.
      */
+    @Pure
+    @Impure
     public int destination(final UdpChannel udpChannel)
     {
         return multiRcvDestination.transport(udpChannel);
@@ -675,6 +722,8 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param transportIndex to get.
      * @return the transport destination for a given index.
      */
+    @Pure
+    @Impure
     public ReceiveDestinationTransport destination(final int transportIndex)
     {
         return multiRcvDestination.transport(transportIndex);
@@ -686,6 +735,8 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param transportIndex to check if a destination exists for.
      * @return true if the channel has a given transport index.
      */
+    @Pure
+    @Impure
     public boolean hasDestination(final int transportIndex)
     {
         return null == multiRcvDestination ? (0 == transportIndex) : multiRcvDestination.hasDestination(transportIndex);
@@ -701,6 +752,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param transportIndex on which the packet was received.
      * @return number of bytes applied as a result of this action.
      */
+    @Impure
     public int onDataPacket(
         final DataHeaderFlyweight header,
         final UnsafeBuffer buffer,
@@ -726,6 +778,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param srcAddress     the message came from.
      * @param transportIndex on which the message was received.
      */
+    @Impure
     public void onSetupMessage(
         final SetupFlyweight header,
         final UnsafeBuffer buffer,
@@ -746,6 +799,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param srcAddress     the message came from.
      * @param transportIndex on which the message was received.
      */
+    @Impure
     public void onRttMeasurement(
         final RttMeasurementFlyweight header,
         final UnsafeBuffer buffer,
@@ -769,6 +823,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param sessionId      for the image.
      * @param streamId       for the image.
      */
+    @Impure
     public void sendSetupElicitingStatusMessage(
         final int transportIndex, final InetSocketAddress controlAddress, final int sessionId, final int streamId)
     {
@@ -798,6 +853,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param receptionDelta  time in nanoseconds between receiving original request and sending Reply RTT Measurement.
      * @param isReply         true if a reply.
      */
+    @Impure
     public void sendRttMeasurement(
         final int transportIndex,
         final InetSocketAddress controlAddress,
@@ -830,6 +886,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param windowLength      for available buffer from the position.
      * @param flags             for the header.
      */
+    @Impure
     public void sendStatusMessage(
         final ImageConnection[] controlAddresses,
         final int sessionId,
@@ -864,6 +921,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param termOffset       of the image to indicate position.
      * @param length           of the range to be re-transmitted.
      */
+    @Impure
     public void sendNakMessage(
         final ImageConnection[] controlAddresses,
         final int sessionId,
@@ -893,6 +951,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param receptionDelta   time in nanoseconds between receiving original request and sending Reply RTT Measurement.
      * @param isReply          true if a reply.
      */
+    @Impure
     public void sendRttMeasurement(
         final ImageConnection[] controlAddresses,
         final int sessionId,
@@ -921,6 +980,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param streamId          for the image.
      * @param responseSessionId to be used by the remote subscription to listen for responses.
      */
+    @Impure
     public void sendResponseSetup(
         final ImageConnection[] controlAddresses,
         final int sessionId,
@@ -945,6 +1005,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param errorCode         for the error being sent.
      * @param errorMessage      to be sent back to the publication.
      */
+    @Impure
     public void sendErrorFrame(
         final ImageConnection[] controlAddresses,
         final int sessionId,
@@ -972,6 +1033,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      *
      * @return dispatcher for the channel.
      */
+    @Pure
     public DataPacketDispatcher dispatcher()
     {
         return dispatcher;
@@ -983,6 +1045,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param transportIndex to update the control address for.
      * @param newAddress     for the control of the transport.
      */
+    @Impure
     public void updateControlAddress(final int transportIndex, final InetSocketAddress newAddress)
     {
         if (null != multiRcvDestination)
@@ -1002,6 +1065,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param length           of the frame in the buffer.
      * @param imageConnections to send the frame to.
      */
+    @Impure
     protected void send(final ByteBuffer buffer, final int length, final ImageConnection[] imageConnections)
     {
         final int bytesSent = null == multiRcvDestination ?
@@ -1022,6 +1086,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * @param transportIndex to send the frame on.
      * @param remoteAddress  to send the frame to.
      */
+    @Impure
     protected void send(
         final ByteBuffer buffer, final int length, final int transportIndex, final InetSocketAddress remoteAddress)
     {
@@ -1035,6 +1100,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
         }
     }
 
+    @Impure
     void checkForReResolution(final long nowNs, final DriverConductorProxy conductorProxy)
     {
         if (null != multiRcvDestination)
@@ -1056,6 +1122,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * Called from the {@link io.aeron.driver.DriverConductor} to
      * increment image ref count for this channel endpoint.
      */
+    @Impure
     public void incRefImages()
     {
         imageRefCount++;
@@ -1065,11 +1132,13 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
      * Called from the {@link io.aeron.driver.DriverConductor} to
      * decrement image ref count for this channel endpoint.
      */
+    @Impure
     public void decRefImages()
     {
         --imageRefCount;
     }
 
+    @Impure
     private void updateTimeOfLastActivityNs(final long nowNs, final int transportIndex)
     {
         if (null == multiRcvDestination)
@@ -1082,6 +1151,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
         }
     }
 
+    @Impure
     private void updateLocalSocketAddress(final String bindAddressAndPort)
     {
         if (null != localSocketAddressIndicator)
@@ -1092,6 +1162,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
         }
     }
 
+    @Impure
     private void applyChannelReceiveTimestamp(final UnsafeBuffer buffer, final int length)
     {
         if (length > DataHeaderFlyweight.HEADER_LENGTH)
@@ -1109,6 +1180,7 @@ public class ReceiveChannelEndpoint extends ReceiveChannelEndpointRhsPadding
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "ReceiveChannelEndpoint{" +

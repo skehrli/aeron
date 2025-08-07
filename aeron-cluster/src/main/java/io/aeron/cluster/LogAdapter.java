@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import io.aeron.BufferBuilder;
 import io.aeron.Image;
@@ -46,12 +49,14 @@ final class LogAdapter implements ControlledFragmentHandler
     private final ClusterActionRequestDecoder clusterActionRequestDecoder = new ClusterActionRequestDecoder();
     private final NewLeadershipTermEventDecoder newLeadershipTermEventDecoder = new NewLeadershipTermEventDecoder();
 
+    @SideEffectFree
     LogAdapter(final ConsensusModuleAgent consensusModuleAgent, final int fragmentLimit)
     {
         this.consensusModuleAgent = consensusModuleAgent;
         this.fragmentLimit = fragmentLimit;
     }
 
+    @Impure
     long disconnect(final ErrorHandler errorHandler)
     {
         long registrationId = Aeron.NULL_VALUE;
@@ -67,22 +72,26 @@ final class LogAdapter implements ControlledFragmentHandler
         return registrationId;
     }
 
+    @Impure
     void disconnect(final ErrorHandler errorHandler, final long maxLogPosition)
     {
         consensusModuleAgent.awaitLocalSocketsClosed(disconnect(errorHandler));
         logPosition = Math.min(logPosition, maxLogPosition);
     }
 
+    @Impure
     Subscription subscription()
     {
         return null == image ? null : image.subscription();
     }
 
+    @Pure
     ConsensusModuleAgent consensusModuleAgent()
     {
         return consensusModuleAgent;
     }
 
+    @Impure
     long position()
     {
         if (null == image)
@@ -93,6 +102,7 @@ final class LogAdapter implements ControlledFragmentHandler
         return image.position();
     }
 
+    @Impure
     int poll(final long boundPosition)
     {
         if (null == image)
@@ -103,26 +113,31 @@ final class LogAdapter implements ControlledFragmentHandler
         return image.boundedControlledPoll(this, boundPosition, fragmentLimit);
     }
 
+    @Impure
     boolean isImageClosed()
     {
         return null == image || image.isClosed();
     }
 
+    @Impure
     boolean isLogEndOfStream()
     {
         return null != image && image.isEndOfStream();
     }
 
+    @Impure
     boolean isLogEndOfStreamAt(final long position)
     {
         return null != image && position == image.endOfStreamPosition();
     }
 
+    @Pure
     Image image()
     {
         return image;
     }
 
+    @Impure
     void image(final Image image)
     {
         if (null != this.image)
@@ -133,6 +148,7 @@ final class LogAdapter implements ControlledFragmentHandler
         this.image = image;
     }
 
+    @Impure
     void asyncRemoveDestination(final String destination)
     {
         if (null != image && !image.subscription().isClosed())
@@ -141,6 +157,7 @@ final class LogAdapter implements ControlledFragmentHandler
         }
     }
 
+    @Impure
     public Action onFragment(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {
         Action action = Action.CONTINUE;
@@ -189,6 +206,7 @@ final class LogAdapter implements ControlledFragmentHandler
         return action;
     }
 
+    @Impure
     @SuppressWarnings("MethodLength")
     private Action onMessage(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {

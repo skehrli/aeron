@@ -15,6 +15,7 @@
  */
 package io.aeron.logbuffer;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import static io.aeron.logbuffer.FrameDescriptor.*;
@@ -38,6 +39,7 @@ public class TermGapFiller
      * @param gapLength         to length of the gap.
      * @return true if the gap has been filled with a padding record or false if data found.
      */
+    @Impure
     public static boolean tryFillGap(
         final UnsafeBuffer logMetaDataBuffer,
         final UnsafeBuffer termBuffer,

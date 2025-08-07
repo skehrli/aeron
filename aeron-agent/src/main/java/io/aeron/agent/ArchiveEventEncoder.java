@@ -15,6 +15,10 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.checker.mustcall.qual.Owning;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import static io.aeron.agent.CommonEventEncoder.*;
@@ -25,17 +29,19 @@ import static org.agrona.BitUtil.SIZE_OF_LONG;
 
 final class ArchiveEventEncoder
 {
+    @SideEffectFree
     private ArchiveEventEncoder()
     {
     }
 
+    @Impure
     static <E extends Enum<E>> int encodeReplaySessionStateChange(
         final UnsafeBuffer encodingBuffer,
         final int offset,
         final int captureLength,
         final int length,
-        final E from,
-        final E to,
+        final @Owning E from,
+        final @Owning E to,
         final long id,
         final long recordingId,
         final long position,
@@ -58,18 +64,21 @@ final class ArchiveEventEncoder
         return encodedLength;
     }
 
-    static <E extends Enum<E>> int replaySessionStateChangeLength(final E from, final E to, final String reason)
+    @Pure
+    @Impure
+    static <E extends Enum<E>> int replaySessionStateChangeLength(final @Owning E from, final @Owning E to, final String reason)
     {
         return stateTransitionStringLength(from, to) + (3 * SIZE_OF_LONG) + (SIZE_OF_INT + reason.length());
     }
 
+    @Impure
     static <E extends Enum<E>> int encodeRecordingSessionStateChange(
         final UnsafeBuffer encodingBuffer,
         final int offset,
         final int captureLength,
         final int length,
-        final E from,
-        final E to,
+        final @Owning E from,
+        final @Owning E to,
         final long recordingId,
         final long position,
         final String reason)
@@ -89,18 +98,21 @@ final class ArchiveEventEncoder
         return encodedLength;
     }
 
-    static <E extends Enum<E>> int recordingSessionStateChangeLength(final E from, final E to, final String reason)
+    @Pure
+    @Impure
+    static <E extends Enum<E>> int recordingSessionStateChangeLength(final @Owning E from, final @Owning E to, final String reason)
     {
         return stateTransitionStringLength(from, to) + (2 * SIZE_OF_LONG) + (SIZE_OF_INT + reason.length());
     }
 
+    @Impure
     static <E extends Enum<E>> int encodeReplicationSessionStateChange(
         final UnsafeBuffer encodingBuffer,
         final int offset,
         final int captureLength,
         final int length,
-        final E from,
-        final E to,
+        final @Owning E from,
+        final @Owning E to,
         final long replicationId,
         final long srcRecordingId,
         final long dstRecordingId,
@@ -126,18 +138,21 @@ final class ArchiveEventEncoder
         return encodedLength;
     }
 
-    static <E extends Enum<E>> int replicationSessionStateChangeLength(final E from, final E to, final String reason)
+    @Pure
+    @Impure
+    static <E extends Enum<E>> int replicationSessionStateChangeLength(final @Owning E from, final @Owning E to, final String reason)
     {
         return stateTransitionStringLength(from, to) + (4 * SIZE_OF_LONG) + (SIZE_OF_INT + reason.length());
     }
 
+    @Impure
     static <E extends Enum<E>> int encodeControlSessionStateChange(
         final UnsafeBuffer encodingBuffer,
         final int offset,
         final int captureLength,
         final int length,
-        final E from,
-        final E to,
+        final @Owning E from,
+        final @Owning E to,
         final long id,
         final String reason)
     {
@@ -154,11 +169,14 @@ final class ArchiveEventEncoder
         return encodedLength;
     }
 
-    static <E extends Enum<E>> int sessionStateChangeLength(final E from, final E to, final String reason)
+    @Pure
+    @Impure
+    static <E extends Enum<E>> int sessionStateChangeLength(final @Owning E from, final @Owning E to, final String reason)
     {
         return stateTransitionStringLength(from, to) + SIZE_OF_LONG + (SIZE_OF_INT + reason.length());
     }
 
+    @Impure
     static void encodeReplaySessionError(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -179,6 +197,7 @@ final class ArchiveEventEncoder
         encodeTrailingString(encodingBuffer, offset + encodedLength, captureLength - (SIZE_OF_INT * 2), errorMessage);
     }
 
+    @Impure
     static void encodeCatalogResize(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -195,11 +214,13 @@ final class ArchiveEventEncoder
         encodingBuffer.putLong(offset + encodedLength, newCatalogLength, LITTLE_ENDIAN);
     }
 
+    @Pure
     static int replicationSessionDoneLength()
     {
         return 8 * SIZE_OF_LONG + 3 * SIZE_OF_BYTE;
     }
 
+    @Impure
     static void encodeReplicationSessionDone(
         final UnsafeBuffer encodingBuffer,
         final int offset,

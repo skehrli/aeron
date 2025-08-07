@@ -15,6 +15,8 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.LockSupport;
 
@@ -34,6 +36,7 @@ public final class ImageRateReporter implements Runnable
      * @param running       flag to control reporter, so it can be stopped running.
      * @param subscriber    for the image.
      */
+    @SideEffectFree
     public ImageRateReporter(final int messageLength, final AtomicBoolean running, final ImageRateSubscriber subscriber)
     {
         this.messageLength = messageLength;
@@ -44,6 +47,7 @@ public final class ImageRateReporter implements Runnable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void run()
     {
         long lastTimestampMs = System.currentTimeMillis();

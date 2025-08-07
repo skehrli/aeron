@@ -15,6 +15,7 @@
  */
 package io.aeron.samples.archive;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.ExclusivePublication;
 import io.aeron.archive.Archive;
@@ -62,6 +63,7 @@ public class EmbeddedRecordingThroughput implements AutoCloseable
      *
      * @param args passed to the process.
      */
+    @Impure
     public static void main(final String[] args)
     {
         loadPropertiesFiles(args);
@@ -85,6 +87,7 @@ public class EmbeddedRecordingThroughput implements AutoCloseable
         }
     }
 
+    @Impure
     EmbeddedRecordingThroughput()
     {
         final String archiveDirName = Archive.Configuration.archiveDirName();
@@ -112,6 +115,7 @@ public class EmbeddedRecordingThroughput implements AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         CloseHelper.closeAll(
@@ -122,6 +126,7 @@ public class EmbeddedRecordingThroughput implements AutoCloseable
             () -> archivingMediaDriver.mediaDriver().context().deleteDirectory());
     }
 
+    @Impure
     private long streamMessagesForRecording()
     {
         try (ExclusivePublication publication = aeron.addExclusivePublication(CHANNEL, STREAM_ID))
@@ -170,11 +175,13 @@ public class EmbeddedRecordingThroughput implements AutoCloseable
         }
     }
 
+    @Impure
     private void startRecording()
     {
         aeronArchive.startRecording(CHANNEL, STREAM_ID, SourceLocation.LOCAL);
     }
 
+    @Impure
     private void truncateRecording(final long previousRecordingId)
     {
         recordingSignalCapture.reset();

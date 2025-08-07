@@ -15,6 +15,7 @@
  */
 package io.aeron.driver.media;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.ErrorHandler;
 import org.agrona.nio.TransportPoller;
 
@@ -36,6 +37,7 @@ public abstract class UdpTransportPoller extends TransportPoller
      *
      * @param errorHandler which can be used to log errors and continue.
      */
+    @Impure
     public UdpTransportPoller(final ErrorHandler errorHandler)
     {
         this.errorHandler = errorHandler;
@@ -46,6 +48,7 @@ public abstract class UdpTransportPoller extends TransportPoller
      *
      * @return the number of frames processed.
      */
+    @Impure
     public abstract int pollTransports();
 
     /**
@@ -54,6 +57,7 @@ public abstract class UdpTransportPoller extends TransportPoller
      * @param transport to associate with read.
      * @return {@link SelectionKey} for registration to cancel.
      */
+    @Impure
     public abstract SelectionKey registerForRead(UdpChannelTransport transport);
 
     /**
@@ -61,5 +65,6 @@ public abstract class UdpTransportPoller extends TransportPoller
      *
      * @param transport to cancel read for
      */
+    @Impure
     public abstract void cancelRead(UdpChannelTransport transport);
 }

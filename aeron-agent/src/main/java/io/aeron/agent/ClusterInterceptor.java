@@ -15,6 +15,8 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.checker.mustcall.qual.Owning;
 import io.aeron.Aeron;
 import io.aeron.cluster.codecs.CloseReason;
 import net.bytebuddy.asm.Advice;
@@ -28,11 +30,12 @@ class ClusterInterceptor
 {
     static class ElectionStateChange
     {
+        @Impure
         @Advice.OnMethodEnter
         static <E extends Enum<E>> void logStateChange(
             final int memberId,
-            final E oldState,
-            final E newState,
+            final @Owning E oldState,
+            final @Owning E newState,
             final int leaderId,
             final long candidateTermId,
             final long leadershipTermId,
@@ -59,6 +62,7 @@ class ClusterInterceptor
 
     static class NewLeadershipTerm
     {
+        @Impure
         @Advice.OnMethodEnter
         static void logOnNewLeadershipTerm(
             final int memberId,
@@ -96,8 +100,9 @@ class ClusterInterceptor
 
     static class ConsensusModuleStateChange
     {
+        @Impure
         @Advice.OnMethodEnter
-        static <E extends Enum<E>> void logStateChange(final int memberId, final E oldState, final E newState)
+        static <E extends Enum<E>> void logStateChange(final int memberId, final @Owning E oldState, final @Owning E newState)
         {
             LOGGER.logStateChange(STATE_CHANGE, memberId, oldState, newState);
         }
@@ -105,8 +110,9 @@ class ClusterInterceptor
 
     static class ConsensusModuleRoleChange
     {
+        @Impure
         @Advice.OnMethodEnter
-        static <E extends Enum<E>> void logRoleChange(final int memberId, final E oldRole, final E newRole)
+        static <E extends Enum<E>> void logRoleChange(final int memberId, final @Owning E oldRole, final @Owning E newRole)
         {
             LOGGER.logStateChange(ROLE_CHANGE, memberId, oldRole, newRole);
         }
@@ -114,6 +120,7 @@ class ClusterInterceptor
 
     static class CanvassPosition
     {
+        @Impure
         @Advice.OnMethodEnter
         static void logOnCanvassPosition(
             final int memberId,
@@ -130,6 +137,7 @@ class ClusterInterceptor
 
     static class RequestVote
     {
+        @Impure
         @Advice.OnMethodEnter
         static void logOnRequestVote(
             final int memberId,
@@ -146,6 +154,7 @@ class ClusterInterceptor
 
     static class CatchupPosition
     {
+        @Impure
         @Advice.OnMethodEnter
         static void logOnCatchupPosition(
             final int memberId,
@@ -160,6 +169,7 @@ class ClusterInterceptor
 
     static class StopCatchup
     {
+        @Impure
         @Advice.OnMethodEnter
         static void logOnStopCatchup(final int memberId, final long leadershipTermId, final int followerMemberId)
         {
@@ -169,10 +179,11 @@ class ClusterInterceptor
 
     static class TruncateLogEntry
     {
+        @Impure
         @Advice.OnMethodEnter
         static <E extends Enum<E>> void onTruncateLogEntry(
             final int memberId,
-            final E state,
+            final @Owning E state,
             final long logLeadershipTermId,
             final long leadershipTermId,
             final long candidateTermId,
@@ -198,6 +209,7 @@ class ClusterInterceptor
 
     static class ReplayNewLeadershipTerm
     {
+        @Impure
         @Advice.OnMethodEnter
         static void logOnReplayNewLeadershipTermEvent(
             final int memberId,
@@ -223,6 +235,7 @@ class ClusterInterceptor
 
     static class AppendPosition
     {
+        @Impure
         @Advice.OnMethodEnter
         static void logOnAppendPosition(
             final int memberId,
@@ -242,6 +255,7 @@ class ClusterInterceptor
 
     static class CommitPosition
     {
+        @Impure
         @Advice.OnMethodEnter
         static void logOnCommitPosition(
             final int memberId,
@@ -255,6 +269,7 @@ class ClusterInterceptor
 
     static class AddPassiveMember
     {
+        @Impure
         @Advice.OnMethodEnter
         static void logOnAddPassiveMember(
             final int memberId,
@@ -267,6 +282,7 @@ class ClusterInterceptor
 
     static class AppendSessionClose
     {
+        @Impure
         @Advice.OnMethodEnter
         static void logAppendSessionClose(
             final int memberId,
@@ -282,8 +298,9 @@ class ClusterInterceptor
 
     static class ClusterBackupStateChange
     {
+        @Impure
         @Advice.OnMethodEnter
-        static <E extends Enum<E>> void logStateChange(final E oldState, final E newState, final long nowMs)
+        static <E extends Enum<E>> void logStateChange(final @Owning E oldState, final @Owning E newState, final long nowMs)
         {
             LOGGER.logStateChange(CLUSTER_BACKUP_STATE_CHANGE, Aeron.NULL_VALUE, oldState, newState);
         }
@@ -291,6 +308,7 @@ class ClusterInterceptor
 
     static class TerminationPosition
     {
+        @Impure
         @Advice.OnMethodEnter
         static void logOnTerminationPosition(final int memberId, final long leadershipTermId, final long position)
         {
@@ -300,6 +318,7 @@ class ClusterInterceptor
 
     static class TerminationAck
     {
+        @Impure
         @Advice.OnMethodEnter
         static void logOnTerminationAck(
             final int memberId, final long leadershipTermId, final long position, final int senderMemberId)
@@ -310,6 +329,7 @@ class ClusterInterceptor
 
     static class ServiceAck
     {
+        @Impure
         @Advice.OnMethodEnter
         static void logOnServiceAck(
             final int memberId,
@@ -326,6 +346,7 @@ class ClusterInterceptor
 
     static class ReplicationEnded
     {
+        @Impure
         @Advice.OnMethodEnter
         static void logReplicationEnded(
             final int memberId,
@@ -342,6 +363,7 @@ class ClusterInterceptor
 
     static class StandbySnapshotNotification
     {
+        @Impure
         @Advice.OnMethodEnter
         static void logStandbySnapshotNotification(
             final int memberId,
@@ -369,6 +391,7 @@ class ClusterInterceptor
 
     static class NewElection
     {
+        @Impure
         @Advice.OnMethodEnter
         static void logNewElection(
             final int memberId,

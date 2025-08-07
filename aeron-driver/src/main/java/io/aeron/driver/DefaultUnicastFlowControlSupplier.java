@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.CommonContext;
 import io.aeron.driver.media.UdpChannel;
 import org.agrona.LangUtil;
@@ -30,6 +32,7 @@ public class DefaultUnicastFlowControlSupplier implements FlowControlSupplier
     /**
      * {@inheritDoc}
      */
+    @Impure
     public FlowControl newInstance(final UdpChannel udpChannel, final int streamId, final long registrationId)
     {
         final String fcStr = udpChannel.channelUri().get(CommonContext.FLOW_CONTROL_PARAM_NAME);
@@ -62,6 +65,7 @@ public class DefaultUnicastFlowControlSupplier implements FlowControlSupplier
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "DefaultUnicastFlowControlSupplier{flowControlClass=" +

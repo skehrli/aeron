@@ -15,6 +15,8 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.ExpandableArrayBuffer;
 import org.agrona.LangUtil;
 import org.agrona.MutableDirectBuffer;
@@ -69,6 +71,7 @@ public final class CollectingEventLogReaderAgent implements Agent, CollectingEve
     private volatile State state = State.IGNORING;
     private int bufferPosition = 0;
 
+    @Impure
     CollectingEventLogReaderAgent(final String fileName, final List<ComponentLogger> loggers)
     {
         for (final ComponentLogger componentLogger : loggers)
@@ -80,6 +83,7 @@ public final class CollectingEventLogReaderAgent implements Agent, CollectingEve
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onStart()
     {
         try
@@ -100,6 +104,7 @@ public final class CollectingEventLogReaderAgent implements Agent, CollectingEve
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String roleName()
     {
         return "inmemory-event-log-reader";
@@ -108,6 +113,7 @@ public final class CollectingEventLogReaderAgent implements Agent, CollectingEve
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int doWork()
     {
         synchronized (mutex)
@@ -116,6 +122,7 @@ public final class CollectingEventLogReaderAgent implements Agent, CollectingEve
         }
     }
 
+    @Impure
     private void onMessage(final int msgTypeId, final MutableDirectBuffer buffer, final int index, final int length)
     {
         if (state == State.IGNORING)
@@ -138,6 +145,7 @@ public final class CollectingEventLogReaderAgent implements Agent, CollectingEve
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void setCollecting(final boolean isCollecting)
     {
         state = isCollecting ? State.COLLECTING : State.IGNORING;
@@ -146,6 +154,7 @@ public final class CollectingEventLogReaderAgent implements Agent, CollectingEve
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void startCollecting(final String name)
     {
         synchronized (mutex)
@@ -159,6 +168,7 @@ public final class CollectingEventLogReaderAgent implements Agent, CollectingEve
     /**
      * {@inheritDoc}
      */
+    @Pure
     public boolean isCollecting()
     {
         return state == State.COLLECTING;
@@ -167,6 +177,7 @@ public final class CollectingEventLogReaderAgent implements Agent, CollectingEve
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void reset()
     {
         synchronized (mutex)
@@ -179,6 +190,7 @@ public final class CollectingEventLogReaderAgent implements Agent, CollectingEve
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void writeToFile(final String filename)
     {
         synchronized (mutex)
@@ -187,11 +199,13 @@ public final class CollectingEventLogReaderAgent implements Agent, CollectingEve
         }
     }
 
+    @Impure
     private void resetWritePosition()
     {
         bufferPosition = 0;
     }
 
+    @Impure
     private void writeLogStartMessage(final String name)
     {
         final long timestampNs = System.nanoTime();
@@ -205,6 +219,7 @@ public final class CollectingEventLogReaderAgent implements Agent, CollectingEve
             .toString();
     }
 
+    @Impure
     private void doOutputToFile(final String filename)
     {
         System.out.println("Dumping to file: " + filename);

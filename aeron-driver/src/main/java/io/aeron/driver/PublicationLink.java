@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package io.aeron.driver;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 
 /**
  * Tracks an Aeron client interest registration in a {@link NetworkPublication} or {@link IpcPublication}.
@@ -25,6 +27,7 @@ final class PublicationLink implements DriverManagedResource
     private final AeronClient client;
     private boolean reachedEndOfLife = false;
 
+    @Impure
     PublicationLink(final long registrationId, final AeronClient client, final NetworkPublication publication)
     {
         this.registrationId = registrationId;
@@ -34,6 +37,7 @@ final class PublicationLink implements DriverManagedResource
         publication.incRef();
     }
 
+    @Impure
     PublicationLink(final long registrationId, final AeronClient client, final IpcPublication publication)
     {
         this.registrationId = registrationId;
@@ -46,6 +50,7 @@ final class PublicationLink implements DriverManagedResource
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         if (publication instanceof NetworkPublication)
@@ -58,6 +63,7 @@ final class PublicationLink implements DriverManagedResource
         }
     }
 
+    @Impure
     void revoke()
     {
         if (publication instanceof NetworkPublication)
@@ -73,6 +79,7 @@ final class PublicationLink implements DriverManagedResource
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onTimeEvent(final long timeNs, final long timeMs, final DriverConductor conductor)
     {
         if (client.hasTimedOut())
@@ -84,11 +91,13 @@ final class PublicationLink implements DriverManagedResource
     /**
      * {@inheritDoc}
      */
+    @Pure
     public boolean hasReachedEndOfLife()
     {
         return reachedEndOfLife;
     }
 
+    @Pure
     long registrationId()
     {
         return registrationId;

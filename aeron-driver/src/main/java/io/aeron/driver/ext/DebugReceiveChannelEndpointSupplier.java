@@ -15,6 +15,7 @@
  */
 package io.aeron.driver.ext;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.MediaDriver;
 import io.aeron.driver.media.ReceiveChannelEndpoint;
 import io.aeron.driver.media.UdpChannel;
@@ -36,6 +37,7 @@ public class DebugReceiveChannelEndpointSupplier implements ReceiveChannelEndpoi
      * @param context         for the configuration of the driver.
      * @return a new instance of a {@link DebugReceiveChannelEndpoint} for testing loss.
      */
+    @Impure
     public ReceiveChannelEndpoint newInstance(
         final UdpChannel udpChannel,
         final DataPacketDispatcher dispatcher,

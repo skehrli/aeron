@@ -15,6 +15,9 @@
  */
 package io.aeron.samples.cluster.tutorial;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.ExclusivePublication;
 import io.aeron.Image;
 import io.aeron.cluster.codecs.CloseReason;
@@ -60,6 +63,7 @@ public class BasicAuctionClusteredService implements ClusteredService
      * {@inheritDoc}
      */
     // tag::start[]
+    @Impure
     public void onStart(final Cluster cluster, final Image snapshotImage)
     {
         this.cluster = cluster;                      // <1>
@@ -76,6 +80,7 @@ public class BasicAuctionClusteredService implements ClusteredService
      * {@inheritDoc}
      */
     // tag::message[]
+    @Impure
     public void onSessionMessage(
         final ClientSession session,
         final long timestamp,
@@ -110,6 +115,7 @@ public class BasicAuctionClusteredService implements ClusteredService
      * {@inheritDoc}
      */
     // tag::takeSnapshot[]
+    @Impure
     public void onTakeSnapshot(final ExclusivePublication snapshotPublication)
     {
         snapshotBuffer.putLong(SNAPSHOT_CUSTOMER_ID_OFFSET, auction.getCurrentWinningCustomerId());  // <1>
@@ -124,6 +130,7 @@ public class BasicAuctionClusteredService implements ClusteredService
     // end::takeSnapshot[]
 
     // tag::loadSnapshot[]
+    @Impure
     private void loadSnapshot(final Cluster cluster, final Image snapshotImage)
     {
         final MutableBoolean isAllDataLoaded = new MutableBoolean(false);
@@ -159,6 +166,7 @@ public class BasicAuctionClusteredService implements ClusteredService
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
     public void onRoleChange(final Cluster.Role newRole)
     {
     }
@@ -166,6 +174,7 @@ public class BasicAuctionClusteredService implements ClusteredService
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
     public void onTerminate(final Cluster cluster)
     {
     }
@@ -173,6 +182,7 @@ public class BasicAuctionClusteredService implements ClusteredService
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onSessionOpen(final ClientSession session, final long timestamp)
     {
         System.out.println("onSessionOpen(" + session + ")");
@@ -181,6 +191,7 @@ public class BasicAuctionClusteredService implements ClusteredService
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onSessionClose(final ClientSession session, final long timestamp, final CloseReason closeReason)
     {
         System.out.println("onSessionClose(" + session + ")");
@@ -189,6 +200,7 @@ public class BasicAuctionClusteredService implements ClusteredService
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
     public void onTimerEvent(final long correlationId, final long timestamp)
     {
     }
@@ -198,12 +210,14 @@ public class BasicAuctionClusteredService implements ClusteredService
         private long bestPrice = 0;
         private long currentWinningCustomerId = -1;
 
+        @Impure
         void loadInitialState(final long price, final long customerId)
         {
             bestPrice = price;
             currentWinningCustomerId = customerId;
         }
 
+        @Impure
         boolean attemptBid(final long price, final long customerId)
         {
             System.out.println("attemptBid(this=" + this + ", price=" + price + ",customerId=" + customerId + ")");
@@ -219,11 +233,13 @@ public class BasicAuctionClusteredService implements ClusteredService
             return true;
         }
 
+        @Pure
         long getBestPrice()
         {
             return bestPrice;
         }
 
+        @Pure
         long getCurrentWinningCustomerId()
         {
             return currentWinningCustomerId;
@@ -232,6 +248,7 @@ public class BasicAuctionClusteredService implements ClusteredService
         /**
          * {@inheritDoc}
          */
+        @Pure
         public boolean equals(final Object o)
         {
             if (this == o)
@@ -252,6 +269,7 @@ public class BasicAuctionClusteredService implements ClusteredService
         /**
          * {@inheritDoc}
          */
+        @Pure
         public int hashCode()
         {
             return Objects.hash(bestPrice, currentWinningCustomerId);
@@ -260,6 +278,7 @@ public class BasicAuctionClusteredService implements ClusteredService
         /**
          * {@inheritDoc}
          */
+        @Pure
         public String toString()
         {
             return "Auction{" +
@@ -272,6 +291,7 @@ public class BasicAuctionClusteredService implements ClusteredService
     /**
      * {@inheritDoc}
      */
+    @Pure
     public boolean equals(final Object o)
     {
         if (this == o)
@@ -292,6 +312,7 @@ public class BasicAuctionClusteredService implements ClusteredService
     /**
      * {@inheritDoc}
      */
+    @Pure
     public int hashCode()
     {
         return Objects.hash(auction);
@@ -300,6 +321,7 @@ public class BasicAuctionClusteredService implements ClusteredService
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "BasicAuctionClusteredService{" +

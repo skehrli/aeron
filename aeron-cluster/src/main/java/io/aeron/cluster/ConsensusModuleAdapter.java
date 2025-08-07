@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.ControlledFragmentAssembler;
 import io.aeron.Subscription;
 import io.aeron.cluster.client.AeronCluster;
@@ -39,22 +41,26 @@ final class ConsensusModuleAdapter implements AutoCloseable
     private final ClusterMembersQueryDecoder clusterMembersQueryDecoder = new ClusterMembersQueryDecoder();
     private final ControlledFragmentAssembler fragmentAssembler = new ControlledFragmentAssembler(this::onFragment);
 
+    @SideEffectFree
     ConsensusModuleAdapter(final Subscription subscription, final ConsensusModuleAgent consensusModuleAgent)
     {
         this.subscription = subscription;
         this.consensusModuleAgent = consensusModuleAgent;
     }
 
+    @Impure
     public void close()
     {
         subscription.close();
     }
 
+    @Impure
     int poll()
     {
         return subscription.controlledPoll(fragmentAssembler, FRAGMENT_LIMIT);
     }
 
+    @Impure
     @SuppressWarnings("MethodLength")
     private ControlledFragmentHandler.Action onFragment(
         final DirectBuffer buffer, final int offset, final int length, final Header header)

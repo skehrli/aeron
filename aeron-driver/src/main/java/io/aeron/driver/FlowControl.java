@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.CommonContext;
 import io.aeron.driver.media.UdpChannel;
 import io.aeron.protocol.ErrorFlyweight;
@@ -40,6 +42,8 @@ public interface FlowControl extends AutoCloseable
      * @param retransmitReceiverWindowMultiple multiplier to the receiver window length.
      * @return the clamped retransmit length
      */
+    @Pure
+    @Impure
     static int calculateRetransmissionLength(
         final int resendLength,
         final int termBufferLength,
@@ -62,6 +66,7 @@ public interface FlowControl extends AutoCloseable
      * @param defaultRetransmitReceiverWindowMultiple window multiple to use when one is not set in the URI.
      * @return receiver window multiple.
      */
+    @Impure
     static int retransmitReceiverWindowMultiple(
         UdpChannel udpChannel, int defaultRetransmitReceiverWindowMultiple)
     {
@@ -95,6 +100,7 @@ public interface FlowControl extends AutoCloseable
      * @param timeNs              current time (in nanoseconds).
      * @return the new position limit to be employed by the sender.
      */
+    @Impure
     long onStatusMessage(
         StatusMessageFlyweight flyweight,
         InetSocketAddress receiverAddress,
@@ -110,6 +116,7 @@ public interface FlowControl extends AutoCloseable
      * @param receiverAddress of the receiver.
      * @param timeNs          current time (in nanoseconds).
      */
+    @Impure
     void onTriggerSendSetup(
         StatusMessageFlyweight flyweight,
         InetSocketAddress receiverAddress,
@@ -125,6 +132,7 @@ public interface FlowControl extends AutoCloseable
      * @param timeNs              current time in nanoseconds.
      * @return the new position limit to be employed by the sender.
      */
+    @Impure
     long onSetup(
         SetupFlyweight flyweight,
         long senderLimit,
@@ -139,6 +147,7 @@ public interface FlowControl extends AutoCloseable
      * @param receiverAddress   the address of the receiver.
      * @param timeNs            current time in nanoseconds
      */
+    @Impure
     void onError(ErrorFlyweight errorFlyweight, InetSocketAddress receiverAddress, long timeNs);
 
     /**
@@ -153,6 +162,7 @@ public interface FlowControl extends AutoCloseable
      * @param initialTermId    at which the stream started.
      * @param termBufferLength to use as the length of each term buffer.
      */
+    @Impure
     void initialize(
         MediaDriver.Context context,
         CountersManager countersManager,
@@ -172,6 +182,7 @@ public interface FlowControl extends AutoCloseable
      * @param isEos          is this end-of-stream for the sender.
      * @return the position limit to be employed by the sender.
      */
+    @Impure
     long onIdle(long timeNs, long senderLimit, long senderPosition, boolean isEos);
 
     /**
@@ -180,6 +191,7 @@ public interface FlowControl extends AutoCloseable
      *
      * @return true if the required group of receivers is connected, otherwise false.
      */
+    @Pure
     boolean hasRequiredReceivers();
 
     /**
@@ -192,10 +204,13 @@ public interface FlowControl extends AutoCloseable
      * @param mtuLength        of the publication.
      * @return the maximum window length allowed to retransmit per NAK.
      */
+    @Pure
+    @Impure
     int maxRetransmissionLength(int termOffset, int resendLength, int termBufferLength, int mtuLength);
 
     /**
      * {@inheritDoc}
      */
+    @Impure
     void close();
 }

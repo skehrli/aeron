@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.cluster.service.ClusterClock;
 import org.agrona.concurrent.HighResolutionClock;
 
@@ -28,6 +30,7 @@ public class NanosecondClusterClock implements ClusterClock
     /**
      * {@inheritDoc}
      */
+    @Pure
     public TimeUnit timeUnit()
     {
         return TimeUnit.NANOSECONDS;
@@ -36,6 +39,7 @@ public class NanosecondClusterClock implements ClusterClock
     /**
      * {@inheritDoc}
      */
+    @Impure
     public long time()
     {
         return HighResolutionClock.epochNanos();
@@ -44,6 +48,7 @@ public class NanosecondClusterClock implements ClusterClock
     /**
      * {@inheritDoc}
      */
+    @Impure
     public long timeMillis()
     {
         return System.currentTimeMillis();
@@ -52,6 +57,7 @@ public class NanosecondClusterClock implements ClusterClock
     /**
      * {@inheritDoc}
      */
+    @Impure
     public long timeMicros()
     {
         return HighResolutionClock.epochMicros();
@@ -60,6 +66,7 @@ public class NanosecondClusterClock implements ClusterClock
     /**
      * {@inheritDoc}
      */
+    @Impure
     public long timeNanos()
     {
         return HighResolutionClock.epochNanos();
@@ -68,6 +75,7 @@ public class NanosecondClusterClock implements ClusterClock
     /**
      * {@inheritDoc}
      */
+    @Pure
     public long convertToNanos(final long time)
     {
         return time;

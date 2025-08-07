@@ -15,6 +15,8 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.logbuffer.Header;
 import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
@@ -53,6 +55,7 @@ public final class BufferBuilder
     /**
      * Construct a buffer builder with an initial capacity of zero and isDirect false.
      */
+    @Impure
     public BufferBuilder()
     {
         this(0, false);
@@ -63,6 +66,7 @@ public final class BufferBuilder
      *
      * @param initialCapacity at which the capacity will start.
      */
+    @Impure
     public BufferBuilder(final int initialCapacity)
     {
         this(initialCapacity, false);
@@ -74,6 +78,7 @@ public final class BufferBuilder
      * @param initialCapacity at which the capacity will start.
      * @param isDirect        is the underlying buffer to be a direct {@link ByteBuffer}
      */
+    @Impure
     public BufferBuilder(final int initialCapacity, final boolean isDirect)
     {
         if (initialCapacity < 0 || initialCapacity > MAX_CAPACITY)
@@ -106,6 +111,7 @@ public final class BufferBuilder
      *
      * @return the current capacity of the buffer.
      */
+    @Impure
     public int capacity()
     {
         return buffer.capacity();
@@ -116,6 +122,7 @@ public final class BufferBuilder
      *
      * @return the current limit of the buffer that has been used by append operations.
      */
+    @Pure
     public int limit()
     {
         return limit;
@@ -126,6 +133,7 @@ public final class BufferBuilder
      *
      * @param limit to be the new value.
      */
+    @Impure
     public void limit(final int limit)
     {
         if (limit < 0 || limit >= buffer.capacity())
@@ -142,6 +150,7 @@ public final class BufferBuilder
      *
      * @return the value which the next term offset for a fragment to be assembled should begin at.
      */
+    @Pure
     public int nextTermOffset()
     {
         return nextTermOffset;
@@ -152,6 +161,7 @@ public final class BufferBuilder
      *
      * @param offset which the next term offset for a fragment to be assembled should begin at.
      */
+    @Impure
     public void nextTermOffset(final int offset)
     {
         nextTermOffset = offset;
@@ -162,6 +172,7 @@ public final class BufferBuilder
      *
      * @return the {@link MutableDirectBuffer} that encapsulates the internal buffer.
      */
+    @Pure
     public MutableDirectBuffer buffer()
     {
         return buffer;
@@ -172,6 +183,7 @@ public final class BufferBuilder
      *
      * @return the builder for fluent API usage.
      */
+    @Impure
     public BufferBuilder reset()
     {
         limit = 0;
@@ -187,6 +199,7 @@ public final class BufferBuilder
      *
      * @return the builder for fluent API usage.
      */
+    @Impure
     public BufferBuilder compact()
     {
         final int newCapacity = Math.max(INIT_MIN_CAPACITY, limit);
@@ -206,6 +219,7 @@ public final class BufferBuilder
      * @param length    in bytes to copy from the source buffer.
      * @return the builder for fluent API usage.
      */
+    @Impure
     public BufferBuilder append(final DirectBuffer srcBuffer, final int srcOffset, final int length)
     {
         ensureCapacity(length);
@@ -222,6 +236,7 @@ public final class BufferBuilder
      * @param header of the first frame.
      * @return the builder for fluent API usage.
      */
+    @Impure
     public BufferBuilder captureHeader(final Header header)
     {
         completeHeader
@@ -241,6 +256,7 @@ public final class BufferBuilder
      * @param header of the last frame.
      * @return complete message header.
      */
+    @Impure
     public Header completeHeader(final Header header)
     {
         final int firstFrameLength = headerBuffer.getInt(FRAME_LENGTH_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -257,6 +273,7 @@ public final class BufferBuilder
         return completeHeader;
     }
 
+    @Impure
     private void ensureCapacity(final int additionalLength)
     {
         final long requiredCapacity = (long)limit + additionalLength;
@@ -276,6 +293,7 @@ public final class BufferBuilder
         }
     }
 
+    @Impure
     private void resize(final int newCapacity)
     {
         if (isDirect)
@@ -290,6 +308,7 @@ public final class BufferBuilder
         }
     }
 
+    @Impure
     private static ByteBuffer newDirectBuffer(final int newCapacity)
     {
         final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(newCapacity);
@@ -297,6 +316,7 @@ public final class BufferBuilder
         return byteBuffer;
     }
 
+    @Pure
     static int findSuitableCapacity(final int capacity, final long requiredCapacity)
     {
         long newCapacity = Math.max(capacity, INIT_MIN_CAPACITY);

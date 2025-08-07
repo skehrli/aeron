@@ -15,6 +15,8 @@
  */
 package io.aeron.driver.status;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.DutyCycleTracker;
 import org.agrona.concurrent.status.AtomicCounter;
 
@@ -37,6 +39,7 @@ public class DutyCycleStallTracker extends DutyCycleTracker
      * @param cycleTimeThresholdExceededCount counter for tracking.
      * @param cycleTimeThresholdNs            to use for tracking excesses.
      */
+    @Impure
     public DutyCycleStallTracker(
         final AtomicCounter maxCycleTime,
         final AtomicCounter cycleTimeThresholdExceededCount,
@@ -52,6 +55,7 @@ public class DutyCycleStallTracker extends DutyCycleTracker
      *
      * @return max cycle time counter.
      */
+    @Pure
     public AtomicCounter maxCycleTime()
     {
         return maxCycleTime;
@@ -62,6 +66,7 @@ public class DutyCycleStallTracker extends DutyCycleTracker
      *
      * @return threshold exceeded counter.
      */
+    @Pure
     public AtomicCounter cycleTimeThresholdExceededCount()
     {
         return cycleTimeThresholdExceededCount;
@@ -72,6 +77,7 @@ public class DutyCycleStallTracker extends DutyCycleTracker
      *
      * @return threshold value.
      */
+    @Pure
     public long cycleTimeThresholdNs()
     {
         return cycleTimeThresholdNs;
@@ -80,6 +86,7 @@ public class DutyCycleStallTracker extends DutyCycleTracker
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void reportMeasurement(final long durationNs)
     {
         if (!maxCycleTime.isClosed())
@@ -96,6 +103,7 @@ public class DutyCycleStallTracker extends DutyCycleTracker
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "DutyCycleStallTracker{" +

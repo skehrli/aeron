@@ -15,6 +15,7 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import java.util.List;
 
 /**
@@ -25,6 +26,7 @@ public interface ClusterBackupEventsListener
     /**
      * Backup has moved into backup query state. Backup process has been started.
      */
+    @SideEffectFree
     void onBackupQuery();
 
     /**
@@ -32,6 +34,7 @@ public interface ClusterBackupEventsListener
      *
      * @param ex the underlying exception.
      */
+    @SideEffectFree
     void onPossibleFailure(Exception ex);
 
     /**
@@ -41,6 +44,7 @@ public interface ClusterBackupEventsListener
      * @param logSourceMember     to be used to replicate data from.
      * @param snapshotsToRetrieve snapshots to be retrieved.
      */
+    @SideEffectFree
     void onBackupResponse(
         ClusterMember[] clusterMembers, ClusterMember logSourceMember, List<RecordingLog.Snapshot> snapshotsToRetrieve);
 
@@ -50,6 +54,7 @@ public interface ClusterBackupEventsListener
      * @param recordingLog       that was updated.
      * @param snapshotsRetrieved the snapshots that were retrieved.
      */
+    @SideEffectFree
     void onUpdatedRecordingLog(RecordingLog recordingLog, List<RecordingLog.Snapshot> snapshotsRetrieved);
 
     /**
@@ -59,5 +64,6 @@ public interface ClusterBackupEventsListener
      * @param recordingPosCounterId {@link io.aeron.archive.status.RecordingPos} counter id for the live log.
      * @param logPosition           of the live log.
      */
+    @SideEffectFree
     void onLiveLogProgress(long recordingId, long recordingPosCounterId, long logPosition);
 }

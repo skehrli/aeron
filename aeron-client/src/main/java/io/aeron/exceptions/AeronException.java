@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 package io.aeron.exceptions;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 
 /**
  * Base Aeron exception for catching all Aeron specific errors.
@@ -53,6 +56,7 @@ public class AeronException extends RuntimeException
     /**
      * Default Aeron exception as {@link AeronException.Category#ERROR}.
      */
+    @SideEffectFree
     public AeronException()
     {
         this.category = Category.ERROR;
@@ -63,6 +67,7 @@ public class AeronException extends RuntimeException
      *
      * @param category of this exception.
      */
+    @SideEffectFree
     public AeronException(final Category category)
     {
         this.category = category;
@@ -73,6 +78,7 @@ public class AeronException extends RuntimeException
      *
      * @param message to detail the exception.
      */
+    @SideEffectFree
     public AeronException(final String message)
     {
         super(Category.ERROR.name() + " - " + message);
@@ -84,6 +90,7 @@ public class AeronException extends RuntimeException
      *
      * @param cause of the error.
      */
+    @SideEffectFree
     public AeronException(final Throwable cause)
     {
         super(cause);
@@ -96,6 +103,7 @@ public class AeronException extends RuntimeException
      * @param message  providing detail on the error.
      * @param category of the exception.
      */
+    @SideEffectFree
     public AeronException(final String message, final Category category)
     {
         super(category.name() + " - " + message);
@@ -108,6 +116,7 @@ public class AeronException extends RuntimeException
      * @param message providing detail on the error.
      * @param cause   of the error.
      */
+    @SideEffectFree
     public AeronException(final String message, final Throwable cause)
     {
         super(Category.ERROR.name() + " - " + message, cause);
@@ -120,6 +129,7 @@ public class AeronException extends RuntimeException
      * @param cause    of the error.
      * @param category of the exception.
      */
+    @SideEffectFree
     public AeronException(final Throwable cause, final Category category)
     {
         super(cause);
@@ -133,6 +143,7 @@ public class AeronException extends RuntimeException
      * @param cause    of the error.
      * @param category of the exception.
      */
+    @SideEffectFree
     public AeronException(final String message, final Throwable cause, final Category category)
     {
         super(category.name() + " - " + message, cause);
@@ -148,6 +159,7 @@ public class AeronException extends RuntimeException
      * @param enableSuppression  is suppression enabled or not.
      * @param writableStackTrace is the stack trace writable or not.
      */
+    @Impure
     public AeronException(
         final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace)
     {
@@ -165,6 +177,7 @@ public class AeronException extends RuntimeException
      * @param writableStackTrace is the stack trace writable or not.
      * @param category           of the exception.
      */
+    @Impure
     public AeronException(
         final String message,
         final Throwable cause,
@@ -181,6 +194,7 @@ public class AeronException extends RuntimeException
      *
      * @return {@link AeronException.Category} of exception for determining what follow-up action can be taken.
      */
+    @Pure
     public Category category()
     {
         return category;
@@ -193,6 +207,7 @@ public class AeronException extends RuntimeException
      * @return true if this is an AeronException with a category set to {@link AeronException.Category#FATAL},
      * false otherwise.
      */
+    @Pure
     public static boolean isFatal(final Throwable t)
     {
         return t instanceof AeronException && Category.FATAL == ((AeronException)t).category;

@@ -15,17 +15,21 @@
  */
 package io.aeron.samples.stress;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.ReservedValueSupplier;
 import org.agrona.DirectBuffer;
 
 class SimpleReservedValueSupplier implements ReservedValueSupplier
 {
     private long value;
+    @Pure
     public long get(final DirectBuffer termBuffer, final int termOffset, final int frameLength)
     {
         return value;
     }
 
+    @Impure
     ReservedValueSupplier set(final long value)
     {
         this.value = value;

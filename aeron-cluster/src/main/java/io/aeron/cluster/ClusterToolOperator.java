@@ -16,6 +16,10 @@
 
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.checker.mustcall.qual.Owning;
 import static io.aeron.Aeron.NULL_VALUE;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.US_ASCII;
@@ -84,6 +88,7 @@ public class ClusterToolOperator
      * @param toolStreamId stream id to use.
      * @param timeoutMs    timeout in milliseconds.
      */
+    @SideEffectFree
     protected ClusterToolOperator(
         final String toolChannel,
         final int toolStreamId,
@@ -101,6 +106,7 @@ public class ClusterToolOperator
      * @param clusterDir where the cluster is running.
      * @return exit status.
      */
+    @Impure
     protected int pid(final File clusterDir, final PrintStream out)
     {
         if (markFileExists(clusterDir) || timeoutMs > 0)
@@ -125,6 +131,7 @@ public class ClusterToolOperator
      * @param serviceCount of services running in the containers.
      * @return exit status
      */
+    @Impure
     protected int recoveryPlan(final PrintStream out, final File clusterDir, final int serviceCount)
     {
         try (AeronArchive archive = AeronArchive.connect();
@@ -142,6 +149,7 @@ public class ClusterToolOperator
      * @param out        to print the output to.
      * @return exit status
      */
+    @Impure
     protected int recordingLog(final File clusterDir, final PrintStream out)
     {
         try (RecordingLog recordingLog = new RecordingLog(clusterDir, false))
@@ -157,6 +165,7 @@ public class ClusterToolOperator
      * @param clusterDir where the cluster is running.
      * @return {@code SUCCESS} if file contents was changed or {@code FAILURE} if it was already in the correct order.
      */
+    @Impure
     protected int sortRecordingLog(final File clusterDir)
     {
         final List<RecordingLog.Entry> entries;
@@ -185,6 +194,7 @@ public class ClusterToolOperator
      * @param clusterDir where the cluster is running.
      * @return exit status
      */
+    @Impure
     protected int seedRecordingLogFromSnapshot(final File clusterDir)
     {
         int snapshotIndex = Aeron.NULL_VALUE;
@@ -262,6 +272,7 @@ public class ClusterToolOperator
      * @param out        to print the output to.
      * @return exit status
      */
+    @Impure
     protected int errors(final File clusterDir, final PrintStream out)
     {
         File clusterServicesDir = clusterDir;
@@ -301,6 +312,7 @@ public class ClusterToolOperator
      * @param out        to print the output to.
      * @return exit status
      */
+    @Impure
     protected int listMembers(final File clusterDir, final PrintStream out)
     {
         if (markFileExists(clusterDir) || timeoutMs > 0)
@@ -341,6 +353,7 @@ public class ClusterToolOperator
      * @param out        to print the output to.
      * @return exit status
      */
+    @Impure
     protected int printNextBackupQuery(final File clusterDir, final PrintStream out)
     {
         if (markFileExists(clusterDir) || timeoutMs > 0)
@@ -376,6 +389,7 @@ public class ClusterToolOperator
      * @param delayMs    from the current time for the next backup query.
      * @return exit status
      */
+    @Impure
     protected int nextBackupQuery(final File clusterDir, final PrintStream out, final long delayMs)
     {
         if (markFileExists(clusterDir) || timeoutMs > 0)
@@ -411,6 +425,7 @@ public class ClusterToolOperator
      * @param out              to print the output to.
      * @param serviceMarkFiles to query.
      */
+    @Impure
     protected void describe(final PrintStream out, final ClusterMarkFile[] serviceMarkFiles)
     {
         for (final ClusterMarkFile serviceMarkFile : serviceMarkFiles)
@@ -429,6 +444,7 @@ public class ClusterToolOperator
      * @return 0 if the node is an active leader in a closed election, 1 if not,
      * -1 if the mark file does not exist.
      */
+    @Impure
     protected int isLeader(final File clusterDir, final PrintStream out)
     {
         if (markFileExists(clusterDir))
@@ -481,6 +497,8 @@ public class ClusterToolOperator
      * @param clusterDir to check for if a mark file exists.
      * @return true if the cluster mark file exists.
      */
+    @SideEffectFree
+    @Impure
     protected boolean markFileExists(final File clusterDir)
     {
         final File markFileDir = resolveClusterMarkFileDir(clusterDir);
@@ -497,6 +515,7 @@ public class ClusterToolOperator
      * @param timeoutMs         to wait on the query completing.
      * @return true if successful.
      */
+    @Impure
     protected boolean listMembers(
         final ClusterMembership clusterMembership, final File clusterDir, final long timeoutMs)
     {
@@ -519,6 +538,7 @@ public class ClusterToolOperator
      * @param clusterMembership to populate.
      * @return true if the query was successful.
      */
+    @Impure
     protected boolean queryClusterMembers(
         final ClusterMarkFile markFile, final long timeoutMs, final ClusterMembership clusterMembership)
     {
@@ -533,6 +553,7 @@ public class ClusterToolOperator
      * @param clusterMembership to populate.
      * @return true if the query was successful.
      */
+    @Impure
     protected boolean queryClusterMembers(
         final ClusterNodeControlProperties controlProperties,
         final long timeoutMs,
@@ -541,6 +562,7 @@ public class ClusterToolOperator
         final MutableLong id = new MutableLong(NULL_VALUE);
         final ClusterControlAdapter.Listener listener = new ClusterControlAdapter.Listener()
         {
+            @Impure
             public void onClusterMembersResponse(
                 final long correlationId,
                 final int leaderMemberId,
@@ -556,6 +578,7 @@ public class ClusterToolOperator
                 }
             }
 
+            @Impure
             public void onClusterMembersExtendedResponse(
                 final long correlationId,
                 final long currentTimeNs,
@@ -629,6 +652,7 @@ public class ClusterToolOperator
      * @param clusterDir where the cluster component is running.
      * @return the deadline time (MS) for the next cluster backup query, or {@link Aeron#NULL_VALUE} not available.
      */
+    @Impure
     protected long nextBackupQueryDeadlineMs(final File clusterDir)
     {
         if (markFileExists(clusterDir) || timeoutMs > 0)
@@ -648,6 +672,7 @@ public class ClusterToolOperator
      * @param markFile for the cluster component.
      * @return the deadline time (MS) for the next cluster backup query, or {@link Aeron#NULL_VALUE} not available.
      */
+    @Impure
     protected long nextBackupQueryDeadlineMs(final ClusterMarkFile markFile)
     {
         final String aeronDirectoryName = markFile.decoder().aeronDirectory();
@@ -675,6 +700,7 @@ public class ClusterToolOperator
      * @param timeMs     to set for the next deadline.
      * @return true if successful, otherwise false.
      */
+    @Impure
     protected boolean nextBackupQueryDeadlineMs(final File clusterDir, final long timeMs)
     {
         if (markFileExists(clusterDir) || timeoutMs > 0)
@@ -695,6 +721,7 @@ public class ClusterToolOperator
      * @param timeMs   to set for the next deadline.
      * @return true if successful, otherwise false.
      */
+    @Impure
     protected boolean nextBackupQueryDeadlineMs(final ClusterMarkFile markFile, final long timeMs)
     {
         final String aeronDirectoryName = markFile.decoder().aeronDirectory();
@@ -728,6 +755,7 @@ public class ClusterToolOperator
      * @param out        to print the operation result.
      * @return SUCCESS if the latest snapshot was invalidated, else FAILURE
      */
+    @Impure
     protected int invalidateLatestSnapshot(final File clusterDir, final PrintStream out)
     {
         try (RecordingLog recordingLog = new RecordingLog(clusterDir, false))
@@ -745,6 +773,7 @@ public class ClusterToolOperator
      * @param out        where to print the operation result.
      * @return SUCCESS is the operation was successfully requested, else FAILURE
      */
+    @Impure
     protected int describeLatestConsensusModuleSnapshot(
         final File clusterDir,
         final PrintStream out)
@@ -763,6 +792,7 @@ public class ClusterToolOperator
      * @param postConsensusImageDescriber describing of image after consensus module state
      * @return SUCCESS is the operation was successfully requested, else FAILURE
      */
+    @Impure
     protected int describeLatestConsensusModuleSnapshot(
         final File clusterDir,
         final PrintStream out,
@@ -841,6 +871,7 @@ public class ClusterToolOperator
      * @param out        to print the result of the operation.
      * @return SUCCESS is the operation was successfully requested, else FAILURE
      */
+    @Impure
     protected int snapshot(final File clusterDir, final PrintStream out)
     {
         return toggleClusterState(
@@ -859,6 +890,7 @@ public class ClusterToolOperator
      * @param out        to print the result of the operation.
      * @return SUCCESS is the operation was successfully requested, else FAILURE
      */
+    @Impure
     protected int suspend(final File clusterDir, final PrintStream out)
     {
         return toggleClusterState(
@@ -877,6 +909,7 @@ public class ClusterToolOperator
      * @param out        to print the result of the operation.
      * @return SUCCESS is the operation was successfully requested, else FAILURE
      */
+    @Impure
     protected int resume(final File clusterDir, final PrintStream out)
     {
         return toggleClusterState(
@@ -895,6 +928,7 @@ public class ClusterToolOperator
      * @param out        to print the result of the operation.
      * @return SUCCESS is the operation was successfully requested, else FAILURE
      */
+    @Impure
     protected int shutdown(final File clusterDir, final PrintStream out)
     {
         return toggleClusterState(
@@ -913,6 +947,7 @@ public class ClusterToolOperator
      * @param out        to print the result of the operation.
      * @return SUCCESS is the operation was successfully requested, else FAILURE
      */
+    @Impure
     protected int abort(final File clusterDir, final PrintStream out)
     {
         return toggleClusterState(
@@ -930,6 +965,7 @@ public class ClusterToolOperator
      * @param clusterDir where the cluster node is running.
      * @return entry or {@code null} if not found.
      */
+    @Impure
     protected RecordingLog.Entry findLatestValidSnapshot(final File clusterDir)
     {
         try (RecordingLog recordingLog = new RecordingLog(clusterDir, false))
@@ -944,6 +980,7 @@ public class ClusterToolOperator
      * @param clusterDir where the cluster node is running.
      * @return control properties.
      */
+    @Impure
     protected ClusterNodeControlProperties loadControlProperties(final File clusterDir)
     {
         final ClusterNodeControlProperties properties;
@@ -954,6 +991,7 @@ public class ClusterToolOperator
         return properties;
     }
 
+    @Impure
     @SuppressWarnings("MethodLength")
     boolean toggleClusterState(
         final PrintStream out,
@@ -974,13 +1012,14 @@ public class ClusterToolOperator
             defaultTimeoutMs);
     }
 
+    @Impure
     @SuppressWarnings("MethodLength")
     <T extends Enum<T>> boolean toggleState(
         final PrintStream out,
         final File clusterDir,
         final boolean isLeaderRequired,
         final ConsensusModule.State expectedState,
-        final T targetState,
+        final @Owning T targetState,
         final ToggleApplication<T> toggleApplication,
         final boolean waitForToggleToComplete,
         final long defaultTimeoutMs)
@@ -1100,6 +1139,7 @@ public class ClusterToolOperator
      * @return exit status
      */
     // Used by Premium Tooling.
+    @Impure
     @SuppressWarnings("UnusedReturnValue")
     protected int describeClusterMarkFile(final File clusterDir, final PrintStream out)
     {
@@ -1128,6 +1168,7 @@ public class ClusterToolOperator
         return SUCCESS;
     }
 
+    @Impure
     File resolveClusterServicesDir(final File clusterDir, final MarkFileHeaderDecoder decoder)
     {
         final File clusterServicesDir;
@@ -1152,6 +1193,7 @@ public class ClusterToolOperator
         return clusterServicesDir;
     }
 
+    @Impure
     ClusterMarkFile openMarkFile(final File clusterDir)
     {
         final File markFileDir = resolveClusterMarkFileDir(clusterDir);
@@ -1159,6 +1201,7 @@ public class ClusterToolOperator
             markFileDir, ClusterMarkFile.FILENAME, System::currentTimeMillis, timeoutMs, null);
     }
 
+    @Impure
     private ClusterMarkFile[] openServiceMarkFiles(final File clusterDir, final Consumer<String> logger)
     {
         File[] clusterMarkFileNames = clusterDir.listFiles((dir, name) ->
@@ -1190,6 +1233,7 @@ public class ClusterToolOperator
         return clusterMarkFiles;
     }
 
+    @Impure
     private void resolveServiceMarkFileNames(final File[] clusterMarkFiles, final ArrayList<File> resolvedFiles)
     {
         final HashSet<String> resolvedServices = new HashSet<>();
@@ -1225,6 +1269,7 @@ public class ClusterToolOperator
         }
     }
 
+    @Impure
     void printTypeAndActivityTimestamp(final PrintStream out, final ClusterMarkFile markFile)
     {
         printTypeAndActivityTimestamp(
@@ -1234,6 +1279,7 @@ public class ClusterToolOperator
             markFile.activityTimestampVolatile());
     }
 
+    @Impure
     void printTypeAndActivityTimestamp(
         final PrintStream out,
         final String clusterComponentType,
@@ -1248,12 +1294,14 @@ public class ClusterToolOperator
             new Date(activityTimestampMs));
     }
 
+    @Impure
     void printErrors(final PrintStream out, final Supplier<AtomicBuffer> errorBuffer, final String name)
     {
         out.println(name + " component error log:");
         CommonContext.printErrorLog(errorBuffer.get(), out);
     }
 
+    @Impure
     void printDriverErrors(final PrintStream out, final String aeronDirectory)
     {
         out.println("Aeron driver error log (directory: " + aeronDirectory + "):");
@@ -1278,12 +1326,15 @@ public class ClusterToolOperator
         }
     }
 
+    @SideEffectFree
+    @Impure
     File resolveClusterMarkFileDir(final File dir)
     {
         final File linkFile = new File(dir, ClusterMarkFile.LINK_FILENAME);
         return linkFile.exists() ? resolveDirectoryFromLinkFile(linkFile) : dir;
     }
 
+    @SideEffectFree
     File resolveDirectoryFromLinkFile(final File linkFile)
     {
         final File markFileDir;
@@ -1305,6 +1356,7 @@ public class ClusterToolOperator
     /**
      * @return channel to use.
      */
+    @Pure
     protected String toolChannel()
     {
         return toolChannel;
@@ -1313,6 +1365,7 @@ public class ClusterToolOperator
     /**
      * @return stream id to use.
      */
+    @Pure
     protected int toolStreamId()
     {
         return toolStreamId;
@@ -1321,16 +1374,19 @@ public class ClusterToolOperator
     /**
      * @return timeout in milliseconds to use.
      */
+    @Pure
     protected long timeoutMs()
     {
         return timeoutMs;
     }
 
+    @Impure
     private void printErrors(final PrintStream out, final ClusterMarkFile markFile)
     {
         printErrors(out, markFile::errorBuffer, "Cluster");
     }
 
+    @Pure
     private boolean isRecordingLogSorted(final List<RecordingLog.Entry> entries)
     {
         for (int i = entries.size() - 1; i >= 0; i--)
@@ -1344,6 +1400,7 @@ public class ClusterToolOperator
         return true;
     }
 
+    @Impure
     private void updateRecordingLog(final File clusterDir, final List<RecordingLog.Entry> entries)
     {
         final Path recordingLog = clusterDir.toPath().resolve(RecordingLog.RECORDING_LOG_FILE_NAME);

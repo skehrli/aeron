@@ -15,6 +15,7 @@
  */
 package io.aeron.protocol;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.LangUtil;
 import org.agrona.concurrent.UnsafeBuffer;
 
@@ -137,6 +138,7 @@ public class HeaderFlyweight extends UnsafeBuffer
     /**
      * Default constructor which can later be used to wrap a frame.
      */
+    @Impure
     public HeaderFlyweight()
     {
     }
@@ -146,6 +148,7 @@ public class HeaderFlyweight extends UnsafeBuffer
      *
      * @param buffer to wrap for the flyweight.
      */
+    @Impure
     public HeaderFlyweight(final UnsafeBuffer buffer)
     {
         super(buffer);
@@ -156,6 +159,7 @@ public class HeaderFlyweight extends UnsafeBuffer
      *
      * @param buffer to wrap for the flyweight.
      */
+    @Impure
     public HeaderFlyweight(final ByteBuffer buffer)
     {
         super(buffer);
@@ -166,6 +170,7 @@ public class HeaderFlyweight extends UnsafeBuffer
      *
      * @return version field value.
      */
+    @Impure
     public short version()
     {
         return (short)(getByte(VERSION_FIELD_OFFSET) & 0xFF);
@@ -177,6 +182,7 @@ public class HeaderFlyweight extends UnsafeBuffer
      * @param version field value to be set.
      * @return this for a fluent API.
      */
+    @Impure
     public HeaderFlyweight version(final short version)
     {
         putByte(VERSION_FIELD_OFFSET, (byte)version);
@@ -189,6 +195,7 @@ public class HeaderFlyweight extends UnsafeBuffer
      *
      * @return the flags field value.
      */
+    @Impure
     public short flags()
     {
         return (short)(getByte(FLAGS_FIELD_OFFSET) & 0xFF);
@@ -200,6 +207,7 @@ public class HeaderFlyweight extends UnsafeBuffer
      * @param flags field value.
      * @return this for a fluent API.
      */
+    @Impure
     public HeaderFlyweight flags(final short flags)
     {
         putByte(FLAGS_FIELD_OFFSET, (byte)flags);
@@ -212,6 +220,7 @@ public class HeaderFlyweight extends UnsafeBuffer
      *
      * @return the type field value.
      */
+    @Impure
     public int headerType()
     {
         return getShort(TYPE_FIELD_OFFSET, LITTLE_ENDIAN) & 0xFFFF;
@@ -223,6 +232,7 @@ public class HeaderFlyweight extends UnsafeBuffer
      * @param type field value.
      * @return this for a fluent API.
      */
+    @Impure
     public HeaderFlyweight headerType(final int type)
     {
         putShort(TYPE_FIELD_OFFSET, (short)type, LITTLE_ENDIAN);
@@ -235,6 +245,7 @@ public class HeaderFlyweight extends UnsafeBuffer
      *
      * @return length of the frame field value.
      */
+    @Impure
     public int frameLength()
     {
         return getInt(FRAME_LENGTH_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -246,6 +257,7 @@ public class HeaderFlyweight extends UnsafeBuffer
      * @param length field value.
      * @return this for a fluent API.
      */
+    @Impure
     public HeaderFlyweight frameLength(final int length)
     {
         putInt(FRAME_LENGTH_FIELD_OFFSET, length, LITTLE_ENDIAN);
@@ -259,6 +271,7 @@ public class HeaderFlyweight extends UnsafeBuffer
      * @param flags to be converted.
      * @return header flags converted to an array of chars to be human-readable.
      */
+    @Impure
     public static char[] flagsToChars(final short flags)
     {
         final char[] chars = new char[]{ '0', '0', '0', '0', '0', '0', '0', '0' };
@@ -284,6 +297,7 @@ public class HeaderFlyweight extends UnsafeBuffer
      * @param flags      to be converted.
      * @param appendable to append flags to.
      */
+    @Impure
     public static void appendFlagsAsChars(final short flags, final Appendable appendable)
     {
         final int length = 8;

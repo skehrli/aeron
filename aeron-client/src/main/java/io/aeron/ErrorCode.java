@@ -15,6 +15,8 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.exceptions.AeronException;
 
 /**
@@ -131,6 +133,7 @@ public enum ErrorCode
 
     private final int value;
 
+    @Impure
     ErrorCode(final int value)
     {
         this.value = value;
@@ -141,6 +144,7 @@ public enum ErrorCode
      *
      * @return The value.
      */
+    @Pure
     public int value()
     {
         return value;
@@ -152,6 +156,7 @@ public enum ErrorCode
      * @param value of the ErrorCode
      * @return ErrorCode
      */
+    @Pure
     public static ErrorCode get(final int value)
     {
         if (0 <= value && value <= (ERROR_CODES.length - 2))

@@ -15,6 +15,7 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.media.SendChannelEndpoint;
 import io.aeron.driver.media.UdpChannel;
 import org.agrona.concurrent.status.AtomicCounter;
@@ -33,5 +34,6 @@ public interface SendChannelEndpointSupplier
      * @param context         for the configuration of the driver.
      * @return a new instance of a specialised {@link SendChannelEndpoint}.
      */
+    @Impure
     SendChannelEndpoint newInstance(UdpChannel udpChannel, AtomicCounter statusIndicator, MediaDriver.Context context);
 }

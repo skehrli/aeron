@@ -15,6 +15,7 @@
  */
 package io.aeron.samples.raw;
 
+import org.checkerframework.dataflow.qual.Impure;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
@@ -50,12 +51,14 @@ public class Common
      */
     public static final String PONG_DEST = System.getProperty("io.aeron.raw.pong.dest", "localhost");
 
+    @Impure
     static void init(final DatagramChannel channel) throws IOException
     {
         channel.configureBlocking(false);
         channel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
     }
 
+    @Impure
     static void init(final DatagramChannel channel, final InetSocketAddress sendAddress) throws IOException
     {
         channel.configureBlocking(false);

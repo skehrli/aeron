@@ -15,6 +15,9 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.CommonContext;
 import io.aeron.driver.media.UdpChannel;
 import io.aeron.driver.status.FlowControlReceivers;
@@ -88,6 +91,7 @@ public abstract class AbstractMinMulticastFlowControl
      *
      * @param isGroupTagAware true if the group tag is used.
      */
+    @Impure
     protected AbstractMinMulticastFlowControl(final boolean isGroupTagAware)
     {
         this.isGroupTagAware = isGroupTagAware;
@@ -96,6 +100,7 @@ public abstract class AbstractMinMulticastFlowControl
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void initialize(
         final MediaDriver.Context context,
         final CountersManager countersManager,
@@ -128,6 +133,7 @@ public abstract class AbstractMinMulticastFlowControl
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         CloseHelper.close(errorHandler, receiverCount);
@@ -136,6 +142,7 @@ public abstract class AbstractMinMulticastFlowControl
     /**
      * {@inheritDoc}
      */
+    @Impure
     public long onSetup(
         final SetupFlyweight flyweight,
         final long senderLimit,
@@ -157,6 +164,7 @@ public abstract class AbstractMinMulticastFlowControl
     /**
      * {@inheritDoc}
      */
+    @Impure
     public long onIdle(final long timeNs, final long senderLimit, final long senderPosition, final boolean isEos)
     {
         long minLimitPosition = lastSetupSenderLimit(timeNs);
@@ -198,6 +206,7 @@ public abstract class AbstractMinMulticastFlowControl
      *
      * @return true if the observed receiver count reached the {@link #groupMinSize()} threshold?
      */
+    @Pure
     public boolean hasRequiredReceivers()
     {
         return hasRequiredReceivers;
@@ -206,6 +215,8 @@ public abstract class AbstractMinMulticastFlowControl
     /**
      * {@inheritDoc}
      */
+    @Pure
+    @Impure
     public int maxRetransmissionLength(
         final int termOffset,
         final int resendLength,
@@ -227,6 +238,7 @@ public abstract class AbstractMinMulticastFlowControl
      * @param matchesTag          if the status messages comes from a receiver with a tag matching the group.
      * @return the new position limit to be employed by the sender.
      */
+    @Impure
     protected final long processStatusMessage(
         final StatusMessageFlyweight flyweight,
         final long senderLimit,
@@ -302,6 +314,7 @@ public abstract class AbstractMinMulticastFlowControl
      * @param timeNs          current time (in nanoseconds).
      * @param hasMatchingTag  if the status messages comes from a receiver with a tag matching the group.
      */
+    @Impure
     protected void processSendSetupTrigger(
         final StatusMessageFlyweight flyweight,
         final InetSocketAddress receiverAddress,
@@ -322,6 +335,7 @@ public abstract class AbstractMinMulticastFlowControl
      * @param timeNs            current time in nanoseconds.
      * @param hasMatchingTag    if the error message comes from a receiver with a tag matching the group.
      */
+    @Impure
     protected void processError(
         final ErrorFlyweight error,
         final InetSocketAddress receiverAddress,
@@ -344,6 +358,7 @@ public abstract class AbstractMinMulticastFlowControl
      *
      * @return timeout after which an inactive receiver will be dropped.
      */
+    @Pure
     protected final long receiverTimeoutNs()
     {
         return receiverTimeoutNs;
@@ -354,6 +369,7 @@ public abstract class AbstractMinMulticastFlowControl
      *
      * @return true if the flow control strategy has a group tag it is aware of for tracking membership.
      */
+    @Pure
     protected final boolean hasGroupTag()
     {
         return isGroupTagAware;
@@ -364,6 +380,7 @@ public abstract class AbstractMinMulticastFlowControl
      *
      * @return tag used to identify members of the group.
      */
+    @Pure
     protected final long groupTag()
     {
         return groupTag;
@@ -374,11 +391,13 @@ public abstract class AbstractMinMulticastFlowControl
      *
      * @return minimum group size required for progress.
      */
+    @Pure
     protected final int groupMinSize()
     {
         return groupMinSize;
     }
 
+    @SideEffectFree
     static Receiver[] truncateReceivers(final Receiver[] receivers, final int removed)
     {
         final int length = receivers.length;
@@ -394,6 +413,7 @@ public abstract class AbstractMinMulticastFlowControl
         }
     }
 
+    @Impure
     private void parseUriParam(final String fcValue)
     {
         if (null != fcValue)
@@ -424,6 +444,7 @@ public abstract class AbstractMinMulticastFlowControl
         }
     }
 
+    @SideEffectFree
     private void receiverAdded(
         final long receiverId, final int sessionId, final int streamId, final String channel, final int receiverCount)
     {
@@ -432,6 +453,7 @@ public abstract class AbstractMinMulticastFlowControl
 //            ", channel=" + channel);
     }
 
+    @SideEffectFree
     private void receiverRemoved(
         final long receiverId, final int sessionId, final int streamId, final String channel, final int receiverCount)
     {
@@ -440,6 +462,7 @@ public abstract class AbstractMinMulticastFlowControl
 //            ", channel=" + channel);
     }
 
+    @Impure
     private long lastSetupSenderLimit(final long nowNs)
     {
         if (-1 != lastSetupSenderLimit)
@@ -467,6 +490,7 @@ public abstract class AbstractMinMulticastFlowControl
         long timeOfLastStatusMessageNs;
         boolean eosFlagged;
 
+        @SideEffectFree
         Receiver(
             final long receiverId,
             final int sessionId,

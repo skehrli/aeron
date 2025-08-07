@@ -15,6 +15,8 @@
  */
 package io.aeron.driver.reports;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import java.io.File;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -38,6 +40,7 @@ public final class LossReportUtil
      * @param aeronDirectoryName in which the loss report should exist.
      * @return the new {@link File} for the loss report.
      */
+    @SideEffectFree
     public static File file(final String aeronDirectoryName)
     {
         return new File(aeronDirectoryName, LOSS_REPORT_FILE_NAME);
@@ -50,6 +53,7 @@ public final class LossReportUtil
      * @param reportFileLength   for the file.
      * @return the newly mapped buffer for the file.
      */
+    @Impure
     public static MappedByteBuffer mapLossReport(final String aeronDirectoryName, final int reportFileLength)
     {
         return mapNewFile(file(aeronDirectoryName), reportFileLength, false);
@@ -61,6 +65,7 @@ public final class LossReportUtil
      * @param aeronDirectoryName containing the file
      * @return the read only mapped buffer for the file.
      */
+    @Impure
     public static MappedByteBuffer mapLossReportReadOnly(final String aeronDirectoryName)
     {
         return mapExistingFile(file(aeronDirectoryName), FileChannel.MapMode.READ_ONLY, "Loss Report");

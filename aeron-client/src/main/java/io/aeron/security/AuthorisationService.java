@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.aeron.security;
+import org.checkerframework.dataflow.qual.Impure;
 
 /**
  * Interface for an authorisation service to handle authorisation checks on clients performing actions to a system.
@@ -55,5 +56,6 @@ public interface AuthorisationService
      * @param encodedPrincipal that has been authenticated.
      * @return {@code true} if the client is authorised to execute the action or {@code false} otherwise.
      */
+    @Impure
     boolean isAuthorised(int protocolId, int actionId, Object type, byte[] encodedPrincipal);
 }

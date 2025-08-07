@@ -15,6 +15,8 @@
  */
 package io.aeron.driver.media;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.ChannelUri;
 import io.aeron.CommonContext;
@@ -91,6 +93,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      * @param statusIndicator to indicate the status of the channel endpoint.
      * @param context         for configuration.
      */
+    @Impure
     public SendChannelEndpoint(
         final UdpChannel udpChannel, final AtomicCounter statusIndicator, final MediaDriver.Context context)
     {
@@ -127,6 +130,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      *
      * @param counter to be set.
      */
+    @Impure
     public void localSocketAddressIndicator(final AtomicCounter counter)
     {
         localSocketAddressIndicator = counter;
@@ -135,6 +139,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
     /**
      * Decrement the reference count to the channel.
      */
+    @Impure
     public void decRef()
     {
         --refCount;
@@ -143,6 +148,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
     /**
      * Increment the reference count to the channel.
      */
+    @Impure
     public void incRef()
     {
         ++refCount;
@@ -153,6 +159,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      *
      * @param conductorProxy for notifying potential channel errors.
      */
+    @Impure
     public void openChannel(final DriverConductorProxy conductorProxy)
     {
         openDatagramChannel(statusIndicator);
@@ -169,6 +176,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      *
      * @return the original URI String used when a subscription was added.
      */
+    @Impure
     public String originalUriString()
     {
         return udpChannel().originalUriString();
@@ -179,6 +187,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      *
      * @return id of the channel status indicator counter.
      */
+    @Impure
     public int statusIndicatorCounterId()
     {
         return statusIndicator.id();
@@ -187,6 +196,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
     /**
      * Indicate that the channel as active after successfully opening it.
      */
+    @Impure
     public void indicateActive()
     {
         final long currentStatus = statusIndicator.get();
@@ -203,6 +213,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
     /**
      * Close the counters used to indicate channel status.
      */
+    @Impure
     public void closeIndicators()
     {
         CloseHelper.close(statusIndicator);
@@ -215,6 +226,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      *
      * @return true if ready to be closed.
      */
+    @Impure
     public boolean shouldBeClosed()
     {
         return 0 == refCount && !statusIndicator.isClosed();
@@ -225,6 +237,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      *
      * @param publication to add to the dispatcher
      */
+    @Impure
     public void registerForSend(final NetworkPublication publication)
     {
         publicationBySessionAndStreamId.put(compoundKey(publication.sessionId(), publication.streamId()), publication);
@@ -235,6 +248,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      *
      * @param publication to remove
      */
+    @Impure
     public void unregisterForSend(final NetworkPublication publication)
     {
         publicationBySessionAndStreamId.remove(compoundKey(publication.sessionId(), publication.streamId()));
@@ -247,6 +261,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      * @param buffer to send
      * @return number of bytes sent
      */
+    @Impure
     public int send(final ByteBuffer buffer)
     {
         int bytesSent = 0;
@@ -295,6 +310,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      * @param endpointAddress to send data to.
      * @return number of bytes sent
      */
+    @Impure
     public int send(final ByteBuffer buffer, final InetSocketAddress endpointAddress)
     {
         int bytesSent = 0;
@@ -329,6 +345,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      * @param nowNs          to test against for activity.
      * @param conductorProxy to notify of any addresses which may need to be re-resolved.
      */
+    @Impure
     public void checkForReResolution(final long nowNs, final DriverConductorProxy conductorProxy)
     {
         if (udpChannel.isManualControlMode())
@@ -355,6 +372,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      * @param srcAddress     of the message.
      * @param conductorProxy to send messages back to the conductor.
      */
+    @Impure
     public void onStatusMessage(
         final StatusMessageFlyweight msg,
         final UnsafeBuffer buffer,
@@ -396,6 +414,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      * @param srcAddress     of the message.
      * @param conductorProxy to send messages back to the conductor.
      */
+    @Impure
     public void onError(
         final ErrorFlyweight msg,
         final UnsafeBuffer buffer,
@@ -426,6 +445,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      * @param length     of the message.
      * @param srcAddress of the message.
      */
+    @Impure
     public void onNakMessage(
         final NakFlyweight msg,
         final UnsafeBuffer buffer,
@@ -450,6 +470,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      * @param length     of the message.
      * @param srcAddress of the message.
      */
+    @Impure
     public void onRttMeasurement(
         final RttMeasurementFlyweight msg,
         final UnsafeBuffer buffer,
@@ -474,6 +495,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      * @param srcAddress     the message came from.
      * @param conductorProxy to send messages back to the conductor.
      */
+    @Impure
     public void onResponseSetup(
         final ResponseSetupFlyweight msg,
         final UnsafeBuffer unsafeBuffer,
@@ -499,6 +521,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      * <p>
      * If not then a {@link ControlProtocolException} will be thrown.
      */
+    @Impure
     public void validateAllowsManualControl()
     {
         if (!(multiSndDestination instanceof ManualSndMultiDestination))
@@ -514,6 +537,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      * @param address    of the destination to be added.
      * @param registrationId of the destination.
      */
+    @Impure
     public void addDestination(final ChannelUri channelUri, final InetSocketAddress address, final long registrationId)
     {
         multiSndDestination.addDestination(channelUri, address, registrationId);
@@ -525,6 +549,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      * @param channelUri for the destination to be removed.
      * @param address    of the destination to be removed.
      */
+    @Impure
     public void removeDestination(final ChannelUri channelUri, final InetSocketAddress address)
     {
         multiSndDestination.removeDestination(channelUri, address);
@@ -535,6 +560,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      *
      * @param destinationRegistrationId the registration id of the destination.
      */
+    @Impure
     public void removeDestination(final long destinationRegistrationId)
     {
         multiSndDestination.removeDestination(destinationRegistrationId);
@@ -546,6 +572,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      * @param endpoint   associated with the address.
      * @param newAddress for the endpoint.
      */
+    @Impure
     public void resolutionChange(final String endpoint, final InetSocketAddress newAddress)
     {
         if (null != multiSndDestination)
@@ -566,6 +593,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      * @param registrationId    of the endpoint.
      * @param originalUriString of the channel.
      */
+    @Impure
     public void allocateDestinationsCounterForMdc(
         final MutableDirectBuffer tempBuffer,
         final CountersManager countersManager,
@@ -580,6 +608,8 @@ public class SendChannelEndpoint extends UdpChannelTransport
         }
     }
 
+    @SideEffectFree
+    @Impure
     private boolean statusMessageTimeout(final long nowNs)
     {
         for (final NetworkPublication publication : publicationBySessionAndStreamId.values())
@@ -593,6 +623,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
         return true;
     }
 
+    @Impure
     private void applyChannelSendTimestamp(final ByteBuffer buffer)
     {
         final int length = buffer.remaining();
@@ -626,6 +657,7 @@ public class SendChannelEndpoint extends UdpChannelTransport
      * @param udpChannel with tag to match against.
      * @return true if the channel matches on tag identity.
      */
+    @Impure
     public boolean matchesTag(final UdpChannel udpChannel)
     {
         return udpChannel.matchesTag(super.udpChannel, null, connectAddress);
@@ -662,42 +694,52 @@ abstract class MultiSndDestination extends MultiSndDestinationRhsPadding
     final ErrorHandler errorHandler;
     AtomicCounter destinationsCounter = null;
 
+    @Impure
     MultiSndDestination(final CachedNanoClock nanoClock, final ErrorHandler errorHandler)
     {
         this.nanoClock = nanoClock;
         this.errorHandler = errorHandler;
     }
 
+    @Impure
     abstract int send(DatagramChannel channel, ByteBuffer buffer, SendChannelEndpoint channelEndpoint, int bytesToSend);
 
+    @Impure
     abstract void onStatusMessage(StatusMessageFlyweight msg, InetSocketAddress address);
 
+    @Impure
     void addDestination(final ChannelUri channelUri, final InetSocketAddress address, final long registrationId)
     {
     }
 
+    @Impure
     void removeDestination(final ChannelUri channelUri, final InetSocketAddress address)
     {
     }
 
+    @Impure
     void removeDestination(final long destinationRegistrationId)
     {
     }
 
+    @Impure
     void checkForReResolution(
         final SendChannelEndpoint channelEndpoint, final long nowNs, final DriverConductorProxy conductorProxy)
     {
     }
 
+    @Impure
     void updateDestination(final String endpoint, final InetSocketAddress newAddress)
     {
     }
 
+    @Impure
     void destinationsCounter(final AtomicCounter destinationsCounter)
     {
         this.destinationsCounter = destinationsCounter;
     }
 
+    @Impure
     static int send(
         final DatagramChannel datagramChannel,
         final ByteBuffer buffer,
@@ -732,6 +774,7 @@ abstract class MultiSndDestination extends MultiSndDestinationRhsPadding
         return bytesSent;
     }
 
+    @Impure
     public long findRegistrationId(final ErrorFlyweight msg, final InetSocketAddress srcAddress)
     {
         return Aeron.NULL_VALUE;
@@ -740,11 +783,13 @@ abstract class MultiSndDestination extends MultiSndDestinationRhsPadding
 
 class ManualSndMultiDestination extends MultiSndDestination
 {
+    @Impure
     ManualSndMultiDestination(final CachedNanoClock nanoClock, final ErrorHandler errorHandler)
     {
         super(nanoClock, errorHandler);
     }
 
+    @Impure
     void onStatusMessage(final StatusMessageFlyweight msg, final InetSocketAddress address)
     {
         final long receiverId = msg.receiverId();
@@ -766,6 +811,7 @@ class ManualSndMultiDestination extends MultiSndDestination
         }
     }
 
+    @Impure
     int send(
         final DatagramChannel channel,
         final ByteBuffer buffer,
@@ -809,6 +855,7 @@ class ManualSndMultiDestination extends MultiSndDestination
         return result;
     }
 
+    @Impure
     void addDestination(final ChannelUri channelUri, final InetSocketAddress address, final long registrationId)
     {
         final Destination destination = new Destination(
@@ -817,6 +864,7 @@ class ManualSndMultiDestination extends MultiSndDestination
         destinationsCounter.setRelease(destinations.length);
     }
 
+    @Impure
     void removeDestination(final ChannelUri channelUri, final InetSocketAddress address)
     {
         boolean found = false;
@@ -847,6 +895,7 @@ class ManualSndMultiDestination extends MultiSndDestination
         destinationsCounter.setRelease(destinations.length);
     }
 
+    @Impure
     void removeDestination(final long destinationRegistrationId)
     {
         boolean found = false;
@@ -877,6 +926,7 @@ class ManualSndMultiDestination extends MultiSndDestination
         destinationsCounter.setRelease(destinations.length);
     }
 
+    @Impure
     void checkForReResolution(
         final SendChannelEndpoint channelEndpoint, final long nowNs, final DriverConductorProxy conductorProxy)
     {
@@ -890,6 +940,7 @@ class ManualSndMultiDestination extends MultiSndDestination
         }
     }
 
+    @Impure
     void updateDestination(final String endpoint, final InetSocketAddress newAddress)
     {
         for (final Destination destination : destinations)
@@ -902,6 +953,7 @@ class ManualSndMultiDestination extends MultiSndDestination
         }
     }
 
+    @Impure
     public long findRegistrationId(final ErrorFlyweight msg, final InetSocketAddress address)
     {
         for (final Destination destination : destinations)
@@ -918,11 +970,13 @@ class ManualSndMultiDestination extends MultiSndDestination
 
 class DynamicSndMultiDestination extends MultiSndDestination
 {
+    @Impure
     DynamicSndMultiDestination(final CachedNanoClock nanoClock, final ErrorHandler errorHandler)
     {
         super(nanoClock, errorHandler);
     }
 
+    @Impure
     void onStatusMessage(final StatusMessageFlyweight msg, final InetSocketAddress address)
     {
         final long receiverId = msg.receiverId();
@@ -945,6 +999,7 @@ class DynamicSndMultiDestination extends MultiSndDestination
         }
     }
 
+    @Impure
     int send(
         final DatagramChannel channel,
         final ByteBuffer buffer,
@@ -1010,12 +1065,14 @@ class DynamicSndMultiDestination extends MultiSndDestination
         return result;
     }
 
+    @Impure
     private void add(final Destination destination)
     {
         destinations = ArrayUtil.add(destinations, destination);
         destinationsCounter.setRelease(destinations.length);
     }
 
+    @Impure
     private void truncateDestinations(final int removedCount)
     {
         final int length = destinations.length;
@@ -1033,6 +1090,7 @@ class DynamicSndMultiDestination extends MultiSndDestination
         destinationsCounter.setRelease(destinations.length);
     }
 
+    @Impure
     private void removeInactiveDestinations(final long nowNs)
     {
         int removedCount = 0;
@@ -1087,6 +1145,7 @@ final class Destination extends DestinationRhsPadding
     InetSocketAddress address;
     final String endpoint;
 
+    @Impure
     Destination(final long nowNs, final long receiverId, final InetSocketAddress address)
     {
         this.timeOfLastActivityNs = nowNs;
@@ -1098,6 +1157,7 @@ final class Destination extends DestinationRhsPadding
         this.registrationId = Aeron.NULL_VALUE;
     }
 
+    @Impure
     Destination(final long nowMs, final String endpoint, final InetSocketAddress address, final long registrationId)
     {
         this.timeOfLastActivityNs = nowMs;
@@ -1109,6 +1169,7 @@ final class Destination extends DestinationRhsPadding
         this.registrationId = registrationId;
     }
 
+    @Impure
     boolean isMatch(final long receiverId, final InetSocketAddress address)
     {
         return

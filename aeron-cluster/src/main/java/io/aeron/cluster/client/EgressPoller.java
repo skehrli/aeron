@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster.client;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import io.aeron.ControlledFragmentAssembler;
 import io.aeron.Image;
@@ -57,6 +60,7 @@ public final class EgressPoller implements ControlledFragmentHandler
      * @param subscription  for egress from the cluster.
      * @param fragmentLimit for each poll operation.
      */
+    @SideEffectFree
     public EgressPoller(final Subscription subscription, final int fragmentLimit)
     {
         this.subscription = subscription;
@@ -68,6 +72,7 @@ public final class EgressPoller implements ControlledFragmentHandler
      *
      * @return the {@link Subscription} used for polling events.
      */
+    @Pure
     public Subscription subscription()
     {
         return subscription;
@@ -78,6 +83,7 @@ public final class EgressPoller implements ControlledFragmentHandler
      *
      * @return {@link Image} for the egress response from the cluster which can be used for connection tracking.
      */
+    @Pure
     public Image egressImage()
     {
         return egressImage;
@@ -88,6 +94,7 @@ public final class EgressPoller implements ControlledFragmentHandler
      *
      * @return the template id of the last received event.
      */
+    @Pure
     public int templateId()
     {
         return templateId;
@@ -98,6 +105,7 @@ public final class EgressPoller implements ControlledFragmentHandler
      *
      * @return cluster session id of the last polled event or {@link Aeron#NULL_VALUE} if not returned.
      */
+    @Pure
     public long clusterSessionId()
     {
         return clusterSessionId;
@@ -108,6 +116,7 @@ public final class EgressPoller implements ControlledFragmentHandler
      *
      * @return correlation id of the last polled event or {@link Aeron#NULL_VALUE} if not returned.
      */
+    @Pure
     public long correlationId()
     {
         return correlationId;
@@ -118,6 +127,7 @@ public final class EgressPoller implements ControlledFragmentHandler
      *
      * @return leadership term id of the last polled event or {@link Aeron#NULL_VALUE} if not returned.
      */
+    @Pure
     public long leadershipTermId()
     {
         return leadershipTermId;
@@ -128,6 +138,7 @@ public final class EgressPoller implements ControlledFragmentHandler
      *
      * @return leader cluster member id of the last polled event or {@link Aeron#NULL_VALUE} if poll returned nothing.
      */
+    @Pure
     public int leaderMemberId()
     {
         return leaderMemberId;
@@ -138,6 +149,7 @@ public final class EgressPoller implements ControlledFragmentHandler
      *
      * @return the event code returned from the last session event.
      */
+    @Pure
     public EventCode eventCode()
     {
         return eventCode;
@@ -148,6 +160,7 @@ public final class EgressPoller implements ControlledFragmentHandler
      *
      * @return response from the server in semantic version form.
      */
+    @Pure
     public int version()
     {
         return version;
@@ -158,6 +171,7 @@ public final class EgressPoller implements ControlledFragmentHandler
      *
      * @return leader heartbeat timeout of the last polled event or {@link Aeron#NULL_VALUE} if not available.
      */
+    @Pure
     public long leaderHeartbeatTimeoutNs()
     {
         return leaderHeartbeatTimeoutNs;
@@ -168,6 +182,7 @@ public final class EgressPoller implements ControlledFragmentHandler
      *
      * @return the detail returned from the last session event.
      */
+    @Pure
     public String detail()
     {
         return detail;
@@ -178,6 +193,7 @@ public final class EgressPoller implements ControlledFragmentHandler
      *
      * @return the encoded challenge in the last challenge or null if last message was not a challenge.
      */
+    @Pure
     public byte[] encodedChallenge()
     {
         return encodedChallenge;
@@ -188,6 +204,7 @@ public final class EgressPoller implements ControlledFragmentHandler
      *
      * @return true if the last polling action received a complete event.
      */
+    @Pure
     public boolean isPollComplete()
     {
         return isPollComplete;
@@ -198,6 +215,7 @@ public final class EgressPoller implements ControlledFragmentHandler
      *
      * @return true if last message was a challenge or false if not.
      */
+    @Pure
     public boolean isChallenged()
     {
         return ChallengeDecoder.TEMPLATE_ID == templateId;
@@ -208,6 +226,7 @@ public final class EgressPoller implements ControlledFragmentHandler
      *
      * @return number of fragments consumed.
      */
+    @Impure
     public int poll()
     {
         if (isPollComplete)
@@ -315,6 +334,7 @@ public final class EgressPoller implements ControlledFragmentHandler
         return Action.CONTINUE;
     }
 
+    @Impure
     private static long leaderHeartbeatTimeoutNs(final SessionEventDecoder sessionEventDecoder)
     {
         final long leaderHeartbeatTimeoutNs = sessionEventDecoder.leaderHeartbeatTimeoutNs();

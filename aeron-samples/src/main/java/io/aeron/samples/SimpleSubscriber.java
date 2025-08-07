@@ -16,6 +16,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.Subscription;
 import io.aeron.logbuffer.FragmentHandler;
@@ -39,6 +40,7 @@ public class SimpleSubscriber
      *
      * @param args passed to the process.
      */
+    @Impure
     public static void main(final String[] args)
     {
         // Maximum number of message fragments to receive during a single 'poll' operation

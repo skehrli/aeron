@@ -15,6 +15,8 @@
  */
 package io.aeron.command;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.exceptions.ControlProtocolException;
 import org.agrona.MutableDirectBuffer;
 
@@ -58,6 +60,7 @@ public class PublicationMessageFlyweight extends CorrelatedMessageFlyweight
      * @param offset at which the message begins.
      * @return this for a fluent API.
      */
+    @Impure
     public PublicationMessageFlyweight wrap(final MutableDirectBuffer buffer, final int offset)
     {
         super.wrap(buffer, offset);
@@ -70,6 +73,7 @@ public class PublicationMessageFlyweight extends CorrelatedMessageFlyweight
      *
      * @return stream id field.
      */
+    @Impure
     public int streamId()
     {
         return buffer.getInt(offset + STREAM_ID_FIELD_OFFSET);
@@ -81,6 +85,7 @@ public class PublicationMessageFlyweight extends CorrelatedMessageFlyweight
      * @param streamId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public PublicationMessageFlyweight streamId(final int streamId)
     {
         buffer.putInt(offset + STREAM_ID_FIELD_OFFSET, streamId);
@@ -93,6 +98,7 @@ public class PublicationMessageFlyweight extends CorrelatedMessageFlyweight
      *
      * @return channel field.
      */
+    @Impure
     public String channel()
     {
         return buffer.getStringAscii(offset + CHANNEL_OFFSET);
@@ -103,6 +109,7 @@ public class PublicationMessageFlyweight extends CorrelatedMessageFlyweight
      *
      * @param appendable to append channel to.
      */
+    @Impure
     public void appendChannel(final Appendable appendable)
     {
         buffer.getStringAscii(offset + CHANNEL_OFFSET, appendable);
@@ -114,6 +121,7 @@ public class PublicationMessageFlyweight extends CorrelatedMessageFlyweight
      * @param channel field value.
      * @return this for a fluent API.
      */
+    @Impure
     public PublicationMessageFlyweight channel(final String channel)
     {
         lengthOfChannel = buffer.putStringAscii(offset + CHANNEL_OFFSET, channel);
@@ -128,6 +136,7 @@ public class PublicationMessageFlyweight extends CorrelatedMessageFlyweight
      *
      * @return the length of the current message.
      */
+    @Pure
     public int length()
     {
         return CHANNEL_OFFSET + lengthOfChannel;
@@ -139,6 +148,7 @@ public class PublicationMessageFlyweight extends CorrelatedMessageFlyweight
      * @param msgTypeId type of message.
      * @param length of message in bytes to validate.
      */
+    @Impure
     public void validateLength(final int msgTypeId, final int length)
     {
         if (length < MINIMUM_LENGTH)
@@ -160,6 +170,7 @@ public class PublicationMessageFlyweight extends CorrelatedMessageFlyweight
      * @param channelLength to be appended to the header.
      * @return the length of the command message for a given channel length.
      */
+    @Pure
     public static int computeLength(final int channelLength)
     {
         return MINIMUM_LENGTH + channelLength;

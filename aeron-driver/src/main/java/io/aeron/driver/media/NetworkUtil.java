@@ -15,6 +15,9 @@
  */
 package io.aeron.driver.media;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.BufferUtil;
 
 import java.net.*;
@@ -46,6 +49,7 @@ public final class NetworkUtil
      * of the subnet prefix. Empty if none match.
      * @throws SocketException if an error occurs
      */
+    @Impure
     public static NetworkInterface[] filterBySubnet(final InetAddress address, final int subnetPrefix)
         throws SocketException
     {
@@ -59,6 +63,7 @@ public final class NetworkUtil
      * @param alignment for the buffer.
      * @return the direct {@link ByteBuffer}.
      */
+    @Impure
     public static ByteBuffer allocateDirectAlignedAndPadded(final int capacity, final int alignment)
     {
         final ByteBuffer buffer = BufferUtil.allocateDirectAligned(capacity + alignment, alignment);
@@ -75,6 +80,7 @@ public final class NetworkUtil
      * @param port    part of the endpoint.
      * @return The formatted string for an address, IPv4 or IPv6, and port separated by a ':'.
      */
+    @Impure
     public static String formatAddressAndPort(final InetAddress address, final int port)
     {
         if (address instanceof Inet6Address)
@@ -93,6 +99,7 @@ public final class NetworkUtil
      * @param address to get the {@link ProtocolFamily} for.
      * @return the {@link ProtocolFamily} to which the address belongs.
      */
+    @Pure
     public static ProtocolFamily getProtocolFamily(final InetAddress address)
     {
         if (address instanceof Inet4Address)
@@ -119,6 +126,7 @@ public final class NetworkUtil
      * @return first matching address bound to a local interface or null if none match.
      * @throws SocketException if an underlying SocketException is thrown, e.g. when getting the network interfaces.
      */
+    @Impure
     public static InetAddress findFirstMatchingLocalAddress(final InetAddress address) throws SocketException
     {
         final Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
@@ -141,6 +149,7 @@ public final class NetworkUtil
     }
 
 
+    @Impure
     static NetworkInterface[] filterBySubnet(
         final NetworkInterfaceShim shim, final InetAddress address, final int subnetPrefix)
         throws SocketException
@@ -174,6 +183,7 @@ public final class NetworkUtil
         return results;
     }
 
+    @Impure
     static InetAddress findAddressOnInterface(
         final NetworkInterface networkInterface, final InetAddress address, final int subnetPrefix)
     {
@@ -183,6 +193,7 @@ public final class NetworkUtil
         return null == interfaceAddress ? null : interfaceAddress.getAddress();
     }
 
+    @Impure
     static InterfaceAddress findAddressOnInterface(
         final NetworkInterfaceShim shim,
         final NetworkInterface networkInterface,
@@ -215,6 +226,8 @@ public final class NetworkUtil
      * @param prefixLength the number of bit required to match.
      * @return true if the leading prefixLength number of bits of the two addresses match.
      */
+    @Pure
+    @Impure
     public static boolean isMatchWithPrefix(final byte[] candidate, final byte[] expected, final int prefixLength)
     {
         if (candidate.length != expected.length)
@@ -241,21 +254,25 @@ public final class NetworkUtil
         throw new IllegalArgumentException("how many bytes does an IP address have again?");
     }
 
+    @Pure
     static int prefixLengthToIpV4Mask(final int subnetPrefix)
     {
         return 0 == subnetPrefix ? 0 : -(1 << 32 - subnetPrefix);
     }
 
+    @Pure
     private static long prefixLengthToIpV6Mask(final int subnetPrefix)
     {
         return 0 == subnetPrefix ? 0 : -(1L << 64 - subnetPrefix);
     }
 
+    @Pure
     private static int toInt(final byte[] b)
     {
         return ((b[3] & 0xFF)) + ((b[2] & 0xFF) << 8) + ((b[1] & 0xFF) << 16) + ((b[0]) << 24);
     }
 
+    @Pure
     static long toLong(final byte[] b, final int offset)
     {
         return ((b[offset + 7] & 0xFFL)) +
@@ -274,6 +291,7 @@ public final class NetworkUtil
         private final NetworkInterface networkInterface;
         private final boolean isLoopback;
 
+        @SideEffectFree
         FilterResult(
             final InterfaceAddress interfaceAddress,
             final NetworkInterface networkInterface,
@@ -284,6 +302,7 @@ public final class NetworkUtil
             this.isLoopback = isLoopback;
         }
 
+        @Impure
         public int compareTo(final FilterResult other)
         {
             if (isLoopback == other.isLoopback)
@@ -298,11 +317,13 @@ public final class NetworkUtil
             }
         }
 
+        @Pure
         public boolean equals(final Object o)
         {
             return o instanceof FilterResult && compareTo((FilterResult)o) == 0;
         }
 
+        @Pure
         public int hashCode()
         {
             return Objects.hash(interfaceAddress, networkInterface, isLoopback);

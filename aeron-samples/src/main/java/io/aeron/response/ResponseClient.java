@@ -15,6 +15,9 @@
  */
 package io.aeron.response;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import io.aeron.ChannelUriStringBuilder;
 import io.aeron.Publication;
@@ -57,6 +60,7 @@ public class ResponseClient implements AutoCloseable, Agent
      * @param responseChannel  channel fragment to allow for configuration parameters on the response subscription.
      *                         May be null. The 'control' parameter is not required and will be removed if specified.
      */
+    @Impure
     public ResponseClient(
         final Aeron aeron,
         final FragmentHandler handler,
@@ -98,6 +102,7 @@ public class ResponseClient implements AutoCloseable, Agent
      * @param responseControl  control address for the response subscription.
      * @param responseStreamId response response streamId
      */
+    @Impure
     public ResponseClient(
         final Aeron aeron,
         final FragmentHandler handler,
@@ -112,6 +117,7 @@ public class ResponseClient implements AutoCloseable, Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int doWork()
     {
         int workCount = 0;
@@ -141,6 +147,7 @@ public class ResponseClient implements AutoCloseable, Agent
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String roleName()
     {
         return "ResponseClient";
@@ -149,6 +156,7 @@ public class ResponseClient implements AutoCloseable, Agent
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
     public void close()
     {
     }
@@ -158,6 +166,7 @@ public class ResponseClient implements AutoCloseable, Agent
      *
      * @return true if the client is connected.
      */
+    @Impure
     public boolean isConnected()
     {
         return null != subscription && subscription.isConnected() && null != publication && publication.isConnected();
@@ -169,6 +178,7 @@ public class ResponseClient implements AutoCloseable, Agent
      * @param message to be sent
      * @return result code from the publication.
      */
+    @Impure
     public long offer(final DirectBuffer message)
     {
         return publication.offer(message);
@@ -179,6 +189,7 @@ public class ResponseClient implements AutoCloseable, Agent
      *
      * @return response control for the server.
      */
+    @Pure
     public String responseControl()
     {
         return responseControl;
@@ -189,6 +200,7 @@ public class ResponseClient implements AutoCloseable, Agent
      *
      * @return request endpoint for the server.
      */
+    @Pure
     public String requestEndpoint()
     {
         return requestEndpoint;
@@ -199,6 +211,7 @@ public class ResponseClient implements AutoCloseable, Agent
      *
      * @return response subscription for the client.
      */
+    @Pure
     public Subscription subscription()
     {
         return subscription;
@@ -209,6 +222,7 @@ public class ResponseClient implements AutoCloseable, Agent
      *
      * @return request publication for the client.
      */
+    @Pure
     public Publication publication()
     {
         return publication;
@@ -217,6 +231,7 @@ public class ResponseClient implements AutoCloseable, Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public String toString()
     {
         return "ResponseClient{" +

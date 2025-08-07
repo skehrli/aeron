@@ -15,6 +15,7 @@
  */
 package io.aeron.command;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.MutableDirectBuffer;
 
 import static org.agrona.BitUtil.SIZE_OF_INT;
@@ -54,6 +55,7 @@ public class SubscriptionReadyFlyweight
      * @param offset at which the message begins.
      * @return this for a fluent API.
      */
+    @Impure
     public final SubscriptionReadyFlyweight wrap(final MutableDirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
@@ -67,6 +69,7 @@ public class SubscriptionReadyFlyweight
      *
      * @return correlation id field.
      */
+    @Impure
     public long correlationId()
     {
         return buffer.getLong(offset + CORRELATION_ID_OFFSET);
@@ -78,6 +81,7 @@ public class SubscriptionReadyFlyweight
      * @param correlationId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public SubscriptionReadyFlyweight correlationId(final long correlationId)
     {
         buffer.putLong(offset + CORRELATION_ID_OFFSET, correlationId);
@@ -90,6 +94,7 @@ public class SubscriptionReadyFlyweight
      *
      * @return channel status counter id.
      */
+    @Impure
     public int channelStatusCounterId()
     {
         return buffer.getInt(offset + CHANNEL_STATUS_INDICATOR_ID_OFFSET);
@@ -101,6 +106,7 @@ public class SubscriptionReadyFlyweight
      * @param counterId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public SubscriptionReadyFlyweight channelStatusCounterId(final int counterId)
     {
         buffer.putInt(offset + CHANNEL_STATUS_INDICATOR_ID_OFFSET, counterId);

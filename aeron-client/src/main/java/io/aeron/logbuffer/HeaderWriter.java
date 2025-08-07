@@ -15,6 +15,8 @@
  */
 package io.aeron.logbuffer;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import java.lang.invoke.VarHandle;
@@ -39,6 +41,7 @@ public class HeaderWriter
     final long sessionId;
     final long streamId;
 
+    @SideEffectFree
     HeaderWriter(final long versionFlagsType, final long sessionId, final long streamId)
     {
         this.versionFlagsType = versionFlagsType;
@@ -46,6 +49,7 @@ public class HeaderWriter
         this.streamId = streamId;
     }
 
+    @Impure
     HeaderWriter(final UnsafeBuffer defaultHeader)
     {
         versionFlagsType = ((long)defaultHeader.getInt(VERSION_FIELD_OFFSET)) << 32;
@@ -59,6 +63,7 @@ public class HeaderWriter
      * @param defaultHeader for the stream.
      * @return a new {@link HeaderWriter} that is {@link ByteOrder} specific to the platform.
      */
+    @Impure
     public static HeaderWriter newInstance(final UnsafeBuffer defaultHeader)
     {
         if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN)
@@ -79,6 +84,7 @@ public class HeaderWriter
      * @param length     of the fragment including the header.
      * @param termId     of the current term buffer.
      */
+    @Impure
     public void write(final UnsafeBuffer termBuffer, final int offset, final int length, final int termId)
     {
         termBuffer.putLongRelease(offset + FRAME_LENGTH_FIELD_OFFSET, versionFlagsType | ((-length) & 0xFFFF_FFFFL));
@@ -91,6 +97,7 @@ public class HeaderWriter
 
 final class NativeBigEndianHeaderWriter extends HeaderWriter
 {
+    @Impure
     NativeBigEndianHeaderWriter(final UnsafeBuffer defaultHeader)
     {
         super(
@@ -99,6 +106,7 @@ final class NativeBigEndianHeaderWriter extends HeaderWriter
             ((long)defaultHeader.getInt(STREAM_ID_FIELD_OFFSET)) << 32);
     }
 
+    @Impure
     public void write(final UnsafeBuffer termBuffer, final int offset, final int length, final int termId)
     {
         termBuffer.putLongRelease(

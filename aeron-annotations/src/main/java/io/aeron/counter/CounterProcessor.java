@@ -15,6 +15,8 @@
  */
 package io.aeron.counter;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.utility.ElementIO;
 import io.aeron.utility.Processor;
 
@@ -41,16 +43,19 @@ public class CounterProcessor extends Processor
     private static final String SYSTEM_COUNTER_ID_PREFIX = "SYSTEM_COUNTER_ID_";
     private static final String TYPE_ID_SUFFIX = "_TYPE_ID";
 
+    @Pure
     protected String getEnabledPropertyName()
     {
         return "aeron.build.counterProcessor.enabled";
     }
 
+    @Pure
     protected String getPrintNotesPropertyName()
     {
         return "aeron.build.counterProcessor.printNotes";
     }
 
+    @Pure
     protected String getFailOnErrorPropertyName()
     {
         return "aeron.build.counterProcessor.failOnError";
@@ -59,6 +64,7 @@ public class CounterProcessor extends Processor
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void doProcess(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv)
     {
         final Map<String, CounterInfo> counterInfoMap = new HashMap<>();
@@ -100,6 +106,7 @@ public class CounterProcessor extends Processor
         }
     }
 
+    @Impure
     private void processElement(final Map<String, CounterInfo> counterInfoMap, final VariableElement element)
     {
         final AeronCounter counter = element.getAnnotation(AeronCounter.class);

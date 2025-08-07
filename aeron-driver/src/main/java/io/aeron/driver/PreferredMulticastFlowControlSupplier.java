@@ -15,6 +15,7 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.media.UdpChannel;
 
 /**
@@ -29,6 +30,7 @@ public class PreferredMulticastFlowControlSupplier implements FlowControlSupplie
     /**
      * {@inheritDoc}
      */
+    @Impure
     public FlowControl newInstance(final UdpChannel udpChannel, final int streamId, final long registrationId)
     {
         return new PreferredMulticastFlowControl();

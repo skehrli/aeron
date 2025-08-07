@@ -15,6 +15,8 @@
  */
 package io.aeron.status;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import org.agrona.concurrent.AtomicBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
@@ -44,6 +46,7 @@ public final class ReadableCounter implements AutoCloseable
      * @param counterId      for the counter to be viewed.
      * @throws IllegalStateException if the id has for the counter has not been allocated.
      */
+    @Impure
     public ReadableCounter(final CountersReader countersReader, final long registrationId, final int counterId)
     {
         final int counterState = countersReader.getCounterState(counterId);
@@ -70,6 +73,7 @@ public final class ReadableCounter implements AutoCloseable
      * @param counterId      for the counter to be viewed.
      * @throws IllegalStateException if the id has for the counter has not been allocated.
      */
+    @Impure
     public ReadableCounter(final CountersReader countersReader, final int counterId)
     {
         this(countersReader, Aeron.NULL_VALUE, counterId);
@@ -80,6 +84,7 @@ public final class ReadableCounter implements AutoCloseable
      *
      * @return registration id.
      */
+    @Pure
     public long registrationId()
     {
         return registrationId;
@@ -90,6 +95,7 @@ public final class ReadableCounter implements AutoCloseable
      *
      * @return counter id.
      */
+    @Pure
     public int counterId()
     {
         return counterId;
@@ -103,6 +109,7 @@ public final class ReadableCounter implements AutoCloseable
      * @see CountersReader#RECORD_RECLAIMED
      * @see CountersReader#RECORD_UNUSED
      */
+    @Impure
     public int state()
     {
         return countersReader.getCounterState(counterId);
@@ -113,6 +120,7 @@ public final class ReadableCounter implements AutoCloseable
      *
      * @return the counter label.
      */
+    @Impure
     public String label()
     {
         return countersReader.getCounterLabel(counterId);
@@ -126,6 +134,7 @@ public final class ReadableCounter implements AutoCloseable
      *
      * @return the latest value for the counter.
      */
+    @Impure
     public long get()
     {
         return valueBuffer.getLongVolatile(0);
@@ -136,6 +145,7 @@ public final class ReadableCounter implements AutoCloseable
      *
      * @return the  value for the counter.
      */
+    @Impure
     public long getWeak()
     {
         return valueBuffer.getLong(0);
@@ -144,6 +154,7 @@ public final class ReadableCounter implements AutoCloseable
     /**
      * Close this counter. This has no impact on the {@link io.aeron.Counter} it is viewing.
      */
+    @Impure
     public void close()
     {
         isClosed = true;
@@ -154,6 +165,7 @@ public final class ReadableCounter implements AutoCloseable
      *
      * @return true if it has been closed otherwise false.
      */
+    @Pure
     public boolean isClosed()
     {
         return isClosed;

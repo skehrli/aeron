@@ -15,6 +15,9 @@
  */
 package io.aeron.samples.security;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.security.Authenticator;
 import io.aeron.security.CredentialsSupplier;
 import io.aeron.security.SessionProxy;
@@ -35,6 +38,7 @@ public final class SimpleAuthenticator implements Authenticator
 
     private final Long2ObjectHashMap<Principal> authenticatedSessionIdToPrincipalMap = new Long2ObjectHashMap<>();
 
+    @Impure
     private SimpleAuthenticator(final Builder builder)
     {
         for (final Principal principal : builder.principals)
@@ -46,6 +50,7 @@ public final class SimpleAuthenticator implements Authenticator
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onConnectRequest(final long sessionId, final byte[] encodedCredentials, final long nowMs)
     {
         final Principal principal = principalsByCredentialsMap.get(new Credentials(encodedCredentials));
@@ -58,6 +63,7 @@ public final class SimpleAuthenticator implements Authenticator
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
     public void onChallengeResponse(final long sessionId, final byte[] encodedCredentials, final long nowMs)
     {
         throw new UnsupportedOperationException();
@@ -66,6 +72,7 @@ public final class SimpleAuthenticator implements Authenticator
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onConnectedSession(final SessionProxy sessionProxy, final long nowMs)
     {
         final long sessionId = sessionProxy.sessionId();
@@ -86,6 +93,7 @@ public final class SimpleAuthenticator implements Authenticator
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
     public void onChallengedSession(final SessionProxy sessionProxy, final long nowMs)
     {
         throw new UnsupportedOperationException();
@@ -113,6 +121,7 @@ public final class SimpleAuthenticator implements Authenticator
          * @param encodedCredentials credentials encoded as a byte array.
          * @return this for a fluent API.
          */
+        @Impure
         public Builder principal(final byte[] encodedPrincipal, final byte[] encodedCredentials)
         {
             principals.add(new Principal(encodedPrincipal, encodedCredentials));
@@ -124,6 +133,7 @@ public final class SimpleAuthenticator implements Authenticator
          *
          * @return a new SimpleAuthenticator instance.
          */
+        @Impure
         public SimpleAuthenticator newInstance()
         {
             return new SimpleAuthenticator(this);
@@ -135,12 +145,15 @@ public final class SimpleAuthenticator implements Authenticator
         private final byte[] encodedPrincipal;
         private final Credentials credentials;
 
+        @SideEffectFree
+        @Impure
         private Principal(final byte[] encodedPrincipal, final byte[] encodedCredentials)
         {
             this.encodedPrincipal = encodedPrincipal;
             this.credentials = new Credentials(encodedCredentials);
         }
 
+        @Pure
         public boolean credentialsMatch(final byte[] encodedCredentials)
         {
             return Arrays.equals(credentials.encodedCredentials, encodedCredentials);
@@ -151,11 +164,13 @@ public final class SimpleAuthenticator implements Authenticator
     {
         private final byte[] encodedCredentials;
 
+        @SideEffectFree
         private Credentials(final byte[] encodedCredentials)
         {
             this.encodedCredentials = encodedCredentials;
         }
 
+        @Pure
         public boolean equals(final Object o)
         {
             if (this == o)
@@ -170,6 +185,7 @@ public final class SimpleAuthenticator implements Authenticator
             return Arrays.equals(encodedCredentials, that.encodedCredentials);
         }
 
+        @Pure
         public int hashCode()
         {
             return Arrays.hashCode(encodedCredentials);

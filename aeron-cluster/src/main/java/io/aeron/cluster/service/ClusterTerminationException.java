@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster.service;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.concurrent.AgentTerminationException;
 
 /**
@@ -32,6 +34,7 @@ public class ClusterTerminationException extends AgentTerminationException
     /**
      * Construct an exception used to terminate the cluster with {@link #isExpected()} set to true.
      */
+    @Impure
     public ClusterTerminationException()
     {
         this(true);
@@ -42,6 +45,7 @@ public class ClusterTerminationException extends AgentTerminationException
      *
      * @param isExpected true if the termination is expected, i.e. it was requested.
      */
+    @Impure
     public ClusterTerminationException(final boolean isExpected)
     {
         super(isExpected ? "expected termination" : "unexpected termination");
@@ -53,6 +57,7 @@ public class ClusterTerminationException extends AgentTerminationException
      *
      * @return true if expected otherwise false.
      */
+    @Pure
     public boolean isExpected()
     {
         return isExpected;

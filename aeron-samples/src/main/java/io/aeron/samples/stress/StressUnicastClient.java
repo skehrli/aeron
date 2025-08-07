@@ -15,6 +15,8 @@
  */
 package io.aeron.samples.stress;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.Aeron;
 import io.aeron.FragmentAssembler;
 import io.aeron.Publication;
@@ -81,6 +83,7 @@ public class StressUnicastClient implements Agent
      * @param totalToSend   total number of messages to send.
      * @param mtu           the mtu to use.
      */
+    @Impure
     public StressUnicastClient(
         final String serverAddress,
         final String clientAddress,
@@ -104,6 +107,7 @@ public class StressUnicastClient implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onStart()
     {
         info("server=" + serverAddress + ", client=" + clientAddress);
@@ -120,6 +124,7 @@ public class StressUnicastClient implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int doWork()
     {
         if (0 == messageLength)
@@ -157,11 +162,13 @@ public class StressUnicastClient implements Agent
         return sendCount;
     }
 
+    @Pure
     private boolean isComplete()
     {
         return totalToSend <= correlationId && inflightMessages.isEmpty();
     }
 
+    @Impure
     private void unicastRspHandler(
         final DirectBuffer msg,
         final int offset,
@@ -173,11 +180,13 @@ public class StressUnicastClient implements Agent
         inflightMessages.remove(correlationId);
     }
 
+    @Pure
     private long currentCorrelationId(final DirectBuffer message, final int offset, final int length)
     {
         return correlationId;
     }
 
+    @Impure
     void reset(final int messageLength)
     {
         this.messageLength = messageLength;
@@ -190,6 +199,7 @@ public class StressUnicastClient implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onClose()
     {
         CloseHelper.quietCloseAll(aeron);
@@ -198,6 +208,7 @@ public class StressUnicastClient implements Agent
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String roleName()
     {
         return null;
@@ -206,6 +217,7 @@ public class StressUnicastClient implements Agent
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "StressClient{" +
@@ -222,6 +234,7 @@ public class StressUnicastClient implements Agent
      *
      * @param args command line arguments.
      */
+    @Impure
     public static void main(final String[] args)
     {
         final IdleStrategy idleStrategy = new YieldingIdleStrategy();

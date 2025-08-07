@@ -15,6 +15,9 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -69,6 +72,7 @@ public class OptimalMulticastDelayGenerator implements FeedbackDelayGenerator
      * @param maxBackoffT of the delay interval
      * @param groupSize   estimate
      */
+    @SideEffectFree
     public OptimalMulticastDelayGenerator(final double maxBackoffT, final double groupSize)
     {
         final double lambda = Math.log(groupSize) + 1;
@@ -82,6 +86,7 @@ public class OptimalMulticastDelayGenerator implements FeedbackDelayGenerator
     /**
      * {@inheritDoc}
      */
+    @Impure
     public long generateDelayNs()
     {
         return (long)generateNewOptimalDelay();
@@ -90,6 +95,7 @@ public class OptimalMulticastDelayGenerator implements FeedbackDelayGenerator
     /**
      * {@inheritDoc}
      */
+    @Pure
     public boolean shouldFeedbackImmediately()
     {
         return false;
@@ -100,6 +106,7 @@ public class OptimalMulticastDelayGenerator implements FeedbackDelayGenerator
      *
      * @return delay in units of {@code maxBackoffT}.
      */
+    @Impure
     public double generateNewOptimalDelay()
     {
         final double x = uniformRandom(randMax) + baseX;
@@ -113,6 +120,7 @@ public class OptimalMulticastDelayGenerator implements FeedbackDelayGenerator
      * @param max of the random range
      * @return random value
      */
+    @Impure
     public static double uniformRandom(final double max)
     {
         return ThreadLocalRandom.current().nextDouble() * max;
@@ -121,6 +129,8 @@ public class OptimalMulticastDelayGenerator implements FeedbackDelayGenerator
     /**
      * {@inheritDoc}
      */
+    @Pure
+    @Impure
     public String toString()
     {
         return "OptimalMulticastDelayGenerator{" +

@@ -15,6 +15,7 @@
  */
 package io.aeron.samples.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.cluster.ClusteredMediaDriver;
 import io.aeron.cluster.service.ClusteredServiceContainer;
 import io.aeron.samples.cluster.tutorial.BasicAuctionClusteredService;
@@ -31,6 +32,7 @@ import static java.lang.Integer.parseInt;
  */
 public final class EchoServiceNode
 {
+    @Impure
     private static ErrorHandler errorHandler(final String context)
     {
         return
@@ -48,6 +50,7 @@ public final class EchoServiceNode
      *
      * @param args passed to the process.
      */
+    @Impure
     @SuppressWarnings("try")
     public static void main(final String[] args)
     {

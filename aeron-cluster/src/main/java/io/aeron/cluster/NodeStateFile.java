@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.Aeron;
 import io.aeron.cluster.client.ClusterException;
 import io.aeron.cluster.codecs.node.*;
@@ -94,6 +97,7 @@ public class NodeStateFile implements AutoCloseable
      * @throws IOException if there is an error creating the file or <code>createNew == false</code> and the file does
      * not already exist.
      */
+    @Impure
     public NodeStateFile(final File clusterDir, final boolean createNew, final int fileSyncLevel) throws IOException
     {
         this.fileSyncLevel = fileSyncLevel;
@@ -146,6 +150,7 @@ public class NodeStateFile implements AutoCloseable
         this.buffer = buffer;
     }
 
+    @Impure
     private int calculateAndVerifyCandidateTermIdOffset()
     {
         final int candidateTermIdOffset;
@@ -154,6 +159,7 @@ public class NodeStateFile implements AutoCloseable
         return candidateTermIdOffset;
     }
 
+    @SideEffectFree
     private static void verifyAlignment(final int offset)
     {
         if (0 != (offset & (ALIGNMENT - 1)))
@@ -163,6 +169,7 @@ public class NodeStateFile implements AutoCloseable
         }
     }
 
+    @Impure
     private static void loadInitialState(
         final MutableDirectBuffer buffer,
         final NodeStateHeaderDecoder nodeStateHeaderDecoder,
@@ -205,6 +212,7 @@ public class NodeStateFile implements AutoCloseable
         candidateTermDecoder.wrapAndApplyHeader(buffer, candidateTermOffset, messageHeaderDecoder);
     }
 
+    @Impure
     private static void initialiseDecodersOnCreation(
         final MutableDirectBuffer buffer,
         final NodeStateHeaderDecoder nodeStateHeaderDecoder,
@@ -242,6 +250,7 @@ public class NodeStateFile implements AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         IoUtil.unmap(mappedFile);
@@ -254,6 +263,7 @@ public class NodeStateFile implements AutoCloseable
      * @param logPosition    log position where the term id change occurred.
      * @param timestampMs    timestamp of the candidate term id change.
      */
+    @Impure
     public void updateCandidateTermId(final long candidateTermId, final long logPosition, final long timestampMs)
     {
         buffer.putLong(candidateTermDecoder.offset() + CandidateTermDecoder.logPositionEncodingOffset(), logPosition);
@@ -270,6 +280,7 @@ public class NodeStateFile implements AutoCloseable
      * @param timestampMs     timestamp of the candidate term id change.
      * @return the new candidate term id.
      */
+    @Impure
     public long proposeMaxCandidateTermId(final long candidateTermId, final long logPosition, final long timestampMs)
     {
         final long existingCandidateTermId = candidateTerm.candidateTermId();
@@ -289,11 +300,13 @@ public class NodeStateFile implements AutoCloseable
      *
      * @return the CandidateTerm wrapper.
      */
+    @Pure
     public CandidateTerm candidateTerm()
     {
         return candidateTerm;
     }
 
+    @Impure
     private void loadDecodersAndOffsets(final UnsafeBuffer buffer)
     {
         loadInitialState(
@@ -305,6 +318,7 @@ public class NodeStateFile implements AutoCloseable
         candidateTermIdOffset = calculateAndVerifyCandidateTermIdOffset();
     }
 
+    @Impure
     private static int scanForMessageTypeOffset(
         final int startPosition,
         final int templateId,
@@ -349,6 +363,7 @@ public class NodeStateFile implements AutoCloseable
      */
     public final class CandidateTerm
     {
+        @SideEffectFree
         private CandidateTerm()
         {
         }
@@ -358,6 +373,7 @@ public class NodeStateFile implements AutoCloseable
          *
          * @return the candidateTermId.
          */
+        @Impure
         public long candidateTermId()
         {
             return buffer.getLongVolatile(candidateTermIdOffset);
@@ -368,6 +384,7 @@ public class NodeStateFile implements AutoCloseable
          *
          * @return epoch timestamp in ms.
          */
+        @Impure
         public long timestamp()
         {
             return candidateTermDecoder.timestamp();
@@ -378,12 +395,14 @@ public class NodeStateFile implements AutoCloseable
          *
          * @return log position.
          */
+        @Impure
         public long logPosition()
         {
             return candidateTermDecoder.logPosition();
         }
     }
 
+    @Impure
     private void syncFile(final MappedByteBuffer mappedFile)
     {
         if (0 < fileSyncLevel)

@@ -15,6 +15,7 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.concurrent.status.CountersReader;
 
 /**
@@ -33,5 +34,6 @@ public interface AvailableCounterHandler
      * @param registrationId for the counter.
      * @param counterId      that is available.
      */
+    @SideEffectFree
     void onAvailableCounter(CountersReader countersReader, long registrationId, int counterId);
 }

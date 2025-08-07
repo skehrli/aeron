@@ -15,6 +15,9 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.concurrent.status.Position;
 
 /**
@@ -26,6 +29,7 @@ final class SubscriberPosition
     private final Subscribable subscribable;
     private final Position position;
 
+    @SideEffectFree
     SubscriberPosition(
         final SubscriptionLink subscriptionLink, final Subscribable subscribable, final Position position)
     {
@@ -34,21 +38,25 @@ final class SubscriberPosition
         this.position = position;
     }
 
+    @Pure
     Position position()
     {
         return position;
     }
 
+    @Impure
     int positionCounterId()
     {
         return position().id();
     }
 
+    @Pure
     SubscriptionLink subscription()
     {
         return subscriptionLink;
     }
 
+    @Impure
     void addLink(final PublicationImage image)
     {
         subscriptionLink.link(image, position);
@@ -57,6 +65,7 @@ final class SubscriberPosition
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "SubscriberPosition{" +

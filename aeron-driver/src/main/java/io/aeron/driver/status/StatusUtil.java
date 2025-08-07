@@ -15,6 +15,7 @@
  */
 package io.aeron.driver.status;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.status.ChannelEndpointStatus;
 import org.agrona.collections.MutableInteger;
@@ -34,6 +35,7 @@ public class StatusUtil
      * @param countersReader that holds the status indicator.
      * @return status indicator to use or null if not found.
      */
+    @Impure
     public static StatusIndicator controllableIdleStrategy(final CountersReader countersReader)
     {
         StatusIndicator statusIndicator = null;
@@ -65,6 +67,7 @@ public class StatusUtil
      * @return read-only status indicator that can be used to query the status of the send channel or null.
      * @see ChannelEndpointStatus for status values and indications.
      */
+    @Impure
     public static StatusIndicatorReader sendChannelStatus(final CountersReader countersReader, final String channel)
     {
         StatusIndicatorReader statusReader = null;
@@ -98,6 +101,7 @@ public class StatusUtil
      * @return read-only status indicator that can be used to query the status of the receive channel endpoint or null.
      * @see ChannelEndpointStatus for status values and indications.
      */
+    @Impure
     public static StatusIndicatorReader receiveChannelStatus(final CountersReader countersReader, final String channel)
     {
         StatusIndicatorReader statusReader = null;

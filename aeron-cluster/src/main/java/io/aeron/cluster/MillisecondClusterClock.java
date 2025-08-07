@@ -15,6 +15,7 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.cluster.service.ClusterClock;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -27,6 +28,7 @@ public class MillisecondClusterClock implements ClusterClock
     /**
      * {@inheritDoc}
      */
+    @Impure
     public long time()
     {
         return System.currentTimeMillis();
@@ -35,6 +37,7 @@ public class MillisecondClusterClock implements ClusterClock
     /**
      * {@inheritDoc}
      */
+    @Impure
     public long timeMillis()
     {
         return System.currentTimeMillis();
@@ -43,6 +46,7 @@ public class MillisecondClusterClock implements ClusterClock
     /**
      * {@inheritDoc}
      */
+    @Impure
     public long timeMicros()
     {
         return MILLISECONDS.toMicros(System.currentTimeMillis());
@@ -51,6 +55,7 @@ public class MillisecondClusterClock implements ClusterClock
     /**
      * {@inheritDoc}
      */
+    @Impure
     public long timeNanos()
     {
         return MILLISECONDS.toNanos(System.currentTimeMillis());
@@ -59,6 +64,7 @@ public class MillisecondClusterClock implements ClusterClock
     /**
      * {@inheritDoc}
      */
+    @Impure
     public long convertToNanos(final long time)
     {
         return MILLISECONDS.toNanos(time);

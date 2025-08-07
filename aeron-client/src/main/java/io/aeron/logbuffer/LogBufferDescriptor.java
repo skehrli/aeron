@@ -15,6 +15,8 @@
  */
 package io.aeron.logbuffer;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.BitUtil;
 import org.agrona.DirectBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
@@ -421,6 +423,7 @@ public class LogBufferDescriptor
      * @param termLength to be checked.
      * @throws IllegalStateException if the length is not as expected.
      */
+    @Impure
     public static void checkTermLength(final int termLength)
     {
         if (termLength < TERM_MIN_LENGTH)
@@ -447,6 +450,7 @@ public class LogBufferDescriptor
      * @param pageSize to be checked.
      * @throws IllegalStateException if the size is not as expected.
      */
+    @Impure
     public static void checkPageSize(final int pageSize)
     {
         if (pageSize < PAGE_MIN_SIZE)
@@ -473,6 +477,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the value of the initial Term id used for this log.
      */
+    @Impure
     public static int initialTermId(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getInt(LOG_INITIAL_TERM_ID_OFFSET);
@@ -485,6 +490,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param initialTermId  value to be set.
      */
+    @Impure
     public static void initialTermId(final UnsafeBuffer metadataBuffer, final int initialTermId)
     {
         metadataBuffer.putInt(LOG_INITIAL_TERM_ID_OFFSET, initialTermId);
@@ -496,6 +502,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the value of the MTU length used for this log.
      */
+    @Impure
     public static int mtuLength(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getInt(LOG_MTU_LENGTH_OFFSET);
@@ -507,6 +514,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param mtuLength      value to be set.
      */
+    @Impure
     public static void mtuLength(final UnsafeBuffer metadataBuffer, final int mtuLength)
     {
         metadataBuffer.putInt(LOG_MTU_LENGTH_OFFSET, mtuLength);
@@ -518,6 +526,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the value of the term length used for this log.
      */
+    @Impure
     public static int termLength(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getInt(LOG_TERM_LENGTH_OFFSET);
@@ -529,6 +538,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param termLength     value to be set.
      */
+    @Impure
     public static void termLength(final UnsafeBuffer metadataBuffer, final int termLength)
     {
         metadataBuffer.putInt(LOG_TERM_LENGTH_OFFSET, termLength);
@@ -540,6 +550,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the value of the page size used for this log.
      */
+    @Impure
     public static int pageSize(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getInt(LOG_PAGE_SIZE_OFFSET);
@@ -551,6 +562,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param pageSize       value to be set.
      */
+    @Impure
     public static void pageSize(final UnsafeBuffer metadataBuffer, final int pageSize)
     {
         metadataBuffer.putInt(LOG_PAGE_SIZE_OFFSET, pageSize);
@@ -562,6 +574,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the value of the correlation ID used for this log.
      */
+    @Impure
     public static long correlationId(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getLong(LOG_CORRELATION_ID_OFFSET);
@@ -573,6 +586,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param id             value to be set.
      */
+    @Impure
     public static void correlationId(final UnsafeBuffer metadataBuffer, final long id)
     {
         metadataBuffer.putLong(LOG_CORRELATION_ID_OFFSET, id);
@@ -584,6 +598,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return whether the log is considered connected or not by the driver.
      */
+    @Impure
     public static boolean isConnected(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getIntVolatile(LOG_IS_CONNECTED_OFFSET) == 1;
@@ -595,6 +610,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param isConnected    or not.
      */
+    @Impure
     public static void isConnected(final UnsafeBuffer metadataBuffer, final boolean isConnected)
     {
         metadataBuffer.putIntRelease(LOG_IS_CONNECTED_OFFSET, isConnected ? 1 : 0);
@@ -606,6 +622,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return count of active transports.
      */
+    @Impure
     public static int activeTransportCount(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getIntVolatile(LOG_ACTIVE_TRANSPORT_COUNT);
@@ -617,6 +634,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer           containing the meta data.
      * @param numberOfActiveTransports value to be set.
      */
+    @Impure
     public static void activeTransportCount(final UnsafeBuffer metadataBuffer, final int numberOfActiveTransports)
     {
         metadataBuffer.putIntRelease(LOG_ACTIVE_TRANSPORT_COUNT, numberOfActiveTransports);
@@ -628,6 +646,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the value of end of stream position
      */
+    @Impure
     public static long endOfStreamPosition(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getLongVolatile(LOG_END_OF_STREAM_POSITION_OFFSET);
@@ -639,6 +658,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param position       value of the end of stream position.
      */
+    @Impure
     public static void endOfStreamPosition(final UnsafeBuffer metadataBuffer, final long position)
     {
         metadataBuffer.putLongRelease(LOG_END_OF_STREAM_POSITION_OFFSET, position);
@@ -651,6 +671,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the value of the active term count used by the producer of this log.
      */
+    @Impure
     public static int activeTermCount(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getIntVolatile(LOG_ACTIVE_TERM_COUNT_OFFSET);
@@ -662,6 +683,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param termCount      value of the active term count used by the producer of this log.
      */
+    @Impure
     public static void activeTermCountOrdered(final UnsafeBuffer metadataBuffer, final int termCount)
     {
         metadataBuffer.putIntRelease(LOG_ACTIVE_TERM_COUNT_OFFSET, termCount);
@@ -675,6 +697,7 @@ public class LogBufferDescriptor
      * @param updateTermCount   value of the active term count to be updated in the log.
      * @return true if successful otherwise false.
      */
+    @Impure
     public static boolean casActiveTermCount(
         final UnsafeBuffer metadataBuffer, final int expectedTermCount, final int updateTermCount)
     {
@@ -687,6 +710,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param termCount      value of the active term count used by the producer of this log.
      */
+    @Impure
     public static void activeTermCount(final UnsafeBuffer metadataBuffer, final int termCount)
     {
         metadataBuffer.putInt(LOG_ACTIVE_TERM_COUNT_OFFSET, termCount);
@@ -698,6 +722,7 @@ public class LogBufferDescriptor
      * @param currentIndex partition index.
      * @return the next partition index.
      */
+    @Pure
     public static int nextPartitionIndex(final int currentIndex)
     {
         return (currentIndex + 1) % PARTITION_COUNT;
@@ -710,6 +735,7 @@ public class LogBufferDescriptor
      * @param activeTermId  that is in current usage.
      * @return the index of which buffer should be used.
      */
+    @Pure
     public static int indexByTerm(final int initialTermId, final int activeTermId)
     {
         return (activeTermId - initialTermId) % PARTITION_COUNT;
@@ -721,6 +747,7 @@ public class LogBufferDescriptor
      * @param termCount for the number of terms that have passed.
      * @return the partition index for the term count.
      */
+    @Pure
     public static int indexByTermCount(final long termCount)
     {
         return (int)(termCount % PARTITION_COUNT);
@@ -733,6 +760,7 @@ public class LogBufferDescriptor
      * @param positionBitsToShift number of times to left shift the term count to multiply by term length.
      * @return the partition index for the position.
      */
+    @Pure
     public static int indexByPosition(final long position, final int positionBitsToShift)
     {
         return (int)((position >>> positionBitsToShift) % PARTITION_COUNT);
@@ -747,6 +775,7 @@ public class LogBufferDescriptor
      * @param initialTermId       the initial term id that this stream started on.
      * @return the absolute position in bytes.
      */
+    @Pure
     public static long computePosition(
         final int activeTermId, final int termOffset, final int positionBitsToShift, final int initialTermId)
     {
@@ -763,6 +792,7 @@ public class LogBufferDescriptor
      * @param initialTermId       the initial term id that this stream started on.
      * @return the absolute position in bytes.
      */
+    @Pure
     public static long computeTermBeginPosition(
         final int activeTermId, final int positionBitsToShift, final int initialTermId)
     {
@@ -779,6 +809,7 @@ public class LogBufferDescriptor
      * @param initialTermId       the initial term id that this stream started on.
      * @return the term id according to the position.
      */
+    @Pure
     public static int computeTermIdFromPosition(
         final long position, final int positionBitsToShift, final int initialTermId)
     {
@@ -794,6 +825,7 @@ public class LogBufferDescriptor
      * @param filePageSize to use for log.
      * @return the total length of the log file.
      */
+    @Impure
     public static long computeLogLength(final int termLength, final int filePageSize)
     {
         return align((PARTITION_COUNT * (long)termLength) + LOG_META_DATA_LENGTH, filePageSize);
@@ -806,6 +838,7 @@ public class LogBufferDescriptor
      * @param defaultHeader  to be stored.
      * @throws IllegalArgumentException if the defaultHeader larger than {@link #LOG_DEFAULT_FRAME_HEADER_MAX_LENGTH}.
      */
+    @Impure
     public static void storeDefaultFrameHeader(final UnsafeBuffer metadataBuffer, final DirectBuffer defaultHeader)
     {
         if (defaultHeader.capacity() != HEADER_LENGTH)
@@ -824,6 +857,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the raw bytes for the default frame header.
      * @return a buffer wrapping the raw bytes.
      */
+    @Impure
     public static UnsafeBuffer defaultFrameHeader(final UnsafeBuffer metadataBuffer)
     {
         return new UnsafeBuffer(metadataBuffer, LOG_DEFAULT_FRAME_HEADER_OFFSET, HEADER_LENGTH);
@@ -836,6 +870,7 @@ public class LogBufferDescriptor
      * @param termBuffer     to which the default header should be applied.
      * @param termOffset     at which the default should be applied.
      */
+    @Impure
     public static void applyDefaultHeader(
         final UnsafeBuffer metadataBuffer, final UnsafeBuffer termBuffer, final int termOffset)
     {
@@ -852,6 +887,7 @@ public class LogBufferDescriptor
      * @param termId         to be used in the default headers.
      * @return true if log was rotated.
      */
+    @Impure
     public static boolean rotateLog(final UnsafeBuffer metadataBuffer, final int termCount, final int termId)
     {
         final int nextTermId = termId + 1;
@@ -880,6 +916,7 @@ public class LogBufferDescriptor
      * @param partitionIndex to be initialised.
      * @param termId         to be set.
      */
+    @Impure
     public static void initialiseTailWithTermId(
         final UnsafeBuffer metadataBuffer, final int partitionIndex, final int termId)
     {
@@ -892,6 +929,7 @@ public class LogBufferDescriptor
      * @param rawTail containing the termId.
      * @return the termId from a packed raw tail value.
      */
+    @Pure
     public static int termId(final long rawTail)
     {
         return (int)(rawTail >> 32);
@@ -904,6 +942,7 @@ public class LogBufferDescriptor
      * @param termLength that the offset cannot exceed.
      * @return the termOffset value.
      */
+    @Pure
     public static int termOffset(final long rawTail, final long termLength)
     {
         final long tail = rawTail & 0xFFFF_FFFFL;
@@ -917,6 +956,7 @@ public class LogBufferDescriptor
      * @param result into which the termOffset value has been packed.
      * @return the termOffset after the append operation.
      */
+    @Pure
     public static int termOffset(final long result)
     {
         return (int)result;
@@ -929,6 +969,7 @@ public class LogBufferDescriptor
      * @param termOffset to be packed.
      * @return the packed value.
      */
+    @Pure
     public static long packTail(final int termId, final int termOffset)
     {
         return ((long)termId << 32) | termOffset;
@@ -941,6 +982,7 @@ public class LogBufferDescriptor
      * @param partitionIndex for the tail counter.
      * @param rawTail        to be stored.
      */
+    @Impure
     public static void rawTail(final UnsafeBuffer metadataBuffer, final int partitionIndex, final long rawTail)
     {
         metadataBuffer.putLong(TERM_TAIL_COUNTERS_OFFSET + (SIZE_OF_LONG * partitionIndex), rawTail);
@@ -953,6 +995,7 @@ public class LogBufferDescriptor
      * @param partitionIndex for the tail counter.
      * @return the raw value of the tail for the current active partition.
      */
+    @Impure
     public static long rawTail(final UnsafeBuffer metadataBuffer, final int partitionIndex)
     {
         return metadataBuffer.getLong(TERM_TAIL_COUNTERS_OFFSET + (SIZE_OF_LONG * partitionIndex));
@@ -965,6 +1008,7 @@ public class LogBufferDescriptor
      * @param partitionIndex for the tail counter.
      * @param rawTail        to be stored.
      */
+    @Impure
     public static void rawTailVolatile(final UnsafeBuffer metadataBuffer, final int partitionIndex, final long rawTail)
     {
         metadataBuffer.putLongVolatile(TERM_TAIL_COUNTERS_OFFSET + (SIZE_OF_LONG * partitionIndex), rawTail);
@@ -977,6 +1021,7 @@ public class LogBufferDescriptor
      * @param partitionIndex for the tail counter.
      * @return the raw value of the tail for the current active partition.
      */
+    @Impure
     public static long rawTailVolatile(final UnsafeBuffer metadataBuffer, final int partitionIndex)
     {
         return metadataBuffer.getLongVolatile(TERM_TAIL_COUNTERS_OFFSET + (SIZE_OF_LONG * partitionIndex));
@@ -988,6 +1033,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the tail counters.
      * @return the raw value of the tail for the current active partition.
      */
+    @Impure
     public static long rawTailVolatile(final UnsafeBuffer metadataBuffer)
     {
         final int partitionIndex = indexByTermCount(activeTermCount(metadataBuffer));
@@ -1003,6 +1049,7 @@ public class LogBufferDescriptor
      * @param updateRawTail   to be applied.
      * @return true if the update was successful otherwise false.
      */
+    @Impure
     public static boolean casRawTail(
         final UnsafeBuffer metadataBuffer,
         final int partitionIndex,
@@ -1019,6 +1066,7 @@ public class LogBufferDescriptor
      * @param termBufferLength to compute the number of bits to shift for.
      * @return the number of bits to shift to divide or multiply by the term buffer length.
      */
+    @Pure
     public static int positionBitsToShift(final int termBufferLength)
     {
         return switch (termBufferLength)
@@ -1049,6 +1097,7 @@ public class LogBufferDescriptor
      * @param maxPayloadSize fragment size without the header.
      * @return message length after fragmentation.
      */
+    @Impure
     public static int computeFragmentedFrameLength(final int length, final int maxPayloadSize)
     {
         final int numMaxPayloads = length / maxPayloadSize;
@@ -1066,6 +1115,7 @@ public class LogBufferDescriptor
      * @param maxPayloadSize fragment size without the header.
      * @return message length after fragmentation.
      */
+    @Pure
     public static int computeAssembledFrameLength(final int length, final int maxPayloadSize)
     {
         final int numMaxPayloads = length / maxPayloadSize;
@@ -1080,6 +1130,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return true if the log is sparse, otherwise false.
      */
+    @Impure
     public static boolean sparse(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getByte(LOG_SPARSE_OFFSET) == 1;
@@ -1091,6 +1142,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          true if the log is sparse, otherwise false.
      */
+    @Impure
     public static void sparse(final UnsafeBuffer metadataBuffer, final boolean value)
     {
         metadataBuffer.putByte(LOG_SPARSE_OFFSET, (byte)(value ? 1 : 0));
@@ -1102,6 +1154,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return true if the log is tethered, otherwise false.
      */
+    @Impure
     public static boolean tether(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getByte(LOG_TETHER_OFFSET) == 1;
@@ -1113,6 +1166,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          true if the log is tethered, otherwise false.
      */
+    @Impure
     public static void tether(final UnsafeBuffer metadataBuffer, final boolean value)
     {
         metadataBuffer.putByte(LOG_TETHER_OFFSET, (byte)(value ? 1 : 0));
@@ -1124,6 +1178,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return true if the log's publication was revoked, otherwise false.
      */
+    @Impure
     public static boolean isPublicationRevoked(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getByte(LOG_IS_PUBLICATION_REVOKED_OFFSET) == 1;
@@ -1135,6 +1190,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          true if the log's publication was revoked, otherwise false.
      */
+    @Impure
     public static void isPublicationRevoked(final UnsafeBuffer metadataBuffer, final boolean value)
     {
         metadataBuffer.putByte(LOG_IS_PUBLICATION_REVOKED_OFFSET, (byte)(value ? 1 : 0));
@@ -1146,6 +1202,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return true if the log is group, otherwise false.
      */
+    @Impure
     public static boolean group(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getByte(LOG_GROUP_OFFSET) == 1;
@@ -1157,6 +1214,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          true if the log is group, otherwise false.
      */
+    @Impure
     public static void group(final UnsafeBuffer metadataBuffer, final boolean value)
     {
         metadataBuffer.putByte(LOG_GROUP_OFFSET, (byte)(value ? 1 : 0));
@@ -1168,6 +1226,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return true if the log is group, otherwise false.
      */
+    @Impure
     public static boolean isResponse(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getByte(LOG_IS_RESPONSE_OFFSET) == 1;
@@ -1179,6 +1238,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          true if the log is group, otherwise false.
      */
+    @Impure
     public static void isResponse(final UnsafeBuffer metadataBuffer, final boolean value)
     {
         metadataBuffer.putByte(LOG_IS_RESPONSE_OFFSET, (byte)(value ? 1 : 0));
@@ -1191,6 +1251,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return true if the log is rejoining, otherwise false.
      */
+    @Impure
     public static boolean rejoin(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getByte(LOG_REJOIN_OFFSET) == 1;
@@ -1202,6 +1263,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          true if the log is rejoining, otherwise false.
      */
+    @Impure
     public static void rejoin(final UnsafeBuffer metadataBuffer, final boolean value)
     {
         metadataBuffer.putByte(LOG_REJOIN_OFFSET, (byte)(value ? 1 : 0));
@@ -1213,6 +1275,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return true if the log is reliable, otherwise false.
      */
+    @Impure
     public static boolean reliable(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getByte(LOG_RELIABLE_OFFSET) == 1;
@@ -1224,6 +1287,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          true if the log is reliable, otherwise false.
      */
+    @Impure
     public static void reliable(final UnsafeBuffer metadataBuffer, final boolean value)
     {
         metadataBuffer.putByte(LOG_RELIABLE_OFFSET, (byte)(value ? 1 : 0));
@@ -1235,6 +1299,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the socket receive buffer length.
      */
+    @Impure
     public static int socketRcvbufLength(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getInt(LOG_SOCKET_RCVBUF_LENGTH_OFFSET);
@@ -1246,6 +1311,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          the socket receive buffer length to set.
      */
+    @Impure
     public static void socketRcvbufLength(final UnsafeBuffer metadataBuffer, final int value)
     {
         metadataBuffer.putInt(LOG_SOCKET_RCVBUF_LENGTH_OFFSET, value);
@@ -1257,6 +1323,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the default length in bytes for the socket receive buffer.
      */
+    @Impure
     public static int osDefaultSocketRcvbufLength(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getInt(LOG_OS_DEFAULT_SOCKET_RCVBUF_LENGTH_OFFSET);
@@ -1268,6 +1335,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          the default length in bytes for the socket receive buffer.
      */
+    @Impure
     public static void osDefaultSocketRcvbufLength(final UnsafeBuffer metadataBuffer, final int value)
     {
         metadataBuffer.putInt(LOG_OS_DEFAULT_SOCKET_RCVBUF_LENGTH_OFFSET, value);
@@ -1279,6 +1347,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the maximum allowed length in bytes for the socket receive buffer.
      */
+    @Impure
     public static int osMaxSocketRcvbufLength(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getInt(LOG_OS_MAX_SOCKET_RCVBUF_LENGTH_OFFSET);
@@ -1290,6 +1359,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          the maximum allowed length in bytes for the socket receive buffer.
      */
+    @Impure
     public static void osMaxSocketRcvbufLength(final UnsafeBuffer metadataBuffer, final int value)
     {
         metadataBuffer.putInt(LOG_OS_MAX_SOCKET_RCVBUF_LENGTH_OFFSET, value);
@@ -1301,6 +1371,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the socket send buffer length.
      */
+    @Impure
     public static int socketSndbufLength(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getInt(LOG_SOCKET_SNDBUF_LENGTH_OFFSET);
@@ -1312,6 +1383,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          the socket send buffer length to set.
      */
+    @Impure
     public static void socketSndbufLength(final UnsafeBuffer metadataBuffer, final int value)
     {
         metadataBuffer.putInt(LOG_SOCKET_SNDBUF_LENGTH_OFFSET, value);
@@ -1323,6 +1395,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the default length in bytes for the socket send buffer.
      */
+    @Impure
     public static int osDefaultSocketSndbufLength(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getInt(LOG_OS_DEFAULT_SOCKET_SNDBUF_LENGTH_OFFSET);
@@ -1334,6 +1407,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          the default length in bytes for the socket send buffer.
      */
+    @Impure
     public static void osDefaultSocketSndbufLength(final UnsafeBuffer metadataBuffer, final int value)
     {
         metadataBuffer.putInt(LOG_OS_DEFAULT_SOCKET_SNDBUF_LENGTH_OFFSET, value);
@@ -1345,6 +1419,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the maximum allowed length in bytes for the socket send buffer.
      */
+    @Impure
     public static int osMaxSocketSndbufLength(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getInt(LOG_OS_MAX_SOCKET_SNDBUF_LENGTH_OFFSET);
@@ -1356,6 +1431,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          the maximum allowed length in bytes for the socket send buffer.
      */
+    @Impure
     public static void osMaxSocketSndbufLength(final UnsafeBuffer metadataBuffer, final int value)
     {
         metadataBuffer.putInt(LOG_OS_MAX_SOCKET_SNDBUF_LENGTH_OFFSET, value);
@@ -1367,6 +1443,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the receiver window length.
      */
+    @Impure
     public static int receiverWindowLength(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getInt(LOG_RECEIVER_WINDOW_LENGTH_OFFSET);
@@ -1378,6 +1455,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          the receiver window length to set.
      */
+    @Impure
     public static void receiverWindowLength(final UnsafeBuffer metadataBuffer, final int value)
     {
         metadataBuffer.putInt(LOG_RECEIVER_WINDOW_LENGTH_OFFSET, value);
@@ -1389,6 +1467,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the publication window length.
      */
+    @Impure
     public static int publicationWindowLength(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getInt(LOG_PUBLICATION_WINDOW_LENGTH_OFFSET);
@@ -1400,6 +1479,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          the publication window length to set.
      */
+    @Impure
     public static void publicationWindowLength(final UnsafeBuffer metadataBuffer, final int value)
     {
         metadataBuffer.putInt(LOG_PUBLICATION_WINDOW_LENGTH_OFFSET, value);
@@ -1411,6 +1491,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the untethered window limit timeout in nanoseconds.
      */
+    @Impure
     public static long untetheredWindowLimitTimeoutNs(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getLong(LOG_UNTETHERED_WINDOW_LIMIT_TIMEOUT_NS_OFFSET);
@@ -1422,6 +1503,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          the untethered window limit timeout to set.
      */
+    @Impure
     public static void untetheredWindowLimitTimeoutNs(final UnsafeBuffer metadataBuffer, final long value)
     {
         metadataBuffer.putLong(LOG_UNTETHERED_WINDOW_LIMIT_TIMEOUT_NS_OFFSET, value);
@@ -1433,6 +1515,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the untethered window limit timeout in nanoseconds.
      */
+    @Impure
     public static long untetheredLingerTimeoutNs(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getLong(LOG_UNTETHERED_LINGER_TIMEOUT_NS_OFFSET);
@@ -1444,6 +1527,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          the untethered linger timeout to set.
      */
+    @Impure
     public static void untetheredLingerTimeoutNs(final UnsafeBuffer metadataBuffer, final long value)
     {
         metadataBuffer.putLong(LOG_UNTETHERED_LINGER_TIMEOUT_NS_OFFSET, value);
@@ -1455,6 +1539,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the untethered resting timeout in nanoseconds.
      */
+    @Impure
     public static long untetheredRestingTimeoutNs(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getLong(LOG_UNTETHERED_RESTING_TIMEOUT_NS_OFFSET);
@@ -1466,6 +1551,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          the untethered resting timeout to set.
      */
+    @Impure
     public static void untetheredRestingTimeoutNs(final UnsafeBuffer metadataBuffer, final long value)
     {
         metadataBuffer.putLong(LOG_UNTETHERED_RESTING_TIMEOUT_NS_OFFSET, value);
@@ -1477,6 +1563,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the maximum resend count.
      */
+    @Impure
     public static int maxResend(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getInt(LOG_MAX_RESEND_OFFSET);
@@ -1488,6 +1575,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          the maximum resend count to set.
      */
+    @Impure
     public static void maxResend(final UnsafeBuffer metadataBuffer, final int value)
     {
         metadataBuffer.putInt(LOG_MAX_RESEND_OFFSET, value);
@@ -1499,6 +1587,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the linger timeout in nanoseconds.
      */
+    @Impure
     public static long lingerTimeoutNs(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getLong(LOG_LINGER_TIMEOUT_NS_OFFSET);
@@ -1510,6 +1599,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          the linger timeout to set.
      */
+    @Impure
     public static void lingerTimeoutNs(final UnsafeBuffer metadataBuffer, final long value)
     {
         metadataBuffer.putLong(LOG_LINGER_TIMEOUT_NS_OFFSET, value);
@@ -1521,6 +1611,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the entity tag in nanoseconds.
      */
+    @Impure
     public static long entityTag(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getLong(LOG_ENTITY_TAG_OFFSET);
@@ -1532,6 +1623,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          the entity tag to set.
      */
+    @Impure
     public static void entityTag(final UnsafeBuffer metadataBuffer, final long value)
     {
         metadataBuffer.putLong(LOG_ENTITY_TAG_OFFSET, value);
@@ -1543,6 +1635,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return the entity tag in nanoseconds.
      */
+    @Impure
     public static long responseCorrelationId(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getLong(LOG_RESPONSE_CORRELATION_ID_OFFSET);
@@ -1554,6 +1647,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          the resonse correlation id to set.
      */
+    @Impure
     public static void responseCorrelationId(final UnsafeBuffer metadataBuffer, final long value)
     {
         metadataBuffer.putLong(LOG_RESPONSE_CORRELATION_ID_OFFSET, value);
@@ -1565,6 +1659,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return true if signal EOS is enabled, otherwise false.
      */
+    @Impure
     public static boolean signalEos(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getByte(LOG_SIGNAL_EOS_OFFSET) == 1;
@@ -1576,6 +1671,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          true if signal EOS is enabled, otherwise false.
      */
+    @Impure
     public static void signalEos(final UnsafeBuffer metadataBuffer, final boolean value)
     {
         metadataBuffer.putByte(LOG_SIGNAL_EOS_OFFSET, (byte)(value ? 1 : 0));
@@ -1587,6 +1683,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @return true if spies simulate connection, otherwise false.
      */
+    @Impure
     public static boolean spiesSimulateConnection(final UnsafeBuffer metadataBuffer)
     {
         return metadataBuffer.getByte(LOG_SPIES_SIMULATE_CONNECTION_OFFSET) == 1;
@@ -1598,6 +1695,7 @@ public class LogBufferDescriptor
      * @param metadataBuffer containing the meta data.
      * @param value          true if spies simulate connection, otherwise false.
      */
+    @Impure
     public static void spiesSimulateConnection(final UnsafeBuffer metadataBuffer, final boolean value)
     {
         metadataBuffer.putByte(LOG_SPIES_SIMULATE_CONNECTION_OFFSET, (byte)(value ? 1 : 0));

@@ -15,6 +15,9 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.driver.media.ReceiveChannelEndpoint;
 import io.aeron.driver.media.ReceiveDestinationTransport;
 import io.aeron.driver.media.SendChannelEndpoint;
@@ -38,6 +41,7 @@ public final class DriverConductorProxy
     private final AtomicCounter failCount;
     private final boolean notConcurrent;
 
+    @SideEffectFree
     DriverConductorProxy(
         final ThreadingMode threadingMode,
         final ManyToOneConcurrentLinkedQueue<Runnable> commandQueue,
@@ -54,6 +58,7 @@ public final class DriverConductorProxy
      *
      * @return true if the {@link DriverConductor} is on the same thread as the sender and receiver.
      */
+    @Pure
     public boolean notConcurrent()
     {
         return notConcurrent;
@@ -64,6 +69,7 @@ public final class DriverConductorProxy
      *
      * @return ThreadingMode of the driver.
      */
+    @Pure
     public ThreadingMode threadingMode()
     {
         return threadingMode;
@@ -72,6 +78,7 @@ public final class DriverConductorProxy
     /**
      * {@inheritDoc}
      */
+    @Impure
     public String toString()
     {
         return getClass().getSimpleName() + "{" +
@@ -86,6 +93,7 @@ public final class DriverConductorProxy
      * @param statusIndicatorId representing the channel.
      * @param ex                cause of the error.
      */
+    @SideEffectFree
     public void channelEndpointError(final long statusIndicatorId, final Exception ex)
     {
     }
@@ -97,6 +105,7 @@ public final class DriverConductorProxy
      * @param channelEndpoint that the endpoint belongs to.
      * @param address         of previous resolution.
      */
+    @Impure
     public void reResolveEndpoint(
         final String endpoint, final SendChannelEndpoint channelEndpoint, final InetSocketAddress address)
     {
@@ -118,6 +127,7 @@ public final class DriverConductorProxy
      * @param channelEndpoint to which the endpoint belongs.
      * @param address         of previous resolution.
      */
+    @Impure
     public void reResolveControl(
         final String endpoint,
         final UdpChannel udpChannel,
@@ -139,6 +149,7 @@ public final class DriverConductorProxy
      *
      * @param destinationTransport to have its indicators closed.
      */
+    @Impure
     public void closeReceiveDestinationIndicators(final ReceiveDestinationTransport destinationTransport)
     {
         if (notConcurrent())
@@ -157,6 +168,7 @@ public final class DriverConductorProxy
      * @param responseCorrelationId correlationId of the subscription that will handle responses.
      * @param responseSessionId     sessionId that will be associated with the incoming messages.
      */
+    @Impure
     public void responseSetup(final long responseCorrelationId, final int responseSessionId)
     {
         if (notConcurrent())
@@ -174,6 +186,7 @@ public final class DriverConductorProxy
      *
      * @param responseCorrelationId correlationId of the subscription that will handle responses.
      */
+    @Impure
     public void responseConnected(final long responseCorrelationId)
     {
         if (notConcurrent())
@@ -186,11 +199,13 @@ public final class DriverConductorProxy
         }
     }
 
+    @Impure
     void driverConductor(final DriverConductor driverConductor)
     {
         this.driverConductor = driverConductor;
     }
 
+    @Impure
     void createPublicationImage(
         final int sessionId,
         final int streamId,
@@ -239,6 +254,7 @@ public final class DriverConductorProxy
         }
     }
 
+    @Impure
     void onPublicationError(
         final long registrationId,
         final long destinationRegistrationId,
@@ -278,6 +294,7 @@ public final class DriverConductorProxy
         }
     }
 
+    @Impure
     private void offer(final Runnable cmd)
     {
         if (!commandQueue.offer(cmd))

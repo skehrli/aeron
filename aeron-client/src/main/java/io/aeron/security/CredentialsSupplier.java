@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.aeron.security;
+import org.checkerframework.dataflow.qual.Pure;
 
 /**
  * Supplier of credentials for authentication with a system.
@@ -28,6 +29,7 @@ public interface CredentialsSupplier
      *
      * @return encoded credentials to be included in the Session Connect message to a system.
      */
+    @Pure
     byte[] encodedCredentials();
 
     /**
@@ -37,5 +39,6 @@ public interface CredentialsSupplier
      * @param encodedChallenge from the cluster to use in providing a credential.
      * @return encoded credentials to be included in the Challenge Response to the system.
      */
+    @Pure
     byte[] onChallenge(byte[] encodedChallenge);
 }

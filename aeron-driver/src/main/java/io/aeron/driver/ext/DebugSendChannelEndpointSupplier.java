@@ -15,6 +15,7 @@
  */
 package io.aeron.driver.ext;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.MediaDriver;
 import io.aeron.driver.SendChannelEndpointSupplier;
 import io.aeron.driver.media.SendChannelEndpoint;
@@ -34,6 +35,7 @@ public class DebugSendChannelEndpointSupplier implements SendChannelEndpointSupp
      * @param context         for the configuration of the driver.
      * @return a new instance of a {@link DebugSendChannelEndpoint} for testing loss.
      */
+    @Impure
     public SendChannelEndpoint newInstance(
         final UdpChannel udpChannel, final AtomicCounter statusIndicator, final MediaDriver.Context context)
     {

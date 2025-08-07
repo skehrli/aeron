@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -25,6 +27,8 @@ public class PriorityHeapTimerServiceSupplier implements TimerServiceSupplier
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
+    @Impure
     public TimerService newInstance(final TimeUnit timeUnit, final TimerService.TimerHandler timerHandler)
     {
         return new PriorityHeapTimerService(timerHandler);

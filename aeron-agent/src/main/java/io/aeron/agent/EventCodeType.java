@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package io.aeron.agent;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 
 /**
  * Specifies the type of EventCode that can be handled by the logging agent.
@@ -52,6 +54,7 @@ enum EventCodeType
 
     private final int typeCode;
 
+    @Impure
     EventCodeType(final int typeCode)
     {
         this.typeCode = typeCode;
@@ -62,6 +65,7 @@ enum EventCodeType
      *
      * @return type code which classifies the events to identify one of the {@link EventCodeType} enum value.
      */
+    @Pure
     public int getTypeCode()
     {
         return typeCode;

@@ -15,6 +15,7 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.cluster.codecs.CloseReason;
 import org.agrona.DirectBuffer;
 
@@ -22,8 +23,10 @@ import java.util.concurrent.TimeUnit;
 
 interface ConsensusModuleSnapshotListener
 {
+    @Impure
     void onLoadBeginSnapshot(int appVersion, TimeUnit timeUnit, DirectBuffer buffer, int offset, int length);
 
+    @Impure
     void onLoadConsensusModuleState(
         long nextSessionId,
         long nextServiceSessionId,
@@ -33,8 +36,10 @@ interface ConsensusModuleSnapshotListener
         int offset,
         int length);
 
+    @Impure
     void onLoadPendingMessage(long clusterSessionId, DirectBuffer buffer, int offset, int length);
 
+    @Impure
     void onLoadClusterSession(
         long clusterSessionId,
         long correlationId,
@@ -47,8 +52,10 @@ interface ConsensusModuleSnapshotListener
         int offset,
         int length);
 
+    @Impure
     void onLoadTimer(long correlationId, long deadline, DirectBuffer buffer, int offset, int length);
 
+    @Impure
     void onLoadPendingMessageTracker(
         long nextServiceSessionId,
         long logServiceSessionId,
@@ -58,5 +65,6 @@ interface ConsensusModuleSnapshotListener
         int offset,
         int length);
 
+    @Impure
     void onLoadEndSnapshot(DirectBuffer buffer, int offset, int length);
 }

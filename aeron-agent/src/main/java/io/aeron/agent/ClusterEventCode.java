@@ -15,6 +15,9 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.MutableDirectBuffer;
 
 import java.util.Arrays;
@@ -164,12 +167,14 @@ public enum ClusterEventCode implements EventCode
         }
     }
 
+    @Impure
     ClusterEventCode(final int id, final DissectFunction<ClusterEventCode> dissector)
     {
         this.id = id;
         this.dissector = dissector;
     }
 
+    @Pure
     static ClusterEventCode get(final int id)
     {
         if (id < 0 || id >= EVENT_CODE_BY_ID.length)
@@ -189,6 +194,7 @@ public enum ClusterEventCode implements EventCode
     /**
      * {@inheritDoc}
      */
+    @Pure
     public int id()
     {
         return id;
@@ -199,6 +205,7 @@ public enum ClusterEventCode implements EventCode
      *
      * @return get {@link ClusterEventCode#id()} from {@link #id()}.
      */
+    @Pure
     public int toEventCodeId()
     {
         return EVENT_CODE_TYPE << 16 | (id & 0xFFFF);
@@ -210,6 +217,8 @@ public enum ClusterEventCode implements EventCode
      * @param eventCodeId to convert.
      * @return {@link ClusterEventCode} from its event code id.
      */
+    @Pure
+    @Impure
     public static ClusterEventCode fromEventCodeId(final int eventCodeId)
     {
         return get(eventCodeId - (EVENT_CODE_TYPE << 16));
@@ -222,6 +231,8 @@ public enum ClusterEventCode implements EventCode
      * @param offset  offset at which the event begins.
      * @param builder to write the decoded event to.
      */
+    @SideEffectFree
+    @Impure
     public void decode(final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
         dissector.dissect(this, buffer, offset, builder);

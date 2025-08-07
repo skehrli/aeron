@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package io.aeron.exceptions;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 
 /**
  * A timeout has occurred between service calls for the client conductor.
@@ -30,6 +32,8 @@ public class ConductorServiceTimeoutException extends TimeoutException
      *
      * @param message detail for the exception.
      */
+    @SideEffectFree
+    @Impure
     public ConductorServiceTimeoutException(final String message)
     {
         super(message, Category.FATAL);

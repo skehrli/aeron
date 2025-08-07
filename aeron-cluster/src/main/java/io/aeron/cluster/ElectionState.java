@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Deterministic;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.cluster.client.ClusterException;
 import org.agrona.concurrent.status.AtomicCounter;
 
@@ -118,6 +121,7 @@ public enum ElectionState
 
     private final int code;
 
+    @Impure
     ElectionState(final int code)
     {
         if (code != ordinal())
@@ -133,6 +137,7 @@ public enum ElectionState
      *
      * @return code stored in a {@link io.aeron.Counter} to represent the election state.
      */
+    @Pure
     public int code()
     {
         return code;
@@ -144,6 +149,7 @@ public enum ElectionState
      * @param code representing election state.
      * @return the enum value for a given code stored in a counter.
      */
+    @Deterministic
     public static ElectionState get(final long code)
     {
         if (code < 0 || code > (STATES.length - 1))
@@ -160,6 +166,7 @@ public enum ElectionState
      * @param counter to read the value for matching against {@link #code()}.
      * @return the {@link ElectionState} value based on the value stored in an {@link AtomicCounter}.
      */
+    @Impure
     public static ElectionState get(final AtomicCounter counter)
     {
         if (counter.isClosed())

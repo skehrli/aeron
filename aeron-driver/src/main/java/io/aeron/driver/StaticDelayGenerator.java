@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 package io.aeron.driver;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 
 /**
  * Delay generator that simply returns a constant value for the delay and the retry delay.
@@ -29,6 +32,7 @@ public final class StaticDelayGenerator implements FeedbackDelayGenerator
      * @param delayNs      initial delay (nanoseconds)
      * @param retryDelayNs delay for retry (nanoseconds)
      */
+    @SideEffectFree
     public StaticDelayGenerator(final long delayNs, final long retryDelayNs)
     {
         this.delayInNs = delayNs;
@@ -40,6 +44,8 @@ public final class StaticDelayGenerator implements FeedbackDelayGenerator
      *
      * @param delayNs      delay (nanoseconds)
      */
+    @SideEffectFree
+    @Impure
     public StaticDelayGenerator(final long delayNs)
     {
         this(delayNs, delayNs);
@@ -58,6 +64,8 @@ public final class StaticDelayGenerator implements FeedbackDelayGenerator
      * If used for unicast delays, then this is not recommended and a short delay like the default
      * {@link Configuration#NAK_UNICAST_DELAY_DEFAULT_NS} should be used.
      */
+    @SideEffectFree
+    @Impure
     @Deprecated
     public StaticDelayGenerator(final long delayNs, @SuppressWarnings("unused") final boolean immediateFeedback)
     {
@@ -67,6 +75,7 @@ public final class StaticDelayGenerator implements FeedbackDelayGenerator
     /**
      * {@inheritDoc}
      */
+    @Pure
     public long generateDelayNs()
     {
         return delayInNs;
@@ -75,6 +84,7 @@ public final class StaticDelayGenerator implements FeedbackDelayGenerator
     /**
      * {@inheritDoc}
      */
+    @Pure
     public long retryDelayNs()
     {
         return retryDelayNs;
@@ -83,6 +93,7 @@ public final class StaticDelayGenerator implements FeedbackDelayGenerator
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "StaticDelayGenerator{" +

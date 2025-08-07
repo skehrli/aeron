@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.cluster.client.AeronCluster;
 import io.aeron.cluster.codecs.*;
 import io.aeron.logbuffer.BufferClaim;
@@ -36,11 +39,13 @@ class EgressPublisher
     private final AdminResponseEncoder adminResponseEncoder = new AdminResponseEncoder();
     private final long leaderHeartbeatTimeoutNs;
 
+    @SideEffectFree
     EgressPublisher(final long leaderHeartbeatTimeoutNs)
     {
         this.leaderHeartbeatTimeoutNs = leaderHeartbeatTimeoutNs;
     }
 
+    @Impure
     boolean sendEvent(
         final ClusterSession session,
         final long leadershipTermId,
@@ -80,6 +85,7 @@ class EgressPublisher
         return false;
     }
 
+    @Impure
     boolean sendChallenge(final ClusterSession session, final byte[] encodedChallenge)
     {
         challengeEncoder
@@ -104,6 +110,7 @@ class EgressPublisher
         return false;
     }
 
+    @Impure
     boolean newLeader(
         final ClusterSession session,
         final long leadershipTermId,
@@ -138,6 +145,7 @@ class EgressPublisher
         return false;
     }
 
+    @Impure
     boolean sendAdminResponse(
         final ClusterSession session,
         final long correlationId,
@@ -170,6 +178,7 @@ class EgressPublisher
         return false;
     }
 
+    @Pure
     public String toString()
     {
         return "EgressPublisher{}";

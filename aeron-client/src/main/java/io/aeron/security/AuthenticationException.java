@@ -15,6 +15,8 @@
  */
 package io.aeron.security;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.exceptions.AeronException;
 
 /**
@@ -27,6 +29,8 @@ public class AuthenticationException extends AeronException
     /**
      * Default exception as {@link io.aeron.exceptions.AeronException.Category#ERROR}.
      */
+    @SideEffectFree
+    @Impure
     public AuthenticationException()
     {
         super();
@@ -37,6 +41,8 @@ public class AuthenticationException extends AeronException
      *
      * @param message to detail the exception.
      */
+    @SideEffectFree
+    @Impure
     public AuthenticationException(final String message)
     {
         super(message);
@@ -47,6 +53,8 @@ public class AuthenticationException extends AeronException
      *
      * @param cause of the error.
      */
+    @SideEffectFree
+    @Impure
     public AuthenticationException(final Throwable cause)
     {
         super(cause);
@@ -58,6 +66,8 @@ public class AuthenticationException extends AeronException
      * @param message providing detail on the error.
      * @param cause   of the error.
      */
+    @SideEffectFree
+    @Impure
     public AuthenticationException(final String message, final Throwable cause)
     {
         super(message, cause);
@@ -73,6 +83,7 @@ public class AuthenticationException extends AeronException
      * @param enableSuppression  is suppression enabled or not.
      * @param writableStackTrace is the stack trace writable or not.
      */
+    @Impure
     protected AuthenticationException(
         final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace)
     {

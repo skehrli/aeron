@@ -15,6 +15,8 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.logbuffer.ControlledFragmentHandler;
 import io.aeron.logbuffer.Header;
 import org.agrona.DirectBuffer;
@@ -44,6 +46,7 @@ public class ImageControlledFragmentAssembler implements ControlledFragmentHandl
      *
      * @param delegate onto which whole messages are forwarded.
      */
+    @Impure
     public ImageControlledFragmentAssembler(final ControlledFragmentHandler delegate)
     {
         this(delegate, 0, false);
@@ -55,6 +58,7 @@ public class ImageControlledFragmentAssembler implements ControlledFragmentHandl
      * @param delegate            onto which whole messages are forwarded.
      * @param initialBufferLength to be used for the session.
      */
+    @Impure
     public ImageControlledFragmentAssembler(final ControlledFragmentHandler delegate, final int initialBufferLength)
     {
         this(delegate, initialBufferLength, false);
@@ -67,6 +71,7 @@ public class ImageControlledFragmentAssembler implements ControlledFragmentHandl
      * @param initialBufferLength to be used for the session.
      * @param isDirectByteBuffer  is the underlying buffer to be a direct {@link java.nio.ByteBuffer}?
      */
+    @Impure
     public ImageControlledFragmentAssembler(
         final ControlledFragmentHandler delegate, final int initialBufferLength, final boolean isDirectByteBuffer)
     {
@@ -79,6 +84,7 @@ public class ImageControlledFragmentAssembler implements ControlledFragmentHandl
      *
      * @return the delegate unto which assembled messages are delegated.
      */
+    @Pure
     public ControlledFragmentHandler delegate()
     {
         return delegate;
@@ -89,6 +95,7 @@ public class ImageControlledFragmentAssembler implements ControlledFragmentHandl
      *
      * @return the {@link BufferBuilder} for resetting this assembler.
      */
+    @Pure
     BufferBuilder bufferBuilder()
     {
         return builder;
@@ -103,6 +110,7 @@ public class ImageControlledFragmentAssembler implements ControlledFragmentHandl
      * @param header representing the metadata for the data.
      * @return {@link io.aeron.logbuffer.ControlledFragmentHandler.Action} to be taken after processing fragment.
      */
+    @Impure
     public Action onFragment(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {
         Action action = Action.CONTINUE;

@@ -15,6 +15,9 @@
  */
 package io.aeron.samples.stress;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import io.aeron.ControlledFragmentAssembler;
 import io.aeron.Publication;
@@ -56,6 +59,7 @@ public class StressUnicastServer implements Agent
      * @param serverAddress local address for the server to listen for requests.
      * @param clientAddress remote address for the server to send responses.
      */
+    @SideEffectFree
     public StressUnicastServer(final String serverAddress, final String clientAddress)
     {
         this.serverAddress = serverAddress;
@@ -65,6 +69,7 @@ public class StressUnicastServer implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onStart()
     {
         info("server=" + serverAddress + ", client=" + clientAddress);
@@ -84,6 +89,7 @@ public class StressUnicastServer implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int doWork()
     {
         int count = 0;
@@ -93,11 +99,13 @@ public class StressUnicastServer implements Agent
         return count;
     }
 
+    @Impure
     private int pollUnicast()
     {
         return unicastSubscription.controlledPoll(unicastFragmentAssembler, 1);
     }
 
+    @Impure
     private ControlledFragmentHandler.Action unicastReqHandler(
         final DirectBuffer msg,
         final int offset,
@@ -115,6 +123,7 @@ public class StressUnicastServer implements Agent
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String roleName()
     {
         return "Stress Server";
@@ -123,6 +132,7 @@ public class StressUnicastServer implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onClose()
     {
         CloseHelper.quietCloseAll(unicastSubscription, unicastPublication, aeron);
@@ -133,6 +143,7 @@ public class StressUnicastServer implements Agent
      *
      * @param args command line args.
      */
+    @Impure
     public static void main(final String[] args)
     {
         final StressUnicastServer server = new StressUnicastServer(serverAddress(), clientAddress());

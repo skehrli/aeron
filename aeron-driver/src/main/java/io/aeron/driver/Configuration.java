@@ -15,6 +15,9 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import io.aeron.CommonContext;
 import io.aeron.Image;
@@ -1153,6 +1156,7 @@ public final class Configuration
      * @return true if the high-resolution timer be used when running on Windows.
      * @see #USE_WINDOWS_HIGH_RES_TIMER_PROP_NAME
      */
+    @Pure
     public static boolean useWindowsHighResTimer()
     {
         return "true".equals(getProperty(USE_WINDOWS_HIGH_RES_TIMER_PROP_NAME));
@@ -1164,6 +1168,7 @@ public final class Configuration
      * @return true if a warning be printed if the aeron directory exist when starting.
      * @see #DIR_WARN_IF_EXISTS_PROP_NAME
      */
+    @Pure
     public static boolean warnIfDirExists()
     {
         return "true".equals(getProperty(DIR_WARN_IF_EXISTS_PROP_NAME));
@@ -1176,6 +1181,7 @@ public final class Configuration
      * @return true if the aeron directory be deleted on start without checking if active.
      * @see #DIR_DELETE_ON_START_PROP_NAME
      */
+    @Pure
     public static boolean dirDeleteOnStart()
     {
         return "true".equals(getProperty(DIR_DELETE_ON_START_PROP_NAME));
@@ -1187,6 +1193,7 @@ public final class Configuration
      * @return true if driver should attempt to delete {@link CommonContext#AERON_DIR_PROP_NAME} on shutdown.
      * @see #DIR_DELETE_ON_SHUTDOWN_PROP_NAME
      */
+    @Pure
     public static boolean dirDeleteOnShutdown()
     {
         return "true".equals(getProperty(DIR_DELETE_ON_SHUTDOWN_PROP_NAME));
@@ -1198,6 +1205,7 @@ public final class Configuration
      * @return true if term buffers should be created as sparse files.
      * @see #TERM_BUFFER_SPARSE_FILE_PROP_NAME
      */
+    @Pure
     public static boolean termBufferSparseFile()
     {
         return "true".equals(getProperty(TERM_BUFFER_SPARSE_FILE_PROP_NAME, "true"));
@@ -1209,6 +1217,7 @@ public final class Configuration
      * @return true if the default subscriptions should be tethered.
      * @see #TETHER_SUBSCRIPTIONS_PROP_NAME
      */
+    @Pure
     public static boolean tetherSubscriptions()
     {
         return "true".equals(getProperty(TETHER_SUBSCRIPTIONS_PROP_NAME, "true"));
@@ -1220,6 +1229,7 @@ public final class Configuration
      * @return true if NAK is default or false to gap fill.
      * @see #RELIABLE_STREAM_PROP_NAME
      */
+    @Pure
     public static boolean reliableStream()
     {
         return "true".equals(getProperty(RELIABLE_STREAM_PROP_NAME, "true"));
@@ -1231,6 +1241,7 @@ public final class Configuration
      * @return true of storage checks should be performed before allocating files.
      * @see #PERFORM_STORAGE_CHECKS_PROP_NAME
      */
+    @Pure
     public static boolean performStorageChecks()
     {
         return "true".equals(getProperty(PERFORM_STORAGE_CHECKS_PROP_NAME, "true"));
@@ -1244,6 +1255,7 @@ public final class Configuration
      * @return true if spy subscriptions should simulate a connection to a network publication.
      * @see #SPIES_SIMULATE_CONNECTION_PROP_NAME
      */
+    @Pure
     public static boolean spiesSimulateConnection()
     {
         return "true".equals(getProperty(SPIES_SIMULATE_CONNECTION_PROP_NAME, "false"));
@@ -1255,6 +1267,7 @@ public final class Configuration
      * @return FORCE_TRUE if subscriptions should be considered a group member or false if individual.
      * @see #GROUP_RECEIVER_CONSIDERATION_PROP_NAME
      */
+    @Impure
     public static CommonContext.InferableBoolean receiverGroupConsideration()
     {
         return CommonContext.InferableBoolean.parse(getProperty(GROUP_RECEIVER_CONSIDERATION_PROP_NAME));
@@ -1266,6 +1279,7 @@ public final class Configuration
      * @return length (in bytes) of the conductor buffer for control commands from the clients to the media driver.
      * @see #CONDUCTOR_BUFFER_LENGTH_PROP_NAME
      */
+    @Impure
     public static int conductorBufferLength()
     {
         return getSizeAsInt(CONDUCTOR_BUFFER_LENGTH_PROP_NAME, CONDUCTOR_BUFFER_LENGTH_DEFAULT);
@@ -1277,6 +1291,7 @@ public final class Configuration
      * @return length (in bytes) of the broadcast buffers from the media driver to the clients.
      * @see #TO_CLIENTS_BUFFER_LENGTH_PROP_NAME
      */
+    @Impure
     public static int toClientsBufferLength()
     {
         return getSizeAsInt(TO_CLIENTS_BUFFER_LENGTH_PROP_NAME, TO_CLIENTS_BUFFER_LENGTH_DEFAULT);
@@ -1290,6 +1305,7 @@ public final class Configuration
      * @return Length of the buffer for the counters.
      * @see #COUNTERS_VALUES_BUFFER_LENGTH_PROP_NAME
      */
+    @Impure
     public static int counterValuesBufferLength()
     {
         return getSizeAsInt(COUNTERS_VALUES_BUFFER_LENGTH_PROP_NAME, COUNTERS_VALUES_BUFFER_LENGTH_DEFAULT);
@@ -1300,6 +1316,7 @@ public final class Configuration
      *
      * @return length of the memory mapped buffer for the distinct error log.
      */
+    @Impure
     public static int errorBufferLength()
     {
         return getSizeAsInt(ERROR_BUFFER_LENGTH_PROP_NAME, ERROR_BUFFER_LENGTH_DEFAULT);
@@ -1311,6 +1328,7 @@ public final class Configuration
      * @return expected size of typical multicast receiver groups.
      * @see #NAK_MULTICAST_GROUP_SIZE_PROP_NAME
      */
+    @SideEffectFree
     public static int nakMulticastGroupSize()
     {
         return getInteger(NAK_MULTICAST_GROUP_SIZE_PROP_NAME, NAK_MULTICAST_GROUP_SIZE_DEFAULT);
@@ -1322,6 +1340,7 @@ public final class Configuration
      * @return max backoff time for multicast NAK delay randomisation in nanoseconds.
      * @see #NAK_MULTICAST_MAX_BACKOFF_PROP_NAME
      */
+    @Impure
     public static long nakMulticastMaxBackoffNs()
     {
         return getDurationInNanos(NAK_MULTICAST_MAX_BACKOFF_PROP_NAME, NAK_MAX_BACKOFF_DEFAULT_NS);
@@ -1333,6 +1352,7 @@ public final class Configuration
      * @return unicast NAK delay in nanoseconds.
      * @see #NAK_UNICAST_DELAY_PROP_NAME
      */
+    @Impure
     public static long nakUnicastDelayNs()
     {
         return getDurationInNanos(NAK_UNICAST_DELAY_PROP_NAME, NAK_UNICAST_DELAY_DEFAULT_NS);
@@ -1344,6 +1364,7 @@ public final class Configuration
      * @return unicast NAK delay in nanoseconds.
      * @see #NAK_UNICAST_DELAY_PROP_NAME
      */
+    @Impure
     public static long nakUnicastRetryDelayRatio()
     {
         final long ratio = getLong(NAK_UNICAST_RETRY_DELAY_RATIO_PROP_NAME, NAK_UNICAST_RETRY_DELAY_RATIO_DEFAULT);
@@ -1357,6 +1378,7 @@ public final class Configuration
      * @return interval between checks for timers and timeouts.
      * @see #TIMER_INTERVAL_PROP_NAME
      */
+    @Impure
     public static long timerIntervalNs()
     {
         return getDurationInNanos(TIMER_INTERVAL_PROP_NAME, DEFAULT_TIMER_INTERVAL_NS);
@@ -1369,6 +1391,7 @@ public final class Configuration
      * @see #LOW_FILE_STORE_WARNING_THRESHOLD_PROP_NAME
      * @see #PERFORM_STORAGE_CHECKS_PROP_NAME
      */
+    @Impure
     public static long lowStorageWarningThreshold()
     {
         return getSizeAsLong(LOW_FILE_STORE_WARNING_THRESHOLD_PROP_NAME, LOW_FILE_STORE_WARNING_THRESHOLD_DEFAULT);
@@ -1380,6 +1403,7 @@ public final class Configuration
      * @return window limit on UDP {@link Publication} side by which the publisher can get ahead of consumers.
      * @see #PUBLICATION_TERM_WINDOW_LENGTH_PROP_NAME
      */
+    @Impure
     public static int publicationTermWindowLength()
     {
         return getSizeAsInt(PUBLICATION_TERM_WINDOW_LENGTH_PROP_NAME, 0);
@@ -1391,6 +1415,7 @@ public final class Configuration
      * @return window limit on IPC {@link Publication} side by which the publisher can get ahead of consumers.
      * @see #IPC_PUBLICATION_TERM_WINDOW_LENGTH_PROP_NAME
      */
+    @Impure
     public static int ipcPublicationTermWindowLength()
     {
         return getSizeAsInt(IPC_PUBLICATION_TERM_WINDOW_LENGTH_PROP_NAME, 0);
@@ -1405,6 +1430,7 @@ public final class Configuration
      * @see #UNTETHERED_RESTING_TIMEOUT_PROP_NAME
      * @see #TETHER_SUBSCRIPTIONS_PROP_NAME
      */
+    @Impure
     public static long untetheredWindowLimitTimeoutNs()
     {
         return getDurationInNanos(
@@ -1418,6 +1444,7 @@ public final class Configuration
      * @see #UNTETHERED_LINGER_TIMEOUT_PROP_NAME
      * @since 1.48.0
      */
+    @Impure
     public static long untetheredLingerTimeoutNs()
     {
         return getDurationInNanos(UNTETHERED_LINGER_TIMEOUT_PROP_NAME, Aeron.NULL_VALUE);
@@ -1432,6 +1459,7 @@ public final class Configuration
      * @see #UNTETHERED_WINDOW_LIMIT_TIMEOUT_PROP_NAME
      * @see #TETHER_SUBSCRIPTIONS_PROP_NAME
      */
+    @Impure
     public static long untetheredRestingTimeoutNs()
     {
         return getDurationInNanos(UNTETHERED_RESTING_TIMEOUT_PROP_NAME, UNTETHERED_RESTING_TIMEOUT_DEFAULT_NS);
@@ -1443,6 +1471,7 @@ public final class Configuration
      * @return max retransmits
      * @see #MAX_RESEND_PROP_NAME
      */
+    @SideEffectFree
     public static int maxResend()
     {
         return Integer.min(
@@ -1456,6 +1485,7 @@ public final class Configuration
      * @return boolean value for if a stream can be rejoined. True to allow stream rejoin, false to not.
      * @see #REJOIN_STREAM_PROP_NAME
      */
+    @Pure
     public static boolean rejoinStream()
     {
         return "true".equalsIgnoreCase(getProperty(REJOIN_STREAM_PROP_NAME, "true"));
@@ -1467,6 +1497,7 @@ public final class Configuration
      * @return Default group tag (gtag) to send in all Status Messages.
      * @see #RECEIVER_GROUP_TAG_PROP_NAME
      */
+    @SideEffectFree
     public static Long groupTag()
     {
         return getLong(RECEIVER_GROUP_TAG_PROP_NAME, null);
@@ -1478,6 +1509,7 @@ public final class Configuration
      * @return group tag (gtag) used by the tagged flow control strategy to group receivers.
      * @see #FLOW_CONTROL_GROUP_TAG_PROP_NAME
      */
+    @Impure
     @SuppressWarnings("deprecation")
     public static long flowControlGroupTag()
     {
@@ -1494,6 +1526,7 @@ public final class Configuration
      * @return default minimum group size used by flow control strategies to determine connectivity.
      * @see #FLOW_CONTROL_GROUP_MIN_SIZE_PROP_NAME
      */
+    @SideEffectFree
     public static int flowControlGroupMinSize()
     {
         return getInteger(FLOW_CONTROL_GROUP_MIN_SIZE_PROP_NAME, 0);
@@ -1505,6 +1538,7 @@ public final class Configuration
      * @return flow control timeout after which with no status messages the receiver is considered gone.
      * @see #FLOW_CONTROL_RECEIVER_TIMEOUT_PROP_NAME
      */
+    @Impure
     public static long flowControlReceiverTimeoutNs()
     {
         return getDurationInNanos(FLOW_CONTROL_RECEIVER_TIMEOUT_PROP_NAME, FLOW_CONTROL_RECEIVER_TIMEOUT_DEFAULT_NS);
@@ -1516,6 +1550,7 @@ public final class Configuration
      *
      * @return multiple.
      */
+    @SideEffectFree
     public static int unicastFlowControlRetransmitReceiverWindowMultiple()
     {
         return getInteger(UNICAST_FLOW_CONTROL_RETRANSMIT_RECEIVER_WINDOW_MULTIPLE_PROP_NAME, 16);
@@ -1527,6 +1562,7 @@ public final class Configuration
      *
      * @return multiple.
      */
+    @SideEffectFree
     public static int multicastFlowControlRetransmitReceiverWindowMultiple()
     {
         return getInteger(MULTICAST_FLOW_CONTROL_RETRANSMIT_RECEIVER_WINDOW_MULTIPLE_PROP_NAME, 4);
@@ -1538,6 +1574,7 @@ public final class Configuration
      * @return resolver name of the Media Driver used in name resolution.
      * @see #RESOLVER_NAME_PROP_NAME
      */
+    @Pure
     public static String resolverName()
     {
         return getProperty(RESOLVER_NAME_PROP_NAME);
@@ -1549,6 +1586,7 @@ public final class Configuration
      * @return resolver interface to which network connections are made, format is hostname:port.
      * @see #RESOLVER_INTERFACE_PROP_NAME
      */
+    @Pure
     public static String resolverInterface()
     {
         return getProperty(RESOLVER_INTERFACE_PROP_NAME);
@@ -1561,6 +1599,7 @@ public final class Configuration
      * @see #RESOLVER_BOOTSTRAP_NEIGHBOR_PROP_NAME
      * @see #RESOLVER_INTERFACE_PROP_NAME
      */
+    @Pure
     public static String resolverBootstrapNeighbor()
     {
         return getProperty(RESOLVER_BOOTSTRAP_NEIGHBOR_PROP_NAME);
@@ -1572,6 +1611,7 @@ public final class Configuration
      * @return re-resolution check interval for resolving names to IP address when they may have changed.
      * @see #RE_RESOLUTION_CHECK_INTERVAL_PROP_NAME
      */
+    @Impure
     public static long reResolutionCheckIntervalNs()
     {
         return getDurationInNanos(RE_RESOLUTION_CHECK_INTERVAL_PROP_NAME, RE_RESOLUTION_CHECK_INTERVAL_DEFAULT_NS);
@@ -1584,6 +1624,7 @@ public final class Configuration
      * @param defaultTermWindowLength to take priority.
      * @return the length to be used for the producer window.
      */
+    @Pure
     public static int producerWindowLength(final int termBufferLength, final int defaultTermWindowLength)
     {
         int termWindowLength = termBufferLength >> 1;
@@ -1603,6 +1644,7 @@ public final class Configuration
      * @param initialWindowLength set for the channel.
      * @return the length to be used for the receiver window.
      */
+    @Pure
     public static int receiverWindowLength(final int termBufferLength, final int initialWindowLength)
     {
         return Math.min(initialWindowLength, termBufferLength >> 1);
@@ -1614,6 +1656,7 @@ public final class Configuration
      * @return length (in bytes) of the log buffers for UDP publication terms.
      * @see #TERM_BUFFER_LENGTH_PROP_NAME
      */
+    @Impure
     public static int termBufferLength()
     {
         return getSizeAsInt(TERM_BUFFER_LENGTH_PROP_NAME, TERM_BUFFER_LENGTH_DEFAULT);
@@ -1625,6 +1668,7 @@ public final class Configuration
      * @return length (in bytes) of the log buffers for IPC publication terms.
      * @see #IPC_TERM_BUFFER_LENGTH_PROP_NAME
      */
+    @Impure
     public static int ipcTermBufferLength()
     {
         return getSizeAsInt(IPC_TERM_BUFFER_LENGTH_PROP_NAME, TERM_BUFFER_IPC_LENGTH_DEFAULT);
@@ -1636,6 +1680,7 @@ public final class Configuration
      * @return length of the initial window which must be sufficient for Bandwidth Delay Product (BDP).
      * @see #INITIAL_WINDOW_LENGTH_PROP_NAME
      */
+    @Impure
     public static int initialWindowLength()
     {
         return getSizeAsInt(INITIAL_WINDOW_LENGTH_PROP_NAME, INITIAL_WINDOW_LENGTH_DEFAULT);
@@ -1647,6 +1692,7 @@ public final class Configuration
      * @return SO_SNDBUF setting on UDP sockets which must be sufficient for Bandwidth Delay Product (BDP).
      * @see #SOCKET_SNDBUF_LENGTH_PROP_NAME
      */
+    @Impure
     public static int socketSndbufLength()
     {
         return getSizeAsInt(SOCKET_SNDBUF_LENGTH_PROP_NAME, SOCKET_SNDBUF_LENGTH_DEFAULT);
@@ -1658,6 +1704,7 @@ public final class Configuration
      * @return SO_RCVBUF setting on UDP sockets which must be sufficient for Bandwidth Delay Product (BDP).
      * @see #SOCKET_RCVBUF_LENGTH_PROP_NAME
      */
+    @Impure
     public static int socketRcvbufLength()
     {
         return getSizeAsInt(SOCKET_RCVBUF_LENGTH_PROP_NAME, SOCKET_RCVBUF_LENGTH_DEFAULT);
@@ -1670,6 +1717,7 @@ public final class Configuration
      * @return length of the maximum transmission unit of the media driver's protocol.
      * @see #MTU_LENGTH_PROP_NAME
      */
+    @Impure
     public static int mtuLength()
     {
         return getSizeAsInt(MTU_LENGTH_PROP_NAME, MTU_LENGTH_DEFAULT);
@@ -1682,6 +1730,7 @@ public final class Configuration
      * @return length of the maximum transmission unit of the media driver's protocol for IPC.
      * @see #IPC_MTU_LENGTH_PROP_NAME
      */
+    @Impure
     public static int ipcMtuLength()
     {
         return getSizeAsInt(IPC_MTU_LENGTH_PROP_NAME, IPC_MTU_LENGTH_DEFAULT);
@@ -1693,6 +1742,7 @@ public final class Configuration
      * @return IP_MULTICAST_TTL setting on UDP sockets.
      * @see #SOCKET_MULTICAST_TTL_PROP_NAME
      */
+    @SideEffectFree
     public static int socketMulticastTtl()
     {
         return getInteger(SOCKET_MULTICAST_TTL_PROP_NAME, SOCKET_MULTICAST_TTL_DEFAULT);
@@ -1704,6 +1754,7 @@ public final class Configuration
      * @return page size in bytes to align all files to.
      * @see #FILE_PAGE_SIZE_PROP_NAME
      */
+    @Impure
     public static int filePageSize()
     {
         return getSizeAsInt(FILE_PAGE_SIZE_PROP_NAME, FILE_PAGE_SIZE_DEFAULT);
@@ -1715,6 +1766,7 @@ public final class Configuration
      * @return low-end of the publication reserved session-id range which will not be automatically assigned.
      * @see #PUBLICATION_RESERVED_SESSION_ID_LOW_PROP_NAME
      */
+    @SideEffectFree
     public static int publicationReservedSessionIdLow()
     {
         return getInteger(PUBLICATION_RESERVED_SESSION_ID_LOW_PROP_NAME, PUBLICATION_RESERVED_SESSION_ID_LOW_DEFAULT);
@@ -1726,6 +1778,7 @@ public final class Configuration
      * @return high-end of the publication reserved session-id range which will not be automatically assigned.
      * @see #PUBLICATION_RESERVED_SESSION_ID_HIGH_PROP_NAME
      */
+    @SideEffectFree
     public static int publicationReservedSessionIdHigh()
     {
         return getInteger(PUBLICATION_RESERVED_SESSION_ID_HIGH_PROP_NAME, PUBLICATION_RESERVED_SESSION_ID_HIGH_DEFAULT);
@@ -1737,6 +1790,7 @@ public final class Configuration
      * @return status message timeout in nanoseconds after which one will be sent.
      * @see #STATUS_MESSAGE_TIMEOUT_PROP_NAME
      */
+    @Impure
     public static long statusMessageTimeoutNs()
     {
         return getDurationInNanos(STATUS_MESSAGE_TIMEOUT_PROP_NAME, STATUS_MESSAGE_TIMEOUT_DEFAULT_NS);
@@ -1748,6 +1802,7 @@ public final class Configuration
      * @return ratio of sending data to polling status messages in the {@link Sender}.
      * @see #SEND_TO_STATUS_POLL_RATIO_PROP_NAME
      */
+    @SideEffectFree
     public static int sendToStatusMessagePollRatio()
     {
         return getInteger(SEND_TO_STATUS_POLL_RATIO_PROP_NAME, SEND_TO_STATUS_POLL_RATIO_DEFAULT);
@@ -1760,6 +1815,7 @@ public final class Configuration
      * @see #RESOURCE_FREE_LIMIT_PROP_NAME
      * @see #RESOURCE_FREE_LIMIT_DEFAULT
      */
+    @SideEffectFree
     public static int resourceFreeLimit()
     {
         return getInteger(RESOURCE_FREE_LIMIT_PROP_NAME, RESOURCE_FREE_LIMIT_DEFAULT);
@@ -1771,6 +1827,7 @@ public final class Configuration
      * @return timeout between a counter being freed and being available to be reused.
      * @see #COUNTER_FREE_TO_REUSE_TIMEOUT_PROP_NAME
      */
+    @Impure
     public static long counterFreeToReuseTimeoutNs()
     {
         return getDurationInNanos(COUNTER_FREE_TO_REUSE_TIMEOUT_PROP_NAME, DEFAULT_COUNTER_FREE_TO_REUSE_TIMEOUT_NS);
@@ -1782,6 +1839,7 @@ public final class Configuration
      * @return {@link Aeron} client liveness timeout after which it is considered not alive.
      * @see #CLIENT_LIVENESS_TIMEOUT_PROP_NAME
      */
+    @Impure
     public static long clientLivenessTimeoutNs()
     {
         return getDurationInNanos(CLIENT_LIVENESS_TIMEOUT_PROP_NAME, CLIENT_LIVENESS_TIMEOUT_DEFAULT_NS);
@@ -1795,6 +1853,7 @@ public final class Configuration
      * being drained.
      * @see #IMAGE_LIVENESS_TIMEOUT_PROP_NAME
      */
+    @Impure
     public static long imageLivenessTimeoutNs()
     {
         return getDurationInNanos(IMAGE_LIVENESS_TIMEOUT_PROP_NAME, IMAGE_LIVENESS_TIMEOUT_DEFAULT_NS);
@@ -1810,6 +1869,7 @@ public final class Configuration
      * @return {@link Publication} unblock timeout due to client crash or untimely commit.
      * @see #PUBLICATION_UNBLOCK_TIMEOUT_PROP_NAME
      */
+    @Impure
     public static long publicationUnblockTimeoutNs()
     {
         return getDurationInNanos(PUBLICATION_UNBLOCK_TIMEOUT_PROP_NAME, PUBLICATION_UNBLOCK_TIMEOUT_DEFAULT_NS);
@@ -1821,6 +1881,7 @@ public final class Configuration
      * @return {@link Publication} timeout due to lack of status messages which indicate a connection.
      * @see #PUBLICATION_CONNECTION_TIMEOUT_PROP_NAME
      */
+    @Impure
     public static long publicationConnectionTimeoutNs()
     {
         return getDurationInNanos(PUBLICATION_CONNECTION_TIMEOUT_PROP_NAME, PUBLICATION_CONNECTION_TIMEOUT_DEFAULT_NS);
@@ -1832,6 +1893,7 @@ public final class Configuration
      * @return linger timeout after draining on {@link Publication}s so they can respond to NAKs.
      * @see #PUBLICATION_LINGER_PROP_NAME
      */
+    @Impure
     public static long publicationLingerTimeoutNs()
     {
         return getDurationInNanos(PUBLICATION_LINGER_PROP_NAME, PUBLICATION_LINGER_DEFAULT_NS);
@@ -1843,6 +1905,7 @@ public final class Configuration
      * @return setting how long to delay before sending a retransmit after receiving a NAK.
      * @see #RETRANSMIT_UNICAST_DELAY_PROP_NAME
      */
+    @Impure
     public static long retransmitUnicastDelayNs()
     {
         return getDurationInNanos(RETRANSMIT_UNICAST_DELAY_PROP_NAME, RETRANSMIT_UNICAST_DELAY_DEFAULT_NS);
@@ -1854,6 +1917,7 @@ public final class Configuration
      * @return setting how long to linger after delay on a NAK before responding to another NAK.
      * @see #RETRANSMIT_UNICAST_LINGER_PROP_NAME
      */
+    @Impure
     public static long retransmitUnicastLingerNs()
     {
         return getDurationInNanos(RETRANSMIT_UNICAST_LINGER_PROP_NAME, RETRANSMIT_UNICAST_LINGER_DEFAULT_NS);
@@ -1865,6 +1929,7 @@ public final class Configuration
      * @return length of the memory mapped buffer for the {@link io.aeron.driver.reports.LossReport}.
      * @see #LOSS_REPORT_BUFFER_LENGTH_PROP_NAME
      */
+    @Impure
     public static int lossReportBufferLength()
     {
         return getSizeAsInt(LOSS_REPORT_BUFFER_LENGTH_PROP_NAME, LOSS_REPORT_BUFFER_LENGTH_DEFAULT);
@@ -1877,6 +1942,7 @@ public final class Configuration
      * @return {@link ThreadingMode} to be used by the Aeron {@link MediaDriver}.
      * @see #THREADING_MODE_PROP_NAME
      */
+    @Impure
     public static ThreadingMode threadingMode()
     {
         final String propertyValue = getProperty(THREADING_MODE_PROP_NAME);
@@ -1893,6 +1959,7 @@ public final class Configuration
      *
      * @return threshold value in nanoseconds.
      */
+    @Impure
     public static long conductorCycleThresholdNs()
     {
         return getDurationInNanos(CONDUCTOR_CYCLE_THRESHOLD_PROP_NAME, CONDUCTOR_CYCLE_THRESHOLD_DEFAULT_NS);
@@ -1903,6 +1970,7 @@ public final class Configuration
      *
      * @return threshold value in nanoseconds.
      */
+    @Impure
     public static long senderCycleThresholdNs()
     {
         return getDurationInNanos(SENDER_CYCLE_THRESHOLD_PROP_NAME, SENDER_CYCLE_THRESHOLD_DEFAULT_NS);
@@ -1913,6 +1981,7 @@ public final class Configuration
      *
      * @return threshold value in nanoseconds.
      */
+    @Impure
     public static long receiverCycleThresholdNs()
     {
         return getDurationInNanos(RECEIVER_CYCLE_THRESHOLD_PROP_NAME, RECEIVER_CYCLE_THRESHOLD_DEFAULT_NS);
@@ -1923,6 +1992,7 @@ public final class Configuration
      *
      * @return threshold value in nanoseconds.
      */
+    @Impure
     public static long nameResolverThresholdNs()
     {
         return getDurationInNanos(NAME_RESOLVER_THRESHOLD_PROP_NAME, NAME_RESOLVER_THRESHOLD_DEFAULT_NS);
@@ -1933,6 +2003,7 @@ public final class Configuration
      *
      * @return port range as string with the format "low high"
      */
+    @Pure
     public static String senderWildcardPortRange()
     {
         return getProperty(SENDER_WILDCARD_PORT_RANGE_PROP_NAME);
@@ -1943,6 +2014,7 @@ public final class Configuration
      *
      * @return port range as string with the format "low high"
      */
+    @Pure
     public static String receiverWildcardPortRange()
     {
         return getProperty(RECEIVER_WILDCARD_PORT_RANGE_PROP_NAME);
@@ -1956,6 +2028,7 @@ public final class Configuration
      * @see #ASYNC_TASK_EXECUTOR_THREADS_PROP_NAME
      * @since 1.44.0
      */
+    @SideEffectFree
     public static int asyncTaskExecutorThreads()
     {
         return getInteger(ASYNC_TASK_EXECUTOR_THREADS_PROP_NAME, 1);
@@ -1968,6 +2041,7 @@ public final class Configuration
      * @param controllableStatus status indicator for what the strategy should do.
      * @return the newly created IdleStrategy.
      */
+    @Impure
     public static IdleStrategy agentIdleStrategy(final String strategyName, final StatusIndicator controllableStatus)
     {
         IdleStrategy idleStrategy = null;
@@ -2034,6 +2108,7 @@ public final class Configuration
      * @return {@link IdleStrategy} to be employed by {@link Sender} for {@link ThreadingMode#DEDICATED}.
      * @see #SENDER_IDLE_STRATEGY_PROP_NAME
      */
+    @Impure
     public static IdleStrategy senderIdleStrategy(final StatusIndicator controllableStatus)
     {
         return agentIdleStrategy(
@@ -2047,6 +2122,7 @@ public final class Configuration
      * @return {@link IdleStrategy} to be employed by {@link Receiver} for {@link ThreadingMode#DEDICATED}.
      * @see #RECEIVER_IDLE_STRATEGY_PROP_NAME
      */
+    @Impure
     public static IdleStrategy receiverIdleStrategy(final StatusIndicator controllableStatus)
     {
         return agentIdleStrategy(
@@ -2062,6 +2138,7 @@ public final class Configuration
      * and {@link ThreadingMode#SHARED_NETWORK}..
      * @see #CONDUCTOR_IDLE_STRATEGY_PROP_NAME
      */
+    @Impure
     public static IdleStrategy conductorIdleStrategy(final StatusIndicator controllableStatus)
     {
         return agentIdleStrategy(
@@ -2077,6 +2154,7 @@ public final class Configuration
      * {@link ThreadingMode#SHARED_NETWORK}.
      * @see #SHARED_NETWORK_IDLE_STRATEGY_PROP_NAME
      */
+    @Impure
     public static IdleStrategy sharedNetworkIdleStrategy(final StatusIndicator controllableStatus)
     {
         return agentIdleStrategy(getProperty(SHARED_NETWORK_IDLE_STRATEGY_PROP_NAME,
@@ -2092,6 +2170,7 @@ public final class Configuration
      * {@link ThreadingMode#SHARED}.
      * @see #SHARED_IDLE_STRATEGY_PROP_NAME
      */
+    @Impure
     public static IdleStrategy sharedIdleStrategy(final StatusIndicator controllableStatus)
     {
         return agentIdleStrategy(
@@ -2103,6 +2182,7 @@ public final class Configuration
      * @see #SM_APPLICATION_SPECIFIC_FEEDBACK_PROP_NAME
      * @deprecated see {@link #groupTag()}.
      */
+    @Impure
     @Deprecated
     public static byte[] applicationSpecificFeedback()
     {
@@ -2121,6 +2201,7 @@ public final class Configuration
      *
      * @return the {@link SendChannelEndpointSupplier}.
      */
+    @Impure
     public static SendChannelEndpointSupplier sendChannelEndpointSupplier()
     {
         SendChannelEndpointSupplier supplier = null;
@@ -2148,6 +2229,7 @@ public final class Configuration
      *
      * @return the {@link SendChannelEndpointSupplier}.
      */
+    @Impure
     public static ReceiveChannelEndpointSupplier receiveChannelEndpointSupplier()
     {
         ReceiveChannelEndpointSupplier supplier = null;
@@ -2175,6 +2257,7 @@ public final class Configuration
      *
      * @return the {@link FlowControlSupplier}.
      */
+    @Impure
     public static FlowControlSupplier unicastFlowControlSupplier()
     {
         FlowControlSupplier supplier = null;
@@ -2202,6 +2285,7 @@ public final class Configuration
      *
      * @return the {@link FlowControlSupplier}.
      */
+    @Impure
     public static FlowControlSupplier multicastFlowControlSupplier()
     {
         FlowControlSupplier supplier = null;
@@ -2228,6 +2312,7 @@ public final class Configuration
      *
      * @return the {@link CongestionControlSupplier}
      */
+    @Impure
     public static CongestionControlSupplier congestionControlSupplier()
     {
         CongestionControlSupplier supplier = null;
@@ -2256,6 +2341,7 @@ public final class Configuration
      * @throws AsciiNumberFormatException if the property referenced by {@link #STREAM_SESSION_LIMIT_PROP_NAME} is not
      * a valid number
      */
+    @Impure
     public static int streamSessionLimit()
     {
         final String streamSessionLimitString = getProperty(STREAM_SESSION_LIMIT_PROP_NAME);
@@ -2277,6 +2363,7 @@ public final class Configuration
      * @param initialWindowLength to be validated.
      * @param mtuLength           against which to validate.
      */
+    @Impure
     public static void validateInitialWindowLength(final int initialWindowLength, final int mtuLength)
     {
         if (mtuLength > initialWindowLength)
@@ -2293,6 +2380,7 @@ public final class Configuration
      * @param mtuLength to be validated.
      * @throws ConfigurationException if the MTU length is not valid.
      */
+    @Impure
     public static void validateMtuLength(final int mtuLength)
     {
         if (mtuLength <= DataHeaderFlyweight.HEADER_LENGTH)
@@ -2320,6 +2408,7 @@ public final class Configuration
      *
      * @return the {@link TerminationValidator}
      */
+    @Impure
     public static TerminationValidator terminationValidator()
     {
         TerminationValidator validator = null;
@@ -2346,6 +2435,7 @@ public final class Configuration
      *
      * @param ctx to be validated.
      */
+    @Impure
     public static void validateSocketBufferLengths(final MediaDriver.Context ctx)
     {
         if (ctx.osMaxSocketSndbufLength() < ctx.socketSndbufLength())
@@ -2389,6 +2479,7 @@ public final class Configuration
      * @param pageSize to be checked.
      * @throws ConfigurationException if the size is not as expected.
      */
+    @Impure
     public static void validatePageSize(final int pageSize)
     {
         validateValueRange(pageSize, PAGE_MIN_SIZE, PAGE_MAX_SIZE, "filePageSize");
@@ -2406,6 +2497,7 @@ public final class Configuration
      * @param high value in the range.
      * @throws ConfigurationException if the values are not valid.
      */
+    @Impure
     public static void validateSessionIdRange(final int low, final int high)
     {
         if (low > high)
@@ -2426,6 +2518,7 @@ public final class Configuration
      * @param counterValuesBufferLength to compute the metadata buffer length from as a ratio.
      * @return the length that should be used for the metadata buffer for counters.
      */
+    @Pure
     public static int countersMetadataBufferLength(final int counterValuesBufferLength)
     {
         return counterValuesBufferLength * (CountersReader.METADATA_LENGTH / CountersReader.COUNTER_LENGTH);
@@ -2439,6 +2532,7 @@ public final class Configuration
      * @param timerIntervalNs             interval at which the driver will check timeouts.
      * @throws ConfigurationException if the values are not valid.
      */
+    @Impure
     public static void validateUnblockTimeout(
         final long publicationUnblockTimeoutNs, final long clientLivenessTimeoutNs, final long timerIntervalNs)
     {
@@ -2465,6 +2559,7 @@ public final class Configuration
      * @param timerIntervalNs                interval at which the driver will check timeouts.
      * @throws ConfigurationException if the values are not valid.
      */
+    @Impure
     public static void validateUntetheredTimeouts(
         final long untetheredWindowLimitTimeoutNs, final long untetheredRestingTimeoutNs, final long timerIntervalNs)
     {
@@ -2489,11 +2584,13 @@ public final class Configuration
      * @param srcAddress to be used for the identity.
      * @return a source identity string for a given address.
      */
+    @Impure
     public static String sourceIdentity(final InetSocketAddress srcAddress)
     {
         return srcAddress.getHostString() + ':' + srcAddress.getPort();
     }
 
+    @Impure
     static void validateValueRange(final long value, final long minValue, final long maxValue, final String name)
     {
         if (value < minValue)

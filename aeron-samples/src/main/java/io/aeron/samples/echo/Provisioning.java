@@ -15,6 +15,8 @@
  */
 package io.aeron.samples.echo;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import io.aeron.ConcurrentPublication;
 import io.aeron.Subscription;
@@ -43,6 +45,7 @@ public class Provisioning implements ProvisioningMBean
      *
      * @param aeron Aeron client instance.
      */
+    @SideEffectFree
     public Provisioning(final Aeron aeron)
     {
         this.aeron = aeron;
@@ -53,6 +56,7 @@ public class Provisioning implements ProvisioningMBean
      *
      * @return amount of work done.
      */
+    @Impure
     public int doWork()
     {
         int workDone = 0;
@@ -66,6 +70,7 @@ public class Provisioning implements ProvisioningMBean
     /**
      * Remove all existing echo pairs.
      */
+    @Impure
     public void removeAll()
     {
         final RemoveAllEchoPairs removeAllEchoPairs = new RemoveAllEchoPairs();
@@ -91,6 +96,7 @@ public class Provisioning implements ProvisioningMBean
      * @param pubChannel    channel used for publication.
      * @param pubStreamId   stream id used for publication.
      */
+    @Impure
     public void createEchoPair(
         final long correlationId,
         final String subChannel,
@@ -117,6 +123,7 @@ public class Provisioning implements ProvisioningMBean
         }
     }
 
+    @Impure
     private void handleCreateEchoPair(final CreateEchoPair create) throws Exception
     {
         final ConcurrentPublication publication = aeron.addPublication(
@@ -155,6 +162,7 @@ public class Provisioning implements ProvisioningMBean
         echoPairByCorrelationId.put(echoPair.correlationId(), echoPair);
     }
 
+    @Impure
     private int pollEchoPairs()
     {
         int workDone = 0;
@@ -167,6 +175,7 @@ public class Provisioning implements ProvisioningMBean
         return workDone;
     }
 
+    @Impure
     private int pollProvisioningQueue()
     {
         int workDone = 0;
@@ -198,6 +207,7 @@ public class Provisioning implements ProvisioningMBean
         return workDone;
     }
 
+    @Impure
     private void handleRemoveAll()
     {
         for (final EchoPair echoPair : echoPairByCorrelationId.values())

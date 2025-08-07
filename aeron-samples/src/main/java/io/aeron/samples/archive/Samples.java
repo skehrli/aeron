@@ -15,6 +15,7 @@
  */
 package io.aeron.samples.archive;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.logbuffer.FragmentHandler;
 
 import java.io.File;
@@ -41,6 +42,7 @@ class Samples
      *
      * @return a temporary directory for storing a sample archive.
      */
+    @Impure
     public static File createTempDir()
     {
         final File tempDirForTest;

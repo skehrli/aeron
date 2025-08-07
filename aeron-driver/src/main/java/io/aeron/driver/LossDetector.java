@@ -15,6 +15,9 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import io.aeron.logbuffer.TermGapScanner;
 import org.agrona.concurrent.UnsafeBuffer;
@@ -47,6 +50,7 @@ public class LossDetector implements TermGapScanner.GapHandler
      * @param delayGenerator to use for delay determination
      * @param lossHandler    to call when signalling a gap
      */
+    @SideEffectFree
     public LossDetector(final FeedbackDelayGenerator delayGenerator, final LossHandler lossHandler)
     {
         this.delayGenerator = delayGenerator;
@@ -67,6 +71,7 @@ public class LossDetector implements TermGapScanner.GapHandler
      * @param initialTermId       used by the scanner
      * @return packed outcome of the scan.
      */
+    @Impure
     public long scan(
         final UnsafeBuffer termBuffer,
         final long rebuildPosition,
@@ -109,6 +114,7 @@ public class LossDetector implements TermGapScanner.GapHandler
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onGap(final int termId, final int offset, final int length)
     {
         scannedTermId = termId;
@@ -123,6 +129,7 @@ public class LossDetector implements TermGapScanner.GapHandler
      * @param lossFound     value to be packed.
      * @return a long with rebuildOffset and lossFound packed into it.
      */
+    @Pure
     public static long pack(final int rebuildOffset, final boolean lossFound)
     {
         return ((long)rebuildOffset << 32) | (lossFound ? 1 : 0);
@@ -134,6 +141,7 @@ public class LossDetector implements TermGapScanner.GapHandler
      * @param scanOutcome into which the fragments read value has been packed.
      * @return if loss has been found or not.
      */
+    @Pure
     public static boolean lossFound(final long scanOutcome)
     {
         return ((int)scanOutcome) != 0;
@@ -145,11 +153,13 @@ public class LossDetector implements TermGapScanner.GapHandler
      * @param scanOutcome into which the offset value has been packed.
      * @return the offset up to which the log has been rebuilt.
      */
+    @Pure
     public static int rebuildOffset(final long scanOutcome)
     {
         return (int)(scanOutcome >>> 32);
     }
 
+    @Impure
     private void activateGap(final long nowNs)
     {
         activeTermId = scannedTermId;
@@ -159,6 +169,7 @@ public class LossDetector implements TermGapScanner.GapHandler
         deadlineNs = nowNs + delayGenerator.generateDelayNs();
     }
 
+    @Impure
     private void checkTimerExpiry(final long nowNs)
     {
         if (deadlineNs - nowNs <= 0)

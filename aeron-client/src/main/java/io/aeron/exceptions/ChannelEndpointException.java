@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 package io.aeron.exceptions;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 
 /**
  * Indicates an error occurred when setting up the channel for either a {@link io.aeron.Publication} or
@@ -34,6 +37,8 @@ public class ChannelEndpointException extends AeronException
      * @param statusIndicatorId counter id for the channel.
      * @param message           for the exception.
      */
+    @SideEffectFree
+    @Impure
     public ChannelEndpointException(final int statusIndicatorId, final String message)
     {
         super(message);
@@ -45,6 +50,7 @@ public class ChannelEndpointException extends AeronException
      *
      * @return counter id associated with the channel endpoint
      */
+    @Pure
     public int statusIndicatorId()
     {
         return statusIndicatorId;

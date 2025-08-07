@@ -15,6 +15,9 @@
  */
 package io.aeron.exceptions;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.*;
 
 /**
@@ -49,6 +52,8 @@ public class RegistrationException extends AeronException
      * @param errorCode      indicating type of error experienced by the media driver.
      * @param msg            proving more detail.
      */
+    @SideEffectFree
+    @Impure
     public RegistrationException(
         final long correlationId, final int errorCodeValue, final ErrorCode errorCode, final String msg)
     {
@@ -66,6 +71,8 @@ public class RegistrationException extends AeronException
      *
      * @param cause original RegistrationException to be stored as the exception cause.
      */
+    @SideEffectFree
+    @Impure
     public RegistrationException(final RegistrationException cause)
     {
         super(stripCategoryName(cause.getMessage()), cause, cause.category());
@@ -79,6 +86,7 @@ public class RegistrationException extends AeronException
      *
      * @return the correlation id of the command to register the resource action.
      */
+    @Pure
     public long correlationId()
     {
         return correlationId;
@@ -89,6 +97,7 @@ public class RegistrationException extends AeronException
      *
      * @return the {@link ErrorCode} for the specific exception.
      */
+    @Pure
     public ErrorCode errorCode()
     {
         return errorCode;
@@ -100,11 +109,13 @@ public class RegistrationException extends AeronException
      *
      * @return value of the errorCode encoded as an int.
      */
+    @Pure
     public int errorCodeValue()
     {
         return errorCodeValue;
     }
 
+    @SideEffectFree
     private static String stripCategoryName(final String msg)
     {
         if (null != msg && msg.length() > 7)

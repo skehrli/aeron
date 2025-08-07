@@ -15,6 +15,9 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.collections.Object2ObjectHashMap;
@@ -47,6 +50,8 @@ public class ArchiveComponentLogger implements ComponentLogger
     /**
      * {@inheritDoc}
      */
+    @Pure
+    @Impure
     public int typeCode()
     {
         return EventCodeType.ARCHIVE.getTypeCode();
@@ -55,6 +60,8 @@ public class ArchiveComponentLogger implements ComponentLogger
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
+    @Impure
     public void decode(
         final MutableDirectBuffer buffer, final int offset, final int eventCodeId, final StringBuilder builder)
     {
@@ -64,6 +71,7 @@ public class ArchiveComponentLogger implements ComponentLogger
     /**
      * {@inheritDoc}
      */
+    @Impure
     public AgentBuilder addInstrumentation(final AgentBuilder agentBuilder, final Map<String, String> configOptions)
     {
         ENABLED_EVENTS.clear();
@@ -142,11 +150,13 @@ public class ArchiveComponentLogger implements ComponentLogger
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void reset()
     {
         ENABLED_EVENTS.clear();
     }
 
+    @Impure
     private static EnumSet<ArchiveEventCode> getArchiveEventCodes(final String enabledEventCodes)
     {
         return parseEventCodes(
@@ -157,6 +167,7 @@ public class ArchiveComponentLogger implements ComponentLogger
             ArchiveEventCode::valueOf);
     }
 
+    @Impure
     private static AgentBuilder addArchiveControlSessionAdapterInstrumentation(final AgentBuilder agentBuilder)
     {
         if (ArchiveEventLogger.CONTROL_REQUEST_EVENTS.stream().noneMatch(ENABLED_EVENTS::contains))
@@ -171,6 +182,7 @@ public class ArchiveComponentLogger implements ComponentLogger
                     .on(named("onFragment")))));
     }
 
+    @Impure
     private static AgentBuilder addEventInstrumentation(
         final AgentBuilder agentBuilder,
         final ArchiveEventCode code,

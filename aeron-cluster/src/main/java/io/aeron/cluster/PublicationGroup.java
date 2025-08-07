@@ -15,6 +15,10 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.checker.mustcall.qual.NotOwning;
 import io.aeron.Aeron;
 import io.aeron.ChannelUri;
 import io.aeron.Publication;
@@ -36,6 +40,7 @@ class PublicationGroup<P extends Publication> implements AutoCloseable
     private int excludedPublicationCursorValue = -1;
     private P current;
 
+    @SideEffectFree
     PublicationGroup(
         final String[] endpoints,
         final String channelTemplate,
@@ -50,6 +55,8 @@ class PublicationGroup<P extends Publication> implements AutoCloseable
     }
 
 
+    @NotOwning
+    @Impure
     P next(final Aeron aeron)
     {
         final int cursor = nextCursor();
@@ -64,6 +71,7 @@ class PublicationGroup<P extends Publication> implements AutoCloseable
         return current;
     }
 
+    @Impure
     private int nextCursor()
     {
         do
@@ -79,22 +87,27 @@ class PublicationGroup<P extends Publication> implements AutoCloseable
         return cursor;
     }
 
+    @NotOwning
+    @Pure
     P current()
     {
         return current;
     }
 
+    @Impure
     void clearExclusion()
     {
         excludedPublicationCursorValue = -1;
     }
 
+    @Impure
     void closeAndExcludeCurrent()
     {
         excludedPublicationCursorValue = cursor;
         CloseHelper.quietClose(current);
     }
 
+    @Impure
     void shuffle()
     {
         close();
@@ -109,11 +122,13 @@ class PublicationGroup<P extends Publication> implements AutoCloseable
         }
     }
 
+    @Impure
     public void close()
     {
         CloseHelper.quietClose(current);
     }
 
+    @Impure
     public boolean isConnected()
     {
         return null != current && current.isConnected();
@@ -121,9 +136,11 @@ class PublicationGroup<P extends Publication> implements AutoCloseable
 
     interface PublicationFactory<P>
     {
+        @Pure
         P addPublication(Aeron aeron, String channel, int streamId);
     }
 
+    @SideEffectFree
     public String toString()
     {
         return "PublicationGroup{" +

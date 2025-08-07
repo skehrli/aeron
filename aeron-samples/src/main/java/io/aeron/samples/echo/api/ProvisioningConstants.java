@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.aeron.samples.echo.api;
+import org.checkerframework.dataflow.qual.Pure;
 
 /**
  * Constants used by the provisioning API.
@@ -36,6 +37,7 @@ public class ProvisioningConstants
      * @param correlationId user defined correlationId.
      * @return a legal JMX object name.
      */
+    @Pure
     public static String echoPairObjectName(final long correlationId)
     {
         return IO_AERON_TYPE_ECHO_PAIR_PREFIX + correlationId;

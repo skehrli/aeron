@@ -16,6 +16,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.Publication;
 import org.agrona.BitUtil;
@@ -35,6 +36,7 @@ public class SimplePublisher
      * @param args passed to the process.
      * @throws InterruptedException if the thread sleep delay is interrupted.
      */
+    @Impure
     public static void main(final String[] args) throws InterruptedException
     {
         // Allocate enough buffer size to hold maximum message length

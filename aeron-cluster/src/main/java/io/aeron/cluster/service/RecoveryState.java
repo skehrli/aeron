@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster.service;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import io.aeron.AeronCounters;
 import io.aeron.Counter;
@@ -93,6 +95,7 @@ public final class RecoveryState
      */
     public static final int SNAPSHOT_RECORDING_IDS_OFFSET = SERVICE_COUNT_OFFSET + SIZE_OF_INT;
 
+    @SideEffectFree
     private RecoveryState()
     {
     }
@@ -108,6 +111,7 @@ public final class RecoveryState
      * @param snapshotRecordingIds for the services to use during recovery indexed by service id.
      * @return the {@link Counter} for the recovery state.
      */
+    @Impure
     public static Counter allocate(
         final Aeron aeron,
         final long leadershipTermId,
@@ -156,6 +160,7 @@ public final class RecoveryState
      * @param clusterId to constrain the search.
      * @return the counter id if found otherwise {@link CountersReader#NULL_COUNTER_ID}.
      */
+    @Impure
     public static int findCounterId(final CountersReader counters, final int clusterId)
     {
         final DirectBuffer buffer = counters.metaDataBuffer();
@@ -186,6 +191,7 @@ public final class RecoveryState
      * @param counterId for the active recovery counter.
      * @return the leadership term id if found otherwise {@link Aeron#NULL_VALUE}.
      */
+    @Impure
     public static long getLeadershipTermId(final CountersReader counters, final int counterId)
     {
         final DirectBuffer buffer = counters.metaDataBuffer();
@@ -206,6 +212,7 @@ public final class RecoveryState
      * @param counterId for the active recovery counter.
      * @return the log position if found otherwise {@link Aeron#NULL_VALUE}.
      */
+    @Impure
     public static long getLogPosition(final CountersReader counters, final int counterId)
     {
         final DirectBuffer buffer = counters.metaDataBuffer();
@@ -226,6 +233,7 @@ public final class RecoveryState
      * @param counterId for the active recovery counter.
      * @return the timestamp if found otherwise {@link Aeron#NULL_VALUE}.
      */
+    @Impure
     public static long getTimestamp(final CountersReader counters, final int counterId)
     {
         final DirectBuffer buffer = counters.metaDataBuffer();
@@ -247,6 +255,7 @@ public final class RecoveryState
      * @param serviceId for the snapshot required.
      * @return the count of replay terms if found otherwise {@link Aeron#NULL_VALUE}.
      */
+    @Impure
     public static long getSnapshotRecordingId(final CountersReader counters, final int counterId, final int serviceId)
     {
         final DirectBuffer buffer = counters.metaDataBuffer();

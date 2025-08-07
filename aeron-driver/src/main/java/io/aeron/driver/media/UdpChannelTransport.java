@@ -15,6 +15,10 @@
  */
 package io.aeron.driver.media;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.checker.mustcall.qual.NotOwning;
 import io.aeron.driver.MediaDriver;
 import io.aeron.driver.status.SystemCounterDescriptor;
 import io.aeron.exceptions.AeronEvent;
@@ -105,6 +109,7 @@ public abstract class UdpChannelTransport implements AutoCloseable
      * @param socketRcvbufLength set SO_RCVBUF for socket, 0 for OS default.
      * @param socketSndbufLength set SO_SNDBUF for socket, 0 for OS default.
      */
+    @Impure
     protected UdpChannelTransport(
         final UdpChannel udpChannel,
         final InetSocketAddress endPointAddress,
@@ -137,6 +142,7 @@ public abstract class UdpChannelTransport implements AutoCloseable
      * @param portManager     for port binding.
      * @param context         for configuration.
      */
+    @Impure
     protected UdpChannelTransport(
         final UdpChannel udpChannel,
         final InetSocketAddress endPointAddress,
@@ -165,6 +171,7 @@ public abstract class UdpChannelTransport implements AutoCloseable
      * @see #onSendError(IOException, InetSocketAddress, ErrorHandler)
      * @deprecated {@link #onSendError(IOException, InetSocketAddress, ErrorHandler)} is used instead.
      */
+    @Impure
     @Deprecated(forRemoval = true, since = "1.46.6")
     public static void sendError(final int bytesToSend, final IOException ex, final InetSocketAddress destination)
     {
@@ -179,6 +186,7 @@ public abstract class UdpChannelTransport implements AutoCloseable
      * @param destination  to which the send operation was addressed.
      * @param errorHandler to report error to.
      */
+    @Impure
     public static void onSendError(
         final IOException ex, final InetSocketAddress destination, final ErrorHandler errorHandler)
     {
@@ -192,6 +200,7 @@ public abstract class UdpChannelTransport implements AutoCloseable
      * @param statusIndicator to set for {@link ChannelEndpointStatus} which could be
      *                        {@link ChannelEndpointStatus#ERRORED}.
      */
+    @Impure
     public void openDatagramChannel(final AtomicCounter statusIndicator)
     {
         try
@@ -274,6 +283,7 @@ public abstract class UdpChannelTransport implements AutoCloseable
      *
      * @param transportPoller to register for read with.
      */
+    @Impure
     public void registerForRead(final UdpTransportPoller transportPoller)
     {
         this.transportPoller = transportPoller;
@@ -285,6 +295,7 @@ public abstract class UdpChannelTransport implements AutoCloseable
      *
      * @return underlying channel.
      */
+    @Impure
     public UdpChannel udpChannel()
     {
         return udpChannel;
@@ -295,6 +306,8 @@ public abstract class UdpChannelTransport implements AutoCloseable
      *
      * @return {@link DatagramChannel} for this transport channel.
      */
+    @NotOwning
+    @Pure
     public DatagramChannel receiveDatagramChannel()
     {
         return receiveDatagramChannel;
@@ -305,6 +318,7 @@ public abstract class UdpChannelTransport implements AutoCloseable
      *
      * @return the multicast TTL value for sending datagrams on the channel.
      */
+    @Impure
     public int multicastTtl()
     {
         return multicastTtl;
@@ -317,6 +331,7 @@ public abstract class UdpChannelTransport implements AutoCloseable
      *
      * @return the bind address and port in endpoint-style format (ip:port).
      */
+    @Impure
     public String bindAddressAndPort()
     {
         try
@@ -337,6 +352,7 @@ public abstract class UdpChannelTransport implements AutoCloseable
     /**
      * Close transport, canceling any pending read operations and closing channel.
      */
+    @Impure
     public void close()
     {
         if (!isClosed)
@@ -370,6 +386,7 @@ public abstract class UdpChannelTransport implements AutoCloseable
      *
      * @return true if the channel has been closed.
      */
+    @Pure
     public boolean isClosed()
     {
         return isClosed;
@@ -380,6 +397,7 @@ public abstract class UdpChannelTransport implements AutoCloseable
      *
      * @return true if transport is multicast media, otherwise false.
      */
+    @Impure
     public boolean isMulticast()
     {
         return udpChannel.isMulticast();
@@ -393,6 +411,7 @@ public abstract class UdpChannelTransport implements AutoCloseable
      * @param length of the frame.
      * @return true if the frame is believed valid otherwise false.
      */
+    @Impure
     public boolean isValidFrame(final UnsafeBuffer buffer, final int length)
     {
         boolean isFrameValid = true;
@@ -417,6 +436,7 @@ public abstract class UdpChannelTransport implements AutoCloseable
      * @param buffer  containing the packet.
      * @param address to which the packet will be sent.
      */
+    @SideEffectFree
     @SuppressWarnings("unused")
     public void sendHook(final ByteBuffer buffer, final InetSocketAddress address)
     {
@@ -429,6 +449,7 @@ public abstract class UdpChannelTransport implements AutoCloseable
      * @param length  length of the packet in bytes.
      * @param address from which the packet came.
      */
+    @SideEffectFree
     @SuppressWarnings("unused")
     public void receiveHook(final UnsafeBuffer buffer, final int length, final InetSocketAddress address)
     {
@@ -443,6 +464,7 @@ public abstract class UdpChannelTransport implements AutoCloseable
      * @param termOffset to resend
      * @param length     to resend
      */
+    @SideEffectFree
     @SuppressWarnings("unused")
     public void resendHook(
         final int sessionId, final int streamId, final int termId, final int termOffset, final int length)
@@ -455,6 +477,7 @@ public abstract class UdpChannelTransport implements AutoCloseable
      * @param buffer into which the datagram will be received.
      * @return the source address of the datagram if one is available otherwise false.
      */
+    @Impure
     public InetSocketAddress receive(final ByteBuffer buffer)
     {
         buffer.clear();
@@ -484,6 +507,7 @@ public abstract class UdpChannelTransport implements AutoCloseable
      * @param newAddress      to send data to.
      * @param statusIndicator for the channel
      */
+    @Impure
     public void updateEndpoint(final InetSocketAddress newAddress, final AtomicCounter statusIndicator)
     {
         try
@@ -519,6 +543,7 @@ public abstract class UdpChannelTransport implements AutoCloseable
      *
      * @return OS socket send buffer length or 0 if using OS default.
      */
+    @Pure
     public int socketSndbufLength()
     {
         return socketSndbufLength;
@@ -529,6 +554,7 @@ public abstract class UdpChannelTransport implements AutoCloseable
      *
      * @return OS socket receive buffer length or 0 if using OS default.
      */
+    @Pure
     public int socketRcvbufLength()
     {
         return socketRcvbufLength;

@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.concurrent.status.ReadablePosition;
 
 /**
@@ -27,6 +29,7 @@ public interface Subscribable
      *
      * @return registration ID for subscribable.
      */
+    @Pure
     long subscribableRegistrationId();
 
     /**
@@ -36,6 +39,7 @@ public interface Subscribable
      * @param subscriberPosition for tracking the subscriber.
      * @param nowNs              for the current time.
      */
+    @Impure
     void addSubscriber(SubscriptionLink subscriptionLink, ReadablePosition subscriberPosition, long nowNs);
 
     /**
@@ -47,5 +51,6 @@ public interface Subscribable
      * @param subscriptionLink   for identifying the subscriber.
      * @param subscriberPosition for tracking the subscriber.
      */
+    @Impure
     void removeSubscriber(SubscriptionLink subscriptionLink, ReadablePosition subscriberPosition);
 }

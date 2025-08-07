@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package io.aeron.driver;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 
 abstract class DutyCycleTrackerLhsPadding
 {
@@ -43,6 +45,7 @@ public class DutyCycleTracker extends DutyCycleTrackerFields
      *
      * @param nowNs to update with.
      */
+    @Impure
     public final void update(final long nowNs)
     {
         timeOfLastUpdateNs = nowNs;
@@ -53,6 +56,7 @@ public class DutyCycleTracker extends DutyCycleTrackerFields
      *
      * @param nowNs of the measurement.
      */
+    @Impure
     public final void measureAndUpdate(final long nowNs)
     {
         final long cycleTimeNs = nowNs - timeOfLastUpdateNs;
@@ -66,6 +70,7 @@ public class DutyCycleTracker extends DutyCycleTrackerFields
      *
      * @param durationNs of the duty cycle.
      */
+    @Impure
     public void reportMeasurement(final long durationNs)
     {
     }
@@ -73,6 +78,7 @@ public class DutyCycleTracker extends DutyCycleTrackerFields
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "DutyCycleTracker{" +

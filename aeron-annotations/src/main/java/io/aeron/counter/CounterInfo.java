@@ -15,6 +15,7 @@
  */
 package io.aeron.counter;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import java.io.Serializable;
 
 /**
@@ -52,6 +53,7 @@ public class CounterInfo implements Serializable
     /**
      * Default constructor.
      */
+    @SideEffectFree
     public CounterInfo()
     {
         this.name = null;
@@ -60,6 +62,7 @@ public class CounterInfo implements Serializable
     /**
      * @param name the name of the counter
      */
+    @SideEffectFree
     public CounterInfo(final String name)
     {
         this.name = name;

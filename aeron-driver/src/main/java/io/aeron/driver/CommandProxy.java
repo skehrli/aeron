@@ -15,6 +15,9 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.concurrent.AgentTerminationException;
 import org.agrona.concurrent.OneToOneConcurrentArrayQueue;
 import org.agrona.concurrent.status.AtomicCounter;
@@ -32,6 +35,7 @@ abstract class CommandProxy
     private final AtomicCounter failCount;
     private final boolean notConcurrent;
 
+    @SideEffectFree
     CommandProxy(
         final ThreadingMode threadingMode,
         final OneToOneConcurrentArrayQueue<Runnable> commandQueue,
@@ -46,6 +50,7 @@ abstract class CommandProxy
     /**
      * {@inheritDoc}
      */
+    @Impure
     public String toString()
     {
         return getClass().getSimpleName() + "{" +
@@ -54,16 +59,19 @@ abstract class CommandProxy
             '}';
     }
 
+    @Pure
     final boolean notConcurrent()
     {
         return notConcurrent;
     }
 
+    @Pure
     final ThreadingMode threadingMode()
     {
         return threadingMode;
     }
 
+    @Impure
     final void offer(final Runnable cmd)
     {
         while (!commandQueue.offer(cmd))
@@ -81,6 +89,7 @@ abstract class CommandProxy
         }
     }
 
+    @Impure
     final boolean isApplyingBackpressure()
     {
         return commandQueue.remainingCapacity() < 1;

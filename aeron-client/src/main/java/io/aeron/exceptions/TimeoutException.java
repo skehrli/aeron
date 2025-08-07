@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package io.aeron.exceptions;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 
 /**
  * Generic timeout has occurred while waiting on some action or event.
@@ -25,6 +27,8 @@ public class TimeoutException extends AeronException
     /**
      * Default timeout exception as {@link AeronException.Category#ERROR}.
      */
+    @SideEffectFree
+    @Impure
     public TimeoutException()
     {
     }
@@ -34,6 +38,8 @@ public class TimeoutException extends AeronException
      *
      * @param message to detail the exception.
      */
+    @SideEffectFree
+    @Impure
     public TimeoutException(final String message)
     {
         super(message);
@@ -44,6 +50,8 @@ public class TimeoutException extends AeronException
      *
      * @param category of this exception.
      */
+    @SideEffectFree
+    @Impure
     public TimeoutException(final Category category)
     {
         super(category);
@@ -55,6 +63,8 @@ public class TimeoutException extends AeronException
      * @param message  providing detail on the error.
      * @param category of the exception.
      */
+    @SideEffectFree
+    @Impure
     public TimeoutException(final String message, final Category category)
     {
         super(message, category);
@@ -66,6 +76,8 @@ public class TimeoutException extends AeronException
      * @param cause    of the error.
      * @param category of the exception.
      */
+    @SideEffectFree
+    @Impure
     public TimeoutException(final Throwable cause, final Category category)
     {
         super(cause, category);
@@ -78,6 +90,8 @@ public class TimeoutException extends AeronException
      * @param cause    of the error.
      * @param category of the exception.
      */
+    @SideEffectFree
+    @Impure
     public TimeoutException(final String message, final Throwable cause, final Category category)
     {
         super(message, cause, category);
@@ -93,6 +107,7 @@ public class TimeoutException extends AeronException
      * @param writableStackTrace is the stack trace writable or not.
      * @param category           of the exception.
      */
+    @Impure
     protected TimeoutException(
         final String message,
         final Throwable cause,

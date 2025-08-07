@@ -15,6 +15,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import static io.aeron.samples.SamplesUtil.rateReporterHandler;
 import static org.agrona.SystemUtil.loadPropertiesFiles;
 
@@ -58,6 +59,7 @@ public class EmbeddedThroughput
      * @param args passed to the process.
      * @throws InterruptedException if the thread is interrupted during linger.
      */
+    @Impure
     public static void main(final String[] args) throws InterruptedException
     {
         loadPropertiesFiles(args);
@@ -118,6 +120,7 @@ public class EmbeddedThroughput
         }
     }
 
+    @Impure
     private static void printRate(
         final double messagesPerSec, final double bytesPerSec, final long totalFragments, final long totalBytes)
     {

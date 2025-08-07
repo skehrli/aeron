@@ -15,6 +15,8 @@
  */
 package io.aeron.samples.archive;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.security.Authenticator;
 import io.aeron.security.SessionProxy;
 import org.agrona.collections.ArrayUtil;
@@ -51,6 +53,7 @@ public final class SampleAuthenticator implements Authenticator
      * @return byte array representation of {@link #PRINCIPAL}
      * @see #PRINCIPAL
      */
+    @SideEffectFree
     public byte[] encodedPrincipal()
     {
         return PRINCIPAL.getBytes(StandardCharsets.US_ASCII);
@@ -63,6 +66,7 @@ public final class SampleAuthenticator implements Authenticator
      * @param encodedCredentials from the Connect Request. Will not be null, but may be 0 length.
      * @param nowMs              current epoch time in milliseconds.
      */
+    @Impure
     public void onConnectRequest(final long sessionId, final byte[] encodedCredentials, final long nowMs)
     {
         final String credentialsString = new String(encodedCredentials, StandardCharsets.US_ASCII);
@@ -88,6 +92,7 @@ public final class SampleAuthenticator implements Authenticator
      * @param encodedCredentials from the Challenge Response. Will not be null, but may be 0 length.
      * @param nowMs              current epoch time in milliseconds.
      */
+    @Impure
     public void onChallengeResponse(final long sessionId, final byte[] encodedCredentials, final long nowMs)
     {
         final String credentialsString = new String(encodedCredentials, StandardCharsets.US_ASCII);
@@ -109,6 +114,7 @@ public final class SampleAuthenticator implements Authenticator
      * @param sessionProxy to use to inform client of status.
      * @param nowMs        current epoch time in milliseconds.
      */
+    @Impure
     public void onConnectedSession(final SessionProxy sessionProxy, final long nowMs)
     {
         final long sessionId = sessionProxy.sessionId();
@@ -143,6 +149,7 @@ public final class SampleAuthenticator implements Authenticator
      * @param sessionProxy to use to inform client of status.
      * @param nowMs        current epoch time in milliseconds.
      */
+    @Impure
     public void onChallengedSession(final SessionProxy sessionProxy, final long nowMs)
     {
         final long sessionId = sessionProxy.sessionId();

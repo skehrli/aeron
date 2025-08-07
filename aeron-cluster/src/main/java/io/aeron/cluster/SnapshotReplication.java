@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.archive.client.AeronArchive;
 import io.aeron.archive.codecs.RecordingSignal;
@@ -29,6 +32,7 @@ class SnapshotReplication implements AutoCloseable
     private final ArrayList<RecordingLog.Snapshot> snapshotsPending = new ArrayList<>();
     private final MultipleRecordingReplication multipleRecordingReplication;
 
+    @Impure
     SnapshotReplication(
         final AeronArchive archive,
         final int srcControlStreamId,
@@ -44,6 +48,8 @@ class SnapshotReplication implements AutoCloseable
             TimeUnit.SECONDS.toNanos(1));
     }
 
+    @SideEffectFree
+    @Impure
     SnapshotReplication(
         final AeronArchive archive,
         final int srcControlStreamId,
@@ -61,27 +67,33 @@ class SnapshotReplication implements AutoCloseable
             replicationProgressIntervalNs);
     }
 
+    @Impure
     void addSnapshot(final RecordingLog.Snapshot snapshot)
     {
         snapshotsPending.add(snapshot);
         multipleRecordingReplication.addRecording(snapshot.recordingId, Aeron.NULL_VALUE, Aeron.NULL_VALUE);
     }
 
+    @Impure
     int poll(final long nowNs)
     {
         return multipleRecordingReplication.poll(nowNs);
     }
 
+    @Impure
     void onSignal(final long correlationId, final long recordingId, final long position, final RecordingSignal signal)
     {
         multipleRecordingReplication.onSignal(correlationId, recordingId, position, signal);
     }
 
+    @Pure
+    @Impure
     boolean isComplete()
     {
         return multipleRecordingReplication.isComplete();
     }
 
+    @Impure
     List<RecordingLog.Snapshot> snapshotsRetrieved()
     {
         final ArrayList<RecordingLog.Snapshot> snapshots = new ArrayList<>();
@@ -96,6 +108,8 @@ class SnapshotReplication implements AutoCloseable
         return snapshots;
     }
 
+    @SideEffectFree
+    @Impure
     static RecordingLog.Snapshot retrievedSnapshot(final RecordingLog.Snapshot pending, final long recordingId)
     {
         return new RecordingLog.Snapshot(
@@ -110,6 +124,7 @@ class SnapshotReplication implements AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         CloseHelper.close(multipleRecordingReplication);

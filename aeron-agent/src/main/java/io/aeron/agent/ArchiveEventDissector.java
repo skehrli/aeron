@@ -15,6 +15,8 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.archive.codecs.*;
 import org.agrona.MutableDirectBuffer;
 
@@ -88,10 +90,12 @@ final class ArchiveEventDissector
     private static final RecordingSignalEventDecoder RECORDING_SIGNAL_EVENT_DECODER = new RecordingSignalEventDecoder();
     private static final ReplayTokenRequestDecoder REPLAY_TOKEN_REQUEST_DECODER = new ReplayTokenRequestDecoder();
 
+    @SideEffectFree
     private ArchiveEventDissector()
     {
     }
 
+    @Impure
     @SuppressWarnings("MethodLength")
     static void dissectControlRequest(
         final ArchiveEventCode eventCode,
@@ -426,6 +430,7 @@ final class ArchiveEventDissector
         }
     }
 
+    @Impure
     static void dissectControlResponse(final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
         int encodedLength = dissectLogHeader(CONTEXT, CMD_OUT_RESPONSE, buffer, offset, builder);
@@ -449,6 +454,7 @@ final class ArchiveEventDissector
         CONTROL_RESPONSE_DECODER.getErrorMessage(builder);
     }
 
+    @Impure
     static void dissectRecordingSignal(final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
         int encodedLength = dissectLogHeader(CONTEXT, RECORDING_SIGNAL, buffer, offset, builder);
@@ -470,6 +476,7 @@ final class ArchiveEventDissector
             .append(" signal=").append(RECORDING_SIGNAL_EVENT_DECODER.signal());
     }
 
+    @Impure
     static void dissectReplicationSessionDone(
         final MutableDirectBuffer buffer,
         final int offset,
@@ -515,6 +522,7 @@ final class ArchiveEventDissector
             .append(" isSynced=").append(isSynced);
     }
 
+    @Impure
     static void dissectReplaySessionStateChange(
         final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
@@ -543,6 +551,7 @@ final class ArchiveEventDissector
         builder.append("\"");
     }
 
+    @Impure
     static void dissectRecordingSessionStateChange(
         final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
@@ -566,6 +575,7 @@ final class ArchiveEventDissector
         builder.append("\"");
     }
 
+    @Impure
     static void dissectReplicationSessionStateChange(
         final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
@@ -595,6 +605,7 @@ final class ArchiveEventDissector
         builder.append("\"");
     }
 
+    @Impure
     static void dissectControlSessionStateChange(
         final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
@@ -614,6 +625,7 @@ final class ArchiveEventDissector
         builder.append("\"");
     }
 
+    @Impure
     static void dissectReplaySessionError(
         final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
@@ -632,6 +644,7 @@ final class ArchiveEventDissector
         buffer.getStringAscii(absoluteOffset, builder, LITTLE_ENDIAN);
     }
 
+    @Impure
     static void dissectCatalogResize(
         final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
@@ -653,6 +666,7 @@ final class ArchiveEventDissector
         builder.append(" entries (").append(newCatalogLength).append(" bytes)");
     }
 
+    @Impure
     private static void appendConnect(final StringBuilder builder)
     {
         builder.append(": correlationId=").append(CONNECT_REQUEST_DECODER.correlationId())
@@ -663,6 +677,7 @@ final class ArchiveEventDissector
         CONNECT_REQUEST_DECODER.getResponseChannel(builder);
     }
 
+    @Impure
     private static void appendAuthConnect(final StringBuilder builder)
     {
         builder.append(": correlationId=").append(AUTH_CONNECT_REQUEST_DECODER.correlationId())
@@ -675,11 +690,13 @@ final class ArchiveEventDissector
         builder.append(" encodedCredentialsLength=").append(AUTH_CONNECT_REQUEST_DECODER.encodedCredentialsLength());
     }
 
+    @Impure
     private static void appendCloseSession(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(CLOSE_SESSION_REQUEST_DECODER.controlSessionId());
     }
 
+    @Impure
     private static void appendStartRecording(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(START_RECORDING_REQUEST_DECODER.controlSessionId())
@@ -691,6 +708,7 @@ final class ArchiveEventDissector
         START_RECORDING_REQUEST_DECODER.getChannel(builder);
     }
 
+    @Impure
     private static void appendStartRecording2(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(START_RECORDING_REQUEST2_DECODER.controlSessionId())
@@ -703,6 +721,7 @@ final class ArchiveEventDissector
         START_RECORDING_REQUEST2_DECODER.getChannel(builder);
     }
 
+    @Impure
     private static void appendStopRecording(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(STOP_RECORDING_REQUEST_DECODER.controlSessionId())
@@ -713,6 +732,7 @@ final class ArchiveEventDissector
         STOP_RECORDING_REQUEST_DECODER.getChannel(builder);
     }
 
+    @Impure
     private static void appendReplay(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(REPLAY_REQUEST_DECODER.controlSessionId())
@@ -726,6 +746,7 @@ final class ArchiveEventDissector
         REPLAY_REQUEST_DECODER.getReplayChannel(builder);
     }
 
+    @Impure
     private static void appendStopReplay(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(STOP_REPLAY_REQUEST_DECODER.controlSessionId())
@@ -733,6 +754,7 @@ final class ArchiveEventDissector
             .append(" replaySessionId=").append(STOP_REPLAY_REQUEST_DECODER.replaySessionId());
     }
 
+    @Impure
     private static void appendListRecordings(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(LIST_RECORDINGS_REQUEST_DECODER.controlSessionId())
@@ -741,6 +763,7 @@ final class ArchiveEventDissector
             .append(" recordCount=").append(LIST_RECORDINGS_REQUEST_DECODER.recordCount());
     }
 
+    @Impure
     private static void appendListRecording(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(LIST_RECORDING_REQUEST_DECODER.controlSessionId())
@@ -748,6 +771,7 @@ final class ArchiveEventDissector
             .append(" recordingId=").append(LIST_RECORDING_REQUEST_DECODER.recordingId());
     }
 
+    @Impure
     private static void appendListRecordingsForUri(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(LIST_RECORDINGS_FOR_URI_REQUEST_DECODER.controlSessionId())
@@ -760,6 +784,7 @@ final class ArchiveEventDissector
         LIST_RECORDINGS_FOR_URI_REQUEST_DECODER.getChannel(builder);
     }
 
+    @Impure
     private static void appendExtendRecording(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(EXTEND_RECORDING_REQUEST_DECODER.controlSessionId())
@@ -772,6 +797,7 @@ final class ArchiveEventDissector
         EXTEND_RECORDING_REQUEST_DECODER.getChannel(builder);
     }
 
+    @Impure
     private static void appendExtendRecording2(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(EXTEND_RECORDING_REQUEST2_DECODER.controlSessionId())
@@ -785,6 +811,7 @@ final class ArchiveEventDissector
         EXTEND_RECORDING_REQUEST2_DECODER.getChannel(builder);
     }
 
+    @Impure
     private static void appendRecordingPosition(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(RECORDING_POSITION_REQUEST_DECODER.controlSessionId())
@@ -792,6 +819,7 @@ final class ArchiveEventDissector
             .append(" recordingId=").append(RECORDING_POSITION_REQUEST_DECODER.recordingId());
     }
 
+    @Impure
     private static void appendTruncateRecording(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(TRUNCATE_RECORDING_REQUEST_DECODER.controlSessionId())
@@ -800,6 +828,7 @@ final class ArchiveEventDissector
             .append(" position=").append(TRUNCATE_RECORDING_REQUEST_DECODER.position());
     }
 
+    @Impure
     private static void appendStopRecordingSubscription(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(STOP_RECORDING_SUBSCRIPTION_REQUEST_DECODER.controlSessionId())
@@ -807,6 +836,7 @@ final class ArchiveEventDissector
             .append(" subscriptionId=").append(STOP_RECORDING_SUBSCRIPTION_REQUEST_DECODER.subscriptionId());
     }
 
+    @Impure
     private static void appendStopRecordingByIdentity(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(STOP_RECORDING_BY_IDENTITY_REQUEST_DECODER.controlSessionId())
@@ -814,6 +844,7 @@ final class ArchiveEventDissector
             .append(" recordingId=").append(STOP_RECORDING_BY_IDENTITY_REQUEST_DECODER.recordingId());
     }
 
+    @Impure
     private static void appendStopPosition(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(STOP_POSITION_REQUEST_DECODER.controlSessionId())
@@ -821,6 +852,7 @@ final class ArchiveEventDissector
             .append(" recordingId=").append(STOP_POSITION_REQUEST_DECODER.recordingId());
     }
 
+    @Impure
     private static void appendFindLastMatchingRecord(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(FIND_LAST_MATCHING_RECORDING_REQUEST_DECODER.controlSessionId())
@@ -833,6 +865,7 @@ final class ArchiveEventDissector
         FIND_LAST_MATCHING_RECORDING_REQUEST_DECODER.getChannel(builder);
     }
 
+    @Impure
     private static void appendListRecordingSubscriptions(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(LIST_RECORDING_SUBSCRIPTIONS_REQUEST_DECODER.controlSessionId())
@@ -846,6 +879,7 @@ final class ArchiveEventDissector
         LIST_RECORDING_SUBSCRIPTIONS_REQUEST_DECODER.getChannel(builder);
     }
 
+    @Impure
     private static void appendStartBoundedReplay(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(BOUNDED_REPLAY_REQUEST_DECODER.controlSessionId())
@@ -860,6 +894,7 @@ final class ArchiveEventDissector
         BOUNDED_REPLAY_REQUEST_DECODER.getReplayChannel(builder);
     }
 
+    @Impure
     private static void appendStopAllReplays(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(STOP_ALL_REPLAYS_REQUEST_DECODER.controlSessionId())
@@ -867,6 +902,7 @@ final class ArchiveEventDissector
             .append(" recordingId=").append(STOP_ALL_REPLAYS_REQUEST_DECODER.recordingId());
     }
 
+    @Impure
     private static void appendReplicate(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(REPLICATE_REQUEST_DECODER.controlSessionId())
@@ -882,6 +918,7 @@ final class ArchiveEventDissector
         REPLICATE_REQUEST_DECODER.getLiveDestination(builder);
     }
 
+    @Impure
     private static void appendReplicate2(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(REPLICATE_REQUEST2_DECODER.controlSessionId())
@@ -903,6 +940,7 @@ final class ArchiveEventDissector
         REPLICATE_REQUEST2_DECODER.getReplicationChannel(builder);
     }
 
+    @Impure
     private static void appendStopReplication(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(STOP_REPLICATION_REQUEST_DECODER.controlSessionId())
@@ -910,6 +948,7 @@ final class ArchiveEventDissector
             .append(" replicationId=").append(STOP_REPLICATION_REQUEST_DECODER.replicationId());
     }
 
+    @Impure
     private static void appendStartPosition(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(START_POSITION_REQUEST_DECODER.controlSessionId())
@@ -917,6 +956,7 @@ final class ArchiveEventDissector
             .append(" recordingId=").append(START_POSITION_REQUEST_DECODER.recordingId());
     }
 
+    @Impure
     private static void appendDetachSegments(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(DETACH_SEGMENTS_REQUEST_DECODER.controlSessionId())
@@ -924,6 +964,7 @@ final class ArchiveEventDissector
             .append(" recordingId=").append(DETACH_SEGMENTS_REQUEST_DECODER.recordingId());
     }
 
+    @Impure
     private static void appendDeleteDetachedSegments(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(DELETE_DETACHED_SEGMENTS_REQUEST_DECODER.controlSessionId())
@@ -931,6 +972,7 @@ final class ArchiveEventDissector
             .append(" recordingId=").append(DELETE_DETACHED_SEGMENTS_REQUEST_DECODER.recordingId());
     }
 
+    @Impure
     private static void appendPurgeSegments(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(PURGE_SEGMENTS_REQUEST_DECODER.controlSessionId())
@@ -939,6 +981,7 @@ final class ArchiveEventDissector
             .append(" newStartPosition=").append(PURGE_SEGMENTS_REQUEST_DECODER.newStartPosition());
     }
 
+    @Impure
     private static void appendAttachSegments(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(ATTACH_SEGMENTS_REQUEST_DECODER.controlSessionId())
@@ -946,6 +989,7 @@ final class ArchiveEventDissector
             .append(" recordingId=").append(ATTACH_SEGMENTS_REQUEST_DECODER.recordingId());
     }
 
+    @Impure
     private static void appendMigrateSegments(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(MIGRATE_SEGMENTS_REQUEST_DECODER.controlSessionId())
@@ -954,12 +998,14 @@ final class ArchiveEventDissector
             .append(" dstRecordingId=").append(MIGRATE_SEGMENTS_REQUEST_DECODER.dstRecordingId());
     }
 
+    @Impure
     private static void appendKeepAlive(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(KEEP_ALIVE_REQUEST_DECODER.controlSessionId())
             .append(" correlationId=").append(KEEP_ALIVE_REQUEST_DECODER.correlationId());
     }
 
+    @Impure
     private static void appendTaggedReplicate(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(TAGGED_REPLICATE_REQUEST_DECODER.controlSessionId())
@@ -977,6 +1023,7 @@ final class ArchiveEventDissector
         TAGGED_REPLICATE_REQUEST_DECODER.getLiveDestination(builder);
     }
 
+    @Impure
     private static void appendPurgeRecording(final StringBuilder builder)
     {
         builder.append(": controlSessionId=").append(PURGE_RECORDING_REQUEST_DECODER.controlSessionId())
@@ -984,6 +1031,7 @@ final class ArchiveEventDissector
             .append(" recordingId=").append(PURGE_RECORDING_REQUEST_DECODER.recordingId());
     }
 
+    @Impure
     private static void appendReplayToken(final StringBuilder builder)
     {
         builder

@@ -15,6 +15,9 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.checker.mustcall.qual.Owning;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.archive.codecs.MessageHeaderDecoder;
 import org.agrona.DirectBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
@@ -57,6 +60,7 @@ public final class ArchiveEventLogger
     private final MessageHeaderDecoder headerDecoder = new MessageHeaderDecoder();
     private final ManyToOneRingBuffer ringBuffer;
 
+    @SideEffectFree
     ArchiveEventLogger(final ManyToOneRingBuffer eventRingBuffer)
     {
         ringBuffer = eventRingBuffer;
@@ -69,6 +73,7 @@ public final class ArchiveEventLogger
      * @param offset in the buffer at which the request begins.
      * @param length of the request in the buffer.
      */
+    @Impure
     public void logControlRequest(final DirectBuffer buffer, final int offset, final int length)
     {
         headerDecoder.wrap(buffer, offset);
@@ -88,6 +93,7 @@ public final class ArchiveEventLogger
      * @param offset at which response message begins.
      * @param length of the response in the buffer.
      */
+    @Impure
     public void logControlResponse(final DirectBuffer buffer, final int offset, final int length)
     {
         log(CMD_OUT_RESPONSE, buffer, offset, length);
@@ -100,6 +106,7 @@ public final class ArchiveEventLogger
      * @param offset at which response message begins.
      * @param length of the response in the buffer.
      */
+    @Impure
     public void logRecordingSignal(final DirectBuffer buffer, final int offset, final int length)
     {
         log(RECORDING_SIGNAL, buffer, offset, length);
@@ -117,9 +124,10 @@ public final class ArchiveEventLogger
      *                    if not relevant).
      * @param reason      a string indicating the reason for the state change.
      */
+    @Impure
     public <E extends Enum<E>> void logReplaySessionStateChange(
-        final E oldState,
-        final E newState,
+        final @Owning E oldState,
+        final @Owning E newState,
         final long sessionId,
         final long recordingId,
         final long position,
@@ -165,9 +173,10 @@ public final class ArchiveEventLogger
      *                    if not relevant).
      * @param reason      a string indicating the reason for the state change.
      */
+    @Impure
     public <E extends Enum<E>> void logRecordingSessionStateChange(
-        final E oldState,
-        final E newState,
+        final @Owning E oldState,
+        final @Owning E newState,
         final long recordingId,
         final long position,
         final String reason)
@@ -213,9 +222,10 @@ public final class ArchiveEventLogger
      *                       if not relevant).
      * @param reason         a string indicating the reason for the state change.
      */
+    @Impure
     public <E extends Enum<E>> void logReplicationSessionStateChange(
-        final E oldState,
-        final E newState,
+        final @Owning E oldState,
+        final @Owning E newState,
         final long replicationId,
         final long srcRecordingId,
         final long dstRecordingId,
@@ -261,9 +271,10 @@ public final class ArchiveEventLogger
      * @param controlSessionId identity for the control session on the Archive.
      * @param reason           a string indicating the reason for the state change.
      */
+    @Impure
     public <E extends Enum<E>> void logControlSessionStateChange(
-        final E oldState,
-        final E newState,
+        final @Owning E oldState,
+        final @Owning E newState,
         final long controlSessionId,
         final String reason)
     {
@@ -310,6 +321,7 @@ public final class ArchiveEventLogger
      * @param isSynced         has the destination recording position reached the stop position of the source
      *                         recording.
      */
+    @Impure
     public void logReplicationSessionDone(
         final long controlSessionId,
         final long replicationId,
@@ -364,6 +376,7 @@ public final class ArchiveEventLogger
      * @param recordingId  to which the error applies.
      * @param errorMessage which resulted.
      */
+    @Impure
     public void logReplaySessionError(final long sessionId, final long recordingId, final String errorMessage)
     {
         final int length = SIZE_OF_LONG * 2 + SIZE_OF_INT + errorMessage.length();
@@ -398,6 +411,7 @@ public final class ArchiveEventLogger
      * @param oldCatalogLength before the resize.
      * @param newCatalogLength after the resize.
      */
+    @Impure
     public void logCatalogResize(final long oldCatalogLength, final long newCatalogLength)
     {
         final int length = SIZE_OF_LONG * 2;
@@ -433,6 +447,7 @@ public final class ArchiveEventLogger
      * @param offset    in the buffer at which the event begins.
      * @param length    of the encoded event.
      */
+    @Impure
     private void log(final ArchiveEventCode eventCode, final DirectBuffer buffer, final int offset, final int length)
     {
         final int captureLength = captureLength(length);

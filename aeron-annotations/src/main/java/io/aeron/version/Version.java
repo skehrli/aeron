@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.aeron.version;
+import org.checkerframework.dataflow.qual.Pure;
 
 /**
  * Version information for a specific component.
@@ -23,20 +24,24 @@ public interface Version
     /**
      * @return major version portion.
      */
+    @Pure
     int majorVersion();
 
     /**
      * @return minor version portion.
      */
+    @Pure
     int minorVersion();
 
     /**
      * @return patched version portion.
      */
+    @Pure
     int patchVersion();
 
     /**
      * @return git SHA.
      */
+    @Pure
     String gitSha();
 }

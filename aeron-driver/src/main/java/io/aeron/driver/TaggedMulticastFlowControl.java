@@ -15,6 +15,7 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.protocol.ErrorFlyweight;
 import io.aeron.protocol.StatusMessageFlyweight;
 
@@ -38,6 +39,7 @@ public class TaggedMulticastFlowControl extends AbstractMinMulticastFlowControl
      */
     public static final String FC_PARAM_VALUE = "tagged";
 
+    @Impure
     TaggedMulticastFlowControl()
     {
         super(true);
@@ -46,6 +48,7 @@ public class TaggedMulticastFlowControl extends AbstractMinMulticastFlowControl
     /**
      * {@inheritDoc}
      */
+    @Impure
     public long onStatusMessage(
         final StatusMessageFlyweight flyweight,
         final InetSocketAddress receiverAddress,
@@ -61,6 +64,7 @@ public class TaggedMulticastFlowControl extends AbstractMinMulticastFlowControl
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onTriggerSendSetup(
         final StatusMessageFlyweight flyweight,
         final InetSocketAddress receiverAddress,
@@ -72,11 +76,13 @@ public class TaggedMulticastFlowControl extends AbstractMinMulticastFlowControl
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onError(final ErrorFlyweight errorFlyweight, final InetSocketAddress receiverAddress, final long timeNs)
     {
         processError(errorFlyweight, receiverAddress, timeNs, matchesTag(errorFlyweight));
     }
 
+    @Impure
     @SuppressWarnings("deprecation")
     private boolean matchesTag(final StatusMessageFlyweight flyweight)
     {
@@ -107,6 +113,7 @@ public class TaggedMulticastFlowControl extends AbstractMinMulticastFlowControl
         return result;
     }
 
+    @Impure
     private boolean matchesTag(final ErrorFlyweight errorFlyweight)
     {
         return errorFlyweight.hasGroupTag() && errorFlyweight.groupTag() == super.groupTag();

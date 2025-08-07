@@ -15,6 +15,7 @@
  */
 package io.aeron.driver.status;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.status.LocalSocketAddressStatus;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.concurrent.status.AtomicCounter;
@@ -39,6 +40,7 @@ public class SendLocalSocketAddress
      * @param channelStatusId with which the new counter is associated.
      * @return the allocated counter.
      */
+    @Impure
     public static AtomicCounter allocate(
         final MutableDirectBuffer tempBuffer,
         final CountersManager countersManager,

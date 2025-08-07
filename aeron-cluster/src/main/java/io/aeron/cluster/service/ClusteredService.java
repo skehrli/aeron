@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster.service;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.ExclusivePublication;
 import io.aeron.Image;
 import io.aeron.Publication;
@@ -46,6 +48,7 @@ public interface ClusteredService
      * @param cluster       with which the service can interact.
      * @param snapshotImage from which the service can load its archived state which can be null when no snapshot.
      */
+    @SideEffectFree
     void onStart(Cluster cluster, Image snapshotImage);
 
     /**
@@ -54,6 +57,7 @@ public interface ClusteredService
      * @param session   for the client which have been opened.
      * @param timestamp at which the session was opened.
      */
+    @SideEffectFree
     void onSessionOpen(ClientSession session, long timestamp);
 
     /**
@@ -63,6 +67,7 @@ public interface ClusteredService
      * @param timestamp   at which the session was closed.
      * @param closeReason the session was closed.
      */
+    @SideEffectFree
     void onSessionClose(ClientSession session, long timestamp, CloseReason closeReason);
 
     /**
@@ -75,6 +80,7 @@ public interface ClusteredService
      * @param length    of the encoded message.
      * @param header    aeron header for the incoming message.
      */
+    @SideEffectFree
     void onSessionMessage(
         ClientSession session,
         long timestamp,
@@ -89,6 +95,7 @@ public interface ClusteredService
      * @param correlationId for the expired timer.
      * @param timestamp     at which the timer expired.
      */
+    @SideEffectFree
     void onTimerEvent(long correlationId, long timestamp);
 
     /**
@@ -101,6 +108,7 @@ public interface ClusteredService
      *
      * @param snapshotPublication to which the state should be recorded.
      */
+    @SideEffectFree
     void onTakeSnapshot(ExclusivePublication snapshotPublication);
 
     /**
@@ -108,6 +116,7 @@ public interface ClusteredService
      *
      * @param newRole that the node has assumed.
      */
+    @SideEffectFree
     void onRoleChange(Cluster.Role newRole);
 
     /**
@@ -115,6 +124,7 @@ public interface ClusteredService
      *
      * @param cluster with which the service can interact.
      */
+    @SideEffectFree
     void onTerminate(Cluster cluster);
 
     /**
@@ -129,6 +139,7 @@ public interface ClusteredService
      * @param timeUnit            for the timestamps in the coming leadership term.
      * @param appVersion          for the application configured in the consensus module.
      */
+    @SideEffectFree
     default void onNewLeadershipTermEvent(
         long leadershipTermId,
         long logPosition,
@@ -156,6 +167,7 @@ public interface ClusteredService
      * @return 0 if no work is done otherwise a positive number.
      * @since 1.40.0
      */
+    @Pure
     default int doBackgroundWork(final long nowNs)
     {
         return 0;

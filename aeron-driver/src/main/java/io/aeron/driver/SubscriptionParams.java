@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.ChannelUri;
 import io.aeron.CommonContext;
@@ -44,6 +46,7 @@ final class SubscriptionParams
     long untetheredLingerTimeoutNs;
     long untetheredRestingTimeoutNs;
 
+    @Impure
     static SubscriptionParams getSubscriptionParams(
         final ChannelUri channelUri, final MediaDriver.Context context, final int publisherTermBufferLength)
     {
@@ -137,12 +140,14 @@ final class SubscriptionParams
         return params;
     }
 
+    @Impure
     private void getUntetheredWindowLimitTimeout(final ChannelUri channelUri, final MediaDriver.Context ctx)
     {
         untetheredWindowLimitTimeoutNs = getTimeoutNs(
             channelUri, UNTETHERED_WINDOW_LIMIT_TIMEOUT_PARAM_NAME, ctx.untetheredWindowLimitTimeoutNs());
     }
 
+    @Impure
     private void getUntetheredLingerTimeout(final ChannelUri channelUri, final MediaDriver.Context ctx)
     {
         untetheredLingerTimeoutNs =
@@ -153,18 +158,21 @@ final class SubscriptionParams
         }
     }
 
+    @Impure
     private void getUntetheredRestingTimeout(final ChannelUri channelUri, final MediaDriver.Context ctx)
     {
         untetheredRestingTimeoutNs = getTimeoutNs(
             channelUri, UNTETHERED_RESTING_TIMEOUT_PARAM_NAME, ctx.untetheredRestingTimeoutNs());
     }
 
+    @Impure
     private static long getTimeoutNs(final ChannelUri channelUri, final String paramName, final long defaultValue)
     {
         final String timeoutString = channelUri.get(paramName);
         return null != timeoutString ? SystemUtil.parseDuration(paramName, timeoutString) : defaultValue;
     }
 
+    @Impure
     static void validateInitialWindowForRcvBuf(
         final SubscriptionParams params,
         final String channel,
@@ -188,6 +196,7 @@ final class SubscriptionParams
         }
     }
 
+    @Pure
     public String toString()
     {
         return "SubscriptionParams" +

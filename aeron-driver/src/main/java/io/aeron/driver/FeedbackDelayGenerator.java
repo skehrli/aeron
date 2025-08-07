@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.aeron.driver;
+import org.checkerframework.dataflow.qual.Impure;
 
 /**
  * Feedback delay generator.
@@ -25,6 +26,7 @@ public interface FeedbackDelayGenerator
      *
      * @return delay value in nanoseconds
      */
+    @Impure
     long generateDelayNs();
 
     /**
@@ -33,6 +35,7 @@ public interface FeedbackDelayGenerator
      *
      * @return delay value in nanoseconds
      */
+    @Impure
     default long retryDelayNs()
     {
         return generateDelayNs();

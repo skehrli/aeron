@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.ChannelUri;
 import io.aeron.driver.media.SendChannelEndpoint;
 import org.agrona.concurrent.OneToOneConcurrentArrayQueue;
@@ -29,6 +31,8 @@ final class SenderProxy extends CommandProxy
 {
     private Sender sender;
 
+    @SideEffectFree
+    @Impure
     SenderProxy(
         final ThreadingMode threadingMode,
         final OneToOneConcurrentArrayQueue<Runnable> commandQueue,
@@ -37,11 +41,13 @@ final class SenderProxy extends CommandProxy
         super(threadingMode, commandQueue, failCount);
     }
 
+    @Impure
     void sender(final Sender sender)
     {
         this.sender = sender;
     }
 
+    @Impure
     void registerSendChannelEndpoint(final SendChannelEndpoint channelEndpoint)
     {
         if (notConcurrent())
@@ -54,6 +60,7 @@ final class SenderProxy extends CommandProxy
         }
     }
 
+    @Impure
     void closeSendChannelEndpoint(final SendChannelEndpoint channelEndpoint)
     {
         if (notConcurrent())
@@ -66,6 +73,7 @@ final class SenderProxy extends CommandProxy
         }
     }
 
+    @Impure
     void removeNetworkPublication(final NetworkPublication publication)
     {
         if (notConcurrent())
@@ -78,6 +86,7 @@ final class SenderProxy extends CommandProxy
         }
     }
 
+    @Impure
     void newNetworkPublication(final NetworkPublication publication)
     {
         if (notConcurrent())
@@ -90,6 +99,7 @@ final class SenderProxy extends CommandProxy
         }
     }
 
+    @Impure
     void addDestination(
         final SendChannelEndpoint channelEndpoint,
         final ChannelUri channelUri,
@@ -106,6 +116,7 @@ final class SenderProxy extends CommandProxy
         }
     }
 
+    @Impure
     void removeDestination(
         final SendChannelEndpoint channelEndpoint, final ChannelUri channelUri, final InetSocketAddress address)
     {
@@ -119,6 +130,7 @@ final class SenderProxy extends CommandProxy
         }
     }
 
+    @Impure
     void removeDestination(
         final SendChannelEndpoint channelEndpoint, final long destinationRegistrationId)
     {
@@ -132,6 +144,7 @@ final class SenderProxy extends CommandProxy
         }
     }
 
+    @Impure
     void onResolutionChange(
         final SendChannelEndpoint channelEndpoint, final String endpoint, final InetSocketAddress newAddress)
     {

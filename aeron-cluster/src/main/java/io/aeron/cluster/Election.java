@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.Aeron;
 import io.aeron.ChannelUri;
 import io.aeron.ChannelUriStringBuilder;
@@ -88,6 +91,7 @@ class Election
     private long lastPublishedCommitPosition;
     private int gracefulClosedLeaderId;
 
+    @Impure
     Election(
         final boolean isNodeStartup,
         final int gracefulClosedLeaderId,
@@ -138,36 +142,44 @@ class Election
         }
     }
 
+    @Pure
     ClusterMember leader()
     {
         return leaderMember;
     }
 
+    @Pure
     int logSessionId()
     {
         return logSessionId;
     }
 
+    @Pure
     long leadershipTermId()
     {
         return leadershipTermId;
     }
 
+    @Pure
     long logPosition()
     {
         return logPosition;
     }
 
+    @Pure
     boolean isLeaderStartup()
     {
         return isLeaderStartup;
     }
 
+    @Pure
+    @Impure
     int thisMemberId()
     {
         return thisMember.id();
     }
 
+    @Impure
     int doWork(final long nowNs)
     {
         int workCount = 0;
@@ -249,6 +261,7 @@ class Election
         return workCount;
     }
 
+    @Impure
     void handleError(final long nowNs, final Throwable ex)
     {
         ctx.countedErrorHandler().onError(ex);
@@ -261,6 +274,7 @@ class Election
         }
     }
 
+    @Impure
     void onRecordingSignal(
         final long correlationId, final long recordingId, final long position, final RecordingSignal signal)
     {
@@ -276,6 +290,7 @@ class Election
         }
     }
 
+    @Impure
     void onCanvassPosition(
         final long logLeadershipTermId,
         final long logPosition,
@@ -322,6 +337,7 @@ class Election
         }
     }
 
+    @Impure
     void onRequestVote(
         final long logLeadershipTermId,
         final long logPosition,
@@ -365,6 +381,7 @@ class Election
         }
     }
 
+    @Impure
     void onVote(
         final long candidateTermId,
         final long logLeadershipTermId,
@@ -394,6 +411,7 @@ class Election
         }
     }
 
+    @Impure
     void onNewLeadershipTerm(
         final long logLeadershipTermId,
         final long nextLeadershipTermId,
@@ -508,6 +526,7 @@ class Election
         }
     }
 
+    @Impure
     void onAppendPosition(
         final long leadershipTermId,
         final long logPosition,
@@ -534,6 +553,7 @@ class Election
         }
     }
 
+    @Impure
     void onCommitPosition(final long leadershipTermId, final long logPosition, final int leaderMemberId)
     {
         if (INIT == state)
@@ -559,6 +579,7 @@ class Election
         }
     }
 
+    @Impure
     void onReplayNewLeadershipTermEvent(
         final long leadershipTermId,
         final long logPosition,
@@ -579,6 +600,7 @@ class Election
         }
     }
 
+    @Impure
     void onTruncateLogEntry(
         final int memberId,
         final ElectionState state,
@@ -604,6 +626,7 @@ class Election
             " newPosition=" + newPosition);
     }
 
+    @Impure
     private int init(final long nowNs)
     {
         if (isFirstInit)
@@ -645,6 +668,7 @@ class Election
         return 1;
     }
 
+    @Impure
     private int canvass(final long nowNs)
     {
         int workCount = 0;
@@ -677,6 +701,7 @@ class Election
         return workCount;
     }
 
+    @Impure
     private int nominate(final long nowNs)
     {
         if (nowNs >= nominationDeadlineNs)
@@ -699,6 +724,7 @@ class Election
         return 0;
     }
 
+    @Impure
     private int candidateBallot(final long nowNs)
     {
         int workCount = 0;
@@ -741,6 +767,7 @@ class Election
         return workCount;
     }
 
+    @Impure
     private int followerBallot(final long nowNs)
     {
         int workCount = 0;
@@ -754,6 +781,7 @@ class Election
         return workCount;
     }
 
+    @Impure
     private int leaderLogReplication(final long nowNs)
     {
         int workCount = 0;
@@ -773,6 +801,7 @@ class Election
         return workCount;
     }
 
+    @Impure
     private int leaderReplay(final long nowNs)
     {
         int workCount = 0;
@@ -810,6 +839,7 @@ class Election
         return workCount;
     }
 
+    @Impure
     private int leaderInit(final long nowNs)
     {
         consensusModuleAgent.joinLogAsLeader(leadershipTermId, logPosition, logSessionId, isLeaderStartup);
@@ -819,6 +849,7 @@ class Election
         return 1;
     }
 
+    @Impure
     private int leaderReady(final long nowNs)
     {
         int workCount = consensusModuleAgent.updateLeaderPosition(nowNs, appendPosition);
@@ -839,6 +870,7 @@ class Election
         return workCount;
     }
 
+    @Impure
     private int followerLogReplication(final long nowNs)
     {
         int workCount = 0;
@@ -902,6 +934,7 @@ class Election
         return workCount;
     }
 
+    @Impure
     private int followerReplay(final long nowNs)
     {
         int workCount = 0;
@@ -932,6 +965,7 @@ class Election
         return workCount;
     }
 
+    @Impure
     private int followerCatchupInit(final long nowNs)
     {
         if (null == logSubscription)
@@ -970,6 +1004,7 @@ class Election
         return 1;
     }
 
+    @Impure
     private int followerCatchupAwait(final long nowNs)
     {
         int workCount = 0;
@@ -1001,6 +1036,7 @@ class Election
         return workCount;
     }
 
+    @Impure
     private int followerCatchup(final long nowNs)
     {
         int workCount = consensusModuleAgent.catchupPoll(catchupCommitPosition, nowNs);
@@ -1027,6 +1063,7 @@ class Election
         return workCount;
     }
 
+    @Impure
     private int followerLogInit(final long nowNs)
     {
         if (null == logSubscription)
@@ -1046,6 +1083,7 @@ class Election
         return 1;
     }
 
+    @Impure
     private int followerLogAwait(final long nowNs)
     {
         int workCount = 0;
@@ -1080,6 +1118,7 @@ class Election
         return workCount;
     }
 
+    @Impure
     private int followerReady(final long nowNs)
     {
         if (consensusPublisher.appendPosition(
@@ -1096,6 +1135,7 @@ class Election
         return 1;
     }
 
+    @Impure
     private void placeVote(final long candidateTermId, final int candidateId, final boolean vote)
     {
         final ClusterMember candidate = clusterMemberByIdMap.get(candidateId);
@@ -1112,6 +1152,7 @@ class Election
         }
     }
 
+    @Impure
     private int publishNewLeadershipTermOnInterval(final long nowNs)
     {
         int workCount = 0;
@@ -1126,6 +1167,7 @@ class Election
         return workCount;
     }
 
+    @Impure
     private int publishCommitPositionOnInterval(final long quorumPosition, final long nowNs)
     {
         int workCount = 0;
@@ -1143,6 +1185,7 @@ class Election
         return workCount;
     }
 
+    @Impure
     private void publishCanvassPosition()
     {
         for (final ClusterMember member : clusterMembers)
@@ -1164,6 +1207,7 @@ class Election
         }
     }
 
+    @Impure
     private void publishNewLeadershipTerm(final long timestamp)
     {
         for (final ClusterMember member : clusterMembers)
@@ -1172,6 +1216,7 @@ class Election
         }
     }
 
+    @Impure
     private void publishNewLeadershipTerm(
         final ClusterMember member, final long logLeadershipTermId, final long timestamp)
     {
@@ -1207,6 +1252,7 @@ class Election
         }
     }
 
+    @Impure
     private int publishFollowerReplicationPosition(final long nowNs)
     {
         final long position = logReplication.position();
@@ -1225,12 +1271,14 @@ class Election
         return 0;
     }
 
+    @Impure
     private boolean sendCatchupPosition(final String catchupEndpoint)
     {
         return consensusPublisher.catchupPosition(
             leaderMember.publication(), leadershipTermId, logPosition, thisMember.id(), catchupEndpoint);
     }
 
+    @Impure
     private void addCatchupLogDestination()
     {
         final String destination = ChannelUri.createDestinationUri(ctx.logChannel(), thisMember.catchupEndpoint());
@@ -1238,6 +1286,7 @@ class Election
         consensusModuleAgent.catchupLogDestination(destination);
     }
 
+    @Impure
     private void addLiveLogDestination()
     {
         final String destination;
@@ -1253,6 +1302,7 @@ class Election
         consensusModuleAgent.liveLogDestination(destination);
     }
 
+    @Impure
     private Subscription addFollowerSubscription()
     {
         final Aeron aeron = ctx.aeron();
@@ -1272,6 +1322,7 @@ class Election
         return aeron.addSubscription(channel, ctx.logStreamId());
     }
 
+    @Impure
     private void state(final ElectionState newState, final long nowNs, final String reason)
     {
         if (newState != state)
@@ -1327,6 +1378,7 @@ class Election
         }
     }
 
+    @Impure
     private void stopCatchup()
     {
         consensusModuleAgent.stopAllCatchups();
@@ -1334,6 +1386,7 @@ class Election
         catchupCommitPosition = 0;
     }
 
+    @Impure
     private void resetMembers()
     {
         ClusterMember.reset(clusterMembers);
@@ -1341,6 +1394,7 @@ class Election
         leaderMember = null;
     }
 
+    @Impure
     private void stopReplay()
     {
         if (null != logReplay)
@@ -1350,6 +1404,7 @@ class Election
         }
     }
 
+    @Impure
     private void stopLogReplication()
     {
         if (null != logReplication)
@@ -1362,11 +1417,14 @@ class Election
         lastPublishedCommitPosition = 0;
     }
 
+    @Pure
+    @Impure
     private boolean isPassiveMember()
     {
         return null == ClusterMember.findMember(clusterMembers, thisMember.id());
     }
 
+    @Impure
     private void ensureRecordingLogCoherent(
         final long leadershipTermId,
         final long termBaseLogPosition,
@@ -1384,6 +1442,7 @@ class Election
             nowNs);
     }
 
+    @Impure
     static void ensureRecordingLogCoherent(
         final ConsensusModule.Context ctx,
         final long recordingId,
@@ -1416,12 +1475,14 @@ class Election
             ctx.fileSyncLevel());
     }
 
+    @Impure
     private void updateRecordingLog(final long nowNs)
     {
         ensureRecordingLogCoherent(leadershipTermId, logPosition, NULL_VALUE, nowNs);
         logLeadershipTermId = leadershipTermId;
     }
 
+    @Impure
     private void updateRecordingLogForReplication(
         final long leadershipTermId,
         final long termBaseLogPosition,
@@ -1432,6 +1493,7 @@ class Election
         logLeadershipTermId = leadershipTermId;
     }
 
+    @Impure
     private void verifyLogJoinPosition(final String state, final long joinPosition)
     {
         if (joinPosition != logPosition)
@@ -1442,17 +1504,21 @@ class Election
         }
     }
 
+    @Pure
+    @Impure
     private boolean hasUpdateIntervalExpired(final long nowNs, final long intervalNs)
     {
         return hasIntervalExpired(nowNs, timeOfLastUpdateNs, intervalNs);
     }
 
+    @Pure
     private boolean hasIntervalExpired(
         final long nowNs, final long previousTimestampForIntervalNs, final long intervalNs)
     {
         return (nowNs - previousTimestampForIntervalNs) >= intervalNs;
     }
 
+    @SideEffectFree
     private void logStateChange(
         final int memberId,
         final ElectionState oldState,
@@ -1479,6 +1545,7 @@ class Election
          */
     }
 
+    @Impure
     private void prepareForNewLeadership(final long nowNs)
     {
         final long lastAppendPosition = consensusModuleAgent.prepareForNewLeadership(logPosition, nowNs);
@@ -1488,6 +1555,7 @@ class Election
         }
     }
 
+    @SideEffectFree
     public String toString()
     {
         return "Election{" +

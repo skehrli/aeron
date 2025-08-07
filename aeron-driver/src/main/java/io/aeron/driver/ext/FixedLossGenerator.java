@@ -15,6 +15,9 @@
  */
 package io.aeron.driver.ext;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.collections.BiInt2ObjectMap;
 import org.agrona.collections.MutableInteger;
 import org.agrona.concurrent.UnsafeBuffer;
@@ -39,6 +42,7 @@ public class FixedLossGenerator implements LossGenerator
      * @param termOffset    to be dropped
      * @param length        to be dropped
      */
+    @SideEffectFree
     public FixedLossGenerator(final int termId, final int termOffset, final int length)
     {
         this.termId = termId;
@@ -49,6 +53,7 @@ public class FixedLossGenerator implements LossGenerator
     /**
      * {@inheritDoc}
      */
+    @Pure
     public boolean shouldDropFrame(final InetSocketAddress address, final UnsafeBuffer buffer, final int length)
     {
         return false;
@@ -57,6 +62,7 @@ public class FixedLossGenerator implements LossGenerator
     /**
      * {@inheritDoc}
      */
+    @Impure
     public boolean shouldDropFrame(
         final InetSocketAddress address,
         final UnsafeBuffer buffer,

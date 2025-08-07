@@ -15,6 +15,8 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.exceptions.AeronException;
 import org.agrona.concurrent.AtomicBuffer;
 import org.agrona.concurrent.status.AtomicCounter;
@@ -45,6 +47,7 @@ public final class Counter extends AtomicCounter
     private final long registrationId;
     private final ClientConductor clientConductor;
 
+    @Impure
     Counter(
         final long registrationId,
         final ClientConductor clientConductor,
@@ -65,6 +68,7 @@ public final class Counter extends AtomicCounter
      * @param counterId      for the counter to be viewed.
      * @throws AeronException if the id has for the counter has not been allocated.
      */
+    @Impure
     public Counter(final CountersReader countersReader, final long registrationId, final int counterId)
     {
         super(countersReader.valuesBuffer(), counterId);
@@ -83,6 +87,7 @@ public final class Counter extends AtomicCounter
      *
      * @return the registration id used to register this counter with the media driver.
      */
+    @Pure
     public long registrationId()
     {
         return registrationId;
@@ -93,6 +98,7 @@ public final class Counter extends AtomicCounter
      * <p>
      * This method is idempotent and thread safe.
      */
+    @Impure
     public void close()
     {
         if (IS_CLOSED_VH.compareAndSet(this, false, true))
@@ -110,17 +116,20 @@ public final class Counter extends AtomicCounter
      *
      * @return true if it has been closed otherwise false.
      */
+    @Pure
     public boolean isClosed()
     {
         return isClosed;
     }
 
+    @Impure
     void internalClose()
     {
         super.close();
         isClosed = true;
     }
 
+    @Pure
     ClientConductor clientConductor()
     {
         return clientConductor;

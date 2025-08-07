@@ -15,6 +15,10 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.checker.mustcall.qual.Owning;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.concurrent.NanoClock;
@@ -36,16 +40,19 @@ final class CommonEventEncoder
     static final int MAX_CAPTURE_LENGTH = MAX_EVENT_LENGTH - LOG_HEADER_LENGTH;
     static final String STATE_SEPARATOR = " -> ";
 
+    @SideEffectFree
     private CommonEventEncoder()
     {
     }
 
+    @Impure
     static int encodeLogHeader(
         final MutableDirectBuffer encodingBuffer, final int offset, final int captureLength, final int length)
     {
         return internalEncodeLogHeader(encodingBuffer, offset, captureLength, length, SystemNanoClock.INSTANCE);
     }
 
+    @Impure
     static int internalEncodeLogHeader(
         final MutableDirectBuffer encodingBuffer,
         final int offset,
@@ -79,6 +86,7 @@ final class CommonEventEncoder
         return encodedLength;
     }
 
+    @Impure
     static int encodeSocketAddress(
         final UnsafeBuffer encodingBuffer, final int offset, final InetSocketAddress address)
     {
@@ -103,6 +111,7 @@ final class CommonEventEncoder
         return encodedLength;
     }
 
+    @Impure
     static int encodeInetAddress(
         final UnsafeBuffer encodingBuffer, final int offset, final InetAddress address)
     {
@@ -131,6 +140,7 @@ final class CommonEventEncoder
         return encodedLength;
     }
 
+    @Impure
     static int encodeTrailingString(
         final UnsafeBuffer encodingBuffer, final int offset, final int remainingCapacity, final String value)
     {
@@ -148,6 +158,7 @@ final class CommonEventEncoder
         }
     }
 
+    @Impure
     static int encode(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -161,8 +172,9 @@ final class CommonEventEncoder
         return encodedLength + captureLength;
     }
 
+    @Impure
     static <E extends Enum<E>> int encodeStateChange(
-        final UnsafeBuffer encodingBuffer, final int offset, final E from, final E to)
+        final UnsafeBuffer encodingBuffer, final int offset, final @Owning E from, final @Owning E to)
     {
         int encodedLength = 0;
 
@@ -181,13 +193,14 @@ final class CommonEventEncoder
         return encodedLength;
     }
 
+    @Impure
     static <E extends Enum<E>> int encodeTrailingStateChange(
         final UnsafeBuffer encodingBuffer,
         final int offset,
         final int runningEncodedLength,
         final int captureLength,
-        final E from,
-        final E to)
+        final @Owning E from,
+        final @Owning E to)
     {
         int encodedLength = runningEncodedLength;
         encodingBuffer.putInt(
@@ -205,37 +218,45 @@ final class CommonEventEncoder
         return encodedLength;
     }
 
+    @Pure
     static int captureLength(final int length)
     {
         return min(length, MAX_CAPTURE_LENGTH);
     }
 
+    @Pure
     static int encodedLength(final int captureLength)
     {
         return LOG_HEADER_LENGTH + captureLength;
     }
 
+    @Impure
     static int socketAddressLength(final InetSocketAddress address)
     {
         return SIZE_OF_INT + inetAddressLength(address.getAddress());
     }
 
+    @Impure
     static int inetAddressLength(final InetAddress address)
     {
         return SIZE_OF_INT + (null != address ? address.getAddress().length : 0);
     }
 
+    @Pure
     static int trailingStringLength(final String s, final int maxLength)
     {
         return SIZE_OF_INT + min(s.length(), maxLength);
     }
 
-    static <E extends Enum<E>> int stateTransitionStringLength(final E from, final E to)
+    @Pure
+    @Impure
+    static <E extends Enum<E>> int stateTransitionStringLength(final @Owning E from, final @Owning E to)
     {
         return SIZE_OF_INT + enumName(from).length() + STATE_SEPARATOR.length() + enumName(to).length();
     }
 
-    static <E extends Enum<E>> String enumName(final E state)
+    @Pure
+    static <E extends Enum<E>> String enumName(final @Owning E state)
     {
         return null == state ? "null" : state.name();
     }

@@ -15,6 +15,8 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.CncFileDescriptor;
 import io.aeron.status.ChannelEndpointStatus;
 import org.agrona.DirectBuffer;
@@ -103,6 +105,7 @@ public class AeronStat
      * @throws IOException if an error occurs writing to the console.
      * @throws InterruptedException if the thread sleep delay is interrupted.
      */
+    @Impure
     public static void main(final String[] args) throws IOException, InterruptedException
     {
         long delayMs = 1000L;
@@ -181,6 +184,7 @@ public class AeronStat
         }
     }
 
+    @Impure
     private static void workLoop(final long delayMs, final Runnable outputPrinter)
         throws IOException, InterruptedException
     {
@@ -196,6 +200,7 @@ public class AeronStat
         while (running.get());
     }
 
+    @Impure
     private static void printOutput(final CncFileReader cncFileReader, final CounterFilter counterFilter)
     {
         System.out.print(DATE_FORMAT.format(new Date()));
@@ -221,6 +226,7 @@ public class AeronStat
         System.out.println("--");
     }
 
+    @Impure
     private static void checkForHelp(final String[] args)
     {
         for (final String arg : args)
@@ -243,6 +249,7 @@ public class AeronStat
         }
     }
 
+    @Impure
     private static void clearScreen() throws IOException, InterruptedException
     {
         if (SystemUtil.isWindows())
@@ -263,6 +270,7 @@ public class AeronStat
         private final Pattern streamFilter;
         private final Pattern channelFilter;
 
+        @SideEffectFree
         CounterFilter(
             final Pattern typeFilter,
             final Pattern identityFilter,
@@ -277,11 +285,13 @@ public class AeronStat
             this.channelFilter = channelFilter;
         }
 
+        @Impure
         private static boolean match(final Pattern pattern, final Supplier<String> supplier)
         {
             return null == pattern || pattern.matcher(supplier.get()).find();
         }
 
+        @Impure
         boolean filter(final int typeId, final DirectBuffer keyBuffer)
         {
             if (!match(typeFilter, () -> Integer.toString(typeId)))

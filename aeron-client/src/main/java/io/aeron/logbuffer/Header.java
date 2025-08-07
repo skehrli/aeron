@@ -15,6 +15,9 @@
  */
 package io.aeron.logbuffer;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import io.aeron.protocol.DataHeaderFlyweight;
 import org.agrona.BitUtil;
@@ -45,6 +48,8 @@ public final class Header
      * @param initialTermId       this stream started at.
      * @param positionBitsToShift for calculating positions.
      */
+    @SideEffectFree
+    @Impure
     public Header(final int initialTermId, final int positionBitsToShift)
     {
         this(initialTermId, positionBitsToShift, null);
@@ -57,6 +62,7 @@ public final class Header
      * @param positionBitsToShift for calculating positions.
      * @param context             for storing state when which can be accessed with {@link #context()}.
      */
+    @SideEffectFree
     public Header(final int initialTermId, final int positionBitsToShift, final Object context)
     {
         this.initialTermId = initialTermId;
@@ -69,6 +75,7 @@ public final class Header
      *
      * @return context for storing state related to the context of the callback where the header is used.
      */
+    @Pure
     public Object context()
     {
         return context;
@@ -80,6 +87,7 @@ public final class Header
      * @param context for storing state related to the context of the callback where the header is used.
      * @return this for a fluent API.
      */
+    @Impure
     public Header context(final Object context)
     {
         this.context = context;
@@ -91,6 +99,7 @@ public final class Header
      *
      * @return the current position to which the image has advanced on reading this message.
      */
+    @Impure
     public long position()
     {
         return computePosition(termId(), nextTermOffset(), positionBitsToShift, initialTermId);
@@ -101,6 +110,7 @@ public final class Header
      *
      * @return number of times to left shift the term count to multiply by term length.
      */
+    @Pure
     public int positionBitsToShift()
     {
         return positionBitsToShift;
@@ -112,6 +122,7 @@ public final class Header
      * @param positionBitsToShift number of times to left shift the term count to multiply by term length.
      * @return this for a fluent API.
      */
+    @Impure
     public Header positionBitsToShift(final int positionBitsToShift)
     {
         this.positionBitsToShift = positionBitsToShift;
@@ -123,6 +134,7 @@ public final class Header
      *
      * @return the initial term id this stream started at.
      */
+    @Pure
     public int initialTermId()
     {
         return initialTermId;
@@ -134,6 +146,7 @@ public final class Header
      * @param initialTermId the initial term id this stream started at.
      * @return this for a fluent API.
      */
+    @Impure
     public Header initialTermId(final int initialTermId)
     {
         this.initialTermId = initialTermId;
@@ -146,6 +159,7 @@ public final class Header
      * @param offset at which the header begins in the buffer.
      * @return this for a fluent API.
      */
+    @Impure
     public Header offset(final int offset)
     {
         this.offset = offset;
@@ -157,6 +171,7 @@ public final class Header
      *
      * @return offset at which the frame begins in the buffer.
      */
+    @Pure
     public int offset()
     {
         return offset;
@@ -167,6 +182,7 @@ public final class Header
      *
      * @return {@link org.agrona.DirectBuffer} containing the header.
      */
+    @Pure
     public DirectBuffer buffer()
     {
         return buffer;
@@ -178,6 +194,7 @@ public final class Header
      * @param buffer {@link org.agrona.DirectBuffer} containing the header.
      * @return this for a fluent API.
      */
+    @Impure
     public Header buffer(final DirectBuffer buffer)
     {
         if (buffer != this.buffer)
@@ -192,6 +209,7 @@ public final class Header
      *
      * @return the total length of the frame including the header.
      */
+    @Impure
     public int frameLength()
     {
         return buffer.getInt(offset, LITTLE_ENDIAN);
@@ -202,6 +220,7 @@ public final class Header
      *
      * @return the session ID to which the frame belongs.
      */
+    @Impure
     public int sessionId()
     {
         return buffer.getInt(offset + SESSION_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -212,6 +231,7 @@ public final class Header
      *
      * @return the stream ID to which the frame belongs.
      */
+    @Impure
     public int streamId()
     {
         return buffer.getInt(offset + STREAM_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -222,6 +242,7 @@ public final class Header
      *
      * @return the term ID to which the frame belongs.
      */
+    @Impure
     public int termId()
     {
         return buffer.getInt(offset + TERM_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -232,6 +253,7 @@ public final class Header
      *
      * @return the offset in the term at which the frame begins.
      */
+    @Impure
     public int termOffset()
     {
         return buffer.getInt(offset + TERM_OFFSET_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -242,6 +264,7 @@ public final class Header
      *
      * @return the offset of the next frame.
      */
+    @Impure
     public int nextTermOffset()
     {
         return BitUtil.align(termOffset() + termOccupancyLength(), FRAME_ALIGNMENT);
@@ -252,6 +275,7 @@ public final class Header
      *
      * @return type of the frame which should always be {@link DataHeaderFlyweight#HDR_TYPE_DATA}.
      */
+    @Impure
     public int type()
     {
         return buffer.getShort(offset + TYPE_FIELD_OFFSET, LITTLE_ENDIAN) & 0xFFFF;
@@ -264,6 +288,7 @@ public final class Header
      *
      * @return the flags for this frame.
      */
+    @Impure
     public byte flags()
     {
         return buffer.getByte(offset + FLAGS_FIELD_OFFSET);
@@ -277,6 +302,7 @@ public final class Header
      * @return the value stored in the reserve space at the end of a data frame header.
      * @see DataHeaderFlyweight
      */
+    @Impure
     public long reservedValue()
     {
         return buffer.getLong(offset + RESERVED_VALUE_OFFSET, LITTLE_ENDIAN);
@@ -288,6 +314,7 @@ public final class Header
      *
      * @param fragmentedFrameLength total fragmented length of the message.
      */
+    @Impure
     public void fragmentedFrameLength(final int fragmentedFrameLength)
     {
         this.fragmentedFrameLength = fragmentedFrameLength;
@@ -300,11 +327,13 @@ public final class Header
      *
      * @return total fragmented length of this message or <code>Aeron.NULL_VALUE</code> if not fragmented.
      */
+    @Pure
     public int fragmentedFrameLength()
     {
         return fragmentedFrameLength;
     }
 
+    @Impure
     private int termOccupancyLength()
     {
         return Aeron.NULL_VALUE == fragmentedFrameLength ? frameLength() : fragmentedFrameLength;

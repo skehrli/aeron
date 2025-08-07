@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import java.util.concurrent.TimeUnit;
 
 import static org.agrona.BitUtil.findNextPositivePowerOfTwo;
@@ -40,6 +42,7 @@ public class WheelTimerServiceSupplier implements TimerServiceSupplier
      * @param tickResolution for the wheel, i.e. how many {@link TimeUnit}s per tick.
      * @param ticksPerWheel  or spokes, for the wheel (must be power of 2).
      */
+    @SideEffectFree
     public WheelTimerServiceSupplier(
         final TimeUnit timeUnit,
         final long startTime,
@@ -55,6 +58,7 @@ public class WheelTimerServiceSupplier implements TimerServiceSupplier
     /**
      * {@inheritDoc}
      */
+    @Impure
     public TimerService newInstance(final TimeUnit clusterTimeUnit, final TimerService.TimerHandler timerHandler)
     {
         final long startTimeInClusterTimeUnits = clusterTimeUnit.convert(startTime, timeUnit);

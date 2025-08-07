@@ -15,6 +15,9 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.Aeron;
 import io.aeron.CommonContext;
 import io.aeron.driver.buffer.RawLog;
@@ -94,6 +97,7 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
     private final AtomicCounter publicationsRevoked;
     private final ErrorHandler errorHandler;
 
+    @Impure
     IpcPublication(
         final long registrationId,
         final String channel,
@@ -152,6 +156,7 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
      *
      * @return channel URI string for this publication.
      */
+    @Pure
     public String channel()
     {
         return channel;
@@ -162,6 +167,7 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
      *
      * @return session id allocated to this stream.
      */
+    @Pure
     public int sessionId()
     {
         return sessionId;
@@ -172,6 +178,7 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
      *
      * @return stream id within the channel.
      */
+    @Pure
     public int streamId()
     {
         return streamId;
@@ -180,56 +187,67 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
     /**
      * {@inheritDoc}
      */
+    @Pure
     public long subscribableRegistrationId()
     {
         return registrationId;
     }
 
+    @Pure
     long registrationId()
     {
         return registrationId;
     }
 
+    @Pure
     long tag()
     {
         return tag;
     }
 
+    @Pure
     boolean isExclusive()
     {
         return isExclusive;
     }
 
+    @Pure
     int initialTermId()
     {
         return initialTermId;
     }
 
+    @Pure
     int startingTermId()
     {
         return startingTermId;
     }
 
+    @Pure
     int startingTermOffset()
     {
         return startingTermOffset;
     }
 
+    @Pure
     RawLog rawLog()
     {
         return rawLog;
     }
 
+    @Impure
     int publisherLimitId()
     {
         return publisherLimit.id();
     }
 
+    @Pure
     int termBufferLength()
     {
         return termBufferLength;
     }
 
+    @Pure
     int mtuLength()
     {
         return mtuLength;
@@ -238,6 +256,7 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public boolean free()
     {
         return rawLog.free();
@@ -246,6 +265,7 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         CloseHelper.close(errorHandler, publisherPos);
@@ -262,6 +282,7 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
         }
     }
 
+    @Impure
     void reject(final long position, final String reason, final DriverConductor conductor, final long nowNs)
     {
         conductor.onPublicationError(
@@ -295,6 +316,7 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void addSubscriber(
         final SubscriptionLink subscriptionLink, final ReadablePosition subscriberPosition, final long nowNs)
     {
@@ -310,6 +332,7 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void removeSubscriber(final SubscriptionLink subscriptionLink, final ReadablePosition subscriberPosition)
     {
         updatePublisherPositionAndLimit();
@@ -337,6 +360,7 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onTimeEvent(final long timeNs, final long timeMs, final DriverConductor conductor)
     {
         switch (state)
@@ -404,21 +428,25 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
     /**
      * {@inheritDoc}
      */
+    @Pure
     public boolean hasReachedEndOfLife()
     {
         return reachedEndOfLife;
     }
 
+    @Impure
     void revoke()
     {
         LogBufferDescriptor.isPublicationRevoked(metaDataBuffer, true);
     }
 
+    @Impure
     void incRef()
     {
         ++refCount;
     }
 
+    @Impure
     void decRef()
     {
         if (0 == --refCount)
@@ -434,6 +462,7 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
         }
     }
 
+    @Impure
     int updatePublisherPositionAndLimit()
     {
         int workCount = 0;
@@ -481,6 +510,7 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
         return workCount;
     }
 
+    @Impure
     long joinPosition()
     {
         long position = consumerPosition;
@@ -493,6 +523,7 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
         return position;
     }
 
+    @Impure
     long producerPosition()
     {
         final long rawTail = rawTailVolatile(metaDataBuffer);
@@ -501,26 +532,31 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
         return computePosition(termId(rawTail), termOffset, positionBitsToShift, initialTermId);
     }
 
+    @Pure
     long consumerPosition()
     {
         return consumerPosition;
     }
 
+    @Pure
     State state()
     {
         return state;
     }
 
+    @Impure
     boolean isAcceptingSubscriptions()
     {
         return !inCoolDown && (State.ACTIVE == state || (State.DRAINING == state && !isDrained(producerPosition())));
     }
 
+    @Pure
     long responseCorrelationId()
     {
         return responseCorrelationId;
     }
 
+    @Impure
     private void checkUntetheredSubscriptions(final long nowNs, final DriverConductor conductor)
     {
         final long untetheredWindowLimit = (consumerPosition - termWindowLength) + (termWindowLength >> 2);
@@ -569,6 +605,7 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
         }
     }
 
+    @Impure
     private void checkCoolDownStatus(final long timeNs, final DriverConductor conductor)
     {
         if (inCoolDown && coolDownExpireTimeNs < timeNs)
@@ -581,6 +618,7 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
         }
     }
 
+    @Impure
     private boolean isDrained(final long producerPosition)
     {
         for (final ReadablePosition subscriberPosition : subscriberPositions)
@@ -594,6 +632,7 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
         return true;
     }
 
+    @Impure
     private void checkForBlockedPublisher(final long producerPosition, final long timeNs)
     {
         final long consumerPosition = this.consumerPosition;
@@ -615,6 +654,7 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
         }
     }
 
+    @Impure
     private boolean isPossiblyBlocked(final long producerPosition, final long consumerPosition)
     {
         final int producerTermCount = activeTermCount(metaDataBuffer);
@@ -628,6 +668,7 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
         return producerPosition > consumerPosition;
     }
 
+    @Impure
     private void cleanBufferTo(final long position)
     {
         final long cleanPosition = this.cleanPosition;
@@ -645,6 +686,7 @@ public final class IpcPublication implements DriverManagedResource, Subscribable
         }
     }
 
+    @SideEffectFree
     private static void logRevoke(
         final long revokedPos,
         final int sessionId,

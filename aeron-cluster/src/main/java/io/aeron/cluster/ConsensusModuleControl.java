@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.archive.client.AeronArchive;
 import io.aeron.security.AuthorisationService;
@@ -33,6 +35,7 @@ public interface ConsensusModuleControl
      *
      * @return unique id for the hosting member of the cluster.
      */
+    @Pure
     int memberId();
 
     /**
@@ -41,6 +44,7 @@ public interface ConsensusModuleControl
      * @return time as {@link #timeUnit()}s since 1 Jan 1970 UTC.
      * @see #timeUnit()
      */
+    @Impure
     long time();
 
     /**
@@ -49,6 +53,7 @@ public interface ConsensusModuleControl
      * @return the unit of time applied when timestamping and invoking {@link #time()} operations.
      * @see #time()
      */
+    @Pure
     TimeUnit timeUnit();
 
     /**
@@ -58,6 +63,7 @@ public interface ConsensusModuleControl
      * @return the {@link IdleStrategy} which should be used by the extension when it experiences back-pressure or is
      * undertaking any long-running actions.
      */
+    @Pure
     IdleStrategy idleStrategy();
 
     /**
@@ -65,6 +71,7 @@ public interface ConsensusModuleControl
      *
      * @return the {@link ConsensusModule.Context} under which the extension is running.
      */
+    @Pure
     ConsensusModule.Context context();
 
     /**
@@ -72,6 +79,7 @@ public interface ConsensusModuleControl
      *
      * @return the {@link Aeron} client to be used by the extension.
      */
+    @Pure
     Aeron aeron();
 
     /**
@@ -79,6 +87,7 @@ public interface ConsensusModuleControl
      *
      * @return the {@link AeronArchive} client to be used by the extension.
      */
+    @Pure
     AeronArchive archive();
 
     /**
@@ -86,6 +95,7 @@ public interface ConsensusModuleControl
      *
      * @return the {@link AuthorisationService} used by the consensus module.
      */
+    @Pure
     AuthorisationService authorisationService();
 
     /**
@@ -94,6 +104,7 @@ public interface ConsensusModuleControl
      * @param clusterSessionId for the session to lookup.
      * @return a {@link ClusterClientSession} for a given id, otherwise {@code null} if not found.
      */
+    @Impure
     ClusterClientSession getClientSession(long clusterSessionId);
 
     /**
@@ -101,6 +112,7 @@ public interface ConsensusModuleControl
      *
      * @param clusterSessionId to be closed.
      */
+    @Impure
     void closeClusterSession(long clusterSessionId);
 
     /**
@@ -108,6 +120,7 @@ public interface ConsensusModuleControl
      *
      * @return commit position counter id.
      */
+    @Impure
     int commitPositionCounterId();
 
     /**
@@ -116,6 +129,7 @@ public interface ConsensusModuleControl
      * @return numeric id for the cluster.
      * @see ConsensusModule.Context#clusterId(int)
      */
+    @Impure
     int clusterId();
 
     /**
@@ -123,5 +137,6 @@ public interface ConsensusModuleControl
      *
      * @return cluster member for this node.
      */
+    @Pure
     ClusterMember clusterMember();
 }

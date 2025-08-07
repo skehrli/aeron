@@ -15,6 +15,9 @@
  */
 package io.aeron.driver.media;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import io.aeron.ChannelUri;
 import io.aeron.driver.DefaultNameResolver;
@@ -74,6 +77,7 @@ public final class UdpChannel
     private final Long groupTag;
     private final Long nakDelayNs;
 
+    @SideEffectFree
     private UdpChannel(final Context context)
     {
         controlMode = context.controlMode;
@@ -109,6 +113,7 @@ public final class UdpChannel
      * @return a new {@link UdpChannel} as the result of parsing.
      * @throws InvalidChannelException if an error occurs.
      */
+    @Impure
     public static UdpChannel parse(final String channelUriString)
     {
         return parse(channelUriString, DefaultNameResolver.INSTANCE, false);
@@ -122,6 +127,7 @@ public final class UdpChannel
      * @return a new {@link UdpChannel} as the result of parsing.
      * @throws InvalidChannelException if an error occurs.
      */
+    @Impure
     public static UdpChannel parse(final String channelUriString, final NameResolver nameResolver)
     {
         return parse(channelUriString, nameResolver, false);
@@ -136,6 +142,7 @@ public final class UdpChannel
      * @return a new {@link UdpChannel} as the result of parsing.
      * @throws InvalidChannelException if an error occurs.
      */
+    @Impure
     @SuppressWarnings("MethodLength")
     public static UdpChannel parse(
         final String channelUriString, final NameResolver nameResolver, final boolean isDestination)
@@ -300,6 +307,7 @@ public final class UdpChannel
         }
     }
 
+    @Impure
     private static int parseTimestampOffset(final ChannelUri channelUri, final String timestampOffsetParamName)
     {
         final String offsetStr = channelUri.get(timestampOffsetParamName);
@@ -325,6 +333,7 @@ public final class UdpChannel
         }
     }
 
+    @Impure
     private static Long parseOptionalLong(final ChannelUri channelUri, final String paramName)
     {
         final String longAsString = channelUri.get(paramName);
@@ -352,6 +361,7 @@ public final class UdpChannel
      * @return value as an integer.
      * @see SystemUtil#parseSize(String, String)
      */
+    @Impure
     public static int parseBufferLength(final ChannelUri channelUri, final String paramName)
     {
         int socketBufferLength = 0;
@@ -377,6 +387,7 @@ public final class UdpChannel
      * @param channelUri to parse the control mode from.
      * @return an enum value representing the control mode.
      */
+    @Impure
     public static ControlMode parseControlMode(final ChannelUri channelUri)
     {
         final String paramValue = channelUri.get(MDC_CONTROL_MODE_PARAM_NAME);
@@ -405,6 +416,7 @@ public final class UdpChannel
      * @param paramName     specific field to access in the URI
      * @return              duration in nanoseconds, null if not present
      */
+    @Impure
     public static Long parseOptionalDurationNs(final ChannelUri channelUri, final String paramName)
     {
         final String valueStr = channelUri.get(paramName);
@@ -429,6 +441,7 @@ public final class UdpChannel
      * @param remoteData       address for the channel.
      * @return canonical representation as a string.
      */
+    @Impure
     public static String canonicalise(
         final String localParamValue,
         final InetSocketAddress localData,
@@ -471,6 +484,7 @@ public final class UdpChannel
      *
      * @return remote data address and port.
      */
+    @Pure
     public InetSocketAddress remoteData()
     {
         return remoteData;
@@ -481,6 +495,7 @@ public final class UdpChannel
      *
      * @return local data address port.
      */
+    @Pure
     public InetSocketAddress localData()
     {
         return localData;
@@ -491,6 +506,7 @@ public final class UdpChannel
      *
      * @return remote control address information.
      */
+    @Pure
     public InetSocketAddress remoteControl()
     {
         return remoteControl;
@@ -501,6 +517,7 @@ public final class UdpChannel
      *
      * @return local control address and port.
      */
+    @Pure
     public InetSocketAddress localControl()
     {
         return localControl;
@@ -511,6 +528,7 @@ public final class UdpChannel
      *
      * @return the {@link ChannelUri} for this channel.
      */
+    @Pure
     public ChannelUri channelUri()
     {
         return channelUri;
@@ -521,6 +539,7 @@ public final class UdpChannel
      *
      * @return true if this channel is a multicast TTL set otherwise false.
      */
+    @Pure
     public boolean hasMulticastTtl()
     {
         return hasMulticastTtl;
@@ -531,6 +550,7 @@ public final class UdpChannel
      *
      * @return multicast TTL value.
      */
+    @Pure
     public int multicastTtl()
     {
         return multicastTtl;
@@ -542,6 +562,7 @@ public final class UdpChannel
      * @return canonical form for channel.
      * @see UdpChannel#canonicalise
      */
+    @Pure
     public String canonicalForm()
     {
         return canonicalForm;
@@ -552,6 +573,7 @@ public final class UdpChannel
      *
      * @return the {@link #canonicalForm()} for the channel.
      */
+    @Pure
     public String toString()
     {
         return canonicalForm;
@@ -562,6 +584,7 @@ public final class UdpChannel
      *
      * @return true if the channel is UDP multicast.
      */
+    @Pure
     public boolean isMulticast()
     {
         return isMulticast;
@@ -572,6 +595,7 @@ public final class UdpChannel
      *
      * @return {@link NetworkInterface} for the local interface used by the channel.
      */
+    @Pure
     public NetworkInterface localInterface()
     {
         return localInterface;
@@ -582,6 +606,7 @@ public final class UdpChannel
      *
      * @return the original uri string from the client.
      */
+    @Pure
     public String originalUriString()
     {
         return uriStr;
@@ -592,6 +617,7 @@ public final class UdpChannel
      *
      * @return the {@link ProtocolFamily} for this channel.
      */
+    @Pure
     public ProtocolFamily protocolFamily()
     {
         return protocolFamily;
@@ -602,6 +628,7 @@ public final class UdpChannel
      *
      * @return the tag value on the channel.
      */
+    @Pure
     public long tag()
     {
         return tag;
@@ -612,6 +639,7 @@ public final class UdpChannel
      *
      * @return the control mode for the channel.
      */
+    @Pure
     public ControlMode controlMode()
     {
         return controlMode;
@@ -623,6 +651,7 @@ public final class UdpChannel
      *
      * @return does channel have manual control mode specified.
      */
+    @Pure
     public boolean isManualControlMode()
     {
         return ControlMode.MANUAL == controlMode;
@@ -633,6 +662,7 @@ public final class UdpChannel
      *
      * @return does channel have dynamic control mode specified.
      */
+    @Pure
     public boolean isDynamicControlMode()
     {
         return ControlMode.DYNAMIC == controlMode;
@@ -643,6 +673,7 @@ public final class UdpChannel
      *
      * @return does the channel have response control mode specified.
      */
+    @Pure
     public boolean isResponseControlMode()
     {
         return ControlMode.RESPONSE == controlMode;
@@ -653,6 +684,7 @@ public final class UdpChannel
      *
      * @return does channel have an explicit endpoint address or not?
      */
+    @Pure
     public boolean hasExplicitEndpoint()
     {
         return hasExplicitEndpoint;
@@ -663,6 +695,7 @@ public final class UdpChannel
      *
      * @return does channel have an explicit control address or not?
      */
+    @Pure
     public boolean hasExplicitControl()
     {
         return hasExplicitControl;
@@ -673,6 +706,7 @@ public final class UdpChannel
      *
      * @return true if the channel has a tag.
      */
+    @Pure
     public boolean hasTag()
     {
         return hasTag;
@@ -683,6 +717,8 @@ public final class UdpChannel
      *
      * @return true if the channel configured as multi-destination.
      */
+    @Pure
+    @Impure
     public boolean isMultiDestination()
     {
         return controlMode.isMultiDestination();
@@ -693,6 +729,8 @@ public final class UdpChannel
      *
      * @return true if the channel has group semantics.
      */
+    @Pure
+    @Impure
     public boolean hasGroupSemantics()
     {
         return isMulticast || isMultiDestination();
@@ -703,6 +741,7 @@ public final class UdpChannel
      *
      * @return socket receive buffer length or 0 if not specified.
      */
+    @Pure
     public int socketRcvbufLength()
     {
         return socketRcvbufLength;
@@ -714,6 +753,7 @@ public final class UdpChannel
      * @param defaultValue to be used if the UdpChannel's value is 0 (unspecified).
      * @return socket receive buffer length or 0 if not specified.
      */
+    @Pure
     public int socketRcvbufLengthOrDefault(final int defaultValue)
     {
         return 0 != socketRcvbufLength ? socketRcvbufLength : defaultValue;
@@ -724,6 +764,7 @@ public final class UdpChannel
      *
      * @return socket send buffer length or 0 if not specified.
      */
+    @Pure
     public int socketSndbufLength()
     {
         return socketSndbufLength;
@@ -735,6 +776,7 @@ public final class UdpChannel
      * @param defaultValue to be used if the UdpChannel's value is 0 (unspecified).
      * @return socket send buffer length or defaultValue if not specified.
      */
+    @Pure
     public int socketSndbufLengthOrDefault(final int defaultValue)
     {
         return 0 != socketSndbufLength ? socketSndbufLength : defaultValue;
@@ -745,6 +787,7 @@ public final class UdpChannel
      *
      * @return receiver window length or 0 if not specified.
      */
+    @Pure
     public int receiverWindowLength()
     {
         return receiverWindowLength;
@@ -756,6 +799,8 @@ public final class UdpChannel
      * @param defaultValue to be used if the UdpChannel's value is 0 (unspecified).
      * @return receiver window length or defaultValue if not specified.
      */
+    @Pure
+    @Impure
     public int receiverWindowLengthOrDefault(final int defaultValue)
     {
         return 0 != receiverWindowLength() ? receiverWindowLength() : defaultValue;
@@ -766,6 +811,7 @@ public final class UdpChannel
      *
      * @return delay in nanoseconds or null if the value is not set.
      */
+    @Pure
     public Long nakDelayNs()
     {
         return nakDelayNs;
@@ -779,6 +825,7 @@ public final class UdpChannel
      * @param remoteAddress remote address override to use for this channel.
      * @return true if there is a match otherwise false.
      */
+    @Impure
     public boolean matchesTag(
         final UdpChannel udpChannel,
         final InetSocketAddress localAddress,
@@ -804,6 +851,7 @@ public final class UdpChannel
         return true;
     }
 
+    @Impure
     private boolean isWildcard()
     {
         return remoteData.getAddress().isAnyLocalAddress() &&
@@ -812,11 +860,14 @@ public final class UdpChannel
             localData.getPort() == 0;
     }
 
+    @Pure
+    @Impure
     private boolean hasMatchingControlMode(final UdpChannel udpChannel)
     {
         return controlMode() == ControlMode.NONE || controlMode() == udpChannel.controlMode();
     }
 
+    @Impure
     private boolean hasMatchingAddress(
         final UdpChannel udpChannel,
         final InetSocketAddress localAddress,
@@ -836,6 +887,7 @@ public final class UdpChannel
      *
      * @return a human-readable description of the channel.
      */
+    @Impure
     public String description()
     {
         return "localData: " + formatAddressAndPort(localData.getAddress(), localData.getPort()) +
@@ -849,6 +901,7 @@ public final class UdpChannel
      * @param o object to be compared with.
      * @return true if the {@link #canonicalForm()} is equal, otherwise false.
      */
+    @Pure
     public boolean equals(final Object o)
     {
         if (this == o)
@@ -871,6 +924,7 @@ public final class UdpChannel
      *
      * @return the hash code for the {@link #canonicalForm()}.
      */
+    @Pure
     public int hashCode()
     {
         return canonicalForm != null ? canonicalForm.hashCode() : 0;
@@ -883,6 +937,7 @@ public final class UdpChannel
      * @param nameResolver to use for resolution.
      * @return endpoint address for URI.
      */
+    @Impure
     public static InetSocketAddress destinationAddress(final ChannelUri uri, final NameResolver nameResolver)
     {
         try
@@ -905,6 +960,7 @@ public final class UdpChannel
      * @return {@code true} if the destination uses multicast address.
      * @since 1.44.0
      */
+    @Impure
     public static boolean isMulticastDestinationAddress(final ChannelUri uri)
     {
         try
@@ -927,6 +983,7 @@ public final class UdpChannel
      * @return {@code true} if the destination uses multicast address.
      * @since 1.47.0
      */
+    @Impure
     public static boolean isMulticastEndpoint(final String endpoint)
     {
         return SocketAddressParser.isMulticastAddress(endpoint);
@@ -941,6 +998,7 @@ public final class UdpChannel
      * @param nameResolver   to be used for hostname.
      * @return address for endpoint.
      */
+    @Impure
     public static InetSocketAddress resolve(
         final String endpoint, final String uriParamName, final boolean isReResolution, final NameResolver nameResolver)
     {
@@ -952,6 +1010,7 @@ public final class UdpChannel
      *
      * @return offset of channel receive timestamps.
      */
+    @Pure
     public int channelReceiveTimestampOffset()
     {
         return channelReceiveTimestampOffset;
@@ -962,6 +1021,7 @@ public final class UdpChannel
      *
      * @return true if channel receive timestamps should be collected false otherwise.
      */
+    @Pure
     public boolean isChannelReceiveTimestampEnabled()
     {
         return RESERVED_VALUE_MESSAGE_OFFSET == channelReceiveTimestampOffset || 0 <= channelReceiveTimestampOffset;
@@ -972,6 +1032,7 @@ public final class UdpChannel
      *
      * @return true if channel send timestamps should be collected false otherwise.
      */
+    @Pure
     public boolean isChannelSendTimestampEnabled()
     {
         return RESERVED_VALUE_MESSAGE_OFFSET == channelSendTimestampOffset || 0 <= channelSendTimestampOffset;
@@ -982,6 +1043,7 @@ public final class UdpChannel
      *
      * @return offset of channel send timestamps.
      */
+    @Pure
     public int channelSendTimestampOffset()
     {
         return channelSendTimestampOffset;
@@ -992,12 +1054,14 @@ public final class UdpChannel
      *
      * @return group tag for the channel
      */
+    @Pure
     public Long groupTag()
     {
         return groupTag;
     }
 
 
+    @Impure
     private static InetSocketAddress getMulticastControlAddress(final InetSocketAddress endpointAddress)
         throws UnknownHostException
     {
@@ -1008,6 +1072,7 @@ public final class UdpChannel
         return new InetSocketAddress(getByAddress(addressAsBytes), endpointAddress.getPort());
     }
 
+    @Impure
     private static InterfaceSearchAddress getInterfaceSearchAddress(final ChannelUri uri) throws UnknownHostException
     {
         final String interfaceValue = uri.get(INTERFACE_PARAM_NAME);
@@ -1019,6 +1084,7 @@ public final class UdpChannel
         return InterfaceSearchAddress.wildcard();
     }
 
+    @Impure
     private static InetSocketAddress getEndpointAddress(final ChannelUri uri, final NameResolver nameResolver)
         throws UnknownHostException
     {
@@ -1040,6 +1106,7 @@ public final class UdpChannel
         return address;
     }
 
+    @Impure
     private static InetSocketAddress getExplicitControlAddress(final ChannelUri uri, final NameResolver nameResolver)
         throws UnknownHostException
     {
@@ -1061,6 +1128,7 @@ public final class UdpChannel
         return address;
     }
 
+    @Impure
     private static void validateDataAddress(final byte[] addressAsBytes)
     {
         if (BitUtil.isEven(addressAsBytes[addressAsBytes.length - 1]))
@@ -1069,11 +1137,13 @@ public final class UdpChannel
         }
     }
 
+    @Impure
     private static void validateConfiguration(final ChannelUri uri)
     {
         validateMedia(uri);
     }
 
+    @Impure
     private static void validateMedia(final ChannelUri uri)
     {
         if (!uri.isUdp())
@@ -1082,6 +1152,7 @@ public final class UdpChannel
         }
     }
 
+    @Impure
     private static InetSocketAddress resolveToAddressOfInterface(
         final NetworkInterface localInterface, final InterfaceSearchAddress searchAddress)
     {
@@ -1096,6 +1167,7 @@ public final class UdpChannel
         return new InetSocketAddress(interfaceAddress, searchAddress.getPort());
     }
 
+    @Impure
     private static NetworkInterface findInterface(final InterfaceSearchAddress searchAddress)
         throws SocketException
     {
@@ -1113,6 +1185,7 @@ public final class UdpChannel
         throw new IllegalArgumentException(noMatchingInterfacesError(filteredInterfaces, searchAddress));
     }
 
+    @Impure
     private static String noMatchingInterfacesError(
         final NetworkInterface[] filteredInterfaces, final InterfaceSearchAddress address)
         throws SocketException
@@ -1173,36 +1246,42 @@ public final class UdpChannel
         Long groupTag = null;
         Long nakDelayNs = null;
 
+        @Impure
         Context uriStr(final String uri)
         {
             uriStr = uri;
             return this;
         }
 
+        @Impure
         Context remoteDataAddress(final InetSocketAddress remoteData)
         {
             this.remoteData = remoteData;
             return this;
         }
 
+        @Impure
         Context localDataAddress(final InetSocketAddress localData)
         {
             this.localData = localData;
             return this;
         }
 
+        @Impure
         Context remoteControlAddress(final InetSocketAddress remoteControl)
         {
             this.remoteControl = remoteControl;
             return this;
         }
 
+        @Impure
         Context localControlAddress(final InetSocketAddress localControl)
         {
             this.localControl = localControl;
             return this;
         }
 
+        @Impure
         @SuppressWarnings("UnusedReturnValue")
         Context canonicalForm(final String canonicalForm)
         {
@@ -1210,24 +1289,28 @@ public final class UdpChannel
             return this;
         }
 
+        @Impure
         Context localInterface(final NetworkInterface networkInterface)
         {
             this.localInterface = networkInterface;
             return this;
         }
 
+        @Impure
         Context protocolFamily(final ProtocolFamily protocolFamily)
         {
             this.protocolFamily = protocolFamily;
             return this;
         }
 
+        @Impure
         Context hasMulticastTtl(final boolean hasMulticastTtl)
         {
             this.hasMulticastTtl = hasMulticastTtl;
             return this;
         }
 
+        @Impure
         @SuppressWarnings("UnusedReturnValue")
         Context multicastTtl(final int multicastTtl)
         {
@@ -1235,6 +1318,7 @@ public final class UdpChannel
             return this;
         }
 
+        @Impure
         @SuppressWarnings("UnusedReturnValue")
         Context tagId(final long tagId)
         {
@@ -1242,66 +1326,77 @@ public final class UdpChannel
             return this;
         }
 
+        @Impure
         Context channelUri(final ChannelUri channelUri)
         {
             this.channelUri = channelUri;
             return this;
         }
 
+        @Impure
         Context controlMode(final ControlMode controlMode)
         {
             this.controlMode = controlMode;
             return this;
         }
 
+        @Impure
         Context hasExplicitEndpoint(final boolean hasExplicitEndpoint)
         {
             this.hasExplicitEndpoint = hasExplicitEndpoint;
             return this;
         }
 
+        @Impure
         Context hasExplicitControl(final boolean hasExplicitControl)
         {
             this.hasExplicitControl = hasExplicitControl;
             return this;
         }
 
+        @Impure
         Context isMulticast(final boolean isMulticast)
         {
             this.isMulticast = isMulticast;
             return this;
         }
 
+        @Impure
         Context hasTagId(final boolean hasTagId)
         {
             this.hasTagId = hasTagId;
             return this;
         }
 
+        @Impure
         Context hasNoDistinguishingCharacteristic(final boolean hasNoDistinguishingCharacteristic)
         {
             this.hasNoDistinguishingCharacteristic = hasNoDistinguishingCharacteristic;
             return this;
         }
 
+        @Impure
         Context socketRcvbufLength(final int socketRcvbufLength)
         {
             this.socketRcvbufLength = socketRcvbufLength;
             return this;
         }
 
+        @Impure
         Context socketSndbufLength(final int socketSndbufLength)
         {
             this.socketSndbufLength = socketSndbufLength;
             return this;
         }
 
+        @Impure
         Context receiverWindowLength(final int receiverWindowLength)
         {
             this.receiverWindowLength = receiverWindowLength;
             return this;
         }
 
+        @Impure
         @SuppressWarnings("UnusedReturnValue")
         Context channelReceiveTimestampOffset(final int timestampOffset)
         {
@@ -1309,6 +1404,7 @@ public final class UdpChannel
             return this;
         }
 
+        @Impure
         @SuppressWarnings("UnusedReturnValue")
         Context channelSendTimestampOffset(final int timestampOffset)
         {
@@ -1316,12 +1412,14 @@ public final class UdpChannel
             return this;
         }
 
+        @Impure
         Context nakDelayNs(final Long nakDelayNs)
         {
             this.nakDelayNs = nakDelayNs;
             return this;
         }
 
+        @Impure
         public void groupTag(final Long groupTag)
         {
             this.groupTag = groupTag;

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package io.aeron.exceptions;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 
 /**
  * Client timeout event received from the driver for this client.
@@ -30,6 +32,8 @@ public class ClientTimeoutException extends TimeoutException
      *
      * @param message detail for the exception.
      */
+    @SideEffectFree
+    @Impure
     public ClientTimeoutException(final String message)
     {
         super(message, Category.FATAL);

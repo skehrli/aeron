@@ -15,6 +15,9 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import static io.aeron.driver.status.PerImageIndicator.PER_IMAGE_TYPE_ID;
 import static io.aeron.driver.status.PublisherLimit.PUBLISHER_LIMIT_TYPE_ID;
 import static io.aeron.driver.status.PublisherPos.PUBLISHER_POS_TYPE_ID;
@@ -59,6 +62,7 @@ public class BacklogStat
      *
      * @param args passed to the process.
      */
+    @Impure
     public static void main(final String[] args)
     {
         final CountersReader counters = SamplesUtil.mapCounters();
@@ -72,6 +76,7 @@ public class BacklogStat
      *
      * @param counters to read for tracking positions.
      */
+    @SideEffectFree
     public BacklogStat(final CountersReader counters)
     {
         this.counters = counters;
@@ -82,6 +87,7 @@ public class BacklogStat
      *
      * @return a snapshot of all the backlog information and group by stream.
      */
+    @Impure
     public Map<StreamCompositeKey, StreamBacklog> snapshot()
     {
         final Map<StreamCompositeKey, StreamBacklog> streams = new HashMap<>();
@@ -149,6 +155,7 @@ public class BacklogStat
      *
      * @param out to which the stream backlog will be written.
      */
+    @Impure
     public void print(final PrintStream out)
     {
         final StringBuilder builder = new StringBuilder();
@@ -246,6 +253,7 @@ public class BacklogStat
          * @param streamId  for the stream within a channel.
          * @param channel   as a URI.
          */
+        @SideEffectFree
         public StreamCompositeKey(final int sessionId, final int streamId, final String channel)
         {
             Objects.requireNonNull(channel, "channel cannot be null");
@@ -260,6 +268,7 @@ public class BacklogStat
          *
          * @return session id of the stream.
          */
+        @Pure
         public int sessionId()
         {
             return sessionId;
@@ -270,6 +279,7 @@ public class BacklogStat
          *
          * @return  stream id within a channel.
          */
+        @Pure
         public int streamId()
         {
             return streamId;
@@ -280,6 +290,7 @@ public class BacklogStat
          *
          * @return channel as a URI.
          */
+        @Pure
         public String channel()
         {
             return channel;
@@ -288,6 +299,7 @@ public class BacklogStat
         /**
          * {@inheritDoc}
          */
+        @Pure
         public boolean equals(final Object o)
         {
             if (this == o)
@@ -310,6 +322,7 @@ public class BacklogStat
         /**
          * {@inheritDoc}
          */
+        @Pure
         public int hashCode()
         {
             int result = sessionId;
@@ -322,6 +335,7 @@ public class BacklogStat
         /**
          * {@inheritDoc}
          */
+        @Pure
         public String toString()
         {
             return "StreamCompositeKey{" +
@@ -342,36 +356,43 @@ public class BacklogStat
         private Receiver receiver;
         private final SortedMap<Long, Subscriber> subscriberBacklogs = new TreeMap<>();
 
+        @Pure
         Publisher publisher()
         {
             return publisher;
         }
 
+        @Pure
         Sender sender()
         {
             return sender;
         }
 
+        @Pure
         Receiver receiver()
         {
             return receiver;
         }
 
+        @Pure
         Map<Long, Subscriber> subscriberBacklogs()
         {
             return subscriberBacklogs;
         }
 
+        @Impure
         Publisher createPublisherIfAbsent()
         {
             return publisher == null ? publisher = new Publisher() : publisher;
         }
 
+        @Impure
         Sender createSenderIfAbsent()
         {
             return sender == null ? sender = new Sender() : sender;
         }
 
+        @Impure
         Receiver createReceiverIfAbsent()
         {
             return receiver == null ? receiver = new Receiver() : receiver;
@@ -382,11 +403,13 @@ public class BacklogStat
     {
         private long registrationId;
 
+        @Pure
         long registrationId()
         {
             return registrationId;
         }
 
+        @Impure
         void registrationId(final long registrationId)
         {
             this.registrationId = registrationId;
@@ -398,21 +421,25 @@ public class BacklogStat
         private long limit;
         private long position;
 
+        @Impure
         void limit(final long limit)
         {
             this.limit = limit;
         }
 
+        @Impure
         void position(final long position)
         {
             this.position = position;
         }
 
+        @Pure
         long position()
         {
             return position;
         }
 
+        @Pure
         long remainingWindow()
         {
             return limit - position;
@@ -424,26 +451,31 @@ public class BacklogStat
         private long position;
         private long limit;
 
+        @Impure
         void position(final long publisherPosition)
         {
             this.position = publisherPosition;
         }
 
+        @Pure
         long position()
         {
             return position;
         }
 
+        @Impure
         void limit(final long limit)
         {
             this.limit = limit;
         }
 
+        @Pure
         long backlog(final long publisherPosition)
         {
             return publisherPosition - position;
         }
 
+        @Pure
         long window()
         {
             return limit - position;
@@ -455,21 +487,25 @@ public class BacklogStat
         private long highWaterMark;
         private long position;
 
+        @Impure
         void highWaterMark(final long highWaterMark)
         {
             this.highWaterMark = highWaterMark;
         }
 
+        @Pure
         long highWaterMark()
         {
             return highWaterMark;
         }
 
+        @Impure
         void position(final long position)
         {
             this.position = position;
         }
 
+        @Pure
         long position()
         {
             return position;
@@ -480,11 +516,13 @@ public class BacklogStat
     {
         private final long position;
 
+        @SideEffectFree
         Subscriber(final long position)
         {
             this.position = position;
         }
 
+        @Pure
         long backlog(final long receiverHwm)
         {
             return receiverHwm - position;

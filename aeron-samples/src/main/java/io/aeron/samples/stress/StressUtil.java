@@ -15,6 +15,8 @@
  */
 package io.aeron.samples.stress;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.ChannelUriStringBuilder;
 import io.aeron.Image;
 import org.agrona.BitUtil;
@@ -59,6 +61,7 @@ public class StressUtil
      *
      * @param message to be logged
      */
+    @Impure
     public static void info(final String message)
     {
         System.out.println(message);
@@ -70,6 +73,7 @@ public class StressUtil
      * @param serverAddress as the endpoint receiver of the unicast traffic.
      * @return a partially constructed URI with the endpoint set.
      */
+    @Impure
     public static ChannelUriStringBuilder unicastReqChannel(final String serverAddress)
     {
         return new ChannelUriStringBuilder().media("udp")
@@ -82,12 +86,14 @@ public class StressUtil
      * @param clientAddress as the endpoint receiver of the unicast traffic.
      * @return a partially constructed URI with the endpoint set.
      */
+    @Impure
     public static ChannelUriStringBuilder unicastRspChannel(final String clientAddress)
     {
         return new ChannelUriStringBuilder().media("udp")
             .endpoint(clientAddress + ":" + (BASE_PORT + UNICAST_RSP_OFFSET));
     }
 
+    @Impure
     private static ChannelUriStringBuilder mdcChannel(
         final String endpointAddress,
         final int endpointOffset,
@@ -99,6 +105,7 @@ public class StressUtil
             .controlEndpoint(controlAddress + ":" + (BASE_PORT + controlOffset));
     }
 
+    @Impure
     static ChannelUriStringBuilder mdcReqSubChannel1(final String serverAddress, final String clientAddress)
     {
         return mdcChannel(serverAddress, MDC_REQ_OFFSET_1, clientAddress, MDC_REQ_CONTROL_OFFSET)
@@ -106,6 +113,7 @@ public class StressUtil
             .alias("req_sub1");
     }
 
+    @Impure
     static ChannelUriStringBuilder mdcReqSubChannel2(final String serverAddress, final String clientAddress)
     {
         return mdcChannel(serverAddress, MDC_REQ_OFFSET_2, clientAddress, MDC_REQ_CONTROL_OFFSET)
@@ -113,6 +121,7 @@ public class StressUtil
             .alias("req_sub2");
     }
 
+    @Impure
     static ChannelUriStringBuilder mdcReqPubChannel(final String clientAddress)
     {
         return new ChannelUriStringBuilder().media("udp")
@@ -121,6 +130,7 @@ public class StressUtil
             .alias("req_pub");
     }
 
+    @Impure
     static ChannelUriStringBuilder mdcRspSubChannel1(final String serverAddress, final String clientAddress)
     {
         return mdcChannel(clientAddress, MDC_RSP_OFFSET_1, serverAddress, MDC_RSP_CONTROL_OFFSET)
@@ -128,6 +138,7 @@ public class StressUtil
             .alias("rsp_sub1");
     }
 
+    @Impure
     static ChannelUriStringBuilder mdcRspSubChannel2(final String serverAddress, final String clientAddress)
     {
         return mdcChannel(clientAddress, MDC_RSP_OFFSET_2, serverAddress, MDC_RSP_CONTROL_OFFSET)
@@ -135,6 +146,7 @@ public class StressUtil
             .alias("rsp_sub2");
     }
 
+    @Impure
     static ChannelUriStringBuilder mdcRspPubChannel(final String serverAddress)
     {
         return new ChannelUriStringBuilder().media("udp")
@@ -143,31 +155,37 @@ public class StressUtil
             .alias("rsp_pub");
     }
 
+    @Impure
     static void imageAvailable(final Image image)
     {
         info("Available image=" + image);
     }
 
+    @Impure
     static void imageUnavailable(final Image image)
     {
         info("Unavailable image=" + image);
     }
 
+    @Impure
     static void error(final String message)
     {
         System.err.println(message);
     }
 
+    @Pure
     static String serverAddress()
     {
         return System.getProperty("aeron.stress.server.address", "localhost");
     }
 
+    @Pure
     static String clientAddress()
     {
         return System.getProperty("aeron.stress.client.address", "localhost");
     }
 
+    @Impure
     static boolean crcMatches(final DirectBuffer msg, final int offset, final int length, final CRC64 crc)
     {
         final long recvCrc = msg.getLong(offset, LITTLE_ENDIAN);
@@ -176,6 +194,7 @@ public class StressUtil
         return calcCrc == recvCrc;
     }
 
+    @Impure
     static void validateMessage(
         final CRC64 crc,
         final DirectBuffer msg,

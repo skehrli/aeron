@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.aeron.samples.echo.api;
+import org.checkerframework.dataflow.qual.Impure;
 
 /**
  * MBean interface for the provisioning service to request manage the creation of pub/sub echo pairs.
@@ -29,6 +30,7 @@ public interface ProvisioningMBean
      * @param pubChannel channel for echo publication.
      * @param pubStreamId stream id for echo publication.
      */
+    @Impure
     void createEchoPair(
         long correlationId,
         String subChannel,
@@ -39,5 +41,6 @@ public interface ProvisioningMBean
     /**
      * Removes all echo pairs on remote provisioning service.
      */
+    @Impure
     void removeAll();
 }

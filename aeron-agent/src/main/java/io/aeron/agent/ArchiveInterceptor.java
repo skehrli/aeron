@@ -15,6 +15,8 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.checker.mustcall.qual.Owning;
 import net.bytebuddy.asm.Advice;
 
 import static io.aeron.agent.ArchiveEventLogger.LOGGER;
@@ -26,10 +28,11 @@ class ArchiveInterceptor
 {
     static class ReplaySessionStateChange
     {
+        @Impure
         @Advice.OnMethodEnter
         static <E extends Enum<E>> void logStateChange(
-            final E oldState,
-            final E newState,
+            final @Owning E oldState,
+            final @Owning E newState,
             final long sessionId,
             final long recordingId,
             final long position,
@@ -42,10 +45,11 @@ class ArchiveInterceptor
 
     static class RecordingSessionStateChange
     {
+        @Impure
         @Advice.OnMethodEnter
         static <E extends Enum<E>> void logStateChange(
-            final E oldState,
-            final E newState,
+            final @Owning E oldState,
+            final @Owning E newState,
             final long recordingId,
             final long position,
             final String reason)
@@ -56,10 +60,11 @@ class ArchiveInterceptor
 
     static class ReplicationSessionStateChange
     {
+        @Impure
         @Advice.OnMethodEnter
         static <E extends Enum<E>> void logStateChange(
-            final E oldState,
-            final E newState,
+            final @Owning E oldState,
+            final @Owning E newState,
             final long replicationId,
             final long srcRecordingId,
             final long dstRecordingId,
@@ -73,6 +78,7 @@ class ArchiveInterceptor
 
     static class ReplicationSessionDone
     {
+        @Impure
         @Advice.OnMethodEnter
         static void logReplicationSessionDone(
             final long controlSessionId,
@@ -104,9 +110,10 @@ class ArchiveInterceptor
 
     static class ControlSessionStateChange
     {
+        @Impure
         @Advice.OnMethodEnter
         static <E extends Enum<E>> void logStateChange(
-            final E oldState, final E newState, final long controlSessionId, final String reason)
+            final @Owning E oldState, final @Owning E newState, final long controlSessionId, final String reason)
         {
             LOGGER.logControlSessionStateChange(oldState, newState, controlSessionId, reason);
         }
@@ -114,6 +121,7 @@ class ArchiveInterceptor
 
     static class ReplaySession
     {
+        @Impure
         @Advice.OnMethodEnter
         static void onPendingError(final long sessionId, final long recordingId, final String errorMessage)
         {
@@ -123,6 +131,7 @@ class ArchiveInterceptor
 
     static class Catalog
     {
+        @Impure
         @Advice.OnMethodEnter
         static void catalogResized(final long catalogLength, final long newCatalogLength)
         {

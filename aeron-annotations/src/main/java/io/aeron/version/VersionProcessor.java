@@ -15,6 +15,8 @@
  */
 package io.aeron.version;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -68,6 +70,7 @@ public class VersionProcessor extends AbstractProcessor
     /**
      * {@inheritDoc}
      */
+    @Impure
     public SourceVersion getSupportedSourceVersion()
     {
         return SourceVersion.latest();
@@ -76,6 +79,7 @@ public class VersionProcessor extends AbstractProcessor
     /**
      * {@inheritDoc}
      */
+    @Impure
     public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv)
     {
         for (final TypeElement annotation : annotations)
@@ -127,6 +131,7 @@ public class VersionProcessor extends AbstractProcessor
         private final int minor;
         private final int patch;
 
+        @SideEffectFree
         VersionInformation(final String versionString)
         {
             final Matcher matcher = VERSION_PATTERN.matcher(versionString);

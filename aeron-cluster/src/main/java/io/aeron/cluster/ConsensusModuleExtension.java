@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.ExclusivePublication;
 import io.aeron.Image;
 import io.aeron.Publication;
@@ -38,6 +40,7 @@ public interface ConsensusModuleExtension extends AutoCloseable
      *
      * @return schema id supported.
      */
+    @Pure
     int supportedSchemaId();
 
     /**
@@ -51,6 +54,7 @@ public interface ConsensusModuleExtension extends AutoCloseable
      * @param consensusModuleControl with which the extension can interact.
      * @param snapshotImage          from which the extension can load its state which can be null when no snapshot.
      */
+    @SideEffectFree
     void onStart(ConsensusModuleControl consensusModuleControl, Image snapshotImage);
 
     /**
@@ -64,6 +68,7 @@ public interface ConsensusModuleExtension extends AutoCloseable
      * @param nowNs is cluster time in nanoseconds.
      * @return 0 to indicate no work was currently available, a positive value otherwise.
      */
+    @Pure
     int doWork(long nowNs);
 
     /**
@@ -72,6 +77,7 @@ public interface ConsensusModuleExtension extends AutoCloseable
      * @param nowNs is cluster time in nanoseconds.
      * @return 0 to indicate no work was currently available, a positive value otherwise.
      */
+    @Pure
     int slowTickWork(long nowNs);
 
     /**
@@ -80,6 +86,7 @@ public interface ConsensusModuleExtension extends AutoCloseable
      * @param nowNs is cluster time in nanoseconds.
      * @return 0 to indicate no work was currently available, a positive value otherwise.
      */
+    @Pure
     int consensusWork(long nowNs);
 
     /**
@@ -88,6 +95,7 @@ public interface ConsensusModuleExtension extends AutoCloseable
      *
      * @param consensusControlState state to allow extension to control the consensus module.
      */
+    @SideEffectFree
     void onElectionComplete(ConsensusControlState consensusControlState);
 
     /**
@@ -95,6 +103,7 @@ public interface ConsensusModuleExtension extends AutoCloseable
      *
      * @param consensusControlState state to allow extension to control the consensus module.
      */
+    @SideEffectFree
     void onNewLeadershipTerm(ConsensusControlState consensusControlState);
 
     /**
@@ -113,6 +122,7 @@ public interface ConsensusModuleExtension extends AutoCloseable
      * @param header            representing the metadata for the data.
      * @return The action to be taken with regard to the stream position after the callback.
      */
+    @Pure
     ControlledFragmentHandler.Action onIngressExtensionMessage(
         int actingBlockLength,
         int templateId,
@@ -139,6 +149,7 @@ public interface ConsensusModuleExtension extends AutoCloseable
      * @param header            representing the metadata for the data.
      * @return The action to be taken with regard to the stream position after the callback.
      */
+    @Pure
     ControlledFragmentHandler.Action onLogExtensionMessage(
         int actingBlockLength,
         int templateId,
@@ -152,6 +163,7 @@ public interface ConsensusModuleExtension extends AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
     void close();
 
     /**
@@ -159,6 +171,7 @@ public interface ConsensusModuleExtension extends AutoCloseable
      *
      * @param clusterSessionId of the opened session which is unique and not reused.
      */
+    @SideEffectFree
     void onSessionOpened(long clusterSessionId);
 
     /**
@@ -167,11 +180,13 @@ public interface ConsensusModuleExtension extends AutoCloseable
      * @param clusterSessionId  of the opened session which is unique and not reused.
      * @param closeReason       reason to closing session
      */
+    @SideEffectFree
     void onSessionClosed(long clusterSessionId, CloseReason closeReason);
 
     /**
      * Callback when preparing for a new Raft leadership term - before election.
      */
+    @SideEffectFree
     void onPrepareForNewLeadership();
 
     /**
@@ -184,5 +199,6 @@ public interface ConsensusModuleExtension extends AutoCloseable
      *
      * @param snapshotPublication to which the state should be recorded.
      */
+    @SideEffectFree
     void onTakeSnapshot(ExclusivePublication snapshotPublication);
 }

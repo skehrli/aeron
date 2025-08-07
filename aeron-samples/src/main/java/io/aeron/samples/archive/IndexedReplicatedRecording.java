@@ -15,6 +15,9 @@
  */
 package io.aeron.samples.archive;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.*;
 import io.aeron.archive.Archive;
 import io.aeron.archive.ArchiveThreadingMode;
@@ -93,6 +96,7 @@ public class IndexedReplicatedRecording implements AutoCloseable
     private final AeronArchive srcAeronArchive;
     private final AeronArchive dstAeronArchive;
 
+    @Impure
     IndexedReplicatedRecording()
     {
         final String srcAeronDirectoryName = getAeronDirectoryName() + "-src";
@@ -168,6 +172,7 @@ public class IndexedReplicatedRecording implements AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         CloseHelper.closeAll(
@@ -188,6 +193,7 @@ public class IndexedReplicatedRecording implements AutoCloseable
      * @param args passed to the process.
      * @throws InterruptedException if the thread is interrupted.
      */
+    @Impure
     public static void main(final String[] args) throws InterruptedException
     {
         try (IndexedReplicatedRecording test = new IndexedReplicatedRecording())
@@ -267,6 +273,7 @@ public class IndexedReplicatedRecording implements AutoCloseable
         }
     }
 
+    @Impure
     static int awaitRecordingCounterId(final CountersReader counters, final int sessionId, final long archiveId)
         throws InterruptedException
     {
@@ -283,6 +290,7 @@ public class IndexedReplicatedRecording implements AutoCloseable
         return counterId;
     }
 
+    @Impure
     static void awaitPosition(final CountersReader counters, final int counterId, final long position)
         throws InterruptedException
     {
@@ -301,6 +309,7 @@ public class IndexedReplicatedRecording implements AutoCloseable
         }
     }
 
+    @SideEffectFree
     static void assertEquals(final String type, final long srcValue, final long dstValue)
     {
         if (srcValue != dstValue)
@@ -309,6 +318,7 @@ public class IndexedReplicatedRecording implements AutoCloseable
         }
     }
 
+    @Impure
     static void assertEquals(final String type, final LongArrayList srcList, final LongArrayList dstList)
     {
         final int srcSize = srcList.size();
@@ -340,6 +350,7 @@ public class IndexedReplicatedRecording implements AutoCloseable
         private final Random random = new Random();
         private final UnsafeBuffer buffer = new UnsafeBuffer(new byte[HEADER_LENGTH + MAX_MESSAGE_LENGTH]);
 
+        @Impure
         Sequencer(final int burstLength, final Publication publication)
         {
             this.burstLength = burstLength;
@@ -347,16 +358,19 @@ public class IndexedReplicatedRecording implements AutoCloseable
             buffer.setMemory(HEADER_LENGTH, MAX_MESSAGE_LENGTH, (byte)'X');
         }
 
+        @Impure
         public void close()
         {
             CloseHelper.close(publication);
         }
 
+        @Pure
         long nextMessageIndex()
         {
             return nextMessageIndex;
         }
 
+        @Impure
         void sendBurst() throws InterruptedException
         {
             for (int i = 0; i < burstLength; i++)
@@ -365,6 +379,7 @@ public class IndexedReplicatedRecording implements AutoCloseable
             }
         }
 
+        @Impure
         private void appendMessage() throws InterruptedException
         {
             final int variableLength = random.nextInt(MAX_MESSAGE_LENGTH);
@@ -402,6 +417,7 @@ public class IndexedReplicatedRecording implements AutoCloseable
         private final LongArrayList timestampPositions = new LongArrayList();
         private final UnsafeBuffer indexBuffer = new UnsafeBuffer(new byte[INDEX_BUFFER_CAPACITY]);
 
+        @Impure
         static Thread start(final Indexer indexer)
         {
             final Thread thread = new Thread(indexer);
@@ -412,6 +428,7 @@ public class IndexedReplicatedRecording implements AutoCloseable
             return thread;
         }
 
+        @SideEffectFree
         Indexer(final Subscription subscription, final Publication publication, final int sessionId)
         {
             this.subscription = subscription;
@@ -419,11 +436,13 @@ public class IndexedReplicatedRecording implements AutoCloseable
             this.sessionId = sessionId;
         }
 
+        @Impure
         public void close()
         {
             CloseHelper.close(subscription);
         }
 
+        @Impure
         long position()
         {
             if (null == image)
@@ -434,6 +453,7 @@ public class IndexedReplicatedRecording implements AutoCloseable
             return image.position();
         }
 
+        @Impure
         void awaitPosition(final long position)
         {
             while (position() < position)
@@ -442,26 +462,31 @@ public class IndexedReplicatedRecording implements AutoCloseable
             }
         }
 
+        @Pure
         long nextMessageIndex()
         {
             return nextMessageIndex;
         }
 
+        @Pure
         LongArrayList messagePositions()
         {
             return messagePositions;
         }
 
+        @Pure
         LongArrayList timestamps()
         {
             return timestamps;
         }
 
+        @Pure
         LongArrayList timestampPositions()
         {
             return timestampPositions;
         }
 
+        @Impure
         public void run()
         {
             while (!subscription.isConnected() || !publication.isConnected())
@@ -502,6 +527,7 @@ public class IndexedReplicatedRecording implements AutoCloseable
             }
         }
 
+        @Impure
         public Action onFragment(final DirectBuffer buffer, final int offset, final int length, final Header header)
         {
             final long currentPosition = lastMessagePosition;

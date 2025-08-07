@@ -15,6 +15,9 @@
  */
 package io.aeron.response;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.*;
 import io.aeron.logbuffer.ControlledFragmentHandler;
 import io.aeron.logbuffer.Header;
@@ -50,6 +53,7 @@ public class ResponseServer implements AutoCloseable, Agent
          * @param responsePublication to send responses back to the client.
          * @return <code>true</code> if the message was processed otherwise.
          */
+        @Pure
         boolean onMessage(DirectBuffer buffer, int offset, int length, Header header, Publication responsePublication);
     }
 
@@ -81,6 +85,7 @@ public class ResponseServer implements AutoCloseable, Agent
      * @param requestChannel   fragment to aid in configuration of the subscription (can be null)
      * @param responseChannel  fragment to aid in configuration of the response publication (can be null)
      */
+    @Impure
     public ResponseServer(
         final Aeron aeron,
         final Function<Image, ResponseHandler> handlerFactory,
@@ -118,6 +123,7 @@ public class ResponseServer implements AutoCloseable, Agent
      *
      * @return amount of work done.
      */
+    @Impure
     public int doWork()
     {
         int workCount = 0;
@@ -155,6 +161,7 @@ public class ResponseServer implements AutoCloseable, Agent
      *
      * @return the number of connected clients.
      */
+    @Pure
     public int sessionCount()
     {
         return clientToPublicationMap.size();
@@ -163,6 +170,7 @@ public class ResponseServer implements AutoCloseable, Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         CloseHelper.quietClose(serverSubscription);
@@ -172,11 +180,13 @@ public class ResponseServer implements AutoCloseable, Agent
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String roleName()
     {
         return "ResponseServer";
     }
 
+    @Impure
     private void enqueueAvailableImage(final Image image)
     {
         if (!availableImages.offer(image))
@@ -185,6 +195,7 @@ public class ResponseServer implements AutoCloseable, Agent
         }
     }
 
+    @Impure
     private void enqueueUnavailableImage(final Image image)
     {
         if (!unavailableImages.offer(image))
@@ -193,6 +204,7 @@ public class ResponseServer implements AutoCloseable, Agent
         }
     }
 
+    @Impure
     private ControlledFragmentHandler.Action onControlledRequestMessage(
         final DirectBuffer buffer, final int offset, final int length, final Header header)
     {
@@ -203,6 +215,7 @@ public class ResponseServer implements AutoCloseable, Agent
     }
 
 
+    @Impure
     private ResponseSession getOrCreateSession(final Image image)
     {
         ResponseSession session = clientToPublicationMap.get(image.correlationId());
@@ -222,6 +235,7 @@ public class ResponseServer implements AutoCloseable, Agent
         return session;
     }
 
+    @Impure
     private void removeSession(final Image image)
     {
         requestAssembler.freeSessionBuffer(image.sessionId());
@@ -234,12 +248,15 @@ public class ResponseServer implements AutoCloseable, Agent
         private final Publication publication;
         private final ResponseHandler handler;
 
+        @SideEffectFree
         ResponseSession(final Publication publication, final ResponseHandler handler)
         {
             this.publication = publication;
             this.handler = handler;
         }
 
+        @Pure
+        @Impure
         public boolean process(final DirectBuffer buffer, final int offset, final int length, final Header header)
         {
             return handler.onMessage(buffer, offset, length, header, publication);
@@ -248,6 +265,7 @@ public class ResponseServer implements AutoCloseable, Agent
         /**
          * {@inheritDoc}
          */
+        @Impure
         public void close()
         {
             CloseHelper.close(publication);

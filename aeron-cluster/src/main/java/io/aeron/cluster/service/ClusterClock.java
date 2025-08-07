@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster.service;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.cluster.codecs.ClusterTimeUnit;
 
 import java.util.concurrent.TimeUnit;
@@ -33,6 +35,7 @@ public interface ClusterClock
      *
      * @return the unit of time returned from the {@link #time()} method.
      */
+    @Pure
     default TimeUnit timeUnit()
     {
         return TimeUnit.MILLISECONDS;
@@ -43,6 +46,7 @@ public interface ClusterClock
      *
      * @return the count of {@link #timeUnit()}s since 1 Jan 1970 UTC.
      */
+    @Impure
     long time();
 
     /**
@@ -50,6 +54,7 @@ public interface ClusterClock
      *
      * @return the current time in {@link TimeUnit#MILLISECONDS}.
      */
+    @Impure
     default long timeMillis()
     {
         return timeUnit().toMillis(time());
@@ -60,6 +65,7 @@ public interface ClusterClock
      *
      * @return the current time in {@link TimeUnit#MICROSECONDS}.
      */
+    @Impure
     default long timeMicros()
     {
         return timeUnit().toMicros(time());
@@ -70,6 +76,7 @@ public interface ClusterClock
      *
      * @return the current time in {@link TimeUnit#NANOSECONDS}.
      */
+    @Impure
     default long timeNanos()
     {
         return timeUnit().toNanos(time());
@@ -81,6 +88,7 @@ public interface ClusterClock
      * @param time to convert to nanoseconds.
      * @return time in {@link TimeUnit#NANOSECONDS}.
      */
+    @Impure
     default long convertToNanos(long time)
     {
         return timeUnit().toNanos(time);
@@ -92,6 +100,7 @@ public interface ClusterClock
      * @param timeUnit to map to a corresponding {@link ClusterTimeUnit}.
      * @return a corresponding {@link ClusterTimeUnit}.
      */
+    @Pure
     static ClusterTimeUnit map(final TimeUnit timeUnit)
     {
         switch (timeUnit)
@@ -117,6 +126,7 @@ public interface ClusterClock
      * @return a corresponding {@link TimeUnit}, if {@link ClusterTimeUnit#NULL_VAL} is passed then defaults
      * to {@link TimeUnit#MILLISECONDS}.
      */
+    @Pure
     static TimeUnit map(final ClusterTimeUnit clusterTimeUnit)
     {
         switch (clusterTimeUnit)

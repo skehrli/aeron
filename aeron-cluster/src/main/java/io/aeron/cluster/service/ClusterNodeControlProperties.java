@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.aeron.cluster.service;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 
 /**
  * Data class for holding the properties used when interacting with a cluster for local admin control.
@@ -57,6 +58,7 @@ public final class ClusterNodeControlProperties
      * @param aeronDirectoryName      where the Aeron Media Driver is running.
      * @param controlChannel          for the services and consensus module.
      */
+    @SideEffectFree
     ClusterNodeControlProperties(
         final int memberId,
         final int serviceStreamId,

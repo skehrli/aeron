@@ -15,6 +15,8 @@
  */
 package io.aeron.driver.media;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.collections.IntHashSet;
 
 import java.net.BindException;
@@ -45,6 +47,7 @@ public class WildcardPortManager implements PortManager
      * @param portRange for the port manager
      * @param isSender for this port manager
      */
+    @SideEffectFree
     public WildcardPortManager(final int[] portRange, final boolean isSender)
     {
         this.lowPort = portRange[0];
@@ -57,6 +60,7 @@ public class WildcardPortManager implements PortManager
     /**
      * {@inheritDoc}
      */
+    @Impure
     public InetSocketAddress getManagedPort(
         final UdpChannel udpChannel,
         final InetSocketAddress bindAddress) throws BindException
@@ -83,6 +87,7 @@ public class WildcardPortManager implements PortManager
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void freeManagedPort(final InetSocketAddress bindAddress)
     {
         if (bindAddress.getPort() != 0)
@@ -97,6 +102,7 @@ public class WildcardPortManager implements PortManager
      * @param value for the port range in string format.
      * @return port range as low index 0 and high index 1.
      */
+    @Impure
     public static int[] parsePortRange(final String value)
     {
         if (null == value || value.isEmpty())
@@ -135,6 +141,7 @@ public class WildcardPortManager implements PortManager
         return portRange;
     }
 
+    @Impure
     private int findOpenPort()
     {
         for (int i = nextPort; i <= highPort; i++)
@@ -156,6 +163,7 @@ public class WildcardPortManager implements PortManager
         return 0;
     }
 
+    @Impure
     private int allocateOpenPort() throws BindException
     {
         final int port = findOpenPort();

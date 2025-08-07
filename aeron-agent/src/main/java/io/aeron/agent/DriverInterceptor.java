@@ -15,6 +15,8 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.checker.mustcall.qual.Owning;
 import net.bytebuddy.asm.Advice;
 
 import java.net.InetAddress;
@@ -27,9 +29,10 @@ class DriverInterceptor
 {
     static class UntetheredSubscriptionStateChange
     {
+        @Impure
         @Advice.OnMethodEnter
         static <E extends Enum<E>> void logStateChange(
-            final E oldState, final E newState, final long subscriptionId, final int streamId, final int sessionId)
+            final @Owning E oldState, final @Owning E newState, final long subscriptionId, final int streamId, final int sessionId)
         {
             LOGGER.logUntetheredSubscriptionStateChange(oldState, newState, subscriptionId, streamId, sessionId);
         }
@@ -39,6 +42,7 @@ class DriverInterceptor
     {
         static class NeighborAdded
         {
+            @Impure
             @Advice.OnMethodEnter
             static void neighborAdded(final long nowMs, final InetSocketAddress address)
             {
@@ -48,6 +52,7 @@ class DriverInterceptor
 
         static class NeighborRemoved
         {
+            @Impure
             @Advice.OnMethodEnter
             static void neighborRemoved(final long nowMs, final InetSocketAddress address)
             {
@@ -57,6 +62,7 @@ class DriverInterceptor
 
         static class Resolve
         {
+            @Impure
             @Advice.OnMethodEnter
             static void logResolve(
                 final String resolverName,
@@ -71,6 +77,7 @@ class DriverInterceptor
 
         static class Lookup
         {
+            @Impure
             @Advice.OnMethodEnter
             static void logLookup(
                 final String resolverName,
@@ -85,6 +92,7 @@ class DriverInterceptor
 
         static class HostName
         {
+            @Impure
             @Advice.OnMethodEnter
             static void logHostName(
                 final long durationNs,
@@ -99,6 +107,7 @@ class DriverInterceptor
     {
         static class ReceiverAdded
         {
+            @Impure
             @Advice.OnMethodEnter
             static void receiverAdded(
                 final long receiverId,
@@ -114,6 +123,7 @@ class DriverInterceptor
 
         static class ReceiverRemoved
         {
+            @Impure
             @Advice.OnMethodEnter
             static void receiverRemoved(
                 final long receiverId,
@@ -132,6 +142,7 @@ class DriverInterceptor
     {
         static class PublicationRevoke
         {
+            @Impure
             @Advice.OnMethodEnter
             static void logRevoke(
                 final long revokedPos,
@@ -145,6 +156,7 @@ class DriverInterceptor
 
         static class PublicationImageRevoke
         {
+            @Impure
             @Advice.OnMethodEnter
             static void logRevoke(
                 final long revokedPos,

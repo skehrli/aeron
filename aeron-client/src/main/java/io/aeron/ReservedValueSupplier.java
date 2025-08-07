@@ -15,6 +15,7 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.DirectBuffer;
 
 /**
@@ -38,5 +39,6 @@ public interface ReservedValueSupplier
      * @param frameLength Total length of the frame including header.
      * @return the value to be used for storing in the reserved value field.
      */
+    @Pure
     long get(DirectBuffer termBuffer, int termOffset, int frameLength);
 }

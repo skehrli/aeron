@@ -15,6 +15,9 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.logbuffer.LogBufferDescriptor;
 import org.agrona.AsciiEncoding;
 import org.agrona.Strings;
@@ -91,6 +94,7 @@ public final class ChannelUri
      * @param media  for the channel which is typically "udp" or "ipc".
      * @param params for the query string as key value pairs.
      */
+    @Impure
     private ChannelUri(final String prefix, final String media, final Object2ObjectHashMap<String, String> params)
     {
         this.prefix = prefix;
@@ -104,6 +108,7 @@ public final class ChannelUri
      *
      * @return the prefix for the channel.
      */
+    @Pure
     public String prefix()
     {
         return prefix;
@@ -115,6 +120,7 @@ public final class ChannelUri
      * @param prefix to replace the existing prefix.
      * @return this for a fluent API.
      */
+    @Impure
     public ChannelUri prefix(final String prefix)
     {
         this.prefix = prefix;
@@ -126,6 +132,7 @@ public final class ChannelUri
      *
      * @return the media over which the channel operates.
      */
+    @Pure
     public String media()
     {
         return media;
@@ -137,6 +144,7 @@ public final class ChannelUri
      * @param media to replace the parsed value.
      * @return this for a fluent API.
      */
+    @Impure
     public ChannelUri media(final String media)
     {
         validateMedia(media);
@@ -149,6 +157,7 @@ public final class ChannelUri
      *
      * @return true the channel {@link #media()} equals {@link CommonContext#UDP_MEDIA}.
      */
+    @Pure
     public boolean isUdp()
     {
         return UDP_MEDIA.equals(media);
@@ -159,6 +168,7 @@ public final class ChannelUri
      *
      * @return true the channel {@link #media()} equals {@link CommonContext#IPC_MEDIA}.
      */
+    @Pure
     public boolean isIpc()
     {
         return IPC_MEDIA.equals(media);
@@ -169,6 +179,7 @@ public final class ChannelUri
      *
      * @return the scheme for the URI.
      */
+    @Pure
     public String scheme()
     {
         return AERON_SCHEME;
@@ -180,6 +191,7 @@ public final class ChannelUri
      * @param key to lookup.
      * @return the value if set for the key otherwise null.
      */
+    @Pure
     public String get(final String key)
     {
         return params.get(key);
@@ -192,6 +204,7 @@ public final class ChannelUri
      * @param defaultValue to be returned if no key match is found.
      * @return the value if set for the key otherwise the default value provided.
      */
+    @Pure
     public String get(final String key, final String defaultValue)
     {
         final String value = params.get(key);
@@ -210,6 +223,7 @@ public final class ChannelUri
      * @param value of the param to be put.
      * @return the existing value otherwise null.
      */
+    @Impure
     public String put(final String key, final String value)
     {
         return params.put(key, value);
@@ -221,6 +235,7 @@ public final class ChannelUri
      * @param key of the param to be removed.
      * @return the previous value of the param or null.
      */
+    @Impure
     public String remove(final String key)
     {
         return params.remove(key);
@@ -232,6 +247,7 @@ public final class ChannelUri
      * @param key to be lookup.
      * @return true if the key has a value otherwise false.
      */
+    @Pure
     public boolean containsKey(final String key)
     {
         return params.containsKey(key);
@@ -244,6 +260,7 @@ public final class ChannelUri
      * @see CommonContext#TAGS_PARAM_NAME
      * @see CommonContext#TAG_PREFIX
      */
+    @Pure
     public String channelTag()
     {
         return tags.length > CHANNEL_TAG_INDEX ? tags[CHANNEL_TAG_INDEX] : null;
@@ -256,6 +273,7 @@ public final class ChannelUri
      * @see CommonContext#TAGS_PARAM_NAME
      * @see CommonContext#TAG_PREFIX
      */
+    @Pure
     public String entityTag()
     {
         return tags.length > ENTITY_TAG_INDEX ? tags[ENTITY_TAG_INDEX] : null;
@@ -264,6 +282,7 @@ public final class ChannelUri
     /**
      * {@inheritDoc}
      */
+    @Pure
     public boolean equals(final Object o)
     {
         if (this == o)
@@ -287,6 +306,7 @@ public final class ChannelUri
     /**
      * {@inheritDoc}
      */
+    @Pure
     public int hashCode()
     {
         int result = 19;
@@ -303,6 +323,7 @@ public final class ChannelUri
      *
      * @return a String representation of the URI that is valid for an Aeron channel.
      */
+    @Impure
     public String toString()
     {
         final StringBuilder sb;
@@ -344,6 +365,7 @@ public final class ChannelUri
      * @param initialTermId what which the stream would start.
      * @param termLength    for the stream.
      */
+    @Impure
     public void initialPosition(final long position, final int initialTermId, final int termLength)
     {
         if (position < 0 || 0 != (position & (FRAME_ALIGNMENT - 1)))
@@ -367,6 +389,7 @@ public final class ChannelUri
      * @param uri to be parsed.
      * @return a new {@link ChannelUri} representing the URI string.
      */
+    @Impure
     @SuppressWarnings("MethodLength")
     public static ChannelUri parse(final CharSequence uri)
     {
@@ -493,6 +516,7 @@ public final class ChannelUri
      * @param sessionId to add to channel.
      * @return new string that represents channel with sessionId added.
      */
+    @Impure
     public static String addSessionId(final String channel, final int sessionId)
     {
         final ChannelUri channelUri = ChannelUri.parse(channel);
@@ -508,6 +532,7 @@ public final class ChannelUri
      * @param alias to add to the uri.
      * @return original uri if alias is empty or one is already defined, otherwise new uri with an alias.
      */
+    @Impure
     public static String addAliasIfAbsent(final String uri, final String alias)
     {
         if (!Strings.isEmpty(alias))
@@ -531,6 +556,7 @@ public final class ChannelUri
      * @param function the transformation function.
      * @return uri equivalent to the one passed in with its alias transformed.
      */
+    @Impure
     public static String transformAlias(final String uri, final Function<String, String> function)
     {
         final ChannelUri channelUri = ChannelUri.parse(uri);
@@ -555,6 +581,8 @@ public final class ChannelUri
      * @see CommonContext#TAGS_PARAM_NAME
      * @see CommonContext#TAG_PREFIX
      */
+    @Pure
+    @Impure
     public static boolean isTagged(final String paramValue)
     {
         return startsWith(paramValue, 0, TAG_PREFIX);
@@ -568,6 +596,7 @@ public final class ChannelUri
      * @see CommonContext#TAGS_PARAM_NAME
      * @see CommonContext#TAG_PREFIX
      */
+    @Impure
     public static long getTag(final String paramValue)
     {
         return isTagged(paramValue) ?
@@ -584,6 +613,7 @@ public final class ChannelUri
      * @param endpoint for the target destination.
      * @return new channel URI for a destination.
      */
+    @Impure
     public static String createDestinationUri(final String channel, final String endpoint)
     {
         final ChannelUri channelUri = ChannelUri.parse(channel);
@@ -608,6 +638,7 @@ public final class ChannelUri
      * @throws IllegalArgumentException if the supplied resolvedEndpoint does not have a port or the port is zero.
      * @throws NullPointerException     if the supplied resolvedEndpoint is null
      */
+    @Impure
     public void replaceEndpointWildcardPort(final String resolvedEndpoint)
     {
         final int portSeparatorIndex = requireNonNull(resolvedEndpoint, "resolvedEndpoint is null").lastIndexOf(':');
@@ -638,6 +669,7 @@ public final class ChannelUri
      *
      * @param consumer to be invoked for each parameter.
      */
+    @Impure
     public void forEachParameter(final BiConsumer<String, String> consumer)
     {
         params.forEach(consumer);
@@ -648,6 +680,8 @@ public final class ChannelUri
      *
      * @return true if this channel has specified <code>control-mode=response</code>.
      */
+    @Pure
+    @Impure
     public boolean hasControlModeResponse()
     {
         return CONTROL_MODE_RESPONSE.equals(get(MDC_CONTROL_MODE_PARAM_NAME));
@@ -659,11 +693,13 @@ public final class ChannelUri
      * @param channelUri to check if the control mode is response
      * @return true if the supplied channel has specified <code>control-mode=response</code>.
      */
+    @Impure
     public static boolean isControlModeResponse(final String channelUri)
     {
         return parse(channelUri).hasControlModeResponse();
     }
 
+    @SideEffectFree
     private static void validateMedia(final String media)
     {
         if (IPC_MEDIA.equals(media) || UDP_MEDIA.equals(media))
@@ -674,6 +710,7 @@ public final class ChannelUri
         throw new IllegalArgumentException("unknown media: " + media);
     }
 
+    @Pure
     private static boolean startsWith(final CharSequence input, final int position, final String prefix)
     {
         if ((input.length() - position) < prefix.length())
@@ -692,6 +729,7 @@ public final class ChannelUri
         return true;
     }
 
+    @Impure
     private static String[] splitTags(final String tagsValue)
     {
         String[] tags = ArrayUtil.EMPTY_STRING_ARRAY;
@@ -728,6 +766,7 @@ public final class ChannelUri
         return tags;
     }
 
+    @Pure
     private static int countTags(final String tags)
     {
         int count = 1;
@@ -743,6 +782,7 @@ public final class ChannelUri
         return count;
     }
 
+    @Impure
     Map<String, String> diff(final ChannelUri that)
     {
         final HashMap<String, String> differingValues = new HashMap<>();

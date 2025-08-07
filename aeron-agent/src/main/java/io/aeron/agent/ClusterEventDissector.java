@@ -15,6 +15,8 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.protocol.HeaderFlyweight;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.SemanticVersion;
@@ -29,10 +31,12 @@ final class ClusterEventDissector
 {
     static final String CONTEXT = "CLUSTER";
 
+    @SideEffectFree
     private ClusterEventDissector()
     {
     }
 
+    @Impure
     static void dissectNewLeadershipTerm(
         final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
@@ -97,6 +101,7 @@ final class ClusterEventDissector
         builder.append(" isStartup=").append(isStartup);
     }
 
+    @Impure
     private static void appendSemanticVersion(final int version, final StringBuilder builder)
     {
         builder.append(SemanticVersion.major(version))
@@ -106,6 +111,7 @@ final class ClusterEventDissector
             .append(SemanticVersion.patch(version));
     }
 
+    @Impure
     static void dissectStateChange(
         final ClusterEventCode eventCode,
         final MutableDirectBuffer buffer,
@@ -123,6 +129,7 @@ final class ClusterEventDissector
         buffer.getStringAscii(absoluteOffset, builder, LITTLE_ENDIAN);
     }
 
+    @SideEffectFree
     static void dissectNoOp(
         final ClusterEventCode eventCode,
         final MutableDirectBuffer buffer,
@@ -131,6 +138,7 @@ final class ClusterEventDissector
     {
     }
 
+    @Impure
     static void dissectElectionStateChange(
         final MutableDirectBuffer buffer,
         final int offset,
@@ -170,6 +178,7 @@ final class ClusterEventDissector
         buffer.getStringAscii(absoluteOffset, builder, LITTLE_ENDIAN);
     }
 
+    @Impure
     static void dissectCanvassPosition(
         final ClusterEventCode eventCode,
         final MutableDirectBuffer buffer,
@@ -200,6 +209,7 @@ final class ClusterEventDissector
         appendSemanticVersion(protocolVersion, builder);
     }
 
+    @Impure
     static void dissectRequestVote(
         final ClusterEventCode eventCode,
         final MutableDirectBuffer buffer,
@@ -230,6 +240,7 @@ final class ClusterEventDissector
         appendSemanticVersion(protocolVersion, builder);
     }
 
+    @Impure
     static void dissectCatchupPosition(
         final ClusterEventCode eventCode,
         final MutableDirectBuffer buffer,
@@ -258,6 +269,7 @@ final class ClusterEventDissector
         buffer.getStringWithoutLengthAscii(absoluteOffset, catchupEndpointLength, builder);
     }
 
+    @Impure
     static void dissectStopCatchup(
         final ClusterEventCode eventCode,
         final MutableDirectBuffer buffer,
@@ -278,6 +290,7 @@ final class ClusterEventDissector
         builder.append(" followerMemberId=").append(followerMemberId);
     }
 
+    @Impure
     static void dissectTruncateLogEntry(
         final ClusterEventCode eventCode,
         final MutableDirectBuffer buffer,
@@ -327,6 +340,7 @@ final class ClusterEventDissector
         builder.append(" newPosition=").append(newPosition);
     }
 
+    @Impure
     public static void dissectReplayNewLeadershipTerm(
         final ClusterEventCode eventCode,
         final MutableDirectBuffer buffer,
@@ -372,6 +386,7 @@ final class ClusterEventDissector
         buffer.getStringWithoutLengthAscii(absoluteOffset, timeUnitLength, builder);
     }
 
+    @Impure
     public static void dissectAppendPosition(
         final ClusterEventCode eventCode,
         final MutableDirectBuffer buffer,
@@ -399,6 +414,7 @@ final class ClusterEventDissector
         HeaderFlyweight.appendFlagsAsChars(flags, builder);
     }
 
+    @Impure
     public static void dissectCommitPosition(
         final ClusterEventCode eventCode,
         final MutableDirectBuffer buffer,
@@ -422,6 +438,7 @@ final class ClusterEventDissector
         builder.append(" leaderId=").append(leaderId);
     }
 
+    @Impure
     public static void dissectAddPassiveMember(
         final ClusterEventCode eventCode,
         final MutableDirectBuffer buffer,
@@ -442,6 +459,7 @@ final class ClusterEventDissector
         buffer.getStringAscii(absoluteOffset, builder, LITTLE_ENDIAN);
     }
 
+    @Impure
     public static void dissectAppendCloseSession(
         final ClusterEventCode eventCode,
         final MutableDirectBuffer buffer,
@@ -471,6 +489,7 @@ final class ClusterEventDissector
         buffer.getStringAscii(absoluteOffset, builder, LITTLE_ENDIAN);
     }
 
+    @Impure
     public static void dissectTerminationPosition(
         final ClusterEventCode eventCode,
         final MutableDirectBuffer buffer,
@@ -492,6 +511,7 @@ final class ClusterEventDissector
         builder.append(" logPosition=").append(position);
     }
 
+    @Impure
     public static void dissectTerminationAck(
         final ClusterEventCode eventCode,
         final MutableDirectBuffer buffer,
@@ -517,6 +537,7 @@ final class ClusterEventDissector
 
     }
 
+    @Impure
     public static void dissectServiceAck(
         final ClusterEventCode eventCode,
         final MutableDirectBuffer buffer,
@@ -549,6 +570,7 @@ final class ClusterEventDissector
         builder.append(" serviceId=").append(serviceId);
     }
 
+    @Impure
     public static void dissectReplicationEnded(
         final ClusterEventCode eventCode,
         final MutableDirectBuffer buffer,
@@ -583,6 +605,7 @@ final class ClusterEventDissector
         builder.append(" hasSynced=").append(hasSynced);
     }
 
+    @Impure
     public static void dissectStandbySnapshotNotification(
         final ClusterEventCode eventCode,
         final MutableDirectBuffer buffer,
@@ -621,6 +644,7 @@ final class ClusterEventDissector
         absoluteOffset += buffer.getStringAscii(absoluteOffset, builder, LITTLE_ENDIAN);
     }
 
+    @Impure
     public static void dissectNewElection(
         final ClusterEventCode eventCode,
         final MutableDirectBuffer buffer,

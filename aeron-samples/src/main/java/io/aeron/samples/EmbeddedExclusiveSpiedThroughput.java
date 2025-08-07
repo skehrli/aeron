@@ -15,6 +15,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.CommonContext;
 import io.aeron.ExclusivePublication;
@@ -59,6 +60,7 @@ public class EmbeddedExclusiveSpiedThroughput
      * @param args passed to the process.
      * @throws InterruptedException if interrupted during linger.
      */
+    @Impure
     public static void main(final String[] args) throws InterruptedException
     {
         loadPropertiesFiles(args);
@@ -123,6 +125,7 @@ public class EmbeddedExclusiveSpiedThroughput
         }
     }
 
+    @Impure
     private static void printRate(
         final double messagesPerSec, final double bytesPerSec, final long totalFragments, final long totalBytes)
     {

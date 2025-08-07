@@ -15,6 +15,7 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.IpcPublication;
 import io.aeron.driver.SubscriptionLink;
 import io.aeron.driver.NetworkPublication;
@@ -27,6 +28,7 @@ class CleanupInterceptor
 {
     static class CleanupImage
     {
+        @Impure
         @Advice.OnMethodEnter
         static void cleanupImage(final PublicationImage image)
         {
@@ -36,6 +38,7 @@ class CleanupInterceptor
 
     static class CleanupPublication
     {
+        @Impure
         @Advice.OnMethodEnter
         static void cleanupPublication(final NetworkPublication publication)
         {
@@ -45,6 +48,7 @@ class CleanupInterceptor
 
     static class CleanupIpcPublication
     {
+        @Impure
         @Advice.OnMethodEnter
         static void cleanupIpcPublication(final IpcPublication publication)
         {
@@ -54,6 +58,7 @@ class CleanupInterceptor
 
     static class CleanupSubscriptionLink
     {
+        @Impure
         @Advice.OnMethodEnter
         static void cleanupSubscriptionLink(final SubscriptionLink link)
         {

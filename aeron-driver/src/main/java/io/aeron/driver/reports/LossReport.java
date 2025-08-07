@@ -15,6 +15,9 @@
  */
 package io.aeron.driver.reports;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.BitUtil;
 import org.agrona.concurrent.AtomicBuffer;
 
@@ -108,6 +111,7 @@ public final class LossReport
      *
      * @param buffer to be wrapped.
      */
+    @Impure
     public LossReport(final AtomicBuffer buffer)
     {
         buffer.verifyAlignment();
@@ -127,6 +131,7 @@ public final class LossReport
      * @param source           of the stream.
      * @return a new record or null if the error log has insufficient space.
      */
+    @Impure
     public ReportEntry createEntry(
         final long initialBytesLost,
         final long timestampMs,
@@ -169,6 +174,7 @@ public final class LossReport
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "LossReport{" +
@@ -186,6 +192,7 @@ public final class LossReport
         private final AtomicBuffer buffer;
         private final int offset;
 
+        @SideEffectFree
         ReportEntry(final AtomicBuffer buffer, final int offset)
         {
             this.buffer = buffer;
@@ -198,6 +205,7 @@ public final class LossReport
          * @param bytesLost   in this observation.
          * @param timestampMs when this observation occurred.
          */
+        @Impure
         public void recordObservation(final long bytesLost, final long timestampMs)
         {
             buffer.putLongRelease(offset + LAST_OBSERVATION_OFFSET, timestampMs);

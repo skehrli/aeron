@@ -15,6 +15,8 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.CncFileDescriptor;
 import io.aeron.CommonContext;
 import io.aeron.exceptions.AeronException;
@@ -45,6 +47,7 @@ public final class CncFileReader implements AutoCloseable
     private final CountersReader countersReader;
     private final UnsafeBuffer toDriverBuffer;
 
+    @Impure
     private CncFileReader(final MappedByteBuffer cncByteBuffer)
     {
         this.cncByteBuffer = cncByteBuffer;
@@ -80,6 +83,7 @@ public final class CncFileReader implements AutoCloseable
      * @return the {@link CncFileReader} wrapper for reading useful data from the cnc file.
      * @throws AeronException if the cnc version major version is not compatible.
      */
+    @Impure
     public static CncFileReader map()
     {
         final File cncFile = CommonContext.newDefaultCncFile();
@@ -93,6 +97,7 @@ public final class CncFileReader implements AutoCloseable
      *
      * @return the cnc version.
      */
+    @Pure
     public int cncVersion()
     {
         return cncVersion;
@@ -103,6 +108,7 @@ public final class CncFileReader implements AutoCloseable
      *
      * @return the cnc semantic version.
      */
+    @Pure
     public String semanticVersion()
     {
         return cncSemanticVersion;
@@ -113,6 +119,7 @@ public final class CncFileReader implements AutoCloseable
      *
      * @return the counters' reader.
      */
+    @Pure
     public CountersReader countersReader()
     {
         return countersReader;
@@ -123,6 +130,7 @@ public final class CncFileReader implements AutoCloseable
      *
      * @return the epoch timestamp (ms) of the last driver heartbeat.
      */
+    @Impure
     public long driverHeartbeatMs()
     {
         final int timestampOffset = (toDriverBuffer.capacity() - RingBufferDescriptor.TRAILER_LENGTH) +
@@ -136,6 +144,7 @@ public final class CncFileReader implements AutoCloseable
      *
      * @return media driver PID.
      */
+    @Pure
     public int driverPid()
     {
         return driverPid;
@@ -146,6 +155,7 @@ public final class CncFileReader implements AutoCloseable
      *
      * @return the number of milliseconds since the last driver heartbeat.
      */
+    @Impure
     public long driverHeartbeatAgeMs()
     {
         return System.currentTimeMillis() - driverHeartbeatMs();
@@ -154,6 +164,7 @@ public final class CncFileReader implements AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         if (!isClosed)

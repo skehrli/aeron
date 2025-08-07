@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Image;
 import io.aeron.ImageControlledFragmentAssembler;
 import io.aeron.cluster.client.ClusterException;
@@ -45,22 +48,26 @@ class ConsensusModuleSnapshotAdapter implements ControlledFragmentHandler
     private final Image image;
     private final ConsensusModuleSnapshotListener listener;
 
+    @SideEffectFree
     ConsensusModuleSnapshotAdapter(final Image image, final ConsensusModuleSnapshotListener listener)
     {
         this.image = image;
         this.listener = listener;
     }
 
+    @Pure
     boolean isDone()
     {
         return isDone;
     }
 
+    @Impure
     int poll()
     {
         return image.controlledPoll(fragmentAssembler, FRAGMENT_LIMIT);
     }
 
+    @Impure
     @SuppressWarnings("MethodLength")
     public Action onFragment(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {

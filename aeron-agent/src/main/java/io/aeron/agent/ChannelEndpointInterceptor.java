@@ -15,6 +15,7 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.media.ImageConnection;
 import io.aeron.driver.media.ReceiveChannelEndpoint;
 import io.aeron.driver.media.SendChannelEndpoint;
@@ -34,6 +35,7 @@ class ChannelEndpointInterceptor
     {
         static class RegisterSendChannelEndpoint
         {
+            @Impure
             @Advice.OnMethodEnter
             static void registerSendChannelEndpoint(final SendChannelEndpoint channelEndpoint)
             {
@@ -43,6 +45,7 @@ class ChannelEndpointInterceptor
 
         static class CloseSendChannelEndpoint
         {
+            @Impure
             @Advice.OnMethodEnter
             static void closeSendChannelEndpoint(final SendChannelEndpoint channelEndpoint)
             {
@@ -55,6 +58,7 @@ class ChannelEndpointInterceptor
     {
         static class RegisterReceiveChannelEndpoint
         {
+            @Impure
             @Advice.OnMethodEnter
             static void registerReceiveChannelEndpoint(final ReceiveChannelEndpoint channelEndpoint)
             {
@@ -64,6 +68,7 @@ class ChannelEndpointInterceptor
 
         static class CloseReceiveChannelEndpoint
         {
+            @Impure
             @Advice.OnMethodEnter
             static void closeReceiveChannelEndpoint(final ReceiveChannelEndpoint channelEndpoint)
             {
@@ -76,6 +81,7 @@ class ChannelEndpointInterceptor
     {
         static class SendHook
         {
+            @Impure
             @Advice.OnMethodEnter
             static void sendHook(final ByteBuffer buffer, final InetSocketAddress address)
             {
@@ -85,6 +91,7 @@ class ChannelEndpointInterceptor
 
         static class ReceiveHook
         {
+            @Impure
             @Advice.OnMethodEnter
             static void receiveHook(final UnsafeBuffer buffer, final int length, final InetSocketAddress address)
             {
@@ -94,6 +101,7 @@ class ChannelEndpointInterceptor
 
         static class ResendHook
         {
+            @Impure
             @Advice.OnMethodEnter
             static void resendHook(
                 final int sessionId,
@@ -115,6 +123,7 @@ class ChannelEndpointInterceptor
     {
         static class NakSent
         {
+            @Impure
             @Advice.OnMethodEnter
             static void sendNakMessage(
                 final ImageConnection[] connections,
@@ -155,6 +164,7 @@ class ChannelEndpointInterceptor
     {
         static class NakReceived
         {
+            @Impure
             @Advice.OnMethodEnter
             static void onNakMessage(
                 final NakFlyweight msg,

@@ -15,6 +15,9 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.protocol.ResolutionEntryFlyweight;
 import org.agrona.collections.ArrayListUtil;
 import org.agrona.concurrent.status.AtomicCounter;
@@ -29,6 +32,7 @@ final class DriverNameResolverCache implements AutoCloseable
     private final ArrayList<CacheEntry> entries = new ArrayList<>();
     private final long timeoutMs;
 
+    @SideEffectFree
     DriverNameResolverCache(final long timeoutMs)
     {
         this.timeoutMs = timeoutMs;
@@ -37,10 +41,13 @@ final class DriverNameResolverCache implements AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
     public void close()
     {
     }
 
+    @Pure
+    @Impure
     CacheEntry lookup(final String name, final byte type)
     {
         final int index = findEntryIndexByNameAndType(name, type);
@@ -48,6 +55,7 @@ final class DriverNameResolverCache implements AutoCloseable
         return INVALID_INDEX == index ? null : entries.get(index);
     }
 
+    @Impure
     void addOrUpdateEntry(
         final byte[] name,
         final int nameLength,
@@ -87,6 +95,7 @@ final class DriverNameResolverCache implements AutoCloseable
         }
     }
 
+    @Impure
     int timeoutOldEntries(final long nowMs, final AtomicCounter cacheEntriesCounter)
     {
         int workCount = 0;
@@ -107,6 +116,7 @@ final class DriverNameResolverCache implements AutoCloseable
         return workCount;
     }
 
+    @Impure
     Iterator resetIterator()
     {
         iterator.cache = this;
@@ -120,16 +130,19 @@ final class DriverNameResolverCache implements AutoCloseable
         int index = -1;
         DriverNameResolverCache cache;
 
+        @Pure
         boolean hasNext()
         {
             return (index + 1) < cache.entries.size();
         }
 
+        @Impure
         CacheEntry next()
         {
             return cache.entries.get(++index);
         }
 
+        @Impure
         void rewindNext()
         {
             --index;
@@ -138,6 +151,7 @@ final class DriverNameResolverCache implements AutoCloseable
 
     private final Iterator iterator = new Iterator();
 
+    @Pure
     static boolean byteSubsetEquals(final byte[] lhs, final byte[] rhs, final int length)
     {
         if (lhs.length < length || rhs.length < length)
@@ -156,6 +170,7 @@ final class DriverNameResolverCache implements AutoCloseable
         return true;
     }
 
+    @Pure
     static boolean byteSubsetEquals(final byte[] lhs, final String rhs)
     {
         final int length = rhs.length();
@@ -176,6 +191,8 @@ final class DriverNameResolverCache implements AutoCloseable
         return true;
     }
 
+    @Pure
+    @Impure
     private int findEntryIndexByNameAndType(final byte[] name, final int nameLength, final byte type)
     {
         for (int i = 0; i < entries.size(); i++)
@@ -191,6 +208,8 @@ final class DriverNameResolverCache implements AutoCloseable
         return INVALID_INDEX;
     }
 
+    @Pure
+    @Impure
     private int findEntryIndexByNameAndType(final String name, final byte type)
     {
         for (int i = 0; i < entries.size(); i++)
@@ -215,6 +234,7 @@ final class DriverNameResolverCache implements AutoCloseable
         final byte[] name;
         byte[] address;
 
+        @SideEffectFree
         CacheEntry(
             final byte[] name,
             final byte type,

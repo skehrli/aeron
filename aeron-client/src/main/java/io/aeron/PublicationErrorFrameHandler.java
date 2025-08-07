@@ -15,6 +15,7 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.status.PublicationErrorFrame;
 
 /**
@@ -42,5 +43,6 @@ public interface PublicationErrorFrameHandler
      *
      * @param errorFrame containing the relevant information about the publication and the error message.
      */
+    @SideEffectFree
     void onPublicationError(PublicationErrorFrame errorFrame);
 }

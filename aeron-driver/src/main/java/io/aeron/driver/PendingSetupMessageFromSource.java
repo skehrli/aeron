@@ -15,6 +15,9 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.driver.media.ReceiveChannelEndpoint;
 
 import java.net.InetSocketAddress;
@@ -30,6 +33,7 @@ final class PendingSetupMessageFromSource
 
     private long timeOfStatusMessageNs;
 
+    @SideEffectFree
     PendingSetupMessageFromSource(
         final int sessionId,
         final int streamId,
@@ -46,61 +50,74 @@ final class PendingSetupMessageFromSource
         this.controlAddress = controlAddress;
     }
 
+    @Pure
     int sessionId()
     {
         return sessionId;
     }
 
+    @Pure
     int streamId()
     {
         return streamId;
     }
 
+    @Pure
     int transportIndex()
     {
         return transportIndex;
     }
 
+    @Pure
     ReceiveChannelEndpoint channelEndpoint()
     {
         return channelEndpoint;
     }
 
+    @Pure
     boolean isPeriodic()
     {
         return periodic;
     }
 
+    @Pure
+    @Impure
     boolean shouldElicitSetupMessage()
     {
         return channelEndpoint.dispatcher().shouldElicitSetupMessage();
     }
 
+    @Impure
     void controlAddress(final InetSocketAddress newControlAddress)
     {
         this.controlAddress = newControlAddress;
     }
 
+    @Pure
     InetSocketAddress controlAddress()
     {
         return controlAddress;
     }
 
+    @Pure
     long timeOfStatusMessageNs()
     {
         return timeOfStatusMessageNs;
     }
 
+    @Impure
     void timeOfStatusMessageNs(final long nowNs)
     {
         timeOfStatusMessageNs = nowNs;
     }
 
+    @Impure
     void removeFromDataPacketDispatcher()
     {
         channelEndpoint.dispatcher().removePendingSetup(sessionId, streamId);
     }
 
+    @Pure
     public String toString()
     {
         return "PendingSetupMessageFromSource{" +

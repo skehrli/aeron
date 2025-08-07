@@ -15,6 +15,7 @@
  */
 package io.aeron.config;
 
+import org.checkerframework.dataflow.qual.Impure;
 import java.io.Serializable;
 
 /**
@@ -28,6 +29,7 @@ public class ExpectedConfig implements Serializable
      */
     public final ExpectedCConfig c;
 
+    @Impure
     ExpectedConfig()
     {
         c = new ExpectedCConfig();

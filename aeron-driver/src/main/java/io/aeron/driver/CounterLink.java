@@ -15,6 +15,9 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.concurrent.status.AtomicCounter;
 
 /**
@@ -27,6 +30,7 @@ final class CounterLink implements DriverManagedResource
     private final AeronClient client;
     private boolean reachedEndOfLife = false;
 
+    @SideEffectFree
     CounterLink(final AtomicCounter counter, final long registrationId, final AeronClient client)
     {
         this.registrationId = registrationId;
@@ -37,6 +41,7 @@ final class CounterLink implements DriverManagedResource
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         counter.close();
@@ -45,6 +50,7 @@ final class CounterLink implements DriverManagedResource
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onTimeEvent(final long timeNs, final long timeMs, final DriverConductor conductor)
     {
         if (client.hasTimedOut())
@@ -57,16 +63,19 @@ final class CounterLink implements DriverManagedResource
     /**
      * {@inheritDoc}
      */
+    @Pure
     public boolean hasReachedEndOfLife()
     {
         return reachedEndOfLife;
     }
 
+    @Impure
     int counterId()
     {
         return counter.id();
     }
 
+    @Pure
     long registrationId()
     {
         return registrationId;

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.aeron.driver.media;
+import org.checkerframework.dataflow.qual.Pure;
 
 /**
  * Represents the control mode specified on a channel URI.
@@ -42,6 +43,7 @@ public enum ControlMode
      *
      * @return <code>true</code> if this is multi-destination <code>false</code> otherwise.
      */
+    @Pure
     public boolean isMultiDestination()
     {
         return this == DYNAMIC || this == MANUAL;

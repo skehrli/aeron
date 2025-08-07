@@ -15,6 +15,8 @@
  */
 package io.aeron.samples.archive;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.Image;
 import io.aeron.Subscription;
@@ -47,6 +49,7 @@ public class RecordingDescriptor
     private String sourceIdentity;
     private boolean isRetained = false;
 
+    @Impure
     RecordingDescriptor reset()
     {
         this.controlSessionId = Aeron.NULL_VALUE;
@@ -69,6 +72,7 @@ public class RecordingDescriptor
         return this;
     }
 
+    @Impure
     RecordingDescriptor set(
         final long controlSessionId,
         final long correlationId,
@@ -112,6 +116,7 @@ public class RecordingDescriptor
      *
      * @return controlSessionId
      */
+    @Pure
     public long controlSessionId()
     {
         return controlSessionId;
@@ -122,6 +127,7 @@ public class RecordingDescriptor
      *
      * @return correlationId
      */
+    @Pure
     public long correlationId()
     {
         return correlationId;
@@ -132,6 +138,7 @@ public class RecordingDescriptor
      *
      * @return recordingId
      */
+    @Pure
     public long recordingId()
     {
         return recordingId;
@@ -142,6 +149,7 @@ public class RecordingDescriptor
      *
      * @return startTimestamp
      */
+    @Pure
     public long startTimestamp()
     {
         return startTimestamp;
@@ -152,6 +160,7 @@ public class RecordingDescriptor
      *
      * @return stopTimestamp
      */
+    @Pure
     public long stopTimestamp()
     {
         return stopTimestamp;
@@ -162,6 +171,7 @@ public class RecordingDescriptor
      *
      * @return startPosition
      */
+    @Pure
     public long startPosition()
     {
         return startPosition;
@@ -172,6 +182,7 @@ public class RecordingDescriptor
      *
      * @return stopPosition
      */
+    @Pure
     public long stopPosition()
     {
         return stopPosition;
@@ -182,6 +193,7 @@ public class RecordingDescriptor
      *
      * @return initialTermId
      */
+    @Pure
     public int initialTermId()
     {
         return initialTermId;
@@ -192,6 +204,7 @@ public class RecordingDescriptor
      *
      * @return segmentFileLength
      */
+    @Pure
     public int segmentFileLength()
     {
         return segmentFileLength;
@@ -202,6 +215,7 @@ public class RecordingDescriptor
      *
      * @return termBufferLength
      */
+    @Pure
     public int termBufferLength()
     {
         return termBufferLength;
@@ -212,6 +226,7 @@ public class RecordingDescriptor
      *
      * @return mtuLength
      */
+    @Pure
     public int mtuLength()
     {
         return mtuLength;
@@ -222,6 +237,7 @@ public class RecordingDescriptor
      *
      * @return sessionId
      */
+    @Pure
     public int sessionId()
     {
         return sessionId;
@@ -232,6 +248,7 @@ public class RecordingDescriptor
      *
      * @return streamId
      */
+    @Pure
     public int streamId()
     {
         return streamId;
@@ -242,6 +259,7 @@ public class RecordingDescriptor
      *
      * @return strippedChannel
      */
+    @Pure
     public String strippedChannel()
     {
         return strippedChannel;
@@ -252,6 +270,7 @@ public class RecordingDescriptor
      *
      * @return originalChannel
      */
+    @Pure
     public String originalChannel()
     {
         return originalChannel;
@@ -262,6 +281,7 @@ public class RecordingDescriptor
      *
      * @return sourceIdentity
      */
+    @Pure
     public String sourceIdentity()
     {
         return sourceIdentity;
@@ -272,6 +292,7 @@ public class RecordingDescriptor
      *
      * @return this for a fluent API.
      */
+    @Impure
     public RecordingDescriptor retain()
     {
         isRetained = true;
@@ -283,6 +304,7 @@ public class RecordingDescriptor
      *
      * @return true if this instance has been flagged to be excluded from the pool.
      */
+    @Pure
     public boolean isRetained()
     {
         return isRetained;
@@ -291,6 +313,7 @@ public class RecordingDescriptor
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "RecordingDescriptor{" +

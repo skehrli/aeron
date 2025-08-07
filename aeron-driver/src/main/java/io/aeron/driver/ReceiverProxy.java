@@ -15,6 +15,9 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.driver.media.ReceiveChannelEndpoint;
 import io.aeron.driver.media.ReceiveDestinationTransport;
 import io.aeron.driver.media.UdpChannel;
@@ -30,6 +33,8 @@ final class ReceiverProxy extends CommandProxy
 {
     private Receiver receiver;
 
+    @SideEffectFree
+    @Impure
     ReceiverProxy(
         final ThreadingMode threadingMode,
         final OneToOneConcurrentArrayQueue<Runnable> commandQueue,
@@ -38,16 +43,19 @@ final class ReceiverProxy extends CommandProxy
         super(threadingMode, commandQueue, failCount);
     }
 
+    @Impure
     void receiver(final Receiver receiver)
     {
         this.receiver = receiver;
     }
 
+    @Pure
     Receiver receiver()
     {
         return receiver;
     }
 
+    @Impure
     void addSubscription(final ReceiveChannelEndpoint mediaEndpoint, final int streamId)
     {
         if (notConcurrent())
@@ -60,6 +68,7 @@ final class ReceiverProxy extends CommandProxy
         }
     }
 
+    @Impure
     void addSubscription(final ReceiveChannelEndpoint mediaEndpoint, final int streamId, final int sessionId)
     {
         if (notConcurrent())
@@ -72,6 +81,7 @@ final class ReceiverProxy extends CommandProxy
         }
     }
 
+    @Impure
     void removeSubscription(final ReceiveChannelEndpoint mediaEndpoint, final int streamId)
     {
         if (notConcurrent())
@@ -84,6 +94,7 @@ final class ReceiverProxy extends CommandProxy
         }
     }
 
+    @Impure
     void removeSubscription(final ReceiveChannelEndpoint mediaEndpoint, final int streamId, final int sessionId)
     {
         if (notConcurrent())
@@ -96,6 +107,7 @@ final class ReceiverProxy extends CommandProxy
         }
     }
 
+    @Impure
     void newPublicationImage(final ReceiveChannelEndpoint channelEndpoint, final PublicationImage image)
     {
         if (notConcurrent())
@@ -108,6 +120,7 @@ final class ReceiverProxy extends CommandProxy
         }
     }
 
+    @Impure
     void registerReceiveChannelEndpoint(final ReceiveChannelEndpoint channelEndpoint)
     {
         if (notConcurrent())
@@ -120,6 +133,7 @@ final class ReceiverProxy extends CommandProxy
         }
     }
 
+    @Impure
     void closeReceiveChannelEndpoint(final ReceiveChannelEndpoint channelEndpoint)
     {
         if (notConcurrent())
@@ -132,6 +146,7 @@ final class ReceiverProxy extends CommandProxy
         }
     }
 
+    @Impure
     void removeCoolDown(final ReceiveChannelEndpoint channelEndpoint, final int sessionId, final int streamId)
     {
         if (notConcurrent())
@@ -144,6 +159,7 @@ final class ReceiverProxy extends CommandProxy
         }
     }
 
+    @Impure
     void addDestination(final ReceiveChannelEndpoint channelEndpoint, final ReceiveDestinationTransport transport)
     {
         if (notConcurrent())
@@ -156,6 +172,7 @@ final class ReceiverProxy extends CommandProxy
         }
     }
 
+    @Impure
     void removeDestination(final ReceiveChannelEndpoint channelEndpoint, final UdpChannel udpChannel)
     {
         if (notConcurrent())
@@ -168,6 +185,7 @@ final class ReceiverProxy extends CommandProxy
         }
     }
 
+    @Impure
     void onResolutionChange(
         final ReceiveChannelEndpoint channelEndpoint, final UdpChannel udpChannel, final InetSocketAddress newAddress)
     {
@@ -181,6 +199,7 @@ final class ReceiverProxy extends CommandProxy
         }
     }
 
+    @Impure
     void requestSetup(
         final ReceiveChannelEndpoint channelEndpoint,
         final int streamId,
@@ -196,6 +215,7 @@ final class ReceiverProxy extends CommandProxy
         }
     }
 
+    @Impure
     void rejectImage(final long imageCorrelationId, final long position, final String reason)
     {
         if (notConcurrent())

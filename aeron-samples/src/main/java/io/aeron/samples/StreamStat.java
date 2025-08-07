@@ -15,6 +15,9 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import io.aeron.driver.status.SubscriberPos;
 import org.agrona.collections.Hashing;
@@ -55,6 +58,7 @@ public final class StreamStat
      *
      * @param args passed to the process.
      */
+    @Impure
     public static void main(final String[] args)
     {
         final CountersReader counters = SamplesUtil.mapCounters();
@@ -68,6 +72,7 @@ public final class StreamStat
      *
      * @param counters to read for tracking positions.
      */
+    @SideEffectFree
     public StreamStat(final CountersReader counters)
     {
         this.counters = counters;
@@ -78,6 +83,7 @@ public final class StreamStat
      *
      * @return a snapshot of all the counters and group them by streams.
      */
+    @Impure
     public Map<StreamCompositeKey, List<StreamPosition>> snapshot()
     {
         final Map<StreamCompositeKey, List<StreamPosition>> streams = new TreeMap<>(LINES_COMPARATOR);
@@ -148,6 +154,7 @@ public final class StreamStat
      * @param out to which the stream snapshot will be written.
      * @return the number of streams printed.
      */
+    @Impure
     public int print(final PrintStream out)
     {
         final Map<StreamCompositeKey, List<StreamPosition>> streams = snapshot();
@@ -196,6 +203,7 @@ public final class StreamStat
          * @param streamId  within a channel.
          * @param channel   as a URI.
          */
+        @SideEffectFree
         public StreamCompositeKey(final int sessionId, final int streamId, final String channel)
         {
             Objects.requireNonNull(channel, "Channel cannot be null");
@@ -210,6 +218,7 @@ public final class StreamStat
          *
          * @return session id of the stream.
          */
+        @Pure
         public int sessionId()
         {
             return sessionId;
@@ -220,6 +229,7 @@ public final class StreamStat
          *
          * @return stream id within a channel.
          */
+        @Pure
         public int streamId()
         {
             return streamId;
@@ -230,6 +240,7 @@ public final class StreamStat
          *
          * @return channel as a URI.
          */
+        @Pure
         public String channel()
         {
             return channel;
@@ -238,6 +249,7 @@ public final class StreamStat
         /**
          * {@inheritDoc}
          */
+        @Pure
         public boolean equals(final Object o)
         {
             if (this == o)
@@ -260,6 +272,7 @@ public final class StreamStat
         /**
          * {@inheritDoc}
          */
+        @Impure
         public int hashCode()
         {
             int result = sessionId;
@@ -272,6 +285,7 @@ public final class StreamStat
         /**
          * {@inheritDoc}
          */
+        @Pure
         public String toString()
         {
             return "StreamCompositeKey{" +
@@ -298,6 +312,7 @@ public final class StreamStat
          * @param value  of the position.
          * @param typeId of the counter.
          */
+        @SideEffectFree
         public StreamPosition(final long id, final long value, final int typeId)
         {
             this.id = id;
@@ -310,6 +325,7 @@ public final class StreamStat
          *
          * @return the identifier for the registered entity to which the counter relates.
          */
+        @Pure
         public long id()
         {
             return id;
@@ -320,6 +336,7 @@ public final class StreamStat
          *
          * @return the value of the counter.
          */
+        @Pure
         public long value()
         {
             return value;
@@ -330,6 +347,7 @@ public final class StreamStat
          *
          * @return the type category of the counter for the stream position.
          */
+        @Pure
         public int typeId()
         {
             return typeId;
@@ -338,6 +356,7 @@ public final class StreamStat
         /**
          * {@inheritDoc}
          */
+        @Pure
         public boolean equals(final Object o)
         {
             if (this == o)
@@ -358,6 +377,7 @@ public final class StreamStat
         /**
          * {@inheritDoc}
          */
+        @Impure
         public int hashCode()
         {
             int result = Hashing.hash(id);
@@ -370,6 +390,7 @@ public final class StreamStat
         /**
          * {@inheritDoc}
          */
+        @Pure
         public String toString()
         {
             return "StreamPosition{" +

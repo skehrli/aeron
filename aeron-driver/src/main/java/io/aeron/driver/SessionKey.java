@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package io.aeron.driver;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 
 /**
  * Key used to identify a session instance of a stream.
@@ -24,12 +26,14 @@ final class SessionKey
     final int streamId;
     final String channel;
 
+    @SideEffectFree
     SessionKey(final int streamId, final String channel)
     {
         this.streamId = streamId;
         this.channel = channel;
     }
 
+    @SideEffectFree
     SessionKey(final int sessionId, final int streamId, final String channel)
     {
         this.sessionId = sessionId;
@@ -40,6 +44,7 @@ final class SessionKey
     /**
      * {@inheritDoc}
      */
+    @Pure
     public boolean equals(final Object o)
     {
         if (this == o)
@@ -60,6 +65,7 @@ final class SessionKey
     /**
      * {@inheritDoc}
      */
+    @Pure
     public int hashCode()
     {
         return 31 * sessionId * streamId * channel.hashCode();
@@ -68,6 +74,7 @@ final class SessionKey
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "SessionKey{" +

@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.archive.Archive;
 import io.aeron.driver.MediaDriver;
 import io.aeron.driver.status.SystemCounterDescriptor;
@@ -34,6 +37,7 @@ public class ClusterBackupMediaDriver implements AutoCloseable
     private final Archive archive;
     private final ClusterBackup clusterBackup;
 
+    @SideEffectFree
     ClusterBackupMediaDriver(final MediaDriver driver, final Archive archive, final ClusterBackup clusterBackup)
     {
         this.driver = driver;
@@ -46,6 +50,7 @@ public class ClusterBackupMediaDriver implements AutoCloseable
      *
      * @param args command line argument which is a list for properties files as URLs or filenames.
      */
+    @Impure
     public static void main(final String[] args)
     {
         loadPropertiesFiles(args);
@@ -62,6 +67,7 @@ public class ClusterBackupMediaDriver implements AutoCloseable
      *
      * @return a new {@link ClusterBackupMediaDriver} with default contexts.
      */
+    @Impure
     public static ClusterBackupMediaDriver launch()
     {
         return launch(new MediaDriver.Context(), new Archive.Context(), new ClusterBackup.Context());
@@ -75,6 +81,7 @@ public class ClusterBackupMediaDriver implements AutoCloseable
      * @param clusterBackupCtx for the configuration of the {@link ClusterBackup}.
      * @return a new {@link ClusterBackupMediaDriver} with the provided contexts.
      */
+    @Impure
     public static ClusterBackupMediaDriver launch(
         final MediaDriver.Context driverCtx,
         final Archive.Context archiveCtx,
@@ -119,6 +126,7 @@ public class ClusterBackupMediaDriver implements AutoCloseable
      *
      * @return the {@link MediaDriver} used in the aggregate.
      */
+    @Pure
     public MediaDriver mediaDriver()
     {
         return driver;
@@ -129,6 +137,7 @@ public class ClusterBackupMediaDriver implements AutoCloseable
      *
      * @return the {@link Archive} used in the aggregate.
      */
+    @Pure
     public Archive archive()
     {
         return archive;
@@ -139,6 +148,7 @@ public class ClusterBackupMediaDriver implements AutoCloseable
      *
      * @return the {@link ClusterBackup} used in the aggregate.
      */
+    @Pure
     public ClusterBackup clusterBackup()
     {
         return clusterBackup;
@@ -147,6 +157,7 @@ public class ClusterBackupMediaDriver implements AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         CloseHelper.closeAll(clusterBackup, archive, driver);

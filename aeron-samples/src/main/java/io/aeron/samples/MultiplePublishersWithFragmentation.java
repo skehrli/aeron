@@ -16,6 +16,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.Publication;
 import org.agrona.BitUtil;
@@ -44,6 +45,7 @@ public class MultiplePublishersWithFragmentation
      *
      * @param args passed to the process.
      */
+    @Impure
     public static void main(final String[] args)
     {
         System.out.println(

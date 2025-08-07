@@ -15,6 +15,7 @@
  */
 package io.aeron.protocol;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import java.nio.ByteBuffer;
@@ -109,6 +110,7 @@ public class ErrorFlyweight extends HeaderFlyweight
     /**
      * Default constructor for the ErrorFlyweight so that it can be wrapped over a buffer later.
      */
+    @Impure
     public ErrorFlyweight()
     {
     }
@@ -118,6 +120,7 @@ public class ErrorFlyweight extends HeaderFlyweight
      *
      * @param buffer containing the frame.
      */
+    @Impure
     public ErrorFlyweight(final ByteBuffer buffer)
     {
         super(buffer);
@@ -128,6 +131,7 @@ public class ErrorFlyweight extends HeaderFlyweight
      *
      * @param buffer containing the frame.
      */
+    @Impure
     public ErrorFlyweight(final UnsafeBuffer buffer)
     {
         super(buffer);
@@ -139,6 +143,7 @@ public class ErrorFlyweight extends HeaderFlyweight
      *
      * @return session-id for the stream.
      */
+    @Impure
     public int sessionId()
     {
         return getInt(SESSION_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -150,6 +155,7 @@ public class ErrorFlyweight extends HeaderFlyweight
      * @param sessionId session-id for the stream.
      * @return this for a fluent API.
      */
+    @Impure
     public ErrorFlyweight sessionId(final int sessionId)
     {
         putInt(SESSION_ID_FIELD_OFFSET, sessionId, LITTLE_ENDIAN);
@@ -162,6 +168,7 @@ public class ErrorFlyweight extends HeaderFlyweight
      *
      * @return stream-id for the stream.
      */
+    @Impure
     public int streamId()
     {
         return getInt(STREAM_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -173,6 +180,7 @@ public class ErrorFlyweight extends HeaderFlyweight
      * @param streamId stream-id for the stream.
      * @return this for a fluent API.
      */
+    @Impure
     public ErrorFlyweight streamId(final int streamId)
     {
         putInt(STREAM_ID_FIELD_OFFSET, streamId, LITTLE_ENDIAN);
@@ -185,6 +193,7 @@ public class ErrorFlyweight extends HeaderFlyweight
      *
      * @return receiver-id for the stream.
      */
+    @Impure
     public long receiverId()
     {
         return getLong(RECEIVER_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -196,6 +205,7 @@ public class ErrorFlyweight extends HeaderFlyweight
      * @param receiverId receiver-id for the stream.
      * @return this for a fluent API.
      */
+    @Impure
     public ErrorFlyweight receiverId(final long receiverId)
     {
         putLong(RECEIVER_ID_FIELD_OFFSET, receiverId, LITTLE_ENDIAN);
@@ -208,6 +218,7 @@ public class ErrorFlyweight extends HeaderFlyweight
      *
      * @return group tag for the message.
      */
+    @Impure
     public long groupTag()
     {
         return getLong(GROUP_TAG_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -218,6 +229,7 @@ public class ErrorFlyweight extends HeaderFlyweight
      *
      * @return <code>true</code> if the flag is set false otherwise.
      */
+    @Impure
     public boolean hasGroupTag()
     {
         return HAS_GROUP_ID_FLAG == (HAS_GROUP_ID_FLAG & flags());
@@ -230,6 +242,7 @@ public class ErrorFlyweight extends HeaderFlyweight
      * @param groupTag optional group tag to be applied to this message.
      * @return this for a fluent API.
      */
+    @Impure
     public ErrorFlyweight groupTag(final Long groupTag)
     {
         if (null == groupTag)
@@ -250,6 +263,7 @@ public class ErrorFlyweight extends HeaderFlyweight
      *
      * @return error-code for the message.
      */
+    @Impure
     public int errorCode()
     {
         return getInt(ERROR_CODE_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -261,6 +275,7 @@ public class ErrorFlyweight extends HeaderFlyweight
      * @param errorCode for the message.
      * @return this for a fluent API.
      */
+    @Impure
     public ErrorFlyweight errorCode(final int errorCode)
     {
         putInt(ERROR_CODE_FIELD_OFFSET, errorCode, LITTLE_ENDIAN);
@@ -273,6 +288,7 @@ public class ErrorFlyweight extends HeaderFlyweight
      *
      * @return the error string for the message.
      */
+    @Impure
     public String errorMessage()
     {
         return getStringAscii(ERROR_STRING_FIELD_OFFSET);
@@ -284,6 +300,7 @@ public class ErrorFlyweight extends HeaderFlyweight
      * @param errorMessage the error string in UTF-8.
      * @return this for a fluent API.
      */
+    @Impure
     public ErrorFlyweight errorMessage(final String errorMessage)
     {
         final int headerAndMessageLength = putStringAscii(ERROR_STRING_FIELD_OFFSET, errorMessage, LITTLE_ENDIAN);
@@ -294,6 +311,7 @@ public class ErrorFlyweight extends HeaderFlyweight
     /**
      * {@inheritDoc}
      */
+    @Impure
     public String toString()
     {
         return "ERROR{" +

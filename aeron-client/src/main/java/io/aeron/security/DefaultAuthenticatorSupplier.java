@@ -15,6 +15,9 @@
  */
 package io.aeron.security;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.collections.ArrayUtil;
 
 /**
@@ -43,6 +46,7 @@ public class DefaultAuthenticatorSupplier implements AuthenticatorSupplier
      *
      * @return {@link #DEFAULT_AUTHENTICATOR} which authenticates all connection requests immediately.
      */
+    @Pure
     public Authenticator get()
     {
         return DEFAULT_AUTHENTICATOR;
@@ -50,19 +54,25 @@ public class DefaultAuthenticatorSupplier implements AuthenticatorSupplier
 
     static final class DefaultAuthenticator implements Authenticator
     {
+        @SideEffectFree
         public void onConnectRequest(final long sessionId, final byte[] encodedCredentials, final long nowMs)
         {
         }
 
+        @SideEffectFree
         public void onChallengeResponse(final long sessionId, final byte[] encodedCredentials, final long nowMs)
         {
         }
 
+        @SideEffectFree
+        @Impure
         public void onConnectedSession(final SessionProxy sessionProxy, final long nowMs)
         {
             sessionProxy.authenticate(NULL_ENCODED_PRINCIPAL);
         }
 
+        @SideEffectFree
+        @Impure
         public void onChallengedSession(final SessionProxy sessionProxy, final long nowMs)
         {
             sessionProxy.authenticate(NULL_ENCODED_PRINCIPAL);

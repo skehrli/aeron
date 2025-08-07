@@ -15,6 +15,8 @@
  */
 package io.aeron.driver.media;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.driver.Configuration;
 import io.aeron.driver.DriverConductorProxy;
 import io.aeron.protocol.ErrorFlyweight;
@@ -68,6 +70,7 @@ public final class ControlTransportPoller extends UdpTransportPoller
      * @param errorHandler   which can be used to log errors and continue.
      * @param conductorProxy to send message back to the conductor.
      */
+    @Impure
     public ControlTransportPoller(final ErrorHandler errorHandler, final DriverConductorProxy conductorProxy)
     {
         super(errorHandler);
@@ -77,6 +80,7 @@ public final class ControlTransportPoller extends UdpTransportPoller
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         CloseHelper.closeAll(errorHandler, transports);
@@ -87,6 +91,7 @@ public final class ControlTransportPoller extends UdpTransportPoller
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int pollTransports()
     {
         totalBytesReceived = 0;
@@ -116,11 +121,13 @@ public final class ControlTransportPoller extends UdpTransportPoller
     /**
      * {@inheritDoc}
      */
+    @Impure
     public SelectionKey registerForRead(final UdpChannelTransport transport)
     {
         return registerChannelForRead((SendChannelEndpoint)transport);
     }
 
+    @Impure
     private SelectionKey registerChannelForRead(final SendChannelEndpoint transport)
     {
         SelectionKey key = null;
@@ -142,6 +149,7 @@ public final class ControlTransportPoller extends UdpTransportPoller
      *
      * @param transport to be cancelled and removed.
      */
+    @Impure
     public void cancelRead(final UdpChannelTransport transport)
     {
         transports = ArrayUtil.remove(transports, (SendChannelEndpoint)transport);
@@ -153,6 +161,7 @@ public final class ControlTransportPoller extends UdpTransportPoller
      * @param nowNs          as the current time.
      * @param conductorProxy for sending re-resolution requests.
      */
+    @Impure
     public void checkForReResolutions(final long nowNs, final DriverConductorProxy conductorProxy)
     {
         for (final SendChannelEndpoint transport : transports)
@@ -164,11 +173,13 @@ public final class ControlTransportPoller extends UdpTransportPoller
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "ControlTransportPoller{}";
     }
 
+    @Impure
     private void poll(final SendChannelEndpoint channelEndpoint)
     {
         try
@@ -181,6 +192,7 @@ public final class ControlTransportPoller extends UdpTransportPoller
         }
     }
 
+    @Impure
     private void receive(final SendChannelEndpoint channelEndpoint)
     {
         final InetSocketAddress srcAddress = channelEndpoint.receive(byteBuffer);

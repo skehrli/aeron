@@ -15,6 +15,8 @@
  */
 package io.aeron.driver.status;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.CloseHelper;
 import org.agrona.concurrent.status.AtomicCounter;
 import org.agrona.concurrent.status.CountersManager;
@@ -34,6 +36,7 @@ public final class SystemCounters implements AutoCloseable
      *
      * @param countersManager which will manage the underlying storage.
      */
+    @Impure
     public SystemCounters(final CountersManager countersManager)
     {
         for (final SystemCounterDescriptor descriptor : SystemCounterDescriptor.values())
@@ -48,6 +51,7 @@ public final class SystemCounters implements AutoCloseable
      * @param descriptor by which the counter should be looked up.
      * @return the counter for the given descriptor.
      */
+    @Pure
     public AtomicCounter get(final SystemCounterDescriptor descriptor)
     {
         return counterByDescriptorMap.get(descriptor);
@@ -56,6 +60,7 @@ public final class SystemCounters implements AutoCloseable
     /**
      * Close all the counters.
      */
+    @Impure
     public void close()
     {
         CloseHelper.closeAll(counterByDescriptorMap.values());
@@ -64,6 +69,7 @@ public final class SystemCounters implements AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "SystemCounters{" +

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.aeron.driver;
+import org.checkerframework.dataflow.qual.Impure;
 
 /**
  * Handler for sending a retransmit.
@@ -28,5 +29,6 @@ public interface RetransmitSender
      * @param termOffset of the data to NAK.
      * @param length     of the data to NAK.
      */
+    @Impure
     void resend(int termId, int termOffset, int length);
 }

@@ -15,6 +15,8 @@
  */
 package io.aeron.status;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.Aeron;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.concurrent.status.AtomicCounter;
@@ -65,6 +67,7 @@ public class ChannelEndpointStatus
      * @param status to be converted.
      * @return representation of the channel status.
      */
+    @Pure
     public static String status(final long status)
     {
         if (INITIALIZING == status)
@@ -106,6 +109,7 @@ public class ChannelEndpointStatus
      * @param channel         for the stream of messages.
      * @return a new {@link AtomicCounter} for tracking the status.
      */
+    @Impure
     public static AtomicCounter allocate(
         final MutableDirectBuffer tempBuffer,
         final String name,

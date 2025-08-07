@@ -15,6 +15,7 @@
  */
 package io.aeron.samples.archive;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.ChannelUriStringBuilder;
 import io.aeron.Publication;
@@ -56,6 +57,7 @@ public class ArchiveCreator
      *
      * @param args passed to the process.
      */
+    @Impure
     @SuppressWarnings("try")
     public static void main(final String[] args)
     {
@@ -104,6 +106,7 @@ public class ArchiveCreator
         }
     }
 
+    @Impure
     private static void createRecording(
         final Aeron aeron, final AeronArchive aeronArchive, final long startPosition, final long targetPosition)
     {
@@ -137,6 +140,7 @@ public class ArchiveCreator
         }
     }
 
+    @Impure
     private static void checkInterruptStatus()
     {
         if (Thread.interrupted())
@@ -145,6 +149,7 @@ public class ArchiveCreator
         }
     }
 
+    @Impure
     private static int awaitRecordingCounterId(final CountersReader counters, final int sessionId, final long archiveId)
     {
         int counterId;
@@ -157,6 +162,7 @@ public class ArchiveCreator
         return counterId;
     }
 
+    @Impure
     private static void offerToPosition(final Publication publication, final long minimumPosition)
     {
         final ExpandableArrayBuffer buffer = new ExpandableArrayBuffer();
@@ -173,6 +179,7 @@ public class ArchiveCreator
         }
     }
 
+    @Impure
     private static void awaitPosition(final CountersReader counters, final int counterId, final long position)
     {
         while (counters.getCounterValue(counterId) < position)

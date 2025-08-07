@@ -15,6 +15,8 @@
  */
 package io.aeron.logbuffer;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.*;
 import org.agrona.concurrent.UnsafeBuffer;
 import org.agrona.concurrent.status.Position;
@@ -41,6 +43,7 @@ public class TermReader
      * @param subscriberPosition to be updated after reading with new position
      * @return the number of fragments read
      */
+    @Impure
     public static int read(
         final UnsafeBuffer termBuffer,
         final int termOffset,
@@ -104,6 +107,7 @@ public class TermReader
      * @param errorHandler   to be notified if an error occurs during the callback.
      * @return the number of fragments read
      */
+    @Impure
     public static long read(
         final UnsafeBuffer termBuffer,
         final int termOffset,
@@ -153,6 +157,7 @@ public class TermReader
      * @param fragmentsRead value to be packed.
      * @return a long with both ints packed into it.
      */
+    @Pure
     public static long pack(final int offset, final int fragmentsRead)
     {
         return ((long)offset << 32) | fragmentsRead;
@@ -164,6 +169,7 @@ public class TermReader
      * @param readOutcome into which the fragments read value has been packed.
      * @return the number of fragments that have been read.
      */
+    @Pure
     public static int fragmentsRead(final long readOutcome)
     {
         return (int)readOutcome;
@@ -175,6 +181,7 @@ public class TermReader
      * @param readOutcome into which the offset value has been packed.
      * @return the offset up to which the term has progressed.
      */
+    @Pure
     public static int offset(final long readOutcome)
     {
         return (int)(readOutcome >>> 32);

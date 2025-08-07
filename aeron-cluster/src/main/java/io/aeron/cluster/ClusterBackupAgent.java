@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import io.aeron.ChannelUri;
 import io.aeron.Counter;
@@ -142,6 +145,7 @@ public final class ClusterBackupAgent implements Agent
     private int liveLogRecordingCounterId = NULL_COUNTER_ID;
     private int liveLogRecordingSessionId = NULL_VALUE;
 
+    @Impure
     ClusterBackupAgent(final ClusterBackup.Context ctx)
     {
         this.ctx = ctx;
@@ -177,6 +181,7 @@ public final class ClusterBackupAgent implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onStart()
     {
         recordingLog = new RecordingLog(ctx.clusterDir(), true);
@@ -193,6 +198,7 @@ public final class ClusterBackupAgent implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onClose()
     {
         if (!aeron.isClosed())
@@ -230,6 +236,7 @@ public final class ClusterBackupAgent implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int doWork()
     {
         final long nowMs = epochClock.time();
@@ -310,11 +317,13 @@ public final class ClusterBackupAgent implements Agent
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String roleName()
     {
         return "cluster-backup";
     }
 
+    @Impure
     private void reset()
     {
         clusterMembers = null;
@@ -347,6 +356,7 @@ public final class ClusterBackupAgent implements Agent
         recordingSubscription = null;
     }
 
+    @Impure
     private void stopReplay()
     {
         if (NULL_VALUE != liveLogReplaySessionId)
@@ -366,6 +376,7 @@ public final class ClusterBackupAgent implements Agent
         }
     }
 
+    @Impure
     private void stopRecording()
     {
         if (NULL_VALUE != liveLogRecordingSubscriptionId)
@@ -382,6 +393,7 @@ public final class ClusterBackupAgent implements Agent
         }
     }
 
+    @Impure
     private void onUnavailableCounter(final CountersReader counters, final long registrationId, final int counterId)
     {
         if (counterId == liveLogRecordingCounterId)
@@ -395,6 +407,7 @@ public final class ClusterBackupAgent implements Agent
         }
     }
 
+    @Impure
     private void onFragment(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {
         messageHeaderDecoder.wrap(buffer, offset);
@@ -451,6 +464,7 @@ public final class ClusterBackupAgent implements Agent
         }
     }
 
+    @Impure
     @SuppressWarnings("MethodLength")
     private void onBackupResponse(
         final long correlationId,
@@ -590,6 +604,7 @@ public final class ClusterBackupAgent implements Agent
         }
     }
 
+    @Impure
     private void onChallenge(final long clusterSessionId, final byte[] encodedChallenge)
     {
         final byte[] challengeResponse = ctx.credentialsSupplier().onChallenge(encodedChallenge);
@@ -599,6 +614,7 @@ public final class ClusterBackupAgent implements Agent
             consensusPublicationGroup.current(), this.correlationId, clusterSessionId, challengeResponse);
     }
 
+    @Impure
     private void onSessionEvent(
         final long correlationId,
         final int leaderMemberId,
@@ -619,6 +635,7 @@ public final class ClusterBackupAgent implements Agent
         }
     }
 
+    @Impure
     private int slowTick(final long nowMs)
     {
         int workCount = aeronClientInvoker.invoke();
@@ -648,6 +665,7 @@ public final class ClusterBackupAgent implements Agent
         return workCount;
     }
 
+    @Impure
     private int resetBackup(final long nowMs)
     {
         timeOfLastProgressMs = nowMs;
@@ -668,6 +686,7 @@ public final class ClusterBackupAgent implements Agent
         return 0;
     }
 
+    @Impure
     private int backupQuery(final long nowMs)
     {
         if (null == consensusPublicationGroup.current() || nowMs > (timeOfLastBackupQueryMs + backupResponseTimeoutMs))
@@ -699,6 +718,7 @@ public final class ClusterBackupAgent implements Agent
         return 0;
     }
 
+    @Impure
     private int snapshotRetrieve(final long nowMs)
     {
         int workCount = 0;
@@ -744,6 +764,7 @@ public final class ClusterBackupAgent implements Agent
         return workCount;
     }
 
+    @Impure
     private int liveLogRecord(final long nowMs)
     {
         int workCount = 0;
@@ -806,6 +827,7 @@ public final class ClusterBackupAgent implements Agent
         return workCount;
     }
 
+    @Impure
     private int liveLogReplay(final long nowMs)
     {
         int workCount = 0;
@@ -897,6 +919,7 @@ public final class ClusterBackupAgent implements Agent
         return workCount;
     }
 
+    @Impure
     private void throwReplayFailedException(final ControlResponsePoller poller)
     {
         throw new ClusterException("Live log replay failed (replaySessionId=" + liveLogReplaySessionId + "):" +
@@ -904,6 +927,7 @@ public final class ClusterBackupAgent implements Agent
             ArchiveException.errorCodeAsString((int)poller.relevantId()));
     }
 
+    @Impure
     private int updateRecordingLog(final long nowMs)
     {
         boolean wasRecordingLogUpdated = false;
@@ -986,6 +1010,7 @@ public final class ClusterBackupAgent implements Agent
         return 1;
     }
 
+    @Impure
     private int backingUp(final long nowMs)
     {
         int workCount = 0;
@@ -1016,6 +1041,7 @@ public final class ClusterBackupAgent implements Agent
         return workCount;
     }
 
+    @Impure
     private void state(final ClusterBackup.State newState, final long nowMs)
     {
         logStateChange(state, newState, nowMs);
@@ -1034,12 +1060,14 @@ public final class ClusterBackupAgent implements Agent
         correlationId = NULL_VALUE;
     }
 
+    @SideEffectFree
     private void logStateChange(
         final ClusterBackup.State oldState, final ClusterBackup.State newState, final long nowMs)
     {
         //System.out.println("ClusterBackup: " + oldState + " -> " + newState + " nowMs=" + nowMs);
     }
 
+    @Impure
     private int pollBackupArchiveEvents()
     {
         int workCount = 0;
@@ -1087,6 +1115,7 @@ public final class ClusterBackupAgent implements Agent
         return workCount;
     }
 
+    @Impure
     private long startLogRecording()
     {
         final RecordingLog.Entry logEntry = recordingLog.findLastTerm();
@@ -1102,17 +1131,20 @@ public final class ClusterBackupAgent implements Agent
         return recordingSubscriptionId;
     }
 
+    @Pure
     private boolean hasProgressStalled(final long nowMs)
     {
         return (NULL_COUNTER_ID == liveLogRecordingCounterId) &&
             (nowMs > (timeOfLastProgressMs + backupProgressTimeoutMs));
     }
 
+    @Impure
     private long replayStartPosition(final RecordingLog.Entry lastTerm)
     {
         return replayStartPosition(lastTerm, snapshotsRetrieved, ctx.initialReplayStart(), backupArchive);
     }
 
+    @Impure
     static long replayStartPosition(
         final RecordingLog.Entry lastTerm,
         final List<RecordingLog.Snapshot> snapshotsRetrieved,
@@ -1144,6 +1176,7 @@ public final class ClusterBackupAgent implements Agent
         return replayStartPosition;
     }
 
+    @Impure
     private void runTerminationHook(final AgentTerminationException ex)
     {
         try

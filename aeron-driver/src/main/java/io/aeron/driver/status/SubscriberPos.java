@@ -15,6 +15,7 @@
  */
 package io.aeron.driver.status;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.AeronCounters;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.concurrent.status.CountersManager;
@@ -49,6 +50,7 @@ public class SubscriberPos
      * @param joinPosition    for the stream.
      * @return the allocated counter.
      */
+    @Impure
     public static UnsafeBufferPosition allocate(
         final MutableDirectBuffer tempBuffer,
         final CountersManager countersManager,

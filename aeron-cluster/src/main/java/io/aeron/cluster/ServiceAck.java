@@ -15,6 +15,10 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Deterministic;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.cluster.client.ClusterException;
 
 import java.util.ArrayDeque;
@@ -30,6 +34,7 @@ final class ServiceAck
     private final long logPosition;
     private final long relevantId;
 
+    @SideEffectFree
     ServiceAck(final long ackId, final long logPosition, final long relevantId)
     {
         this.logPosition = logPosition;
@@ -37,21 +42,25 @@ final class ServiceAck
         this.relevantId = relevantId;
     }
 
+    @Pure
     long ackId()
     {
         return ackId;
     }
 
+    @Pure
     long logPosition()
     {
         return logPosition;
     }
 
+    @Pure
     long relevantId()
     {
         return relevantId;
     }
 
+    @Deterministic
     static boolean hasReached(final long logPosition, final long ackId, final ArrayDeque<ServiceAck>[] queues)
     {
         for (int serviceId = 0, serviceCount = queues.length; serviceId < serviceCount; serviceId++)
@@ -74,6 +83,7 @@ final class ServiceAck
         return true;
     }
 
+    @Impure
     static void removeHead(final ArrayDeque<ServiceAck>[] queues)
     {
         for (final ArrayDeque<ServiceAck> queue : queues)
@@ -82,6 +92,7 @@ final class ServiceAck
         }
     }
 
+    @Impure
     @SuppressWarnings({ "unchecked", "rawtypes" })
     static ArrayDeque<ServiceAck>[] newArrayOfQueues(final int serviceCount)
     {
@@ -95,6 +106,7 @@ final class ServiceAck
         return queues;
     }
 
+    @Pure
     public String toString()
     {
         return "ServiceAck{" +

@@ -15,6 +15,7 @@
  */
 package io.aeron.driver.status;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.AeronCounters;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.concurrent.status.AtomicCounter;
@@ -43,6 +44,7 @@ public class PerImageIndicator
      * @param channel         for the stream of messages.
      * @return a new {@link AtomicCounter} for tracking the indicator.
      */
+    @Impure
     public static AtomicCounter allocate(
         final MutableDirectBuffer tempBuffer,
         final String name,

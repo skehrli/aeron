@@ -15,6 +15,9 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.MutableDirectBuffer;
 
 import java.util.Arrays;
@@ -265,6 +268,7 @@ public enum DriverEventCode implements EventCode
         }
     }
 
+    @Impure
     DriverEventCode(final int id, final DissectFunction<DriverEventCode> dissector)
     {
         this.id = id;
@@ -274,11 +278,13 @@ public enum DriverEventCode implements EventCode
     /**
      * {@inheritDoc}
      */
+    @Pure
     public int id()
     {
         return id;
     }
 
+    @Pure
     static DriverEventCode get(final int id)
     {
         if (id < 0 || id >= EVENT_CODE_BY_ID.length)
@@ -296,6 +302,7 @@ public enum DriverEventCode implements EventCode
         return code;
     }
 
+    @Impure
     static DriverEventCode get(final String name)
     {
         if ("SEND_NAK_MESSAGE".equals(name))
@@ -315,6 +322,8 @@ public enum DriverEventCode implements EventCode
      * @param offset  offset at which the event begins.
      * @param builder to write the decoded event to.
      */
+    @SideEffectFree
+    @Impure
     public void decode(final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
         dissector.dissect(this, buffer, offset, builder);

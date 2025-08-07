@@ -16,6 +16,8 @@
  */
 package io.aeron.cluster.client;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import static io.aeron.cluster.client.AeronCluster.SESSION_HEADER_LENGTH;
 
 import org.agrona.DirectBuffer;
@@ -52,6 +54,8 @@ public final class ControlledEgressAdapter implements ControlledFragmentHandler
      * @param subscription     over the egress stream.
      * @param fragmentLimit    to poll on each {@link #poll()} operation.
      */
+    @SideEffectFree
+    @Impure
     public ControlledEgressAdapter(
         final ControlledEgressListener listener,
         final long clusterSessionId,
@@ -71,6 +75,7 @@ public final class ControlledEgressAdapter implements ControlledFragmentHandler
      * @param subscription      over the egress stream.
      * @param fragmentLimit     to poll on each {@link #poll()} operation.
      */
+    @SideEffectFree
     public ControlledEgressAdapter(
         final ControlledEgressListener listener,
         final ControlledEgressListenerExtension listenerExtension,
@@ -90,6 +95,7 @@ public final class ControlledEgressAdapter implements ControlledFragmentHandler
      *
      * @return the number of fragments consumed.
      */
+    @Impure
     public int poll()
     {
         return subscription.controlledPoll(fragmentAssembler, fragmentLimit);
@@ -98,6 +104,7 @@ public final class ControlledEgressAdapter implements ControlledFragmentHandler
     /**
      * {@inheritDoc}
      */
+    @Impure
     @SuppressWarnings("MethodLength")
     public Action onFragment(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {

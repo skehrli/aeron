@@ -15,6 +15,9 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.archive.codecs.*;
 import org.agrona.MutableDirectBuffer;
 
@@ -251,6 +254,7 @@ public enum ArchiveEventCode implements EventCode
         EVENT_CODE_BY_TEMPLATE_ID = createLookupArray(codes, ArchiveEventCode::templateId);
     }
 
+    @Impure
     private static ArchiveEventCode[] createLookupArray(
         final ArchiveEventCode[] codes, final ToIntFunction<ArchiveEventCode> idSupplier)
     {
@@ -278,6 +282,7 @@ public enum ArchiveEventCode implements EventCode
         return array;
     }
 
+    @Impure
     ArchiveEventCode(final int id, final int templateId, final DissectFunction<ArchiveEventCode> dissector)
     {
         this.id = id;
@@ -285,6 +290,7 @@ public enum ArchiveEventCode implements EventCode
         this.dissector = dissector;
     }
 
+    @Pure
     static ArchiveEventCode get(final int id)
     {
         if (id < 0 || id >= EVENT_CODE_BY_ID.length)
@@ -301,6 +307,7 @@ public enum ArchiveEventCode implements EventCode
         return code;
     }
 
+    @Pure
     static ArchiveEventCode getByTemplateId(final int templateId)
     {
         return templateId >= 0 && templateId < EVENT_CODE_BY_TEMPLATE_ID.length ?
@@ -310,6 +317,7 @@ public enum ArchiveEventCode implements EventCode
     /**
      * {@inheritDoc}
      */
+    @Pure
     public int id()
     {
         return id;
@@ -320,6 +328,7 @@ public enum ArchiveEventCode implements EventCode
      *
      * @return template ID of the SBE message.
      */
+    @Pure
     public int templateId()
     {
         return templateId;
@@ -330,6 +339,7 @@ public enum ArchiveEventCode implements EventCode
      *
      * @return get {@link ArchiveEventCode#id()} from {@link #id()}.
      */
+    @Pure
     public int toEventCodeId()
     {
         return EVENT_CODE_TYPE << 16 | (id & 0xFFFF);
@@ -341,6 +351,8 @@ public enum ArchiveEventCode implements EventCode
      * @param eventCodeId to convert.
      * @return {@link ArchiveEventCode} from its event code id.
      */
+    @Pure
+    @Impure
     public static ArchiveEventCode fromEventCodeId(final int eventCodeId)
     {
         return get(eventCodeId - (EVENT_CODE_TYPE << 16));
@@ -353,6 +365,8 @@ public enum ArchiveEventCode implements EventCode
      * @param offset  offset at which the event begins.
      * @param builder to write the decoded event to.
      */
+    @SideEffectFree
+    @Impure
     public void decode(final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
         dissector.dissect(this, buffer, offset, builder);

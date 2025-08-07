@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster.service;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.FragmentAssembler;
 import io.aeron.Subscription;
 import io.aeron.cluster.client.ClusterException;
@@ -37,22 +39,26 @@ final class ServiceAdapter implements AutoCloseable
     private final ServiceTerminationPositionDecoder serviceTerminationPositionDecoder =
         new ServiceTerminationPositionDecoder();
 
+    @SideEffectFree
     ServiceAdapter(final Subscription subscription, final ClusteredServiceAgent clusteredServiceAgent)
     {
         this.subscription = subscription;
         this.clusteredServiceAgent = clusteredServiceAgent;
     }
 
+    @Impure
     public void close()
     {
         CloseHelper.close(subscription);
     }
 
+    @Impure
     int poll()
     {
         return subscription.poll(fragmentAssembler, FRAGMENT_LIMIT);
     }
 
+    @Impure
     private void onFragment(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {
         messageHeaderDecoder.wrap(buffer, offset);

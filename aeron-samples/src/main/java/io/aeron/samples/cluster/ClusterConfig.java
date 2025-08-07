@@ -15,6 +15,9 @@
  */
 package io.aeron.samples.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.CommonContext;
 import io.aeron.archive.Archive;
 import io.aeron.archive.client.AeronArchive;
@@ -85,6 +88,7 @@ public final class ClusterConfig
     private final ConsensusModule.Context consensusModuleContext;
     private final List<ClusteredServiceContainer.Context> clusteredServiceContexts;
 
+    @SideEffectFree
     ClusterConfig(
         final int memberId,
         final String ingressHostname,
@@ -120,6 +124,7 @@ public final class ClusterConfig
      * @param additionalServices instances of additional clustered services that will run with this configuration.
      * @return configuration that wraps all aeron service configuration.
      */
+    @Impure
     public static ClusterConfig create(
         final int startingMemberId,
         final int memberId,
@@ -220,6 +225,7 @@ public final class ClusterConfig
      * @param additionalServices instances of additional clustered services that will run with this configuration.
      * @return configuration that wraps all aeron service configuration.
      */
+    @Impure
     public static ClusterConfig create(
         final int nodeId,
         final List<String> ingressHostnames,
@@ -248,6 +254,7 @@ public final class ClusterConfig
      * @param clusteredService instance of the clustered service that will run on this node.
      * @return configuration that wraps the detailed aeron service configuration.
      */
+    @Impure
     public static ClusterConfig create(
         final int nodeId,
         final List<String> hostnames,
@@ -262,6 +269,7 @@ public final class ClusterConfig
      *
      * @param errorHandler to receive errors.
      */
+    @Impure
     public void errorHandler(final ErrorHandler errorHandler)
     {
         this.mediaDriverContext.errorHandler(errorHandler);
@@ -276,6 +284,7 @@ public final class ClusterConfig
      *
      * @param aeronDir directory to use for aeron.
      */
+    @Impure
     public void aeronDirectoryName(final String aeronDir)
     {
         this.mediaDriverContext.aeronDirectoryName(aeronDir);
@@ -290,6 +299,7 @@ public final class ClusterConfig
      *
      * @param baseDir parent directory to be used for archive and cluster stored data.
      */
+    @Impure
     public void baseDir(final File baseDir)
     {
         this.archiveContext.archiveDir(new File(baseDir, ARCHIVE_SUB_DIR));
@@ -303,6 +313,7 @@ public final class ClusterConfig
      * @return configured {@link io.aeron.driver.MediaDriver.Context}.
      * @see io.aeron.driver.MediaDriver.Context
      */
+    @Pure
     public MediaDriver.Context mediaDriverContext()
     {
         return mediaDriverContext;
@@ -314,6 +325,7 @@ public final class ClusterConfig
      * @return configured {@link io.aeron.archive.Archive.Context}.
      * @see io.aeron.archive.Archive.Context
      */
+    @Pure
     public Archive.Context archiveContext()
     {
         return archiveContext;
@@ -325,6 +337,7 @@ public final class ClusterConfig
      * @return configured {@link io.aeron.archive.Archive.Context}.
      * @see io.aeron.archive.client.AeronArchive.Context
      */
+    @Pure
     public AeronArchive.Context aeronArchiveContext()
     {
         return aeronArchiveContext;
@@ -336,6 +349,7 @@ public final class ClusterConfig
      * @return configured {@link io.aeron.cluster.ConsensusModule.Context}.
      * @see io.aeron.cluster.ConsensusModule.Context
      */
+    @Pure
     public ConsensusModule.Context consensusModuleContext()
     {
         return consensusModuleContext;
@@ -347,6 +361,7 @@ public final class ClusterConfig
      * @return configured {@link io.aeron.cluster.service.ClusteredServiceContainer.Context}.
      * @see io.aeron.cluster.service.ClusteredServiceContainer.Context
      */
+    @Pure
     public ClusteredServiceContainer.Context clusteredServiceContext()
     {
         return clusteredServiceContexts.get(0);
@@ -358,6 +373,7 @@ public final class ClusterConfig
      * @return configured list of {@link io.aeron.cluster.service.ClusteredServiceContainer.Context}.
      * @see io.aeron.cluster.service.ClusteredServiceContainer.Context
      */
+    @Pure
     public List<ClusteredServiceContainer.Context> clusteredServiceContexts()
     {
         return clusteredServiceContexts;
@@ -368,6 +384,7 @@ public final class ClusterConfig
      *
      * @return memberId.
      */
+    @Pure
     public int memberId()
     {
         return memberId;
@@ -378,6 +395,7 @@ public final class ClusterConfig
      *
      * @return ingress hostname.
      */
+    @Pure
     public String ingressHostname()
     {
         return ingressHostname;
@@ -388,6 +406,7 @@ public final class ClusterConfig
      *
      * @return cluster hostname
      */
+    @Pure
     public String clusterHostname()
     {
         return clusterHostname;
@@ -402,6 +421,7 @@ public final class ClusterConfig
      * @param portBase         initial port to derive other port from via appropriate node id and offset.
      * @return the String which can be used for {@link io.aeron.cluster.ClusterMember#parse(String)}.
      */
+    @Impure
     public static String clusterMembers(
         final List<String> ingressHostnames, final List<String> clusterHostnames, final int portBase)
     {
@@ -419,6 +439,7 @@ public final class ClusterConfig
      * @param portBase         initial port to derive other port from via appropriate node id and offset.
      * @return the String which can be used for {@link io.aeron.cluster.ClusterMember#parse(String)}.
      */
+    @Impure
     public static String clusterMembers(
         final int startingMemberId,
         final List<String> ingressHostnames,
@@ -454,6 +475,7 @@ public final class ClusterConfig
      * @param clientFacingPortOffset Offset for the client facing port
      * @return a formatted string of ingress endpoints for connecting to a cluster.
      */
+    @Impure
     public static String ingressEndpoints(
         final List<String> hostnames,
         final int portBase,
@@ -472,6 +494,7 @@ public final class ClusterConfig
      * @param clientFacingPortOffset Offset for the client facing port
      * @return a formatted string of ingress endpoints for connecting to a cluster.
      */
+    @Impure
     public static String ingressEndpoints(
         final int startingMemberId,
         final List<String> hostnames,
@@ -503,17 +526,22 @@ public final class ClusterConfig
      * @param offset   The offset to add onto the port base
      * @return a calculated port, which should be unique for the specified criteria.
      */
+    @Pure
     public static int calculatePort(final int nodeId, final int portBase, final int offset)
     {
         return portBase + (nodeId * PORTS_PER_NODE) + offset;
     }
 
+    @Pure
+    @Impure
     private static String udpChannel(final int nodeId, final String hostname, final int portBase, final int portOffset)
     {
         final int port = calculatePort(nodeId, portBase, portOffset);
         return "aeron:udp?endpoint=" + hostname + ":" + port;
     }
 
+    @Pure
+    @Impure
     private static String endpoint(final int nodeId, final String hostname, final int portBase, final int portOffset)
     {
         return hostname + ":" + calculatePort(nodeId, portBase, portOffset);

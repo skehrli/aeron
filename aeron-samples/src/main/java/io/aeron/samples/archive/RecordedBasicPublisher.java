@@ -15,6 +15,7 @@
  */
 package io.aeron.samples.archive;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Publication;
 import io.aeron.archive.client.AeronArchive;
 import io.aeron.archive.codecs.SourceLocation;
@@ -50,6 +51,7 @@ public class RecordedBasicPublisher
      * @param args passed to the process.
      * @throws InterruptedException if the thread sleep delay is interrupted.
      */
+    @Impure
     public static void main(final String[] args) throws InterruptedException
     {
         System.out.println("Publishing to " + CHANNEL + " on stream id " + STREAM_ID);
@@ -125,6 +127,7 @@ public class RecordedBasicPublisher
         }
     }
 
+    @Impure
     private static void checkResult(final long position)
     {
         if (position > 0)

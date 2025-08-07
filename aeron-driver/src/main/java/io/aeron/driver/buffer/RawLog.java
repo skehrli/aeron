@@ -15,6 +15,9 @@
  */
 package io.aeron.driver.buffer;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import java.nio.ByteBuffer;
@@ -29,6 +32,7 @@ public interface RawLog extends AutoCloseable
      *
      * @return the length of each term in bytes.
      */
+    @Pure
     int termLength();
 
     /**
@@ -36,6 +40,7 @@ public interface RawLog extends AutoCloseable
      *
      * @return an array of the term buffer partitions.
      */
+    @Pure
     UnsafeBuffer[] termBuffers();
 
     /**
@@ -43,6 +48,7 @@ public interface RawLog extends AutoCloseable
      *
      * @return the meta data storage for the overall log.
      */
+    @Pure
     UnsafeBuffer metaData();
 
     /**
@@ -50,6 +56,7 @@ public interface RawLog extends AutoCloseable
      *
      * @return slices of the underlying buffer to provide an array of term buffers in order.
      */
+    @Impure
     ByteBuffer[] sliceTerms();
 
     /**
@@ -57,6 +64,7 @@ public interface RawLog extends AutoCloseable
      *
      * @return the fully qualified file name for the log file.
      */
+    @SideEffectFree
     String fileName();
 
     /**
@@ -64,10 +72,12 @@ public interface RawLog extends AutoCloseable
      *
      * @return true if successful or false if it should be reattempted.
      */
+    @Impure
     boolean free();
 
     /**
      * Close the resource regardless of if {@link #free()} has succeeded or not.
      */
+    @Impure
     void close();
 }

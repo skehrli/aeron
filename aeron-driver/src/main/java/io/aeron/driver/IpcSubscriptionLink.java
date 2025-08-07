@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 package io.aeron.driver;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 
 class IpcSubscriptionLink extends SubscriptionLink
 {
+    @Impure
     IpcSubscriptionLink(
         final long registrationId,
         final int streamId,
@@ -27,6 +30,8 @@ class IpcSubscriptionLink extends SubscriptionLink
         super(registrationId, streamId, channelUri, aeronClient, params);
     }
 
+    @Pure
+    @Impure
     boolean matches(final IpcPublication publication)
     {
         return publication.streamId() == streamId && isWildcardOrSessionIdMatch(publication.sessionId());

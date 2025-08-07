@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.aeron.agent;
+import org.checkerframework.dataflow.qual.Pure;
 
 /**
  * Identifies an event that can be enabled for logging.
@@ -25,5 +26,6 @@ public interface EventCode
      *
      * @return the unique event identifier withing an {@link EventCodeType}.
      */
+    @Pure
     int id();
 }

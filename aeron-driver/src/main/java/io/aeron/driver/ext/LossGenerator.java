@@ -15,6 +15,7 @@
  */
 package io.aeron.driver.ext;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import java.net.InetSocketAddress;
@@ -33,6 +34,7 @@ public interface LossGenerator
      * @param length  The length of the frame.
      * @return true to drop, false to process
      */
+    @Impure
     boolean shouldDropFrame(InetSocketAddress address, UnsafeBuffer buffer, int length);
 
     /**
@@ -47,6 +49,7 @@ public interface LossGenerator
      * @param length     of the incoming frame.
      * @return true to drop, false to process
      */
+    @Impure
     default boolean shouldDropFrame(
         InetSocketAddress address,
         UnsafeBuffer buffer,

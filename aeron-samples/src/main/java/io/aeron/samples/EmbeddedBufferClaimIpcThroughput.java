@@ -15,6 +15,8 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.*;
 import io.aeron.driver.MediaDriver;
 import io.aeron.driver.ThreadingMode;
@@ -43,6 +45,7 @@ public class EmbeddedBufferClaimIpcThroughput
      * @param args passed to the process.
      * @throws InterruptedException if the join on other threads is interrupted.
      */
+    @Impure
     public static void main(final String[] args) throws InterruptedException
     {
         loadPropertiesFiles(args);
@@ -81,12 +84,14 @@ public class EmbeddedBufferClaimIpcThroughput
         private final AtomicBoolean running;
         private final Publication publication;
 
+        @SideEffectFree
         Publisher(final AtomicBoolean running, final Publication publication)
         {
             this.running = running;
             this.publication = publication;
         }
 
+        @Impure
         public void run()
         {
             final IdleStrategy idleStrategy = SampleConfiguration.newIdleStrategy();

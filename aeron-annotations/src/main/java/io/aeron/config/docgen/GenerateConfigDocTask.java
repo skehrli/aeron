@@ -15,6 +15,7 @@
  */
 package io.aeron.config.docgen;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.utility.ElementIO;
 
 /**
@@ -28,6 +29,7 @@ public class GenerateConfigDocTask
      * Arg 1 should be the location of an output file where a .md file is to be written.
      * @throws Exception on IO failure.
      */
+    @Impure
     public static void main(final String[] args) throws Exception
     {
         ConfigDocGenerator.generate(ElementIO.read(args[0]), args[1]);

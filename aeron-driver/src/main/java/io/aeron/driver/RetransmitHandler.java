@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.protocol.DataHeaderFlyweight;
 import org.agrona.concurrent.status.AtomicCounter;
 import org.agrona.concurrent.NanoClock;
@@ -51,6 +53,7 @@ public final class RetransmitHandler
      * @param maxRetransmits            max retransmits for when group semantics is enabled
      * @param retransmitOverflowCounter counter to track overflows.
      */
+    @Impure
     public RetransmitHandler(
         final NanoClock nanoClock,
         final AtomicCounter invalidPackets,
@@ -87,6 +90,7 @@ public final class RetransmitHandler
      * @param flowControl      for the publication (to clamp the retransmission length).
      * @param retransmitSender to call if an immediate retransmit is required.
      */
+    @Impure
     public void onNak(
         final int termId,
         final int termOffset,
@@ -128,6 +132,7 @@ public final class RetransmitHandler
      * @param termId     of the data.
      * @param termOffset of the data.
      */
+    @Impure
     public void onRetransmitReceived(final int termId, final int termOffset)
     {
         final RetransmitAction action = scanForExistingRetransmit(termId, termOffset);
@@ -144,6 +149,7 @@ public final class RetransmitHandler
      * @param nowNs            time in nanoseconds.
      * @param retransmitSender to call on retransmissions.
      */
+    @Impure
     public void processTimeouts(final long nowNs, final RetransmitSender retransmitSender)
     {
         if (activeRetransmitCount > 0)
@@ -163,6 +169,7 @@ public final class RetransmitHandler
         }
     }
 
+    @Impure
     private boolean isInvalid(final int termOffset, final int termLength)
     {
         final boolean isInvalid = (termOffset > (termLength - DataHeaderFlyweight.HEADER_LENGTH)) || (termOffset < 0);
@@ -175,6 +182,7 @@ public final class RetransmitHandler
         return isInvalid;
     }
 
+    @Impure
     private RetransmitAction scanForAvailableRetransmit(final int termId, final int termOffset, final int length)
     {
         if (0 == activeRetransmitCount)
@@ -224,6 +232,7 @@ public final class RetransmitHandler
         return availableAction;
     }
 
+    @Pure
     private RetransmitAction scanForExistingRetransmit(final int termId, final int termOffset)
     {
         if (0 == activeRetransmitCount)
@@ -251,12 +260,14 @@ public final class RetransmitHandler
         return null;
     }
 
+    @Impure
     private RetransmitAction addRetransmit(final RetransmitAction retransmitAction)
     {
         ++activeRetransmitCount;
         return retransmitAction;
     }
 
+    @Impure
     private void removeRetransmit(final RetransmitAction action)
     {
         --activeRetransmitCount;
@@ -279,18 +290,21 @@ public final class RetransmitHandler
         int length;
         State state = State.INACTIVE;
 
+        @Impure
         void delay(final long delayNs, final long nowNs)
         {
             state = State.DELAYED;
             expiryNs = nowNs + delayNs;
         }
 
+        @Impure
         void linger(final long timeoutNs, final long nowNs)
         {
             state = State.LINGERING;
             expiryNs = nowNs + timeoutNs;
         }
 
+        @Impure
         void cancel()
         {
             state = State.INACTIVE;

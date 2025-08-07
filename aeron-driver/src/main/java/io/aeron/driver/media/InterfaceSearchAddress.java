@@ -15,6 +15,9 @@
  */
 package io.aeron.driver.media;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.AsciiEncoding;
 import org.agrona.Strings;
 
@@ -28,37 +31,44 @@ final class InterfaceSearchAddress
     private final InetSocketAddress address;
     private final int subnetPrefix;
 
+    @SideEffectFree
     InterfaceSearchAddress(final InetSocketAddress address, final int subnetPrefix)
     {
         this.address = address;
         this.subnetPrefix = subnetPrefix;
     }
 
+    @Pure
     InetSocketAddress getAddress()
     {
         return address;
     }
 
+    @Impure
     InetAddress getInetAddress()
     {
         return address.getAddress();
     }
 
+    @Pure
     int getSubnetPrefix()
     {
         return subnetPrefix;
     }
 
+    @Impure
     int getPort()
     {
         return address.getPort();
     }
 
+    @Pure
     static InterfaceSearchAddress wildcard()
     {
         return WILDCARD;
     }
 
+    @Impure
     static InterfaceSearchAddress parse(final String addressAndPort) throws UnknownHostException
     {
         if (Strings.isEmpty(addressAndPort))
@@ -97,6 +107,7 @@ final class InterfaceSearchAddress
         return new InterfaceSearchAddress(new InetSocketAddress(hostAddress, port), subnetPrefix);
     }
 
+    @Impure
     private static int getSubnet(final String s, final int slashIndex, final int defaultSubnetPrefix)
     {
         if (slashIndex < 0)
@@ -113,6 +124,7 @@ final class InterfaceSearchAddress
         return AsciiEncoding.parseIntAscii(s, subnetStringBegin, s.length() - subnetStringBegin);
     }
 
+    @Impure
     private static int getPort(
         final String s, final int slashIndex, final int colonIndex, final int rightAngleBraceIndex)
     {
@@ -131,6 +143,7 @@ final class InterfaceSearchAddress
         return AsciiEncoding.parseIntAscii(s, portStringBegin, portStringEnd - portStringBegin);
     }
 
+    @SideEffectFree
     private static String getAddress(
         final String s, final int slashIndex, final int colonIndex, final int rightAngleBraceIndex)
     {

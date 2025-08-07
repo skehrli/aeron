@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.aeron.samples.echo;
+import org.checkerframework.dataflow.qual.Impure;
 
 class CreateEchoPair extends ProvisioningMessage
 {
@@ -23,6 +24,7 @@ class CreateEchoPair extends ProvisioningMessage
     final String publicationChannel;
     final int publicationStream;
 
+    @Impure
     CreateEchoPair(
         final long correlationId,
         final String subscriptionChannel,

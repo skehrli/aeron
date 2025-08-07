@@ -15,6 +15,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.CommonContext;
 import io.aeron.FragmentAssembler;
 import io.aeron.Image;
@@ -53,6 +54,7 @@ public class SamplesUtil
      * @param running         indication for loop.
      * @return loop function.
      */
+    @Impure
     public static Consumer<Subscription> subscriberLoop(
         final FragmentHandler fragmentHandler, final int limit, final AtomicBoolean running)
     {
@@ -68,6 +70,7 @@ public class SamplesUtil
      * @param idleStrategy    to use for loop.
      * @return loop function.
      */
+    @Impure
     public static Consumer<Subscription> subscriberLoop(
         final FragmentHandler fragmentHandler,
         final int limit,
@@ -92,6 +95,7 @@ public class SamplesUtil
      * @param streamId to show when printing.
      * @return subscription data handler function that prints the message contents.
      */
+    @Impure
     public static FragmentHandler printAsciiMessage(final int streamId)
     {
         return (buffer, offset, length, header) ->
@@ -110,6 +114,7 @@ public class SamplesUtil
      * @param reporter for the rate.
      * @return {@link FragmentHandler} that records the rate information.
      */
+    @Impure
     public static FragmentHandler rateReporterHandler(final RateReporter reporter)
     {
         return (buffer, offset, length, header) -> reporter.onMessage(length);
@@ -124,6 +129,7 @@ public class SamplesUtil
      * @param message   indicating what the error was.
      * @param cause     of the error.
      */
+    @Impure
     public static void printError(
         final String channel,
         final int streamId,
@@ -142,6 +148,7 @@ public class SamplesUtil
      * @param totalMessages  being reported.
      * @param totalBytes     being reported.
      */
+    @Impure
     public static void printRate(
         final double messagesPerSec,
         final double bytesPerSec,
@@ -158,6 +165,7 @@ public class SamplesUtil
      *
      * @param image that has been created.
      */
+    @Impure
     public static void printAvailableImage(final Image image)
     {
         final Subscription subscription = image.subscription();
@@ -172,6 +180,7 @@ public class SamplesUtil
      *
      * @param image that has gone inactive.
      */
+    @Impure
     public static void printUnavailableImage(final Image image)
     {
         final Subscription subscription = image.subscription();
@@ -186,6 +195,7 @@ public class SamplesUtil
      * @param location of file to map.
      * @return the mapped file.
      */
+    @Impure
     public static MappedByteBuffer mapExistingFileReadOnly(final File location)
     {
         if (!location.exists())
@@ -213,6 +223,7 @@ public class SamplesUtil
      *
      * @return the {@link CountersReader} over the CnC file.
      */
+    @Impure
     public static CountersReader mapCounters()
     {
         final File cncFile = CommonContext.newDefaultCncFile();
@@ -236,6 +247,7 @@ public class SamplesUtil
      * @param cncFileVersion to set as value of file.
      * @return the {@link CountersReader} over the CnC file.
      */
+    @Impure
     public static CountersReader mapCounters(final MutableInteger cncFileVersion)
     {
         final File cncFile = CommonContext.newDefaultCncFile();

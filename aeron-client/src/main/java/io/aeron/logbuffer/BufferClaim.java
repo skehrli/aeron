@@ -15,6 +15,8 @@
  */
 package io.aeron.logbuffer;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.concurrent.AtomicBuffer;
@@ -46,6 +48,7 @@ public final class BufferClaim
      * @param offset at which the claimed region begins including space for the header.
      * @param length length of the underlying claimed region including space for the header.
      */
+    @Impure
     public void wrap(final AtomicBuffer buffer, final int offset, final int length)
     {
         this.buffer.wrap(buffer, offset, length);
@@ -56,6 +59,7 @@ public final class BufferClaim
      *
      * @return the referenced buffer to be used.
      */
+    @Pure
     public MutableDirectBuffer buffer()
     {
         return buffer;
@@ -66,6 +70,7 @@ public final class BufferClaim
      *
      * @return offset in the buffer at which the range begins.
      */
+    @Pure
     public int offset()
     {
         return HEADER_LENGTH;
@@ -76,6 +81,7 @@ public final class BufferClaim
      *
      * @return length of the range in the buffer.
      */
+    @Impure
     public int length()
     {
         return buffer.capacity() - HEADER_LENGTH;
@@ -87,6 +93,7 @@ public final class BufferClaim
      * @return the value of the header type field.
      * @see io.aeron.protocol.DataHeaderFlyweight
      */
+    @Impure
     public int headerType()
     {
         return buffer.getShort(TYPE_FIELD_OFFSET, LITTLE_ENDIAN) & 0xFFFF;
@@ -98,6 +105,7 @@ public final class BufferClaim
      * @return the value of the header flags field.
      * @see io.aeron.protocol.DataHeaderFlyweight
      */
+    @Impure
     public byte flags()
     {
         return buffer.getByte(FLAGS_FIELD_OFFSET);
@@ -110,6 +118,7 @@ public final class BufferClaim
      * @return this for a fluent API.
      * @see io.aeron.protocol.DataHeaderFlyweight
      */
+    @Impure
     public BufferClaim flags(final byte flags)
     {
         buffer.putByte(FLAGS_FIELD_OFFSET, flags);
@@ -123,6 +132,7 @@ public final class BufferClaim
      * @return this for a fluent API.
      * @see io.aeron.protocol.DataHeaderFlyweight
      */
+    @Impure
     public BufferClaim headerType(final int type)
     {
         buffer.putShort(TYPE_FIELD_OFFSET, (short)type, LITTLE_ENDIAN);
@@ -137,6 +147,7 @@ public final class BufferClaim
      * @return the value stored in the reserve space at the end of a data frame header.
      * @see io.aeron.protocol.DataHeaderFlyweight
      */
+    @Impure
     public long reservedValue()
     {
         return buffer.getLong(RESERVED_VALUE_OFFSET, LITTLE_ENDIAN);
@@ -151,6 +162,7 @@ public final class BufferClaim
      * @return this for fluent API semantics.
      * @see io.aeron.protocol.DataHeaderFlyweight
      */
+    @Impure
     public BufferClaim reservedValue(final long value)
     {
         buffer.putLong(RESERVED_VALUE_OFFSET, value, LITTLE_ENDIAN);
@@ -166,6 +178,7 @@ public final class BufferClaim
      * @param length    of the source buffer to copy.
      * @return this for a fluent API.
      */
+    @Impure
     public BufferClaim putBytes(final DirectBuffer srcBuffer, final int srcIndex, final int length)
     {
         buffer.putBytes(HEADER_LENGTH, srcBuffer, srcIndex, length);
@@ -175,6 +188,7 @@ public final class BufferClaim
     /**
      * Commit the message to the log buffer so that is it available to subscribers.
      */
+    @Impure
     public void commit()
     {
         int frameLength = buffer.capacity();
@@ -189,6 +203,7 @@ public final class BufferClaim
     /**
      * Abort a claim of the message space to the log buffer so that the log can progress by ignoring this claim.
      */
+    @Impure
     public void abort()
     {
         int frameLength = buffer.capacity();

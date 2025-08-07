@@ -15,6 +15,9 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.driver.exceptions.UnknownSubscriptionException;
 import io.aeron.driver.media.ReceiveChannelEndpoint;
 import io.aeron.exceptions.AeronEvent;
@@ -53,21 +56,25 @@ public final class DataPacketDispatcher
         final Int2ObjectHashMap<PublicationImage> activeImageByIdMap = new Int2ObjectHashMap<>();
         final IntHashSet subscribedSessionIds = new IntHashSet();
 
+        @SideEffectFree
         StreamInterest(final boolean isAllSessions)
         {
             this.isAllSessions = isAllSessions;
         }
 
+        @Impure
         PublicationImage findActive(final int sessionId)
         {
             return activeImageByIdMap.get(sessionId);
         }
 
+        @Pure
         public boolean isSessionLimitExceeded(final int sessionLimit)
         {
             return sessionLimit <= activeImageByIdMap.size();
         }
 
+        @Impure
         void removeNonSessionSpecificInterest()
         {
             final Int2ObjectHashMap<PublicationImage>.EntryIterator activeIterator =
@@ -106,6 +113,7 @@ public final class DataPacketDispatcher
     private final Receiver receiver;
     private final int streamSessionLimit;
 
+    @SideEffectFree
     DataPacketDispatcher(
         final DriverConductorProxy conductorProxy,
         final Receiver receiver,
@@ -121,6 +129,7 @@ public final class DataPacketDispatcher
      *
      * @param streamId to capture within a channel.
      */
+    @Impure
     public void addSubscription(final int streamId)
     {
         final StreamInterest streamInterest = streamInterestByIdMap.get(streamId);
@@ -152,6 +161,7 @@ public final class DataPacketDispatcher
      * @param streamId  to capture within a channel.
      * @param sessionId to capture within a stream id.
      */
+    @Impure
     public void addSubscription(final int streamId, final int sessionId)
     {
         StreamInterest streamInterest = streamInterestByIdMap.get(streamId);
@@ -175,6 +185,7 @@ public final class DataPacketDispatcher
      *
      * @param streamId to remove the capture for.
      */
+    @Impure
     public void removeSubscription(final int streamId)
     {
         final StreamInterest streamInterest = streamInterestByIdMap.get(streamId);
@@ -199,6 +210,7 @@ public final class DataPacketDispatcher
      * @param streamId  to remove the capture for.
      * @param sessionId within the given stream id.
      */
+    @Impure
     public void removeSubscription(final int streamId, final int sessionId)
     {
         final StreamInterest streamInterest = streamInterestByIdMap.get(streamId);
@@ -230,6 +242,7 @@ public final class DataPacketDispatcher
      *
      * @param image to which the packets are dispatched.
      */
+    @Impure
     public void addPublicationImage(final PublicationImage image)
     {
         final StreamInterest streamInterest = streamInterestByIdMap.get(image.streamId());
@@ -246,6 +259,7 @@ public final class DataPacketDispatcher
      *
      * @param image to which the packets are dispatched.
      */
+    @Impure
     public void removePublicationImage(final PublicationImage image)
     {
         final StreamInterest streamInterest = streamInterestByIdMap.get(image.streamId());
@@ -272,6 +286,7 @@ public final class DataPacketDispatcher
      * @param sessionId of the registered interest.
      * @param streamId  of the registered interest.
      */
+    @Impure
     public void removePendingSetup(final int sessionId, final int streamId)
     {
         removeByState(sessionId, streamId, PENDING_SETUP_FRAME);
@@ -283,6 +298,7 @@ public final class DataPacketDispatcher
      * @param sessionId of the registered interest.
      * @param streamId  of the registered interest.
      */
+    @Impure
     public void removeCoolDown(final int sessionId, final int streamId)
     {
         removeByState(sessionId, streamId, ON_COOL_DOWN);
@@ -299,6 +315,7 @@ public final class DataPacketDispatcher
      * @param transportIndex  on which the packet was received.
      * @return number of bytes applied as a result of this action.
      */
+    @Impure
     public int onDataPacket(
         final ReceiveChannelEndpoint channelEndpoint,
         final DataHeaderFlyweight header,
@@ -346,6 +363,7 @@ public final class DataPacketDispatcher
      * @param srcAddress      the message came from.
      * @param transportIndex  on which the message was received.
      */
+    @Impure
     public void onSetupMessage(
         final ReceiveChannelEndpoint channelEndpoint,
         final SetupFlyweight msg,
@@ -427,6 +445,7 @@ public final class DataPacketDispatcher
      * @param srcAddress      the message came from.
      * @param transportIndex  on which the message was received.
      */
+    @Impure
     public void onRttMeasurement(
         final ReceiveChannelEndpoint channelEndpoint,
         final RttMeasurementFlyweight msg,
@@ -464,11 +483,13 @@ public final class DataPacketDispatcher
      *
      * @return true if there is interest otherwise false.
      */
+    @Pure
     public boolean shouldElicitSetupMessage()
     {
         return !streamInterestByIdMap.isEmpty();
     }
 
+    @Impure
     private void removeByState(final int sessionId, final int streamId, final SessionState state)
     {
         final StreamInterest streamInterest = streamInterestByIdMap.get(streamId);
@@ -482,6 +503,7 @@ public final class DataPacketDispatcher
         }
     }
 
+    @Impure
     private void elicitSetupMessageFromSource(
         final ReceiveChannelEndpoint channelEndpoint,
         final int transportIndex,
@@ -496,6 +518,7 @@ public final class DataPacketDispatcher
         receiver.addPendingSetupMessage(sessionId, streamId, transportIndex, channelEndpoint, false, controlAddress);
     }
 
+    @Impure
     private void createPublicationImage(
         final ReceiveChannelEndpoint channelEndpoint,
         final int transportIndex,

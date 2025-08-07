@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package io.aeron.driver.buffer;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 
 /**
  * Factory interface for creating the log buffers under publications and images.
@@ -23,6 +25,7 @@ public interface LogFactory extends AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
     void close();
 
     /**
@@ -33,6 +36,7 @@ public interface LogFactory extends AutoCloseable
      * @param useSparseFiles   should the file be sparse so the pages are only allocated as required.
      * @return the newly created {@link RawLog}
      */
+    @Impure
     RawLog newPublication(long correlationId, int termBufferLength, boolean useSparseFiles);
 
     /**
@@ -43,5 +47,6 @@ public interface LogFactory extends AutoCloseable
      * @param useSparseFiles   should the file be sparse so the pages are only allocated as required.
      * @return the newly created {@link RawLog}
      */
+    @Impure
     RawLog newImage(long correlationId, int termBufferLength, boolean useSparseFiles);
 }

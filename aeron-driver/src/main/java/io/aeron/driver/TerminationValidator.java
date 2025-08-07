@@ -15,6 +15,7 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.DirectBuffer;
 
 import java.io.File;
@@ -34,5 +35,6 @@ public interface TerminationValidator
      * @param tokenLength of the token within the buffer.
      * @return true if request is to be considered valid and the driver termination hook should be run or false if not.
      */
+    @Pure
     boolean allowTermination(File aeronDir, DirectBuffer tokenBuffer, int tokenOffset, int tokenLength);
 }

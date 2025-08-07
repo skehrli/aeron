@@ -15,6 +15,7 @@
  */
 package io.aeron.protocol;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import java.nio.ByteBuffer;
@@ -52,6 +53,7 @@ public class ResponseSetupFlyweight extends HeaderFlyweight
     /**
      * Default constructor which can later be used to wrap a frame.
      */
+    @Impure
     public ResponseSetupFlyweight()
     {
     }
@@ -61,6 +63,7 @@ public class ResponseSetupFlyweight extends HeaderFlyweight
      *
      * @param buffer containing the frame.
      */
+    @Impure
     public ResponseSetupFlyweight(final UnsafeBuffer buffer)
     {
         super(buffer);
@@ -71,6 +74,7 @@ public class ResponseSetupFlyweight extends HeaderFlyweight
      *
      * @param buffer containing the frame.
      */
+    @Impure
     public ResponseSetupFlyweight(final ByteBuffer buffer)
     {
         super(buffer);
@@ -81,6 +85,7 @@ public class ResponseSetupFlyweight extends HeaderFlyweight
      *
      * @return session id field.
      */
+    @Impure
     public int sessionId()
     {
         return getInt(SESSION_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -92,6 +97,7 @@ public class ResponseSetupFlyweight extends HeaderFlyweight
      * @param sessionId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public ResponseSetupFlyweight sessionId(final int sessionId)
     {
         putInt(SESSION_ID_FIELD_OFFSET, sessionId, LITTLE_ENDIAN);
@@ -104,6 +110,7 @@ public class ResponseSetupFlyweight extends HeaderFlyweight
      *
      * @return stream id field.
      */
+    @Impure
     public int streamId()
     {
         return getInt(STREAM_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -115,6 +122,7 @@ public class ResponseSetupFlyweight extends HeaderFlyweight
      * @param streamId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public ResponseSetupFlyweight streamId(final int streamId)
     {
         putInt(STREAM_ID_FIELD_OFFSET, streamId, LITTLE_ENDIAN);
@@ -127,6 +135,7 @@ public class ResponseSetupFlyweight extends HeaderFlyweight
      *
      * @return response session id field.
      */
+    @Impure
     public int responseSessionId()
     {
         return getInt(RESPONSE_SESSION_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -138,6 +147,7 @@ public class ResponseSetupFlyweight extends HeaderFlyweight
      * @param streamId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public ResponseSetupFlyweight responseSessionId(final int streamId)
     {
         putInt(RESPONSE_SESSION_ID_FIELD_OFFSET, streamId, LITTLE_ENDIAN);

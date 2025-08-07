@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.ChannelUri;
 import io.aeron.driver.media.ControlTransportPoller;
 import io.aeron.driver.media.SendChannelEndpoint;
@@ -75,6 +77,7 @@ public final class Sender extends SenderRhsPadding implements Agent
     private final DriverConductorProxy conductorProxy;
     private final DutyCycleTracker dutyCycleTracker;
 
+    @Impure
     Sender(final MediaDriver.Context ctx)
     {
         controlTransportPoller = ctx.controlTransportPoller();
@@ -94,6 +97,7 @@ public final class Sender extends SenderRhsPadding implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onStart()
     {
         final long nowNs = nanoClock.nanoTime();
@@ -115,6 +119,7 @@ public final class Sender extends SenderRhsPadding implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onClose()
     {
         controlTransportPoller.close();
@@ -123,6 +128,7 @@ public final class Sender extends SenderRhsPadding implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int doWork()
     {
         final long nowNs = nanoClock.nanoTime();
@@ -158,27 +164,32 @@ public final class Sender extends SenderRhsPadding implements Agent
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String roleName()
     {
         return "sender";
     }
 
+    @Impure
     void onRegisterSendChannelEndpoint(final SendChannelEndpoint channelEndpoint)
     {
         channelEndpoint.registerForRead(controlTransportPoller);
     }
 
+    @Impure
     void onCloseSendChannelEndpoint(final SendChannelEndpoint channelEndpoint)
     {
         channelEndpoint.close();
     }
 
+    @Impure
     void onNewNetworkPublication(final NetworkPublication publication)
     {
         networkPublications = ArrayUtil.add(networkPublications, publication);
         publication.channelEndpoint().registerForSend(publication);
     }
 
+    @Impure
     void onRemoveNetworkPublication(final NetworkPublication publication)
     {
         networkPublications = ArrayUtil.remove(networkPublications, publication);
@@ -186,6 +197,7 @@ public final class Sender extends SenderRhsPadding implements Agent
         publication.senderRelease();
     }
 
+    @Impure
     void onAddDestination(
         final SendChannelEndpoint channelEndpoint,
         final ChannelUri channelUri,
@@ -195,17 +207,20 @@ public final class Sender extends SenderRhsPadding implements Agent
         channelEndpoint.addDestination(channelUri, address, registrationId);
     }
 
+    @Impure
     void onRemoveDestination(
         final SendChannelEndpoint channelEndpoint, final ChannelUri channelUri, final InetSocketAddress address)
     {
         channelEndpoint.removeDestination(channelUri, address);
     }
 
+    @Impure
     void onRemoveDestination(final SendChannelEndpoint channelEndpoint, final long destinationRegistrationId)
     {
         channelEndpoint.removeDestination(destinationRegistrationId);
     }
 
+    @Impure
     void onResolutionChange(
         final SendChannelEndpoint channelEndpoint, final String endpoint, final InetSocketAddress newAddress)
     {
@@ -213,6 +228,7 @@ public final class Sender extends SenderRhsPadding implements Agent
         resolutionChanges.getAndAddOrdered(1);
     }
 
+    @Impure
     private int doSend(final long nowNs)
     {
         int bytesSent = 0;

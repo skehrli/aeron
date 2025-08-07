@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package io.aeron.security;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
 
 /**
  * Representation of a session during the authentication process from the perspective of an {@link Authenticator}.
@@ -27,6 +29,7 @@ public interface SessionProxy
      *
      * @return identity for the potential session.
      */
+    @Pure
     long sessionId();
 
     /**
@@ -35,6 +38,7 @@ public interface SessionProxy
      * @param encodedChallenge to be sent to the client.
      * @return true if challenge was accepted to be sent at present time or false if it will be retried later.
      */
+    @Pure
     boolean challenge(byte[] encodedChallenge);
 
     /**
@@ -43,10 +47,12 @@ public interface SessionProxy
      * @param encodedPrincipal that has passed authentication.
      * @return true if authentication was accepted at present time or false if it will be retried later.
      */
+    @Pure
     boolean authenticate(byte[] encodedPrincipal);
 
     /**
      * Inform the system that the session should be rejected.
      */
+    @SideEffectFree
     void reject();
 }

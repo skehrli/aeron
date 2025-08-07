@@ -15,6 +15,8 @@
  */
 package io.aeron.protocol;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.exceptions.AeronException;
 import org.agrona.concurrent.UnsafeBuffer;
 
@@ -90,6 +92,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
     /**
      * Default constructor which can later be used to wrap a frame.
      */
+    @Impure
     public StatusMessageFlyweight()
     {
     }
@@ -99,6 +102,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
      *
      * @param buffer containing the frame.
      */
+    @Impure
     public StatusMessageFlyweight(final ByteBuffer buffer)
     {
         super(buffer);
@@ -109,6 +113,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
      *
      * @param buffer containing the frame.
      */
+    @Impure
     public StatusMessageFlyweight(final UnsafeBuffer buffer)
     {
         super(buffer);
@@ -119,6 +124,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
      *
      * @return session-id for the stream.
      */
+    @Impure
     public int sessionId()
     {
         return getInt(SESSION_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -130,6 +136,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
      * @param sessionId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public StatusMessageFlyweight sessionId(final int sessionId)
     {
         putInt(SESSION_ID_FIELD_OFFSET, sessionId, LITTLE_ENDIAN);
@@ -142,6 +149,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
      *
      * @return the session-id for the stream.
      */
+    @Impure
     public int streamId()
     {
         return getInt(STREAM_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -153,6 +161,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
      * @param streamId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public StatusMessageFlyweight streamId(final int streamId)
     {
         putInt(STREAM_ID_FIELD_OFFSET, streamId, LITTLE_ENDIAN);
@@ -165,6 +174,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
      *
      * @return the highest consumption offset within the term.
      */
+    @Impure
     public int consumptionTermOffset()
     {
         return getInt(CONSUMPTION_TERM_OFFSET_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -176,6 +186,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
      * @param termOffset field value.
      * @return this for a fluent API.
      */
+    @Impure
     public StatusMessageFlyweight consumptionTermOffset(final int termOffset)
     {
         putInt(CONSUMPTION_TERM_OFFSET_FIELD_OFFSET, termOffset, LITTLE_ENDIAN);
@@ -188,6 +199,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
      *
      * @return highest consumption term-id.
      */
+    @Impure
     public int consumptionTermId()
     {
         return getInt(CONSUMPTION_TERM_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -199,6 +211,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
      * @param termId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public StatusMessageFlyweight consumptionTermId(final int termId)
     {
         putInt(CONSUMPTION_TERM_ID_FIELD_OFFSET, termId, LITTLE_ENDIAN);
@@ -211,6 +224,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
      *
      * @return receiver window length they will accept.
      */
+    @Impure
     public int receiverWindowLength()
     {
         return getInt(RECEIVER_WINDOW_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -222,6 +236,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
      * @param receiverWindowLength field value.
      * @return this for a fluent API.
      */
+    @Impure
     public StatusMessageFlyweight receiverWindowLength(final int receiverWindowLength)
     {
         putInt(RECEIVER_WINDOW_FIELD_OFFSET, receiverWindowLength, LITTLE_ENDIAN);
@@ -234,6 +249,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
      *
      * @return identifier for the receiver to distinguish them for FlowControl strategies.
      */
+    @Impure
     public long receiverId()
     {
         return getLongUnaligned(RECEIVER_ID_FIELD_OFFSET);
@@ -245,6 +261,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
      * @param id for the receiver to distinguish them for FlowControl strategies.
      * @return this for a fluent API.
      */
+    @Impure
     public StatusMessageFlyweight receiverId(final long id)
     {
         return putLongUnaligned(RECEIVER_ID_FIELD_OFFSET, id);
@@ -255,6 +272,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
      *
      * @return length, in bytes, of the Application Specific Feedback (or gtag).
      */
+    @Impure
     public int asfLength()
     {
         return (frameLength() - HEADER_LENGTH);
@@ -265,6 +283,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
      *
      * @return the group tag value or 0 if not present.
      */
+    @Impure
     public long groupTag()
     {
         final int frameLength = frameLength();
@@ -289,6 +308,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
      * @param groupTag value to set if not null.
      * @return this for a fluent API.
      */
+    @Impure
     public StatusMessageFlyweight groupTag(final Long groupTag)
     {
         if (null != groupTag)
@@ -310,6 +330,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
      *
      * @return offset of group tag field
      */
+    @Pure
     public static int groupTagFieldOffset()
     {
         return GROUP_TAG_FIELD_OFFSET;
@@ -321,6 +342,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
      * @param offset of the field to get.
      * @return value of field.
      */
+    @Impure
     public long getLongUnaligned(final int offset)
     {
         final long value;
@@ -359,6 +381,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
      * @param value of the field to put.
      * @return this for fluent API.
      */
+    @Impure
     public StatusMessageFlyweight putLongUnaligned(final int offset, final long value)
     {
         if (ByteOrder.nativeOrder() == LITTLE_ENDIAN)
@@ -390,6 +413,7 @@ public class StatusMessageFlyweight extends HeaderFlyweight
     /**
      * {@inheritDoc}
      */
+    @Impure
     public String toString()
     {
         return "STATUS{" +

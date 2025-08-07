@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.concurrent.status.ReadablePosition;
 
 class UntetheredSubscription
@@ -32,6 +34,7 @@ class UntetheredSubscription
     final SubscriptionLink subscriptionLink;
     final ReadablePosition position;
 
+    @SideEffectFree
     UntetheredSubscription(final SubscriptionLink subscriptionLink, final ReadablePosition position, final long timeNs)
     {
         this.subscriptionLink = subscriptionLink;
@@ -39,6 +42,7 @@ class UntetheredSubscription
         this.timeOfLastUpdateNs = timeNs;
     }
 
+    @Impure
     void state(final State newState, final long nowNs, final int streamId, final int sessionId)
     {
         logStateChange(state, newState, subscriptionLink.registrationId, streamId, sessionId, nowNs);
@@ -46,6 +50,7 @@ class UntetheredSubscription
         timeOfLastUpdateNs = nowNs;
     }
 
+    @SideEffectFree
     private void logStateChange(
         final State oldState,
         final State newState,

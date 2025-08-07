@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.ChannelUri;
 import io.aeron.ExclusivePublication;
 import io.aeron.Publication;
@@ -53,12 +56,14 @@ final class LogPublisher
     private final String destinationChannel;
     private ExclusivePublication publication;
 
+    @Impure
     LogPublisher(final String destinationChannel)
     {
         this.destinationChannel = destinationChannel;
         sessionHeaderEncoder.wrapAndApplyHeader(sessionHeaderBuffer, 0, new MessageHeaderEncoder());
     }
 
+    @Impure
     void publication(final ExclusivePublication publication)
     {
         if (null != this.publication)
@@ -68,11 +73,13 @@ final class LogPublisher
         this.publication = publication;
     }
 
+    @Pure
     ExclusivePublication publication()
     {
         return publication;
     }
 
+    @Impure
     void disconnect(final ErrorHandler errorHandler)
     {
         if (null != publication)
@@ -82,6 +89,7 @@ final class LogPublisher
         }
     }
 
+    @Impure
     long position()
     {
         if (null == publication)
@@ -92,11 +100,13 @@ final class LogPublisher
         return publication.position();
     }
 
+    @Impure
     int sessionId()
     {
         return publication.sessionId();
     }
 
+    @Impure
     void addDestination(final String followerLogEndpoint)
     {
         if (null != publication)
@@ -105,6 +115,7 @@ final class LogPublisher
         }
     }
 
+    @Impure
     long appendMessage(
         final long leadershipTermId,
         final long clusterSessionId,
@@ -136,6 +147,7 @@ final class LogPublisher
         return position;
     }
 
+    @Impure
     long appendSessionOpen(final ClusterSession session, final long leadershipTermId, final long timestamp)
     {
         long position;
@@ -170,6 +182,7 @@ final class LogPublisher
         return position;
     }
 
+    @Impure
     boolean appendSessionClose(
         final int memberId,
         final ClusterSession session,
@@ -205,6 +218,7 @@ final class LogPublisher
         return false;
     }
 
+    @Impure
     long appendTimer(final long correlationId, final long leadershipTermId, final long timestamp)
     {
         final int length = MessageHeaderEncoder.ENCODED_LENGTH + TimerEventEncoder.BLOCK_LENGTH;
@@ -233,6 +247,7 @@ final class LogPublisher
         return position;
     }
 
+    @Impure
     boolean appendClusterAction(
         final long leadershipTermId,
         final long timestamp,
@@ -270,6 +285,7 @@ final class LogPublisher
         return false;
     }
 
+    @Impure
     boolean appendNewLeadershipTermEvent(
         final long leadershipTermId,
         final long timestamp,
@@ -313,6 +329,7 @@ final class LogPublisher
         return false;
     }
 
+    @Impure
     private static void checkResult(final long position, final Publication publication)
     {
         if (Publication.CLOSED == position)
@@ -327,6 +344,7 @@ final class LogPublisher
         }
     }
 
+    @SideEffectFree
     private static void logAppendSessionClose(
         final int memberId,
         final long id,
@@ -340,6 +358,7 @@ final class LogPublisher
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "LogPublisher{" +

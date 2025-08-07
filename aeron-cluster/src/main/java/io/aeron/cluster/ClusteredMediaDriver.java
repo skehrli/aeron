@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.archive.Archive;
 import io.aeron.driver.MediaDriver;
 import io.aeron.driver.status.SystemCounterDescriptor;
@@ -34,6 +37,7 @@ public class ClusteredMediaDriver implements AutoCloseable
     private final Archive archive;
     private final ConsensusModule consensusModule;
 
+    @SideEffectFree
     ClusteredMediaDriver(final MediaDriver driver, final Archive archive, final ConsensusModule consensusModule)
     {
         this.driver = driver;
@@ -46,6 +50,7 @@ public class ClusteredMediaDriver implements AutoCloseable
      *
      * @param args command line argument which is a list for properties files as URLs or filenames.
      */
+    @Impure
     public static void main(final String[] args)
     {
         loadPropertiesFiles(args);
@@ -62,6 +67,7 @@ public class ClusteredMediaDriver implements AutoCloseable
      *
      * @return a new {@link ClusteredMediaDriver} with default contexts.
      */
+    @Impure
     public static ClusteredMediaDriver launch()
     {
         return launch(new MediaDriver.Context(), new Archive.Context(), new ConsensusModule.Context());
@@ -75,6 +81,7 @@ public class ClusteredMediaDriver implements AutoCloseable
      * @param consensusModuleCtx for the configuration of the {@link ConsensusModule}.
      * @return a new {@link ClusteredMediaDriver} with the provided contexts.
      */
+    @Impure
     public static ClusteredMediaDriver launch(
         final MediaDriver.Context driverCtx,
         final Archive.Context archiveCtx,
@@ -117,6 +124,7 @@ public class ClusteredMediaDriver implements AutoCloseable
      *
      * @return the {@link MediaDriver} used in the aggregate.
      */
+    @Pure
     public MediaDriver mediaDriver()
     {
         return driver;
@@ -127,6 +135,7 @@ public class ClusteredMediaDriver implements AutoCloseable
      *
      * @return the {@link Archive} used in the aggregate.
      */
+    @Pure
     public Archive archive()
     {
         return archive;
@@ -137,6 +146,7 @@ public class ClusteredMediaDriver implements AutoCloseable
      *
      * @return the {@link ConsensusModule} used in the aggregate.
      */
+    @Pure
     public ConsensusModule consensusModule()
     {
         return consensusModule;
@@ -145,6 +155,7 @@ public class ClusteredMediaDriver implements AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         CloseHelper.closeAll(consensusModule, archive, driver);

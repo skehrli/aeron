@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster.service;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.DirectBufferVector;
 import io.aeron.Publication;
 import io.aeron.cluster.client.AeronCluster;
@@ -36,6 +38,7 @@ public interface ClientSession
      *
      * @return the cluster session identity uniquely allocated when the session was opened.
      */
+    @Pure
     long id();
 
     /**
@@ -43,6 +46,7 @@ public interface ClientSession
      *
      * @return response channel stream id for responding to the client.
      */
+    @Pure
     int responseStreamId();
 
     /**
@@ -50,6 +54,7 @@ public interface ClientSession
      *
      * @return response channel for responding to the client.
      */
+    @Pure
     String responseChannel();
 
     /**
@@ -57,6 +62,7 @@ public interface ClientSession
      *
      * @return The encoded Principal passed. May be 0 length to indicate none present.
      */
+    @Pure
     byte[] encodedPrincipal();
 
     /**
@@ -64,6 +70,7 @@ public interface ClientSession
      * <p>
      * This method is idempotent.
      */
+    @Impure
     void close();
 
     /**
@@ -71,6 +78,7 @@ public interface ClientSession
      *
      * @return whether a request to close this session has been made.
      */
+    @Pure
     boolean isClosing();
 
     /**
@@ -82,6 +90,7 @@ public interface ClientSession
      * @return the same as {@link Publication#offer(DirectBuffer, int, int)} when in {@link Cluster.Role#LEADER},
      * otherwise {@link #MOCKED_OFFER} when a follower.
      */
+    @Impure
     long offer(DirectBuffer buffer, int offset, int length);
 
     /**
@@ -93,6 +102,7 @@ public interface ClientSession
      * @see Publication#offer(DirectBufferVector[]) when in {@link Cluster.Role#LEADER},
      * otherwise {@link #MOCKED_OFFER} when a follower.
      */
+    @Impure
     long offer(DirectBufferVector[] vectors);
 
     /**
@@ -130,5 +140,6 @@ public interface ClientSession
      * @see BufferClaim#commit()
      * @see BufferClaim#abort()
      */
+    @Impure
     long tryClaim(int length, BufferClaim bufferClaim);
 }

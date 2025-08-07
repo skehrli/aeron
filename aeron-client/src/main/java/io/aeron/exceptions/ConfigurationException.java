@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package io.aeron.exceptions;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 
 /**
  * Indicates an invalid configuration option has been provided.
@@ -27,6 +29,8 @@ public class ConfigurationException extends AeronException
      *
      * @param message detail for the configuration error.
      */
+    @SideEffectFree
+    @Impure
     public ConfigurationException(final String message)
     {
         super(message);

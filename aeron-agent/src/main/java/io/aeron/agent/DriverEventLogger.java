@@ -15,6 +15,10 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.checker.mustcall.qual.Owning;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.DirectBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
 import org.agrona.concurrent.ringbuffer.ManyToOneRingBuffer;
@@ -55,6 +59,7 @@ public final class DriverEventLogger
 
     private final ManyToOneRingBuffer ringBuffer;
 
+    @SideEffectFree
     DriverEventLogger(final ManyToOneRingBuffer ringBuffer)
     {
         this.ringBuffer = ringBuffer;
@@ -68,6 +73,7 @@ public final class DriverEventLogger
      * @param offset in the buffer at which the event begins.
      * @param length of the encoded event.
      */
+    @Impure
     public void log(final DriverEventCode code, final DirectBuffer buffer, final int offset, final int length)
     {
         if (DriverComponentLogger.ENABLED_EVENTS.contains(code))
@@ -99,6 +105,7 @@ public final class DriverEventLogger
      * @param frameLength of the frame.
      * @param dstAddress  for the frame.
      */
+    @Impure
     public void logFrameIn(
         final DirectBuffer buffer, final int offset, final int frameLength, final InetSocketAddress dstAddress)
     {
@@ -127,6 +134,7 @@ public final class DriverEventLogger
      * @param buffer     containing the frame.
      * @param dstAddress for the frame.
      */
+    @Impure
     public void logFrameOut(final ByteBuffer buffer, final InetSocketAddress dstAddress)
     {
         final int length = buffer.remaining() + socketAddressLength(dstAddress);
@@ -162,6 +170,7 @@ public final class DriverEventLogger
      * @param sessionId for the publication.
      * @param streamId  within the channel.
      */
+    @Impure
     public void logPublicationRemoval(final String channel, final int sessionId, final int streamId)
     {
         final int length = SIZE_OF_INT * 3 + channel.length();
@@ -191,6 +200,7 @@ public final class DriverEventLogger
      * @param streamId       within the channel.
      * @param subscriptionId for the subscription.
      */
+    @Impure
     public void logSubscriptionRemoval(final String channel, final int streamId, final long subscriptionId)
     {
         final int length = SIZE_OF_INT * 2 + SIZE_OF_LONG + channel.length();
@@ -221,6 +231,7 @@ public final class DriverEventLogger
      * @param streamId      for the image.
      * @param correlationId for the image.
      */
+    @Impure
     public void logImageRemoval(final String channel, final int sessionId, final int streamId, final long correlationId)
     {
         final int length = SIZE_OF_INT * 3 + SIZE_OF_LONG + channel.length();
@@ -249,6 +260,7 @@ public final class DriverEventLogger
      * @param code  for the event type.
      * @param value of the string to be logged.
      */
+    @Impure
     public void logString(final DriverEventCode code, final String value)
     {
         final int length = value.length() + SIZE_OF_INT;
@@ -280,8 +292,9 @@ public final class DriverEventLogger
      * @param sessionId      of the image.
      * @param <E>            type of the event.
      */
+    @Impure
     public <E extends Enum<E>> void logUntetheredSubscriptionStateChange(
-        final E oldState, final E newState, final long subscriptionId, final int streamId, final int sessionId)
+        final @Owning E oldState, final @Owning E newState, final long subscriptionId, final int streamId, final int sessionId)
     {
         final int length = untetheredSubscriptionStateChangeLength(oldState, newState);
         final int captureLength = captureLength(length);
@@ -317,6 +330,7 @@ public final class DriverEventLogger
      * @param code    representing the event type.
      * @param address to be logged.
      */
+    @Impure
     public void logAddress(final DriverEventCode code, final InetSocketAddress address)
     {
         final int length = socketAddressLength(address);
@@ -347,6 +361,7 @@ public final class DriverEventLogger
      * @param isReResolution {@code true} if this is a re-resolution or {@code false} if initial resolution.
      * @param address        address that was resolved to, can be {@code null}.
      */
+    @Impure
     public void logResolve(
         final String resolverName,
         final long durationNs,
@@ -394,6 +409,7 @@ public final class DriverEventLogger
      * @param isReLookup   address that was resolved to, can be null.
      * @param resolvedName address that was resolved to, can be null.
      */
+    @Impure
     public void logLookup(
         final String resolverName,
         final long durationNs,
@@ -437,6 +453,7 @@ public final class DriverEventLogger
      * @param durationNs of the call in nanoseconds.
      * @param hostName   host name being resolved.
      */
+    @Impure
     public void logHostName(final long durationNs, final String hostName)
     {
         final int length = SIZE_OF_LONG + trailingStringLength(hostName, MAX_HOST_NAME_LENGTH);
@@ -474,6 +491,7 @@ public final class DriverEventLogger
      * @param channel       uri of the channel.
      * @param receiverCount number of the receivers after the event.
      */
+    @Impure
     public void logFlowControlReceiver(
         final DriverEventCode code,
         final long receiverId,
@@ -522,6 +540,7 @@ public final class DriverEventLogger
      * @param nakLength  of the Nak.
      * @param channel    of the Nak.
      */
+    @Impure
     public void logNakMessage(
         final DriverEventCode eventCode,
         final InetSocketAddress address,
@@ -572,6 +591,7 @@ public final class DriverEventLogger
      * @param resendLength of the Resend.
      * @param channel      of the Resend.
      */
+    @Impure
     public void logResend(
         final int sessionId,
         final int streamId,
@@ -617,6 +637,7 @@ public final class DriverEventLogger
      * @param streamId   of the PublicationRevoke
      * @param channel    of the PublicationRevoke
      */
+    @Impure
     public void logPublicationRevoke(
         final long revokedPos,
         final int sessionId,
@@ -658,6 +679,7 @@ public final class DriverEventLogger
      * @param streamId   of the PublicationImageRevoke
      * @param channel    of the PublicationImageRevoke
      */
+    @Impure
     public void logPublicationImageRevoke(
         final long revokedPos,
         final int sessionId,
@@ -691,6 +713,8 @@ public final class DriverEventLogger
         }
     }
 
+    @Pure
+    @Impure
     static int toEventCodeId(final DriverEventCode code)
     {
         return EVENT_CODE_TYPE << 16 | (code.id() & 0xFFFF);

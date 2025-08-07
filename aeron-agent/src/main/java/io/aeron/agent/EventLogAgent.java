@@ -15,6 +15,8 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
@@ -69,6 +71,7 @@ public final class EventLogAgent
      * @param agentArgs       which are ignored.
      * @param instrumentation for applying to the agent.
      */
+    @Impure
     public static void premain(final String agentArgs, final Instrumentation instrumentation)
     {
         startLogging(instrumentation, ConfigOption.fromSystemProperties());
@@ -80,6 +83,7 @@ public final class EventLogAgent
      * @param agentArgs       containing configuration options or command to stop.
      * @param instrumentation for applying to the agent.
      */
+    @Impure
     public static void agentmain(final String agentArgs, final Instrumentation instrumentation)
     {
         if (STOP_COMMAND.equals(agentArgs))
@@ -97,6 +101,7 @@ public final class EventLogAgent
     /**
      * Remove the transformer and close the agent runner for the event log reader.
      */
+    @Impure
     @Deprecated
     public static void removeTransformer()
     {
@@ -106,6 +111,7 @@ public final class EventLogAgent
     /**
      * Remove the transformer and close the agent runner for the event log reader.
      */
+    @Impure
     public static synchronized void stopLogging()
     {
         if (logTransformer != null)
@@ -127,6 +133,7 @@ public final class EventLogAgent
         }
     }
 
+    @Impure
     private static synchronized void startLogging(
         final Instrumentation instrumentation, final Map<String, String> configOptions)
     {
@@ -178,6 +185,7 @@ public final class EventLogAgent
         thread.start();
     }
 
+    @Impure
     private static Agent newReaderAgent(final Map<String, String> configOptions, final List<ComponentLogger> loggers)
     {
         try
@@ -212,6 +220,7 @@ public final class EventLogAgent
 
 final class AgentBuilderListener implements AgentBuilder.Listener
 {
+    @SideEffectFree
     public void onDiscovery(
         final String typeName,
         final ClassLoader classLoader,
@@ -220,6 +229,7 @@ final class AgentBuilderListener implements AgentBuilder.Listener
     {
     }
 
+    @SideEffectFree
     public void onTransformation(
         final TypeDescription typeDescription,
         final ClassLoader classLoader,
@@ -229,6 +239,7 @@ final class AgentBuilderListener implements AgentBuilder.Listener
     {
     }
 
+    @SideEffectFree
     public void onIgnored(
         final TypeDescription typeDescription,
         final ClassLoader classLoader,
@@ -237,6 +248,7 @@ final class AgentBuilderListener implements AgentBuilder.Listener
     {
     }
 
+    @Impure
     public void onError(
         final String typeName,
         final ClassLoader classLoader,
@@ -248,6 +260,7 @@ final class AgentBuilderListener implements AgentBuilder.Listener
         throwable.printStackTrace(System.err);
     }
 
+    @SideEffectFree
     public void onComplete(
         final String typeName,
         final ClassLoader classLoader,

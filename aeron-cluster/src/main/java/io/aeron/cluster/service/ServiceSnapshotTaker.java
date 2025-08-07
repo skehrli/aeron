@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster.service;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.ExclusivePublication;
 import io.aeron.cluster.codecs.ClientSessionEncoder;
 import io.aeron.cluster.codecs.MessageHeaderEncoder;
@@ -28,12 +30,15 @@ final class ServiceSnapshotTaker extends SnapshotTaker
     private final ExpandableArrayBuffer offerBuffer = new ExpandableArrayBuffer(1024);
     private final ClientSessionEncoder clientSessionEncoder = new ClientSessionEncoder();
 
+    @SideEffectFree
+    @Impure
     ServiceSnapshotTaker(
         final ExclusivePublication publication, final IdleStrategy idleStrategy, final AgentInvoker aeronClientInvoker)
     {
         super(publication, idleStrategy, aeronClientInvoker);
     }
 
+    @Impure
     void snapshotSession(final ClientSession session)
     {
         final String responseChannel = session.responseChannel();
@@ -68,6 +73,7 @@ final class ServiceSnapshotTaker extends SnapshotTaker
         }
     }
 
+    @Impure
     private void encodeSession(
         final ClientSession session,
         final String responseChannel,

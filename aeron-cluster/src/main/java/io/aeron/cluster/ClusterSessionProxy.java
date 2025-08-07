@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.cluster.codecs.EventCode;
 import io.aeron.security.SessionProxy;
 
@@ -28,22 +31,27 @@ final class ClusterSessionProxy implements SessionProxy
     private final EgressPublisher egressPublisher;
     private ClusterSession clusterSession;
 
+    @SideEffectFree
     ClusterSessionProxy(final EgressPublisher egressPublisher)
     {
         this.egressPublisher = egressPublisher;
     }
 
+    @Impure
     SessionProxy session(final ClusterSession clusterSession)
     {
         this.clusterSession = clusterSession;
         return this;
     }
 
+    @Pure
+    @Impure
     public long sessionId()
     {
         return clusterSession.id();
     }
 
+    @Impure
     public boolean challenge(final byte[] encodedChallenge)
     {
         if (egressPublisher.sendChallenge(clusterSession, encodedChallenge))
@@ -55,6 +63,7 @@ final class ClusterSessionProxy implements SessionProxy
         return false;
     }
 
+    @Impure
     public boolean authenticate(final byte[] encodedPrincipal)
     {
         ClusterSession.checkEncodedPrincipalLength(encodedPrincipal);
@@ -63,6 +72,7 @@ final class ClusterSessionProxy implements SessionProxy
         return true;
     }
 
+    @Impure
     public void reject()
     {
         clusterSession.reject(EventCode.AUTHENTICATION_REJECTED, ConsensusModule.Configuration.SESSION_REJECTED_MSG);

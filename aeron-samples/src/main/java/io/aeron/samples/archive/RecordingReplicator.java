@@ -15,6 +15,7 @@
  */
 package io.aeron.samples.archive;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.archive.client.AeronArchive;
 import io.aeron.archive.client.ReplicationParams;
@@ -142,6 +143,7 @@ public final class RecordingReplicator
      * @throws ClassCastException       if {@link io.aeron.archive.client.AeronArchive.Context#recordingSignalConsumer()}
      *                                  is not an instance of the {@link RecordingSignalCapture} class.
      */
+    @Impure
     public RecordingReplicator(
         final AeronArchive aeronArchive,
         final long srcRecordingId,
@@ -176,6 +178,7 @@ public final class RecordingReplicator
      *
      * @return id of the destination recording (created or replaced).
      */
+    @Impure
     public long replicate()
     {
         if (NULL_VALUE != dstRecordingId)
@@ -213,6 +216,7 @@ public final class RecordingReplicator
      *
      * @param args passed to the process.
      */
+    @Impure
     public static void main(final String[] args)
     {
         loadPropertiesFiles(args);
@@ -255,6 +259,7 @@ public final class RecordingReplicator
         }
     }
 
+    @Impure
     private static String trimToNull(final String value)
     {
         if (Strings.isEmpty(value))

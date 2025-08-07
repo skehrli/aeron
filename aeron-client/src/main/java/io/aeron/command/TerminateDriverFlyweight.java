@@ -15,6 +15,9 @@
  */
 package io.aeron.command;
 
+import org.checkerframework.dataflow.qual.Deterministic;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.exceptions.ConfigurationException;
 import io.aeron.exceptions.ControlProtocolException;
 import org.agrona.DirectBuffer;
@@ -58,6 +61,7 @@ public class TerminateDriverFlyweight extends CorrelatedMessageFlyweight
      * @param offset at which the message begins.
      * @return this for a fluent API.
      */
+    @Impure
     public TerminateDriverFlyweight wrap(final MutableDirectBuffer buffer, final int offset)
     {
         super.wrap(buffer, offset);
@@ -69,6 +73,7 @@ public class TerminateDriverFlyweight extends CorrelatedMessageFlyweight
      *
      * @return relative offset of the token buffer.
      */
+    @Pure
     public int tokenBufferOffset()
     {
         return TOKEN_BUFFER_OFFSET;
@@ -79,6 +84,7 @@ public class TerminateDriverFlyweight extends CorrelatedMessageFlyweight
      *
      * @return length of token buffer in bytes.
      */
+    @Impure
     public int tokenBufferLength()
     {
         return buffer.getInt(offset + TOKEN_LENGTH_OFFSET);
@@ -92,6 +98,7 @@ public class TerminateDriverFlyweight extends CorrelatedMessageFlyweight
      * @param tokenLength of the token in the tokenBuffer.
      * @return this for a fluent API.
      */
+    @Impure
     public TerminateDriverFlyweight tokenBuffer(
         final DirectBuffer tokenBuffer, final int tokenOffset, final int tokenLength)
     {
@@ -111,6 +118,7 @@ public class TerminateDriverFlyweight extends CorrelatedMessageFlyweight
      *
      * @return the length of the current message
      */
+    @Impure
     public int length()
     {
         return TOKEN_BUFFER_OFFSET + tokenBufferLength();
@@ -122,6 +130,7 @@ public class TerminateDriverFlyweight extends CorrelatedMessageFlyweight
      * @param msgTypeId type of message.
      * @param length    of message in bytes to validate.
      */
+    @Impure
     public void validateLength(final int msgTypeId, final int length)
     {
         if (length < MINIMUM_LENGTH)
@@ -143,6 +152,8 @@ public class TerminateDriverFlyweight extends CorrelatedMessageFlyweight
      * @param tokenLength to be appended to the header.
      * @return the length of the command message for a given token length.
      */
+    @Pure
+    @Deterministic
     public static int computeLength(final int tokenLength)
     {
         if (tokenLength < 0)

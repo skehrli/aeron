@@ -15,6 +15,7 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.ErrorHandler;
 import org.agrona.LangUtil;
 
@@ -31,6 +32,7 @@ public final class RethrowingErrorHandler implements ErrorHandler
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onError(final Throwable ex)
     {
         LangUtil.rethrowUnchecked(ex);

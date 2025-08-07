@@ -15,6 +15,9 @@
  */
 package io.aeron.validation;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Collections;
@@ -32,6 +35,7 @@ public final class Grep
      * @param sourceDir the base directory where the search should begin.
      * @return a Grep object with the results of the action.
      */
+    @Impure
     public static Grep execute(final String pattern, final String sourceDir)
     {
         final String commandString = "grep -r -n -E '^" + pattern + "' " + sourceDir;
@@ -67,6 +71,7 @@ public final class Grep
 
     private final Exception e;
 
+    @SideEffectFree
     private Grep(final String commandString, final Exception e)
     {
         this.commandString = commandString;
@@ -75,6 +80,7 @@ public final class Grep
         this.e = e;
     }
 
+    @SideEffectFree
     private Grep(final String commandString, final int exitCode, final List<String> lines)
     {
         this.commandString = commandString;
@@ -86,6 +92,8 @@ public final class Grep
     /**
      * @return whether grep succeeded.
      */
+    @Pure
+    @Impure
     public boolean success()
     {
         return success(true);
@@ -96,6 +104,7 @@ public final class Grep
      *                      if more than one are found, that counts as a failure
      * @return whether grep succeeded.
      */
+    @Pure
     public boolean success(final boolean expectOneLine)
     {
         if (this.e != null)
@@ -114,6 +123,7 @@ public final class Grep
     /**
      * @return the command string that was executed
      */
+    @Pure
     public String getCommandString()
     {
         return this.commandString;
@@ -122,6 +132,8 @@ public final class Grep
     /**
      * @return the filename and line number of the first line of output
      */
+    @SideEffectFree
+    @Impure
     public String getFilenameAndLine()
     {
         return getFilenameAndLine(0);
@@ -131,6 +143,7 @@ public final class Grep
      * @param lineNumber specify the line of output
      * @return the filename and line number of the specified line of output
      */
+    @SideEffectFree
     public String getFilenameAndLine(final int lineNumber)
     {
         final String[] pieces = this.lines.get(lineNumber).split(":");
@@ -140,6 +153,8 @@ public final class Grep
     /**
      * @return the first line of output (minus the filename and line number)
      */
+    @SideEffectFree
+    @Impure
     public String getOutput()
     {
         return getOutput(0);
@@ -149,6 +164,7 @@ public final class Grep
      * @param lineNumber specify the line of output
      * @return the output of the specified line number (minus the filename and the line number)
      */
+    @SideEffectFree
     public String getOutput(final int lineNumber)
     {
         return this.lines.get(lineNumber).split(":")[2];
@@ -157,6 +173,7 @@ public final class Grep
     /**
      * @param action a BiConsumer that consumes the filename/line number and output for each line of output
      */
+    @Impure
     public void forEach(final BiConsumer<String, String> action)
     {
         for (int i = 0; i < lines.size(); i++)

@@ -15,6 +15,8 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.exceptions.AeronException;
 import io.aeron.logbuffer.BlockHandler;
 import io.aeron.logbuffer.ControlledFragmentHandler;
@@ -54,6 +56,7 @@ abstract class SubscriptionFields extends SubscriptionLhsPadding
     final UnavailableImageHandler unavailableImageHandler;
     int channelStatusId = ChannelEndpointStatus.NO_ID_ALLOCATED;
 
+    @Impure
     SubscriptionFields(
         final long registrationId,
         final int streamId,
@@ -99,6 +102,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
     byte p096, p097, p098, p099, p100, p101, p102, p103, p104, p105, p106, p107, p108, p109, p110, p111;
     byte p112, p113, p114, p115, p116, p117, p118, p119, p120, p121, p122, p123, p124, p125, p126, p127;
 
+    @Impure
     Subscription(
         final ClientConductor conductor,
         final String channel,
@@ -121,6 +125,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      *
      * @return Media address for delivery to the channel.
      */
+    @Pure
     public String channel()
     {
         return channel;
@@ -131,6 +136,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      *
      * @return Stream identity for scoping within the channel media address.
      */
+    @Pure
     public int streamId()
     {
         return streamId;
@@ -141,6 +147,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      *
      * @return registration id
      */
+    @Pure
     public long registrationId()
     {
         return registrationId;
@@ -151,6 +158,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      *
      * @return callback used to indicate when an {@link Image} becomes available under this {@link Subscription}.
      */
+    @Pure
     public AvailableImageHandler availableImageHandler()
     {
         return availableImageHandler;
@@ -161,6 +169,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      *
      * @return Callback used to indicate when an {@link Image} goes unavailable under this {@link Subscription}.
      */
+    @Pure
     public UnavailableImageHandler unavailableImageHandler()
     {
         return unavailableImageHandler;
@@ -178,6 +187,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      * @param fragmentLimit   number of message fragments to limit when polling across multiple {@link Image}s.
      * @return the number of fragments received.
      */
+    @Impure
     public int poll(final FragmentHandler fragmentHandler, final int fragmentLimit)
     {
         final Image[] images = this.images;
@@ -218,6 +228,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      * @return the number of fragments received.
      * @see ControlledFragmentHandler
      */
+    @Impure
     public int controlledPoll(final ControlledFragmentHandler fragmentHandler, final int fragmentLimit)
     {
         final Image[] images = this.images;
@@ -252,6 +263,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      * @param blockLengthLimit for each {@link Image} polled.
      * @return the number of bytes consumed.
      */
+    @Impure
     public long blockPoll(final BlockHandler blockHandler, final int blockLengthLimit)
     {
         long bytesConsumed = 0;
@@ -272,6 +284,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      * @param blockLengthLimit for each {@link Image} polled.
      * @return the number of bytes consumed.
      */
+    @Impure
     public long rawPoll(final RawBlockHandler rawBlockHandler, final int blockLengthLimit)
     {
         long bytesConsumed = 0;
@@ -288,6 +301,8 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      *
      * @return true if this subscription connected by having at least one open publication {@link Image}.
      */
+    @Pure
+    @Impure
     public boolean isConnected()
     {
         for (final Image image : images)
@@ -306,6 +321,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      *
      * @return has subscription currently no {@link Image}s?
      */
+    @Pure
     public boolean hasNoImages()
     {
         return images.length == 0;
@@ -316,6 +332,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      *
      * @return count of {@link Image}s associated to this subscription.
      */
+    @Pure
     public int imageCount()
     {
         return images.length;
@@ -327,6 +344,8 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      * @param sessionId associated with the {@link Image}.
      * @return Image associated with the given sessionId or null if no Image exist.
      */
+    @Pure
+    @Impure
     public Image imageBySessionId(final int sessionId)
     {
         Image result = null;
@@ -350,6 +369,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      * @return image at given index.
      * @throws ArrayIndexOutOfBoundsException if the index is not valid.
      */
+    @Pure
     public Image imageAtIndex(final int index)
     {
         return images[index];
@@ -360,6 +380,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      *
      * @return an unmodifiable {@link List} of active {@link Image}s that match this subscription.
      */
+    @Impure
     public List<Image> images()
     {
         return Collections.unmodifiableList(Arrays.asList(images));
@@ -370,6 +391,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      *
      * @param consumer to handle each {@link Image}.
      */
+    @Impure
     public void forEachImage(final Consumer<Image> consumer)
     {
         for (final Image image : images)
@@ -383,6 +405,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      * <p>
      * This method is idempotent.
      */
+    @Impure
     public void close()
     {
         if (!isClosed)
@@ -396,6 +419,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      *
      * @return true if it has been closed otherwise false.
      */
+    @Pure
     public boolean isClosed()
     {
         return isClosed;
@@ -411,6 +435,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      * {@link ChannelEndpointStatus#NO_ID_ALLOCATED} if the subscription is closed.
      * @see io.aeron.status.ChannelEndpointStatus
      */
+    @Impure
     public long channelStatus()
     {
         if (isClosed)
@@ -426,6 +451,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      *
      * @return the counter used to represent the channel status for this Subscription.
      */
+    @Pure
     public int channelStatusId()
     {
         return channelStatusId;
@@ -448,6 +474,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      * @return {@link List} of local socket addresses for this subscription.
      * @see #channelStatus()
      */
+    @Impure
     public List<String> localSocketAddresses()
     {
         return LocalSocketAddressStatus.findAddresses(conductor.countersReader(), channelStatus(), channelStatusId);
@@ -458,6 +485,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      *
      * @param endpointChannel for the destination to add.
      */
+    @Impure
     public void addDestination(final String endpointChannel)
     {
         if (isClosed)
@@ -473,6 +501,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      *
      * @param endpointChannel for the destination to remove.
      */
+    @Impure
     public void removeDestination(final String endpointChannel)
     {
         if (isClosed)
@@ -492,6 +521,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      * @param endpointChannel for the destination to add.
      * @return the correlationId for the command.
      */
+    @Impure
     public long asyncAddDestination(final String endpointChannel)
     {
         if (isClosed)
@@ -511,6 +541,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      * @param endpointChannel for the destination to remove.
      * @return the correlationId for the command.
      */
+    @Impure
     public long asyncRemoveDestination(final String endpointChannel)
     {
         if (isClosed)
@@ -532,6 +563,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      * @see #channelStatus()
      * @see #localSocketAddresses()
      */
+    @Impure
     public String tryResolveChannelEndpointPort()
     {
         final long channelStatus = channelStatus();
@@ -570,16 +602,19 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
      * @see #channelStatus()
      * @see #localSocketAddresses()
      */
+    @Impure
     public String resolvedEndpoint()
     {
         return LocalSocketAddressStatus.findAddress(conductor.countersReader(), channelStatus(), channelStatusId);
     }
 
+    @Impure
     void channelStatusId(final int id)
     {
         channelStatusId = id;
     }
 
+    @Impure
     void internalClose(final long lingerDurationNs)
     {
         final Image[] images = this.images;
@@ -588,11 +623,13 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
         conductor.closeImages(images, unavailableImageHandler, lingerDurationNs);
     }
 
+    @Impure
     void addImage(final Image image)
     {
         images = ArrayUtil.add(images, image);
     }
 
+    @Impure
     Image removeImage(final long correlationId)
     {
         final Image[] oldArray = images;
@@ -620,6 +657,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
         return removedImage;
     }
 
+    @Impure
     void rejectImage(final long correlationId, final long position, final String reason)
     {
         if (channel().startsWith(CommonContext.SPY_PREFIX))
@@ -633,6 +671,7 @@ public final class Subscription extends SubscriptionFields implements AutoClosea
     /**
      * {@inheritDoc}
      */
+    @Impure
     public String toString()
     {
         return "Subscription{" +

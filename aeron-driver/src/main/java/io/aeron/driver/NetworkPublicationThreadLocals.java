@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.protocol.DataHeaderFlyweight;
 import io.aeron.protocol.HeaderFlyweight;
 import io.aeron.protocol.RttMeasurementFlyweight;
@@ -34,6 +36,7 @@ final class NetworkPublicationThreadLocals
     private final ByteBuffer rttMeasurementBuffer;
     private final RttMeasurementFlyweight rttMeasurementHeader;
 
+    @Impure
     NetworkPublicationThreadLocals()
     {
         final ByteBuffer byteBuffer = BufferUtil.allocateDirectAligned(CACHE_LINE_LENGTH * 4, CACHE_LINE_LENGTH);
@@ -69,31 +72,37 @@ final class NetworkPublicationThreadLocals
             .frameLength(RttMeasurementFlyweight.HEADER_LENGTH);
     }
 
+    @Pure
     ByteBuffer heartbeatBuffer()
     {
         return heartbeatBuffer;
     }
 
+    @Pure
     DataHeaderFlyweight heartbeatDataHeader()
     {
         return dataHeader;
     }
 
+    @Pure
     ByteBuffer setupBuffer()
     {
         return setupBuffer;
     }
 
+    @Pure
     SetupFlyweight setupHeader()
     {
         return setupHeader;
     }
 
+    @Pure
     ByteBuffer rttMeasurementBuffer()
     {
         return rttMeasurementBuffer;
     }
 
+    @Pure
     RttMeasurementFlyweight rttMeasurementHeader()
     {
         return rttMeasurementHeader;

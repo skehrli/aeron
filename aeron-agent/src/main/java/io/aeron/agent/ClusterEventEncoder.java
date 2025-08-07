@@ -15,6 +15,10 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.checker.mustcall.qual.Owning;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.cluster.codecs.CloseReason;
 import org.agrona.concurrent.UnsafeBuffer;
 
@@ -28,10 +32,12 @@ final class ClusterEventEncoder
 {
     static final int MAX_REASON_LENGTH = 300;
 
+    @SideEffectFree
     private ClusterEventEncoder()
     {
     }
 
+    @Impure
     static int encodeOnNewLeadershipTerm(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -99,19 +105,21 @@ final class ClusterEventEncoder
         return encodedLength;
     }
 
+    @Pure
     static int newLeaderShipTermLength()
     {
         return (SIZE_OF_LONG * 9) + (SIZE_OF_INT * 4) + SIZE_OF_BYTE;
     }
 
+    @Impure
     static <E extends Enum<E>> int encodeStateChange(
         final UnsafeBuffer encodingBuffer,
         final int offset,
         final int captureLength,
         final int length,
         final int memberId,
-        final E from,
-        final E to)
+        final @Owning E from,
+        final @Owning E to)
     {
         int encodedLength = encodeLogHeader(encodingBuffer, offset, captureLength, length);
 
@@ -121,19 +129,22 @@ final class ClusterEventEncoder
         return encodeTrailingStateChange(encodingBuffer, offset, encodedLength, captureLength, from, to);
     }
 
-    static <E extends Enum<E>> int stateChangeLength(final E from, final E to)
+    @Pure
+    @Impure
+    static <E extends Enum<E>> int stateChangeLength(final @Owning E from, final @Owning E to)
     {
         return stateTransitionStringLength(from, to) + SIZE_OF_INT;
     }
 
+    @Impure
     static <E extends Enum<E>> int encodeElectionStateChange(
         final UnsafeBuffer encodingBuffer,
         final int offset,
         final int captureLength,
         final int length,
         final int memberId,
-        final E from,
-        final E to,
+        final @Owning E from,
+        final @Owning E to,
         final int leaderId,
         final long candidateTermId,
         final long leadershipTermId,
@@ -177,12 +188,15 @@ final class ClusterEventEncoder
         return encodedLength;
     }
 
-    static <E extends Enum<E>> int electionStateChangeLength(final E from, final E to, final String reason)
+    @Pure
+    @Impure
+    static <E extends Enum<E>> int electionStateChangeLength(final @Owning E from, final @Owning E to, final String reason)
     {
         return (2 * SIZE_OF_INT) + (6 * SIZE_OF_LONG) + stateTransitionStringLength(from, to) +
             trailingStringLength(reason, MAX_REASON_LENGTH);
     }
 
+    @Impure
     static int encodeOnCanvassPosition(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -218,11 +232,13 @@ final class ClusterEventEncoder
         return encodedLength;
     }
 
+    @Pure
     static int canvassPositionLength()
     {
         return 3 * SIZE_OF_LONG + 3 * SIZE_OF_INT;
     }
 
+    @Impure
     static int encodeOnRequestVote(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -258,11 +274,13 @@ final class ClusterEventEncoder
         return encodedLength;
     }
 
+    @Pure
     static int requestVoteLength()
     {
         return 3 * SIZE_OF_LONG + 3 * SIZE_OF_INT;
     }
 
+    @Impure
     static int encodeOnCatchupPosition(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -296,11 +314,13 @@ final class ClusterEventEncoder
         return logHeaderLength + bodyLength;
     }
 
+    @Pure
     static int catchupPositionLength(final String endpoint)
     {
         return 2 * SIZE_OF_LONG + 2 * SIZE_OF_INT + SIZE_OF_INT + endpoint.length();
     }
 
+    @Impure
     static int encodeOnStopCatchup(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -326,13 +346,14 @@ final class ClusterEventEncoder
         return logHeaderLength + bodyLength;
     }
 
+    @Impure
     static <E extends Enum<E>> int encodeTruncateLogEntry(
         final UnsafeBuffer encodingBuffer,
         final int offset,
         final int length,
         final int captureLength,
         final int memberId,
-        final E state,
+        final @Owning E state,
         final long logLeadershipTermId,
         final long leadershipTermId,
         final long candidateTermId,
@@ -376,6 +397,7 @@ final class ClusterEventEncoder
         return encodedLength;
     }
 
+    @Impure
     static int encodeOnReplayNewLeadershipTermEvent(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -422,11 +444,13 @@ final class ClusterEventEncoder
         return logHeaderLength + bodyLength;
     }
 
+    @Pure
     static int replayNewLeadershipTermEventLength(final TimeUnit timeUnit)
     {
         return (2 * SIZE_OF_INT) + (4 * SIZE_OF_LONG) + SIZE_OF_BYTE + SIZE_OF_INT + timeUnit.name().length();
     }
 
+    @Impure
     static int encodeOnAppendPosition(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -460,6 +484,7 @@ final class ClusterEventEncoder
         return logHeaderLength + bodyLength;
     }
 
+    @Impure
     static int encodeOnCommitPosition(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -489,11 +514,13 @@ final class ClusterEventEncoder
         return logHeaderLength + bodyLength;
     }
 
+    @Pure
     static int addPassiveMemberLength(final String endpoints)
     {
         return SIZE_OF_LONG + 2 * SIZE_OF_INT + endpoints.length();
     }
 
+    @Impure
     static int encodeOnAddPassiveMember(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -519,12 +546,15 @@ final class ClusterEventEncoder
         return logHeaderLength + bodyLength;
     }
 
+    @Pure
+    @Impure
     static int appendSessionCloseLength(final CloseReason closeReason, final TimeUnit timeUnit)
     {
         return 3 * SIZE_OF_LONG + SIZE_OF_INT + (SIZE_OF_INT + enumName(closeReason).length()) +
             (SIZE_OF_INT + enumName(timeUnit).length());
     }
 
+    @Impure
     static int encodeAppendSessionClose(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -560,11 +590,13 @@ final class ClusterEventEncoder
         return logHeaderLength + bodyLength;
     }
 
+    @Pure
     static int terminationPositionLength()
     {
         return SIZE_OF_INT + 2 * SIZE_OF_LONG;
     }
 
+    @Impure
     static int encodeTerminationPosition(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -590,11 +622,13 @@ final class ClusterEventEncoder
         return logHeaderLength + bodyLength;
     }
 
+    @Pure
     static int terminationAckLength()
     {
         return 2 * SIZE_OF_LONG + 2 * SIZE_OF_INT;
     }
 
+    @Impure
     static int encodeTerminationAck(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -624,11 +658,14 @@ final class ClusterEventEncoder
         return logHeaderLength + bodyLength;
     }
 
+    @Pure
+    @Impure
     static int serviceAckLength(final TimeUnit timeUnit)
     {
         return (2 * SIZE_OF_INT) + (4 * SIZE_OF_LONG) + (SIZE_OF_INT + enumName(timeUnit).length());
     }
 
+    @Impure
     public static int encodeServiceAck(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -669,12 +706,14 @@ final class ClusterEventEncoder
         return logHeaderLength + bodyLength;
     }
 
+    @Pure
     static int replicationEndedLength(final String purpose, final String controlUri)
     {
         return (3 * SIZE_OF_LONG) + (SIZE_OF_INT) + (SIZE_OF_BYTE) + (SIZE_OF_INT + purpose.length()) +
             (SIZE_OF_INT + controlUri.length());
     }
 
+    @Impure
     static int encodeReplicationEnded(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -714,12 +753,14 @@ final class ClusterEventEncoder
         return logHeaderLength + bodyLength;
     }
 
+    @Pure
     static int standbySnapshotNotificationLength(final TimeUnit timeUnit, final String archiveEndpoint)
     {
         return (5 * SIZE_OF_LONG) + (2 * SIZE_OF_LONG) +
             (2 * SIZE_OF_INT) + timeUnit.name().length() + archiveEndpoint.length();
     }
 
+    @Impure
     static int encodeStandbySnapshotNotification(
         final UnsafeBuffer encodingBuffer,
         final int offset,
@@ -767,11 +808,14 @@ final class ClusterEventEncoder
         return logHeaderLength + bodyLength;
     }
 
+    @Pure
+    @Impure
     static int newElectionLength(final String reason)
     {
         return (3 * SIZE_OF_LONG) + SIZE_OF_INT + trailingStringLength(reason, 300);
     }
 
+    @Impure
     static int encodeNewElection(
         final UnsafeBuffer encodingBuffer,
         final int offset,

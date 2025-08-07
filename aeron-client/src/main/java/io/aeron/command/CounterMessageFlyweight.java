@@ -15,6 +15,8 @@
  */
 package io.aeron.command;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.exceptions.ControlProtocolException;
 import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
@@ -66,6 +68,7 @@ public class CounterMessageFlyweight extends CorrelatedMessageFlyweight
      * @param offset at which the message begins.
      * @return this for a fluent API.
      */
+    @Impure
     public CounterMessageFlyweight wrap(final MutableDirectBuffer buffer, final int offset)
     {
         super.wrap(buffer, offset);
@@ -78,6 +81,7 @@ public class CounterMessageFlyweight extends CorrelatedMessageFlyweight
      *
      * @return type id field.
      */
+    @Impure
     public int typeId()
     {
         return buffer.getInt(offset + COUNTER_TYPE_ID_FIELD_OFFSET);
@@ -89,6 +93,7 @@ public class CounterMessageFlyweight extends CorrelatedMessageFlyweight
      * @param typeId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public CounterMessageFlyweight typeId(final int typeId)
     {
         buffer.putInt(offset + COUNTER_TYPE_ID_FIELD_OFFSET, typeId);
@@ -100,6 +105,7 @@ public class CounterMessageFlyweight extends CorrelatedMessageFlyweight
      *
      * @return relative offset of the key buffer.
      */
+    @Pure
     public int keyBufferOffset()
     {
         return KEY_BUFFER_OFFSET;
@@ -110,6 +116,7 @@ public class CounterMessageFlyweight extends CorrelatedMessageFlyweight
      *
      * @return length of key buffer in bytes.
      */
+    @Impure
     public int keyBufferLength()
     {
         return buffer.getInt(offset + KEY_LENGTH_OFFSET);
@@ -123,6 +130,7 @@ public class CounterMessageFlyweight extends CorrelatedMessageFlyweight
      * @param keyLength of the key in the keyBuffer.
      * @return this for a fluent API.
      */
+    @Impure
     public CounterMessageFlyweight keyBuffer(final DirectBuffer keyBuffer, final int keyOffset, final int keyLength)
     {
         buffer.putInt(offset + KEY_LENGTH_OFFSET, keyLength);
@@ -139,6 +147,7 @@ public class CounterMessageFlyweight extends CorrelatedMessageFlyweight
      *
      * @return relative offset of label buffer.
      */
+    @Impure
     public int labelBufferOffset()
     {
         return labelLengthOffset() + SIZE_OF_INT;
@@ -149,6 +158,7 @@ public class CounterMessageFlyweight extends CorrelatedMessageFlyweight
      *
      * @return length of label buffer in bytes.
      */
+    @Impure
     public int labelBufferLength()
     {
         return buffer.getInt(offset + labelLengthOffset());
@@ -162,6 +172,7 @@ public class CounterMessageFlyweight extends CorrelatedMessageFlyweight
      * @param labelLength of the label in the labelBuffer.
      * @return this for a fluent API.
      */
+    @Impure
     public CounterMessageFlyweight labelBuffer(
         final DirectBuffer labelBuffer, final int labelOffset, final int labelLength)
     {
@@ -181,6 +192,7 @@ public class CounterMessageFlyweight extends CorrelatedMessageFlyweight
      * @param label for the counter.
      * @return this for a fluent API.
      */
+    @Impure
     public CounterMessageFlyweight label(final String label)
     {
         buffer.putStringAscii(offset + labelLengthOffset(), label);
@@ -195,6 +207,7 @@ public class CounterMessageFlyweight extends CorrelatedMessageFlyweight
      *
      * @return the length of the current message
      */
+    @Impure
     public int length()
     {
         final int labelOffset = labelLengthOffset();
@@ -207,6 +220,7 @@ public class CounterMessageFlyweight extends CorrelatedMessageFlyweight
      * @param msgTypeId type of message.
      * @param length    of message in bytes to validate.
      */
+    @Impure
     public void validateLength(final int msgTypeId, final int length)
     {
         if (length < MINIMUM_LENGTH)
@@ -238,6 +252,7 @@ public class CounterMessageFlyweight extends CorrelatedMessageFlyweight
      * @param labelLength to be appended.
      * @return the length of the command message given key and label length.
      */
+    @Impure
     public static int computeLength(final int keyLength, final int labelLength)
     {
         return MINIMUM_LENGTH + align(keyLength, SIZE_OF_INT) + SIZE_OF_INT + labelLength;
@@ -246,6 +261,7 @@ public class CounterMessageFlyweight extends CorrelatedMessageFlyweight
     /**
      * {@inheritDoc}
      */
+    @Impure
     public String toString()
     {
         return "CounterMessageFlyweight{" +
@@ -261,6 +277,7 @@ public class CounterMessageFlyweight extends CorrelatedMessageFlyweight
             "}";
     }
 
+    @Impure
     private int labelLengthOffset()
     {
         return KEY_BUFFER_OFFSET + align(keyBufferLength(), SIZE_OF_INT);

@@ -15,6 +15,9 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.logbuffer.LogBufferDescriptor;
 
 import static io.aeron.ChannelUri.SPY_QUALIFIER;
@@ -87,6 +90,7 @@ public final class ChannelUriStringBuilder
     /**
      * Default constructor.
      */
+    @SideEffectFree
     public ChannelUriStringBuilder()
     {
     }
@@ -97,6 +101,7 @@ public final class ChannelUriStringBuilder
      *
      * @param initialUri initial values for the builder.
      */
+    @Impure
     public ChannelUriStringBuilder(final String initialUri)
     {
         this(ChannelUri.parse(initialUri));
@@ -107,6 +112,7 @@ public final class ChannelUriStringBuilder
      *
      * @param channelUri initial values for the builder.
      */
+    @Impure
     public ChannelUriStringBuilder(final ChannelUri channelUri)
     {
         isSessionIdTagged = false;
@@ -159,6 +165,7 @@ public final class ChannelUriStringBuilder
      *
      * @return this for a fluent API.
      */
+    @Impure
     public ChannelUriStringBuilder clear()
     {
         prefix = null;
@@ -208,6 +215,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @throws IllegalArgumentException if the combination of params is invalid.
      */
+    @Pure
     public ChannelUriStringBuilder validate()
     {
         if (null == media)
@@ -252,6 +260,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see ChannelUri#SPY_QUALIFIER
      */
+    @Impure
     public ChannelUriStringBuilder prefix(final String prefix)
     {
         if (null != prefix && !prefix.isEmpty() && !prefix.equals(SPY_QUALIFIER))
@@ -270,6 +279,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see ChannelUri#SPY_QUALIFIER
      */
+    @Impure
     public ChannelUriStringBuilder prefix(final ChannelUri channelUri)
     {
         return prefix(channelUri.prefix());
@@ -280,6 +290,7 @@ public final class ChannelUriStringBuilder
      *
      * @return the prefix for the additional action to be taken on the request.
      */
+    @Pure
     public String prefix()
     {
         return prefix;
@@ -291,6 +302,7 @@ public final class ChannelUriStringBuilder
      * @param media for this channel.
      * @return this for a fluent API.
      */
+    @Impure
     public ChannelUriStringBuilder media(final String media)
     {
         switch (media)
@@ -313,6 +325,7 @@ public final class ChannelUriStringBuilder
      * @param channelUri to read the value from.
      * @return this for a fluent API.
      */
+    @Impure
     public ChannelUriStringBuilder media(final ChannelUri channelUri)
     {
         return media(channelUri.media());
@@ -323,6 +336,7 @@ public final class ChannelUriStringBuilder
      *
      * @return the media over which the channel transmits.
      */
+    @Pure
     public String media()
     {
         return media;
@@ -336,6 +350,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#ENDPOINT_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder endpoint(final String endpoint)
     {
         this.endpoint = endpoint;
@@ -349,6 +364,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#ENDPOINT_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder endpoint(final ChannelUri channelUri)
     {
         return endpoint(channelUri.get(ENDPOINT_PARAM_NAME));
@@ -360,6 +376,7 @@ public final class ChannelUriStringBuilder
      * @return the endpoint address:port pairing for the channel.
      * @see CommonContext#ENDPOINT_PARAM_NAME
      */
+    @Pure
     public String endpoint()
     {
         return endpoint;
@@ -372,6 +389,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#INTERFACE_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder networkInterface(final String networkInterface)
     {
         this.networkInterface = networkInterface;
@@ -385,6 +403,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#INTERFACE_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder networkInterface(final ChannelUri channelUri)
     {
         return networkInterface(channelUri.get(INTERFACE_PARAM_NAME));
@@ -396,6 +415,7 @@ public final class ChannelUriStringBuilder
      * @return the address of the local interface in the form host:[port]/[subnet mask] for routing traffic.
      * @see CommonContext#INTERFACE_PARAM_NAME
      */
+    @Pure
     public String networkInterface()
     {
         return networkInterface;
@@ -408,6 +428,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#MDC_CONTROL_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder controlEndpoint(final String controlEndpoint)
     {
         this.controlEndpoint = controlEndpoint;
@@ -421,6 +442,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#MDC_CONTROL_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder controlEndpoint(final ChannelUri channelUri)
     {
         return controlEndpoint(channelUri.get(MDC_CONTROL_PARAM_NAME));
@@ -432,6 +454,7 @@ public final class ChannelUriStringBuilder
      * @return the control address:port pair for dynamically joining a multi-destination-cast publication.
      * @see CommonContext#MDC_CONTROL_PARAM_NAME
      */
+    @Pure
     public String controlEndpoint()
     {
         return controlEndpoint;
@@ -449,6 +472,7 @@ public final class ChannelUriStringBuilder
      * @see CommonContext#MDC_CONTROL_MODE_DYNAMIC
      * @see CommonContext#CONTROL_MODE_RESPONSE
      */
+    @Impure
     public ChannelUriStringBuilder controlMode(final String controlMode)
     {
         if (null != controlMode &&
@@ -470,6 +494,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#MDC_CONTROL_MODE_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder controlMode(final ChannelUri channelUri)
     {
         return controlMode(channelUri.get(MDC_CONTROL_MODE_PARAM_NAME));
@@ -484,6 +509,7 @@ public final class ChannelUriStringBuilder
      * @see CommonContext#MDC_CONTROL_MODE_DYNAMIC
      * @see CommonContext#CONTROL_MODE_RESPONSE
      */
+    @Pure
     public String controlMode()
     {
         return controlMode;
@@ -496,6 +522,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#RELIABLE_STREAM_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder reliable(final Boolean isReliable)
     {
         this.reliable = isReliable;
@@ -509,6 +536,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#RELIABLE_STREAM_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder reliable(final ChannelUri channelUri)
     {
         final String reliableValue = channelUri.get(RELIABLE_STREAM_PARAM_NAME);
@@ -529,6 +557,7 @@ public final class ChannelUriStringBuilder
      * @return the subscription semantics for if loss is acceptable, or not, for a reliable message delivery.
      * @see CommonContext#RELIABLE_STREAM_PARAM_NAME
      */
+    @Pure
     public Boolean reliable()
     {
         return reliable;
@@ -542,6 +571,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#TTL_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder ttl(final Integer ttl)
     {
         if (null != ttl && (ttl < 0 || ttl > 255))
@@ -560,6 +590,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#TTL_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder ttl(final ChannelUri channelUri)
     {
         final String ttlValue = channelUri.get(TTL_PARAM_NAME);
@@ -587,6 +618,7 @@ public final class ChannelUriStringBuilder
      * @return the Time To Live (TTL) for a multicast datagram.
      * @see CommonContext#TTL_PARAM_NAME
      */
+    @Pure
     public Integer ttl()
     {
         return ttl;
@@ -600,6 +632,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#MTU_LENGTH_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder mtu(final Integer mtu)
     {
         if (null != mtu)
@@ -626,6 +659,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#MTU_LENGTH_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder mtu(final ChannelUri channelUri)
     {
         final String mtuValue = channelUri.get(MTU_LENGTH_PARAM_NAME);
@@ -653,6 +687,7 @@ public final class ChannelUriStringBuilder
      * @return the maximum transmission unit (MTU) including Aeron header for a datagram payload.
      * @see CommonContext#MTU_LENGTH_PARAM_NAME
      */
+    @Pure
     public Integer mtu()
     {
         return mtu;
@@ -665,6 +700,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#TERM_LENGTH_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder termLength(final Integer termLength)
     {
         if (null != termLength)
@@ -683,6 +719,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#TERM_LENGTH_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder termLength(final ChannelUri channelUri)
     {
         final String termLengthValue = channelUri.get(TERM_LENGTH_PARAM_NAME);
@@ -710,6 +747,7 @@ public final class ChannelUriStringBuilder
      * @return the length of buffer used for each term of the log.
      * @see CommonContext#TERM_LENGTH_PARAM_NAME
      */
+    @Pure
     public Integer termLength()
     {
         return termLength;
@@ -722,6 +760,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#INITIAL_TERM_ID_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder initialTermId(final Integer initialTermId)
     {
         this.initialTermId = initialTermId;
@@ -735,6 +774,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#INITIAL_TERM_ID_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder initialTermId(final ChannelUri channelUri)
     {
         final String initialTermIdValue = channelUri.get(INITIAL_TERM_ID_PARAM_NAME);
@@ -762,6 +802,7 @@ public final class ChannelUriStringBuilder
      * @return the initial term id at which a publication will start.
      * @see CommonContext#INITIAL_TERM_ID_PARAM_NAME
      */
+    @Pure
     public Integer initialTermId()
     {
         return initialTermId;
@@ -775,6 +816,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#TERM_ID_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder termId(final Integer termId)
     {
         this.termId = termId;
@@ -788,6 +830,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#TERM_ID_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder termId(final ChannelUri channelUri)
     {
         final String termIdValue = channelUri.get(TERM_ID_PARAM_NAME);
@@ -815,6 +858,7 @@ public final class ChannelUriStringBuilder
      * @return the current term id at which a publication will start.
      * @see CommonContext#TERM_ID_PARAM_NAME
      */
+    @Pure
     public Integer termId()
     {
         return termId;
@@ -828,6 +872,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#TERM_OFFSET_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder termOffset(final Integer termOffset)
     {
         if (null != termOffset)
@@ -854,6 +899,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#TERM_OFFSET_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder termOffset(final ChannelUri channelUri)
     {
         final String termOffsetValue = channelUri.get(TERM_OFFSET_PARAM_NAME);
@@ -881,6 +927,7 @@ public final class ChannelUriStringBuilder
      * @return the offset within a term at which a publication will start.
      * @see CommonContext#TERM_OFFSET_PARAM_NAME
      */
+    @Pure
     public Integer termOffset()
     {
         return termOffset;
@@ -893,6 +940,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#SESSION_ID_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder sessionId(final Integer sessionId)
     {
         this.sessionId = null != sessionId ? sessionId.longValue() : null;
@@ -907,6 +955,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#SESSION_ID_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder sessionId(final String sessionIdStr)
     {
         if (null != sessionIdStr)
@@ -943,6 +992,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#SESSION_ID_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder taggedSessionId(final Long sessionId)
     {
         isSessionIdTagged(true);
@@ -957,6 +1007,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#SESSION_ID_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder sessionId(final ChannelUri channelUri)
     {
         return sessionId(channelUri.get(SESSION_ID_PARAM_NAME));
@@ -971,6 +1022,7 @@ public final class ChannelUriStringBuilder
      * a signed 32-bit number.  If this is called and a tagged value outside this range is currently held in this
      * object, then the result will be the same as {@link Long#intValue()}.
      */
+    @Pure
     @Deprecated
     public Integer sessionId()
     {
@@ -985,6 +1037,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#LINGER_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder linger(final Long lingerNs)
     {
         if (null != lingerNs && lingerNs < 0)
@@ -1003,6 +1056,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#LINGER_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder linger(final ChannelUri channelUri)
     {
         final String lingerValue = channelUri.get(LINGER_PARAM_NAME);
@@ -1024,6 +1078,7 @@ public final class ChannelUriStringBuilder
      * @return the  time in nanoseconds a publication will linger after being drained.
      * @see CommonContext#LINGER_PARAM_NAME
      */
+    @Pure
     public Long linger()
     {
         return linger;
@@ -1037,6 +1092,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#SPARSE_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder sparse(final Boolean isSparse)
     {
         this.sparse = isSparse;
@@ -1050,6 +1106,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#SPARSE_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder sparse(final ChannelUri channelUri)
     {
         final String sparseValue = channelUri.get(SPARSE_PARAM_NAME);
@@ -1070,6 +1127,7 @@ public final class ChannelUriStringBuilder
      * @return true if the term buffer log is sparse on disk.
      * @see CommonContext#SPARSE_PARAM_NAME
      */
+    @Pure
     public Boolean sparse()
     {
         return sparse;
@@ -1082,6 +1140,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#EOS_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder eos(final Boolean eos)
     {
         this.eos = eos;
@@ -1095,6 +1154,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#EOS_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder eos(final ChannelUri channelUri)
     {
         final String eosValue = channelUri.get(EOS_PARAM_NAME);
@@ -1115,6 +1175,7 @@ public final class ChannelUriStringBuilder
      * @return true if the EOS param should be set.
      * @see CommonContext#EOS_PARAM_NAME
      */
+    @Pure
     public Boolean eos()
     {
         return eos;
@@ -1127,6 +1188,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#TETHER_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder tether(final Boolean tether)
     {
         this.tether = tether;
@@ -1140,6 +1202,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#TETHER_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder tether(final ChannelUri channelUri)
     {
         final String tetherValue = channelUri.get(TETHER_PARAM_NAME);
@@ -1160,6 +1223,7 @@ public final class ChannelUriStringBuilder
      * @return value of the tether param.
      * @see CommonContext#TETHER_PARAM_NAME
      */
+    @Pure
     public Boolean tether()
     {
         return tether;
@@ -1174,6 +1238,7 @@ public final class ChannelUriStringBuilder
      * @see #controlMode()
      * @see #controlEndpoint()
      */
+    @Impure
     public ChannelUriStringBuilder group(final Boolean group)
     {
         this.group = group;
@@ -1187,6 +1252,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#GROUP_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder group(final ChannelUri channelUri)
     {
         final String groupValue = channelUri.get(GROUP_PARAM_NAME);
@@ -1209,6 +1275,7 @@ public final class ChannelUriStringBuilder
      * @see #controlMode()
      * @see #controlEndpoint()
      */
+    @Pure
     public Boolean group()
     {
         return group;
@@ -1223,6 +1290,7 @@ public final class ChannelUriStringBuilder
      * @see CommonContext#TAGS_PARAM_NAME
      * @see CommonContext#TAG_PREFIX
      */
+    @Impure
     public ChannelUriStringBuilder tags(final String tags)
     {
         this.tags = tags;
@@ -1236,6 +1304,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#TAGS_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder tags(final ChannelUri channelUri)
     {
         return tags(channelUri.get(TAGS_PARAM_NAME));
@@ -1251,6 +1320,7 @@ public final class ChannelUriStringBuilder
      * @throws IllegalArgumentException if channelTag is null and pubSubTag is not.
      * @see CommonContext#TAGS_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder tags(final Long channelTag, final Long pubSubTag)
     {
         if (null == channelTag && null != pubSubTag)
@@ -1274,6 +1344,7 @@ public final class ChannelUriStringBuilder
      * @see CommonContext#TAGS_PARAM_NAME
      * @see CommonContext#TAG_PREFIX
      */
+    @Pure
     public String tags()
     {
         return tags;
@@ -1287,6 +1358,7 @@ public final class ChannelUriStringBuilder
      * @see CommonContext#TAGS_PARAM_NAME
      * @see CommonContext#TAG_PREFIX
      */
+    @Impure
     public ChannelUriStringBuilder isSessionIdTagged(final boolean isSessionIdTagged)
     {
         this.isSessionIdTagged = isSessionIdTagged;
@@ -1300,6 +1372,7 @@ public final class ChannelUriStringBuilder
      * @see CommonContext#TAGS_PARAM_NAME
      * @see CommonContext#TAG_PREFIX
      */
+    @Pure
     public boolean isSessionIdTagged()
     {
         return isSessionIdTagged;
@@ -1312,6 +1385,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#ALIAS_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder alias(final String alias)
     {
         this.alias = alias;
@@ -1325,6 +1399,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#TAGS_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder alias(final ChannelUri channelUri)
     {
         return alias(channelUri.get(ALIAS_PARAM_NAME));
@@ -1336,6 +1411,7 @@ public final class ChannelUriStringBuilder
      * @return alias for the URI.
      * @see CommonContext#ALIAS_PARAM_NAME
      */
+    @Pure
     public String alias()
     {
         return alias;
@@ -1348,6 +1424,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#CONGESTION_CONTROL_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder congestionControl(final String congestionControl)
     {
         this.cc = congestionControl;
@@ -1361,6 +1438,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#CONGESTION_CONTROL_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder congestionControl(final ChannelUri channelUri)
     {
         return congestionControl(channelUri.get(CONGESTION_CONTROL_PARAM_NAME));
@@ -1372,6 +1450,7 @@ public final class ChannelUriStringBuilder
      * @return congestion control strategy for the channel.
      * @see CommonContext#CONGESTION_CONTROL_PARAM_NAME
      */
+    @Pure
     public String congestionControl()
     {
         return cc;
@@ -1384,6 +1463,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#FLOW_CONTROL_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder flowControl(final String flowControl)
     {
         this.fc = flowControl;
@@ -1399,6 +1479,7 @@ public final class ChannelUriStringBuilder
      * @param timeout      timeout receivers, default is ns, but allows suffixing of time units (e.g. 5s).
      * @return this for fluent API.
      */
+    @Impure
     public ChannelUriStringBuilder taggedFlowControl(
         final Long groupTag, final Integer minGroupSize, final String timeout)
     {
@@ -1435,6 +1516,7 @@ public final class ChannelUriStringBuilder
      * @param timeout      timeout receivers, default is ns, but allows suffixing of time units (e.g. 5s).
      * @return this for fluent API.
      */
+    @Impure
     public ChannelUriStringBuilder minFlowControl(final Integer minGroupSize, final String timeout)
     {
         String flowControlValue = "min";
@@ -1459,6 +1541,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#FLOW_CONTROL_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder flowControl(final ChannelUri channelUri)
     {
         return flowControl(channelUri.get(FLOW_CONTROL_PARAM_NAME));
@@ -1470,6 +1553,7 @@ public final class ChannelUriStringBuilder
      * @return flow control strategy for the stream.
      * @see CommonContext#FLOW_CONTROL_PARAM_NAME
      */
+    @Pure
     public String flowControl()
     {
         return fc;
@@ -1482,6 +1566,7 @@ public final class ChannelUriStringBuilder
      * @return this for fluent API.
      * @see CommonContext#GROUP_TAG_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder groupTag(final Long groupTag)
     {
         this.groupTag = groupTag;
@@ -1495,6 +1580,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#GROUP_TAG_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder groupTag(final ChannelUri channelUri)
     {
         final String groupTagValue = channelUri.get(GROUP_TAG_PARAM_NAME);
@@ -1522,6 +1608,7 @@ public final class ChannelUriStringBuilder
      * @return receiver tag to be sent in SMs.
      * @see CommonContext#GROUP_TAG_PARAM_NAME
      */
+    @Pure
     public Long groupTag()
     {
         return groupTag;
@@ -1534,6 +1621,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#REJOIN_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder rejoin(final Boolean rejoin)
     {
         this.rejoin = rejoin;
@@ -1547,6 +1635,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#REJOIN_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder rejoin(final ChannelUri channelUri)
     {
         final String rejoinValue = channelUri.get(REJOIN_PARAM_NAME);
@@ -1567,6 +1656,7 @@ public final class ChannelUriStringBuilder
      * @return the subscription semantics for if a stream should be rejoined after going unavailable.
      * @see CommonContext#REJOIN_PARAM_NAME
      */
+    @Pure
     public Boolean rejoin()
     {
         return rejoin;
@@ -1579,6 +1669,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#SPIES_SIMULATE_CONNECTION_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder spiesSimulateConnection(final Boolean spiesSimulateConnection)
     {
         this.ssc = spiesSimulateConnection;
@@ -1593,6 +1684,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#SPIES_SIMULATE_CONNECTION_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder spiesSimulateConnection(final ChannelUri channelUri)
     {
         final String sscValue = channelUri.get(SPIES_SIMULATE_CONNECTION_PARAM_NAME);
@@ -1613,6 +1705,7 @@ public final class ChannelUriStringBuilder
      * @return true if the presence of spy subscriptions simulate a connection, otherwise false.
      * @see CommonContext#SPIES_SIMULATE_CONNECTION_PARAM_NAME
      */
+    @Pure
     public Boolean spiesSimulateConnection()
     {
         return ssc;
@@ -1626,6 +1719,7 @@ public final class ChannelUriStringBuilder
      * @param termLength    for the stream.
      * @return this for a fluent API.
      */
+    @Impure
     public ChannelUriStringBuilder initialPosition(final long position, final int initialTermId, final int termLength)
     {
         if (position < 0)
@@ -1655,6 +1749,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#SOCKET_SNDBUF_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder socketSndbufLength(final Integer socketSndbufLength)
     {
         this.socketSndbufLength = socketSndbufLength;
@@ -1668,6 +1763,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#SOCKET_SNDBUF_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder socketSndbufLength(final ChannelUri channelUri)
     {
         final String valueStr = channelUri.get(SOCKET_SNDBUF_PARAM_NAME);
@@ -1694,6 +1790,7 @@ public final class ChannelUriStringBuilder
      * @return underlying OS send buffer length setting or null if not specified.
      * @see CommonContext#SOCKET_SNDBUF_PARAM_NAME
      */
+    @Pure
     public Integer socketSndbufLength()
     {
         return socketSndbufLength;
@@ -1706,6 +1803,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#SOCKET_RCVBUF_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder socketRcvbufLength(final Integer socketRcvbufLength)
     {
         this.socketRcvbufLength = socketRcvbufLength;
@@ -1720,6 +1818,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#SOCKET_RCVBUF_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder socketRcvbufLength(final ChannelUri channelUri)
     {
         final String valueStr = channelUri.get(SOCKET_RCVBUF_PARAM_NAME);
@@ -1746,6 +1845,7 @@ public final class ChannelUriStringBuilder
      * @return underlying OS receive buffer length setting or null if not specified.
      * @see CommonContext#SOCKET_RCVBUF_PARAM_NAME
      */
+    @Pure
     public Integer socketRcvbufLength()
     {
         return socketRcvbufLength;
@@ -1758,6 +1858,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#RECEIVER_WINDOW_LENGTH_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder receiverWindowLength(final Integer receiverWindowLength)
     {
         this.receiverWindowLength = receiverWindowLength;
@@ -1772,6 +1873,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#RECEIVER_WINDOW_LENGTH_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder receiverWindowLength(final ChannelUri channelUri)
     {
         final String valueStr = channelUri.get(RECEIVER_WINDOW_LENGTH_PARAM_NAME);
@@ -1798,6 +1900,7 @@ public final class ChannelUriStringBuilder
      * @return receiver window length.
      * @see CommonContext#RECEIVER_WINDOW_LENGTH_PARAM_NAME
      */
+    @Pure
     public Integer receiverWindowLength()
     {
         return receiverWindowLength;
@@ -1811,6 +1914,7 @@ public final class ChannelUriStringBuilder
      * special value 'reserved'
      * @see CommonContext#MEDIA_RCV_TIMESTAMP_OFFSET_PARAM_NAME
      */
+    @Pure
     public String mediaReceiveTimestampOffset()
     {
         return mediaReceiveTimestampOffset;
@@ -1825,6 +1929,7 @@ public final class ChannelUriStringBuilder
      * @throws IllegalArgumentException if the string is not null and doesn't represent an int or the 'reserved' value.
      * @see CommonContext#MEDIA_RCV_TIMESTAMP_OFFSET_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder mediaReceiveTimestampOffset(final String timestampOffset)
     {
         if (null != timestampOffset && !RESERVED_OFFSET.equals(timestampOffset))
@@ -1853,6 +1958,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#MEDIA_RCV_TIMESTAMP_OFFSET_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder mediaReceiveTimestampOffset(final ChannelUri channelUri)
     {
         return mediaReceiveTimestampOffset(channelUri.get(MEDIA_RCV_TIMESTAMP_OFFSET_PARAM_NAME));
@@ -1866,6 +1972,7 @@ public final class ChannelUriStringBuilder
      * the special value 'reserved'
      * @see CommonContext#CHANNEL_RECEIVE_TIMESTAMP_OFFSET_PARAM_NAME
      */
+    @Pure
     public String channelReceiveTimestampOffset()
     {
         return channelReceiveTimestampOffset;
@@ -1880,6 +1987,7 @@ public final class ChannelUriStringBuilder
      * @throws IllegalArgumentException if the string doesn't represent an int or the 'reserved' value.
      * @see CommonContext#CHANNEL_RECEIVE_TIMESTAMP_OFFSET_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder channelReceiveTimestampOffset(final String timestampOffset)
     {
         if (null != timestampOffset && !RESERVED_OFFSET.equals(timestampOffset))
@@ -1908,6 +2016,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#CHANNEL_RECEIVE_TIMESTAMP_OFFSET_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder channelReceiveTimestampOffset(final ChannelUri channelUri)
     {
         return channelReceiveTimestampOffset(channelUri.get(CHANNEL_RECEIVE_TIMESTAMP_OFFSET_PARAM_NAME));
@@ -1922,6 +2031,7 @@ public final class ChannelUriStringBuilder
      * @throws IllegalArgumentException if the string is not null doesn't represent an int or the 'reserved' value.
      * @see CommonContext#CHANNEL_SEND_TIMESTAMP_OFFSET_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder channelSendTimestampOffset(final String timestampOffset)
     {
         if (null != timestampOffset && !RESERVED_OFFSET.equals(timestampOffset))
@@ -1950,6 +2060,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#CHANNEL_SEND_TIMESTAMP_OFFSET_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder channelSendTimestampOffset(final ChannelUri channelUri)
     {
         return channelSendTimestampOffset(channelUri.get(CHANNEL_SEND_TIMESTAMP_OFFSET_PARAM_NAME));
@@ -1963,6 +2074,7 @@ public final class ChannelUriStringBuilder
      * value 'reserved'.
      * @see CommonContext#CHANNEL_SEND_TIMESTAMP_OFFSET_PARAM_NAME
      */
+    @Pure
     public String channelSendTimestampOffset()
     {
         return channelSendTimestampOffset;
@@ -1975,6 +2087,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#RESPONSE_ENDPOINT_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder responseEndpoint(final String responseEndpoint)
     {
         this.responseEndpoint = responseEndpoint;
@@ -1989,6 +2102,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#RESPONSE_ENDPOINT_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder responseEndpoint(final ChannelUri channelUri)
     {
         return responseEndpoint(channelUri.get(RESPONSE_ENDPOINT_PARAM_NAME));
@@ -2000,6 +2114,7 @@ public final class ChannelUriStringBuilder
      * @return response endpoint.
      * @see CommonContext#RESPONSE_ENDPOINT_PARAM_NAME
      */
+    @Pure
     public String responseEndpoint()
     {
         return this.responseEndpoint;
@@ -2012,6 +2127,7 @@ public final class ChannelUriStringBuilder
      * @return correlation id of an image from the response "server's" subscription.
      * @see CommonContext#RESPONSE_CORRELATION_ID_PARAM_NAME
      */
+    @Pure
     public Long responseCorrelationId()
     {
         return responseCorrelationId;
@@ -2025,6 +2141,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#RESPONSE_CORRELATION_ID_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder responseCorrelationId(final Long responseCorrelationId)
     {
         this.responseCorrelationId = responseCorrelationId;
@@ -2039,6 +2156,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#RESPONSE_CORRELATION_ID_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder responseCorrelationId(final ChannelUri channelUri)
     {
         final String responseCorrelationIdString = channelUri.get(RESPONSE_CORRELATION_ID_PARAM_NAME);
@@ -2065,6 +2183,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#NAK_DELAY_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder nakDelay(final String nakDelay)
     {
         this.nakDelay = null != nakDelay ? parseDuration(NAK_DELAY_PARAM_NAME, nakDelay) : null;
@@ -2078,6 +2197,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#NAK_DELAY_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder nakDelay(final ChannelUri channelUri)
     {
         return nakDelay(channelUri.get(NAK_DELAY_PARAM_NAME));
@@ -2089,6 +2209,7 @@ public final class ChannelUriStringBuilder
      * @return the delay in nanoseconds, null if not set.
      * @see CommonContext#NAK_DELAY_PARAM_NAME
      */
+    @Pure
     public Long nakDelay()
     {
         return nakDelay;
@@ -2102,6 +2223,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#UNTETHERED_WINDOW_LIMIT_TIMEOUT_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder untetheredWindowLimitTimeout(final String timeout)
     {
         this.untetheredWindowLimitTimeoutNs = null != timeout ?
@@ -2117,6 +2239,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#UNTETHERED_WINDOW_LIMIT_TIMEOUT_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder untetheredWindowLimitTimeoutNs(final Long timeout)
     {
         this.untetheredWindowLimitTimeoutNs = timeout;
@@ -2131,6 +2254,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#UNTETHERED_WINDOW_LIMIT_TIMEOUT_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder untetheredWindowLimitTimeout(final ChannelUri channelUri)
     {
         this.untetheredWindowLimitTimeout(channelUri.get(UNTETHERED_WINDOW_LIMIT_TIMEOUT_PARAM_NAME));
@@ -2144,6 +2268,7 @@ public final class ChannelUriStringBuilder
      * @return the timeout in ns.
      * @see CommonContext#UNTETHERED_WINDOW_LIMIT_TIMEOUT_PARAM_NAME
      */
+    @Pure
     public Long untetheredWindowLimitTimeoutNs()
     {
         return untetheredWindowLimitTimeoutNs;
@@ -2156,6 +2281,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#UNTETHERED_LINGER_TIMEOUT_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder untetheredLingerTimeout(final String timeout)
     {
         this.untetheredLingerTimeoutNs = null != timeout ?
@@ -2170,6 +2296,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#UNTETHERED_LINGER_TIMEOUT_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder untetheredLingerTimeoutNs(final Long timeout)
     {
         this.untetheredLingerTimeoutNs = timeout;
@@ -2183,6 +2310,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#UNTETHERED_LINGER_TIMEOUT_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder untetheredLingerTimeout(final ChannelUri channelUri)
     {
         this.untetheredLingerTimeout(channelUri.get(UNTETHERED_LINGER_TIMEOUT_PARAM_NAME));
@@ -2195,6 +2323,7 @@ public final class ChannelUriStringBuilder
      * @return the timeout in ns.
      * @see CommonContext#UNTETHERED_LINGER_TIMEOUT_PARAM_NAME
      */
+    @Pure
     public Long untetheredLingerTimeoutNs()
     {
         return untetheredLingerTimeoutNs;
@@ -2208,6 +2337,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#UNTETHERED_RESTING_TIMEOUT_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder untetheredRestingTimeout(final String timeout)
     {
         this.untetheredRestingTimeoutNs = null != timeout ?
@@ -2223,6 +2353,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#UNTETHERED_RESTING_TIMEOUT_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder untetheredRestingTimeoutNs(final Long timeout)
     {
         this.untetheredRestingTimeoutNs = timeout;
@@ -2237,6 +2368,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#UNTETHERED_RESTING_TIMEOUT_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder untetheredRestingTimeout(final ChannelUri channelUri)
     {
         this.untetheredRestingTimeout(channelUri.get(UNTETHERED_RESTING_TIMEOUT_PARAM_NAME));
@@ -2250,6 +2382,7 @@ public final class ChannelUriStringBuilder
      * @return the timeout in ns.
      * @see CommonContext#UNTETHERED_RESTING_TIMEOUT_PARAM_NAME
      */
+    @Pure
     public Long untetheredRestingTimeoutNs()
     {
         return untetheredRestingTimeoutNs;
@@ -2262,6 +2395,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#MAX_RESEND_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder maxResend(final Integer maxResend)
     {
         this.maxResend = maxResend;
@@ -2275,6 +2409,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#MAX_RESEND_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder maxResend(final ChannelUri channelUri)
     {
         final String valueStr = channelUri.get(MAX_RESEND_PARAM_NAME);
@@ -2303,6 +2438,7 @@ public final class ChannelUriStringBuilder
      * @return the max number of outstanding retransmit actions
      * @see CommonContext#MAX_RESEND_PARAM_NAME
      */
+    @Pure
     public Integer maxResend()
     {
         return maxResend;
@@ -2313,6 +2449,7 @@ public final class ChannelUriStringBuilder
      *
      * @return the stream or null of no streamId is set.
      */
+    @Pure
     public Integer streamId()
     {
         return streamId;
@@ -2324,6 +2461,7 @@ public final class ChannelUriStringBuilder
      * @param streamId of the channel.
      * @return this for a fluent API.
      */
+    @Impure
     public ChannelUriStringBuilder streamId(final Integer streamId)
     {
         this.streamId = streamId;
@@ -2336,6 +2474,7 @@ public final class ChannelUriStringBuilder
      * @param channelUri the existing URI to extract the streamId from.
      * @return this for a fluent API.
      */
+    @Impure
     public ChannelUriStringBuilder streamId(final ChannelUri channelUri)
     {
         final String valueStr = channelUri.get(STREAM_ID_PARAM_NAME);
@@ -2365,6 +2504,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#PUBLICATION_WINDOW_LENGTH_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder publicationWindowLength(final Integer publicationWindowLength)
     {
         this.publicationWindowLength = publicationWindowLength;
@@ -2379,6 +2519,7 @@ public final class ChannelUriStringBuilder
      * @return this for a fluent API.
      * @see CommonContext#PUBLICATION_WINDOW_LENGTH_PARAM_NAME
      */
+    @Impure
     public ChannelUriStringBuilder publicationWindowLength(final ChannelUri channelUri)
     {
         final String valueStr = channelUri.get(PUBLICATION_WINDOW_LENGTH_PARAM_NAME);
@@ -2405,6 +2546,7 @@ public final class ChannelUriStringBuilder
      * @return publication window length or {@code null} if was not set.
      * @see CommonContext#PUBLICATION_WINDOW_LENGTH_PARAM_NAME
      */
+    @Pure
     public Integer publicationWindowLength()
     {
         return publicationWindowLength;
@@ -2415,6 +2557,7 @@ public final class ChannelUriStringBuilder
      *
      * @return a channel URI String for the given parameters.
      */
+    @Impure
     @SuppressWarnings({ "MethodLength", "DuplicatedCode" })
     public String build()
     {
@@ -2481,6 +2624,7 @@ public final class ChannelUriStringBuilder
         return sb.toString();
     }
 
+    @Impure
     private static void appendParameter(final StringBuilder sb, final String paramName, final Object paramValue)
     {
         if (null != paramValue)
@@ -2492,11 +2636,13 @@ public final class ChannelUriStringBuilder
     /**
      * {@inheritDoc}
      */
+    @Impure
     public String toString()
     {
         return build();
     }
 
+    @SideEffectFree
     private static String prefixTag(final boolean isTagged, final Long value)
     {
         return isTagged ? TAG_PREFIX + value : value.toString();

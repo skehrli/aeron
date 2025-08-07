@@ -15,6 +15,8 @@
  */
 package io.aeron.driver.media;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.protocol.ErrorFlyweight;
 import io.aeron.protocol.HeaderFlyweight;
 import io.aeron.protocol.NakFlyweight;
@@ -52,6 +54,7 @@ public final class ReceiveChannelEndpointThreadLocals
     /**
      * Construct a set of local state to be used by the receiver thread.
      */
+    @Impure
     public ReceiveChannelEndpointThreadLocals()
     {
         final int smLength = StatusMessageFlyweight.HEADER_LENGTH + SIZE_OF_LONG;
@@ -124,6 +127,7 @@ public final class ReceiveChannelEndpointThreadLocals
      *
      * @return buffer for writing status messages to send.
      */
+    @Pure
     public ByteBuffer statusMessageBuffer()
     {
         return smBuffer;
@@ -134,6 +138,7 @@ public final class ReceiveChannelEndpointThreadLocals
      *
      * @return flyweight over the {@link #statusMessageBuffer()}.
      */
+    @Pure
     public StatusMessageFlyweight statusMessageFlyweight()
     {
         return statusMessageFlyweight;
@@ -144,6 +149,7 @@ public final class ReceiveChannelEndpointThreadLocals
      *
      * @return buffer for writing NAK messages to send.
      */
+    @Pure
     public ByteBuffer nakBuffer()
     {
         return nakBuffer;
@@ -154,6 +160,7 @@ public final class ReceiveChannelEndpointThreadLocals
      *
      * @return flyweight over the {@link #nakBuffer()}.
      */
+    @Pure
     public NakFlyweight nakFlyweight()
     {
         return nakFlyweight;
@@ -164,6 +171,7 @@ public final class ReceiveChannelEndpointThreadLocals
      *
      * @return buffer for writing RTT measurement messages to send.
      */
+    @Pure
     public ByteBuffer rttMeasurementBuffer()
     {
         return rttMeasurementBuffer;
@@ -174,6 +182,7 @@ public final class ReceiveChannelEndpointThreadLocals
      *
      * @return flyweight over the {@link #rttMeasurementBuffer()}.
      */
+    @Pure
     public RttMeasurementFlyweight rttMeasurementFlyweight()
     {
         return rttMeasurementFlyweight;
@@ -184,6 +193,7 @@ public final class ReceiveChannelEndpointThreadLocals
      *
      * @return buffer for writing Response Setup messages to send.
      */
+    @Pure
     public ByteBuffer responseSetupBuffer()
     {
         return responseSetupBuffer;
@@ -194,6 +204,7 @@ public final class ReceiveChannelEndpointThreadLocals
      *
      * @return flyweight over the {@link #responseSetupBuffer()}.
      */
+    @Pure
     public ResponseSetupFlyweight responseSetupHeader()
     {
         return responseSetupHeader;
@@ -204,6 +215,7 @@ public final class ReceiveChannelEndpointThreadLocals
      *
      * @return buffer for writing the error messages to send.
      */
+    @Pure
     public ByteBuffer errorBuffer()
     {
         return errorBuffer;
@@ -214,6 +226,7 @@ public final class ReceiveChannelEndpointThreadLocals
      *
      * @return flyweight over the {@link #errorBuffer()}.
      */
+    @Pure
     public ErrorFlyweight errorFlyweight()
     {
         return errorFlyweight;
@@ -224,6 +237,7 @@ public final class ReceiveChannelEndpointThreadLocals
      *
      * @return the next receiver id to be used for a receiver channel identity.
      */
+    @Impure
     public long nextReceiverId()
     {
         return nextReceiverId++;
@@ -232,6 +246,7 @@ public final class ReceiveChannelEndpointThreadLocals
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "ReceiveChannelEndpointThreadLocals{" +

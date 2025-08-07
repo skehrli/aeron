@@ -15,6 +15,9 @@
  */
 package io.aeron.exceptions;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import java.io.IOException;
 
 /**
@@ -29,6 +32,8 @@ public class StorageSpaceException extends AeronException
      *
      * @param message detail for the exception.
      */
+    @SideEffectFree
+    @Impure
     public StorageSpaceException(final String message)
     {
         super(message);
@@ -41,6 +46,7 @@ public class StorageSpaceException extends AeronException
      * @param error to check.
      * @return {@code true} if cause is {@link java.io.IOException} with a specific error.
      */
+    @Pure
     public static boolean isStorageSpaceError(final Throwable error)
     {
         Throwable cause = error;

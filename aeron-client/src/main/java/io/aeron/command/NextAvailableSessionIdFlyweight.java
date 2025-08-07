@@ -15,6 +15,7 @@
  */
 package io.aeron.command;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.MutableDirectBuffer;
 
 import static org.agrona.BitUtil.SIZE_OF_INT;
@@ -56,6 +57,7 @@ public class NextAvailableSessionIdFlyweight
      * @param offset at which the message begins.
      * @return this for a fluent API.
      */
+    @Impure
     public final NextAvailableSessionIdFlyweight wrap(final MutableDirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
@@ -69,6 +71,7 @@ public class NextAvailableSessionIdFlyweight
      *
      * @return correlation id field.
      */
+    @Impure
     public long correlationId()
     {
         return buffer.getLong(offset + CORRELATION_ID_OFFSET);
@@ -80,6 +83,7 @@ public class NextAvailableSessionIdFlyweight
      * @param correlationId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public NextAvailableSessionIdFlyweight correlationId(final long correlationId)
     {
         buffer.putLong(offset + CORRELATION_ID_OFFSET, correlationId);
@@ -92,6 +96,7 @@ public class NextAvailableSessionIdFlyweight
      *
      * @return session id.
      */
+    @Impure
     public int nextSessionId()
     {
         return buffer.getInt(offset + SESSION_ID_OFFSET);
@@ -103,6 +108,7 @@ public class NextAvailableSessionIdFlyweight
      * @param sessionId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public NextAvailableSessionIdFlyweight nextSessionId(final int sessionId)
     {
         buffer.putInt(offset + SESSION_ID_OFFSET, sessionId);
@@ -113,6 +119,7 @@ public class NextAvailableSessionIdFlyweight
     /**
      * {@inheritDoc}
      */
+    @Impure
     public String toString()
     {
         return "NextSessionIdFlyweight{" +

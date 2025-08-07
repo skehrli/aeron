@@ -16,6 +16,9 @@
 
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import static io.aeron.cluster.ClusterToolOperator.SUCCESS;
 
 import java.io.File;
@@ -38,6 +41,8 @@ public final class ClusterToolCommand
      * @param actual actual action.
      * @return SUCCESS
      */
+    @Pure
+    @Impure
     public static Action ignoreFailures(final Action actual)
     {
         return (clusterDir, out, args) ->
@@ -53,6 +58,7 @@ public final class ClusterToolCommand
      * @param actual actual action.
      * @return SUCCESS
      */
+    @Impure
     public static Action action(final ToIntBiFunction<File, PrintStream> actual)
     {
         return (clusterDir, out, args) -> actual.applyAsInt(clusterDir, out);
@@ -64,6 +70,7 @@ public final class ClusterToolCommand
      * @param commands map of commands by name.
      * @param prefix   usage description prefix.
      */
+    @Impure
     public static void printHelp(final Map<String, ClusterToolCommand> commands, final String prefix)
     {
         System.out.format("%s%n", prefix);
@@ -88,6 +95,7 @@ public final class ClusterToolCommand
      * @param action      action to perform for command.
      * @param description description of command.
      */
+    @SideEffectFree
     public ClusterToolCommand(final Action action, final String description)
     {
         this.action = action;
@@ -100,6 +108,7 @@ public final class ClusterToolCommand
      * @param actual actual action.
      * @return SUCCESS.
      */
+    @Impure
     public static Action action(final ToIntFunction<File> actual)
     {
         return (clusterDir, out, args) -> actual.applyAsInt(clusterDir);
@@ -108,6 +117,7 @@ public final class ClusterToolCommand
     /**
      * @return description of command.
      */
+    @Pure
     public String describe()
     {
         return description;
@@ -116,6 +126,7 @@ public final class ClusterToolCommand
     /**
      * @return the actual action to perform when given the command.
      */
+    @Pure
     public Action action()
     {
         return action;
@@ -135,6 +146,7 @@ public final class ClusterToolCommand
          * @param args       args to tool.
          * @return exit value.
          */
+        @Pure
         int act(File clusterDir, PrintStream out, String[] args);
     }
 }

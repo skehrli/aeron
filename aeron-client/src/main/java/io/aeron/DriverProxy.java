@@ -15,6 +15,9 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.command.*;
 import io.aeron.exceptions.AeronException;
 import org.agrona.DirectBuffer;
@@ -53,6 +56,7 @@ public final class DriverProxy
      * @param toDriverCommandBuffer to send commands via.
      * @param clientId              to represent the client.
      */
+    @SideEffectFree
     public DriverProxy(final RingBuffer toDriverCommandBuffer, final long clientId)
     {
         this.toDriverCommandBuffer = toDriverCommandBuffer;
@@ -64,6 +68,7 @@ public final class DriverProxy
      *
      * @return time of the last heartbeat to indicate the driver is alive.
      */
+    @Impure
     public long timeOfLastDriverKeepaliveMs()
     {
         return toDriverCommandBuffer.consumerHeartbeatTime();
@@ -76,6 +81,7 @@ public final class DriverProxy
      * @param streamId within the channel.
      * @return the correlation id for the command.
      */
+    @Impure
     public long addPublication(final String channel, final int streamId)
     {
         final long correlationId = toDriverCommandBuffer.nextCorrelationId();
@@ -105,6 +111,7 @@ public final class DriverProxy
      * @param streamId within the channel.
      * @return the correlation id for the command.
      */
+    @Impure
     public long addExclusivePublication(final String channel, final int streamId)
     {
         final long correlationId = toDriverCommandBuffer.nextCorrelationId();
@@ -134,6 +141,7 @@ public final class DriverProxy
      * @param revoke whether the publication is being revoked.
      * @return the correlation id for the command.
      */
+    @Impure
     public long removePublication(final long registrationId, final boolean revoke)
     {
         final long correlationId = toDriverCommandBuffer.nextCorrelationId();
@@ -162,6 +170,7 @@ public final class DriverProxy
      * @param streamId within the channel.
      * @return the correlation id for the command.
      */
+    @Impure
     public long addSubscription(final String channel, final int streamId)
     {
         final long registrationId = Aeron.NULL_VALUE;
@@ -192,6 +201,7 @@ public final class DriverProxy
      * @param registrationId for the subscription to be removed.
      * @return the correlation id for the command.
      */
+    @Impure
     public long removeSubscription(final long registrationId)
     {
         final long correlationId = toDriverCommandBuffer.nextCorrelationId();
@@ -219,6 +229,7 @@ public final class DriverProxy
      * @param endpointChannel for the destination.
      * @return the correlation id for the command.
      */
+    @Impure
     public long addDestination(final long registrationId, final String endpointChannel)
     {
         final long correlationId = toDriverCommandBuffer.nextCorrelationId();
@@ -248,6 +259,7 @@ public final class DriverProxy
      * @param endpointChannel used for the {@link #addDestination(long, String)} command.
      * @return the correlation id for the command.
      */
+    @Impure
     public long removeDestination(final long registrationId, final String endpointChannel)
     {
         final long correlationId = toDriverCommandBuffer.nextCorrelationId();
@@ -277,6 +289,7 @@ public final class DriverProxy
      * @param destinationRegistrationId used for the {@link #addDestination(long, String)} command.
      * @return the correlation id for the command.
      */
+    @Impure
     public long removeDestination(final long publicationRegistrationId, final long destinationRegistrationId)
     {
         final long correlationId = toDriverCommandBuffer.nextCorrelationId();
@@ -306,6 +319,7 @@ public final class DriverProxy
      * @param endpointChannel for the destination.
      * @return the correlation id for the command.
      */
+    @Impure
     public long addRcvDestination(final long registrationId, final String endpointChannel)
     {
         final long correlationId = toDriverCommandBuffer.nextCorrelationId();
@@ -335,6 +349,7 @@ public final class DriverProxy
      * @param endpointChannel used for the {@link #addRcvDestination(long, String)} command.
      * @return the correlation id for the command.
      */
+    @Impure
     public long removeRcvDestination(final long registrationId, final String endpointChannel)
     {
         final long correlationId = toDriverCommandBuffer.nextCorrelationId();
@@ -369,6 +384,7 @@ public final class DriverProxy
      * @param labelLength length in bytes for the label.
      * @return the correlation id for the command.
      */
+    @Impure
     public long addCounter(
         final int typeId,
         final DirectBuffer keyBuffer,
@@ -406,6 +422,7 @@ public final class DriverProxy
      * @param label  that is human-readable for the counter.
      * @return the correlation id for the command.
      */
+    @Impure
     public long addCounter(final int typeId, final String label)
     {
         final long correlationId = toDriverCommandBuffer.nextCorrelationId();
@@ -435,6 +452,7 @@ public final class DriverProxy
      * @param registrationId of counter to remove.
      * @return the correlation id for the command.
      */
+    @Impure
     public long removeCounter(final long registrationId)
     {
         final long correlationId = toDriverCommandBuffer.nextCorrelationId();
@@ -458,6 +476,7 @@ public final class DriverProxy
     /**
      * Notify the media driver that this client is closing.
      */
+    @Impure
     public void clientClose()
     {
         final int index = toDriverCommandBuffer.tryClaim(CLIENT_CLOSE, CorrelatedMessageFlyweight.LENGTH);
@@ -480,6 +499,7 @@ public final class DriverProxy
      * @param tokenLength in bytes.
      * @return true is successfully sent.
      */
+    @Impure
     public boolean terminateDriver(final DirectBuffer tokenBuffer, final int tokenOffset, final int tokenLength)
     {
         final int length = TerminateDriverFlyweight.computeLength(tokenLength);
@@ -507,6 +527,7 @@ public final class DriverProxy
      * @param reason        user supplied reason for invalidation, reported back to publication
      * @return              the correlationId of the request for invalidation.
      */
+    @Impure
     public long rejectImage(
         final long imageCorrelationId,
         final long position,
@@ -539,6 +560,7 @@ public final class DriverProxy
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "DriverProxy{" +
@@ -546,6 +568,7 @@ public final class DriverProxy
             '}';
     }
 
+    @Impure
     long addStaticCounter(
         final int typeId,
         final DirectBuffer keyBuffer,
@@ -578,6 +601,7 @@ public final class DriverProxy
         return correlationId;
     }
 
+    @Impure
     long addStaticCounter(final int typeId, final String label, final long registrationId)
     {
         final long correlationId = toDriverCommandBuffer.nextCorrelationId();
@@ -602,6 +626,7 @@ public final class DriverProxy
         return correlationId;
     }
 
+    @Impure
     long nextAvailableSessionId(final int streamId)
     {
         final long correlationId = toDriverCommandBuffer.nextCorrelationId();

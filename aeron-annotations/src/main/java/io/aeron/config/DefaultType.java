@@ -15,6 +15,8 @@
  */
 package io.aeron.config;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -63,6 +65,7 @@ public enum DefaultType
      * @param canonicalName the name of the java class.
      * @return the associated DefaultType.
      */
+    @Pure
     public static DefaultType fromCanonicalName(final String canonicalName)
     {
         return BY_CANONICAL_NAME.getOrDefault(canonicalName, UNDEFINED);
@@ -72,6 +75,7 @@ public enum DefaultType
      * @param defaultType a DefaultType or null.
      * @return true if the type is null or if it's UNDEFINED, otherwise false.
      */
+    @Pure
     public static boolean isUndefined(final DefaultType defaultType)
     {
         return Objects.isNull(defaultType) || UNDEFINED == defaultType;
@@ -81,6 +85,7 @@ public enum DefaultType
     private final String simpleName;
     private final boolean numeric;
 
+    @Impure
     DefaultType(final String canonicalName, final String simpleName, final boolean numeric)
     {
         this.canonicalName = canonicalName;
@@ -91,6 +96,7 @@ public enum DefaultType
     /**
      * @return indicates whether the value is numeric (int or long).
      */
+    @Pure
     public boolean isNumeric()
     {
         return this.numeric;
@@ -99,6 +105,7 @@ public enum DefaultType
     /**
      * @return a simple name, for display purposes.
      */
+    @Pure
     public String getSimpleName()
     {
         return this.simpleName;

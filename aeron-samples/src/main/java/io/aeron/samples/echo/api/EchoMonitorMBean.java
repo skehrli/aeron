@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.aeron.samples.echo.api;
+import org.checkerframework.dataflow.qual.Pure;
 
 /**
  * MBean interface for interacting with a provisioned Echo sub/pub pair.
@@ -25,6 +26,7 @@ public interface EchoMonitorMBean
      *
      * @return original caller supplied correlationId.
      */
+    @Pure
     long getCorrelationId();
 
     /**
@@ -32,6 +34,7 @@ public interface EchoMonitorMBean
      *
      * @return current back pressure count.
      */
+    @Pure
     long getBackPressureCount();
 
     /**
@@ -39,6 +42,7 @@ public interface EchoMonitorMBean
      *
      * @return current fragment count.
      */
+    @Pure
     long getFragmentCount();
 
     /**
@@ -46,5 +50,6 @@ public interface EchoMonitorMBean
      *
      * @return number of bytes.
      */
+    @Pure
     long getByteCount();
 }

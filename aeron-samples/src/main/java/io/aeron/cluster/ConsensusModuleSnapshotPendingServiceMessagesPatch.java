@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.*;
 import io.aeron.archive.client.AeronArchive;
 import io.aeron.archive.codecs.RecordingSignal;
@@ -62,11 +65,13 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
      * {@link AeronArchive.Configuration#localControlChannel()} and
      * {@link AeronArchive.Configuration#localControlStreamId()}.
      */
+    @Impure
     public ConsensusModuleSnapshotPendingServiceMessagesPatch()
     {
         this(AeronArchive.Configuration.localControlChannel(), AeronArchive.Configuration.localControlStreamId());
     }
 
+    @SideEffectFree
     ConsensusModuleSnapshotPendingServiceMessagesPatch(
         final String archiveLocalRequestChannel, final int archiveRequestStreamId)
     {
@@ -84,6 +89,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
      * @throws ClusterException         if {@code clusterDir} does not contain a recording log or if the log does not
      *                                  contain a valid snapshot.
      */
+    @Impure
     public boolean execute(final File clusterDir)
     {
         if (!clusterDir.exists() || !clusterDir.isDirectory())
@@ -154,6 +160,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
         return false;
     }
 
+    @Impure
     static void replayLocalSnapshotRecording(
         final Aeron aeron,
         final AeronArchive archive,
@@ -203,6 +210,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
         }
     }
 
+    @Pure
     private static boolean snapshotIsNotValid(final SnapshotReader snapshotReader, final TargetState[] targetStates)
     {
         for (int i = 0; i < targetStates.length; i++)
@@ -224,6 +232,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
             defaultTracker.logServiceSessionId != snapshotReader.logServiceSessionId;
     }
 
+    @Impure
     private static long createNewSnapshotRecording(
         final Aeron aeron, final AeronArchive archive, final long oldRecordingId, final TargetState[] targetStates)
     {
@@ -251,6 +260,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
         }
     }
 
+    @Impure
     private static int awaitRecordingCounter(
         final int publicationSessionId, final long archiveId, final CountersReader countersReader)
     {
@@ -264,6 +274,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
         return counterId;
     }
 
+    @Impure
     private static void awaitRecordingComplete(
         final CountersReader counters, final int counterId, final long position, final long recordingId)
     {
@@ -277,6 +288,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
         }
     }
 
+    @Impure
     private static long awaitRecordingStopPosition(final AeronArchive archive, final long recordingId)
     {
         long stopPosition;
@@ -293,6 +305,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
      *
      * @param args for the tool.
      */
+    @Impure
     public static void main(final String[] args)
     {
         if (1 != args.length)
@@ -310,6 +323,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
         final long logServiceSessionId;
         long clusterSessionId;
 
+        @SideEffectFree
         private TargetState(final long nextServiceSessionId, final long logServiceSessionId)
         {
             this.nextServiceSessionId = nextServiceSessionId;
@@ -317,6 +331,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
             clusterSessionId = logServiceSessionId + 1;
         }
 
+        @Impure
         static TargetState[] compute(final int serviceCount, final PendingMessageTrackerState[] states)
         {
             final TargetState[] targetStates = new TargetState[serviceCount];
@@ -350,6 +365,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
         final PendingMessageTrackerState[] pendingMessageTrackers = new PendingMessageTrackerState[127];
         int serviceCount;
 
+        @SideEffectFree
         public void onLoadBeginSnapshot(
             final int appVersion,
             final TimeUnit timeUnit,
@@ -359,6 +375,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
         {
         }
 
+        @Impure
         public void onLoadConsensusModuleState(
             final long nextSessionId,
             final long nextServiceSessionId,
@@ -372,6 +389,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
             this.logServiceSessionId = logServiceSessionId;
         }
 
+        @Impure
         public void onLoadPendingMessage(
             final long clusterSessionId, final DirectBuffer buffer, final int offset, final int length)
         {
@@ -382,6 +400,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
             trackerState.maxClusterSessionId = max(trackerState.maxClusterSessionId, clusterSessionId);
         }
 
+        @SideEffectFree
         public void onLoadClusterSession(
             final long clusterSessionId,
             final long correlationId,
@@ -396,6 +415,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
         {
         }
 
+        @SideEffectFree
         public void onLoadTimer(
             final long correlationId,
             final long deadline,
@@ -405,6 +425,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
         {
         }
 
+        @Impure
         public void onLoadPendingMessageTracker(
             final long nextServiceSessionId,
             final long logServiceSessionId,
@@ -419,10 +440,12 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
             trackerState.logServiceSessionId = logServiceSessionId;
         }
 
+        @SideEffectFree
         public void onLoadEndSnapshot(final DirectBuffer buffer, final int offset, final int length)
         {
         }
 
+        @Impure
         private PendingMessageTrackerState tracker(final int serviceId)
         {
             PendingMessageTrackerState trackerState = pendingMessageTrackers[serviceId];
@@ -445,6 +468,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
         private final ExclusivePublication snapshotPublication;
         private final TargetState[] targetStates;
 
+        @SideEffectFree
         SnapshotWriter(
             final ExclusivePublication snapshotPublication,
             final TargetState[] targetStates)
@@ -453,6 +477,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
             this.targetStates = targetStates;
         }
 
+        @Impure
         public void onLoadBeginSnapshot(
             final int appVersion,
             final TimeUnit timeUnit,
@@ -463,6 +488,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
             writeToSnapshot(buffer, offset, length);
         }
 
+        @Impure
         public void onLoadConsensusModuleState(
             final long nextSessionId,
             final long nextServiceSessionId,
@@ -483,6 +509,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
             writeToSnapshot(tempBuffer, 0, length);
         }
 
+        @Impure
         public void onLoadPendingMessage(
             final long clusterSessionId,
             final DirectBuffer buffer,
@@ -500,6 +527,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
             writeToSnapshot(tempBuffer, 0, length);
         }
 
+        @Impure
         public void onLoadClusterSession(
             final long clusterSessionId,
             final long correlationId,
@@ -515,6 +543,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
             writeToSnapshot(buffer, offset, length);
         }
 
+        @Impure
         public void onLoadTimer(
             final long correlationId,
             final long deadline,
@@ -525,6 +554,7 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
             writeToSnapshot(buffer, offset, length);
         }
 
+        @Impure
         public void onLoadPendingMessageTracker(
             final long nextServiceSessionId,
             final long logServiceSessionId,
@@ -545,11 +575,13 @@ public class ConsensusModuleSnapshotPendingServiceMessagesPatch
             writeToSnapshot(tempBuffer, 0, length);
         }
 
+        @Impure
         public void onLoadEndSnapshot(final DirectBuffer buffer, final int offset, final int length)
         {
             writeToSnapshot(buffer, offset, length);
         }
 
+        @Impure
         private void writeToSnapshot(final DirectBuffer buffer, final int offset, final int length)
         {
             long position;

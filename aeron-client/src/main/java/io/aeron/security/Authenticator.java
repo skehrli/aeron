@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package io.aeron.security;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 
 /**
  * Interface for an Authenticator to handle authentication of clients to a system.
@@ -33,6 +35,7 @@ public interface Authenticator
      * @param encodedCredentials from the Connect Request. Will not be null, but may be 0 length.
      * @param nowMs              current epoch time in milliseconds.
      */
+    @Impure
     void onConnectRequest(long sessionId, byte[] encodedCredentials, long nowMs);
 
     /**
@@ -42,6 +45,7 @@ public interface Authenticator
      * @param encodedCredentials from the Challenge Response. Will not be null, but may be 0 length.
      * @param nowMs              current epoch time in milliseconds.
      */
+    @SideEffectFree
     void onChallengeResponse(long sessionId, byte[] encodedCredentials, long nowMs);
 
     /**
@@ -52,6 +56,7 @@ public interface Authenticator
      * @param nowMs        current epoch time in milliseconds.
      * @see SessionProxy
      */
+    @Impure
     void onConnectedSession(SessionProxy sessionProxy, long nowMs);
 
     /**
@@ -66,5 +71,7 @@ public interface Authenticator
      * @param nowMs        current epoch time in milliseconds.
      * @see SessionProxy
      */
+    @SideEffectFree
+    @Impure
     void onChallengedSession(SessionProxy sessionProxy, long nowMs);
 }

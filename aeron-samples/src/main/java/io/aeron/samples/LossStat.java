@@ -15,6 +15,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.reports.LossReportReader;
 import io.aeron.driver.reports.LossReportUtil;
 import org.agrona.concurrent.AtomicBuffer;
@@ -37,6 +38,7 @@ public class LossStat
      *
      * @param args passed to the process.
      */
+    @Impure
     public static void main(final String[] args)
     {
         final String aeronDirectoryName = getProperty(AERON_DIR_PROP_NAME, AERON_DIR_PROP_DEFAULT);

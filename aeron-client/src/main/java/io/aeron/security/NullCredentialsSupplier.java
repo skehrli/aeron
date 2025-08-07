@@ -15,6 +15,7 @@
  */
 package io.aeron.security;
 
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.collections.ArrayUtil;
 
 /**
@@ -30,6 +31,7 @@ public class NullCredentialsSupplier implements CredentialsSupplier
     /**
      * {@inheritDoc}
      */
+    @Pure
     public byte[] encodedCredentials()
     {
         return NULL_CREDENTIAL;
@@ -38,6 +40,7 @@ public class NullCredentialsSupplier implements CredentialsSupplier
     /**
      * {@inheritDoc}
      */
+    @Pure
     public byte[] onChallenge(final byte[] encodedChallenge)
     {
         return NULL_CREDENTIAL;

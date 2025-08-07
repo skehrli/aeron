@@ -15,6 +15,8 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 import java.util.concurrent.locks.LockSupport;
 
@@ -64,6 +66,7 @@ public final class RateReporter extends RateReporterRhsPadding implements Runnab
          * @param totalMessages  since beginning of reporting.
          * @param totalBytes     since beginning of reporting.
          */
+        @SideEffectFree
         void onReport(double messagesPerSec, double bytesPerSec, long totalMessages, long totalBytes);
     }
 
@@ -81,6 +84,7 @@ public final class RateReporter extends RateReporterRhsPadding implements Runnab
      * @param reportInterval in nanoseconds.
      * @param reportingFunc  to call for reporting rates.
      */
+    @Impure
     public RateReporter(final long reportInterval, final Reporter reportingFunc)
     {
         this.reportIntervalNs = reportInterval;
@@ -92,6 +96,7 @@ public final class RateReporter extends RateReporterRhsPadding implements Runnab
     /**
      * Run loop for the rate reporter.
      */
+    @Impure
     public void run()
     {
         do
@@ -120,6 +125,7 @@ public final class RateReporter extends RateReporterRhsPadding implements Runnab
     /**
      * Signal the run loop to exit. Does not block.
      */
+    @Impure
     public void halt()
     {
         running = false;
@@ -130,6 +136,7 @@ public final class RateReporter extends RateReporterRhsPadding implements Runnab
      *
      * @param length received, sent, etc.
      */
+    @Impure
     public void onMessage(final long length)
     {
         TOTAL_BYTES_UPDATER.lazySet(this, totalBytes + length);

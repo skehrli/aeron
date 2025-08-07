@@ -15,6 +15,7 @@
  */
 package io.aeron.driver.status;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.status.HeartbeatTimestamp;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.concurrent.status.AtomicCounter;
@@ -41,6 +42,7 @@ public class ClientHeartbeatTimestamp extends HeartbeatTimestamp
      * @param registrationId  for the client.
      * @return the allocated counter.
      */
+    @Impure
     public static AtomicCounter allocate(
         final MutableDirectBuffer tempBuffer, final CountersManager countersManager, final long registrationId)
     {

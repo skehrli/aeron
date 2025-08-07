@@ -15,6 +15,7 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.SemanticVersion;
 
 /**
@@ -37,6 +38,7 @@ public class AppVersionValidator
      * @param appVersionUnderTest to check against configured appVersion.
      * @return true for compatible or false for not compatible.
      */
+    @Impure
     public boolean isVersionCompatible(final int contextAppVersion, final int appVersionUnderTest)
     {
         return SemanticVersion.major(contextAppVersion) == SemanticVersion.major(appVersionUnderTest);

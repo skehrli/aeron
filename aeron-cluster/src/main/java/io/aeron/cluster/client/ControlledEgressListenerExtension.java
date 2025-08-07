@@ -15,6 +15,7 @@
  */
 package io.aeron.cluster.client;
 
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.DirectBuffer;
 
 import io.aeron.logbuffer.ControlledFragmentHandler;
@@ -39,6 +40,7 @@ public interface ControlledEgressListenerExtension
      * @param length        message length
      * @return action to be taken after processing the message.
      */
+    @Pure
     ControlledFragmentHandler.Action onExtensionMessage(
         int actingBlockLength,
         int templateId,

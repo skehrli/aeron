@@ -15,6 +15,8 @@
  */
 package io.aeron.counter.validation;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.counter.CounterInfo;
 import io.aeron.validation.Grep;
 
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 
 final class Validator
 {
+    @Impure
     static ValidationReport validate(
         final Collection<CounterInfo> counterInfoCollection,
         final String sourceDir)
@@ -36,12 +39,15 @@ final class Validator
     private final String sourceDir;
     private final ValidationReport report;
 
+    @SideEffectFree
+    @Impure
     private Validator(final String sourceDir)
     {
         this.sourceDir = sourceDir;
         this.report = new ValidationReport();
     }
 
+    @Impure
     private Validator validate(final Collection<CounterInfo> counterInfoCollection)
     {
         counterInfoCollection.forEach(this::validateCExpectations);
@@ -51,6 +57,7 @@ final class Validator
         return this;
     }
 
+    @Impure
     private void identifyExtraCCounters(final Collection<CounterInfo> counterInfoCollection)
     {
         final Pattern compiledPattern = Pattern.compile("#define[ \t]+([A-Z_]+)[ \t]+\\([0-9]+\\)");
@@ -83,6 +90,7 @@ final class Validator
         });
     }
 
+    @Impure
     private void validateCExpectations(final CounterInfo counterInfo)
     {
         if (counterInfo.existsInC)
@@ -91,6 +99,7 @@ final class Validator
         }
     }
 
+    @Impure
     private void validate(final Validation validation, final CounterInfo counterInfo)
     {
         /* Expectations:

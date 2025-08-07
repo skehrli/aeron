@@ -15,6 +15,9 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.counter.AeronCounter;
 import io.aeron.exceptions.ConfigurationException;
 import io.aeron.status.ChannelEndpointStatus;
@@ -776,6 +779,7 @@ public final class AeronCounters
     @AeronCounter(existsInC = false)
     public static final int CLUSTER_LEADERSHIP_TERM_ID_TYPE_ID = 239;
 
+    @SideEffectFree
     private AeronCounters()
     {
     }
@@ -790,6 +794,7 @@ public final class AeronCounters
      * @throws io.aeron.exceptions.ConfigurationException if the type id does not match.
      * @throws IllegalArgumentException                   if the counterId is not valid.
      */
+    @Impure
     public static void validateCounterTypeId(
         final CountersReader countersReader,
         final int counterId,
@@ -815,6 +820,7 @@ public final class AeronCounters
      * @throws IllegalArgumentException                   if the counterId is not valid.
      * @see AeronCounters#validateCounterTypeId(CountersReader, int, int)
      */
+    @Impure
     public static void validateCounterTypeId(
         final Aeron aeron,
         final Counter counter,
@@ -832,6 +838,7 @@ public final class AeronCounters
      * @param commitHashCode Git commit SHA.
      * @return length of the suffix appended.
      */
+    @Impure
     public static int appendVersionInfo(
         final MutableDirectBuffer tempBuffer, final int offset, final String fullVersion, final String commitHashCode)
     {
@@ -851,6 +858,7 @@ public final class AeronCounters
      * @return number of bytes that got appended.
      * @throws IllegalArgumentException if {@code counterId} is invalid or points to non-allocated counter.
      */
+    @Impure
     public static int appendToLabel(
         final AtomicBuffer metaDataBuffer, final int counterId, final String value)
     {
@@ -898,6 +906,7 @@ public final class AeronCounters
      * @param commitHash  Git commit SHA.
      * @return formatted String.
      */
+    @Pure
     public static String formatVersionInfo(final String fullVersion, final String commitHash)
     {
         return "version=" + fullVersion + " commit=" + commitHash;

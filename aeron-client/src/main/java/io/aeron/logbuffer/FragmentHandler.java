@@ -15,6 +15,7 @@
  */
 package io.aeron.logbuffer;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.DirectBuffer;
 
 /**
@@ -35,5 +36,6 @@ public interface FragmentHandler
      * @param length of the data in bytes.
      * @param header representing the metadata for the data.
      */
+    @Impure
     void onFragment(DirectBuffer buffer, int offset, int length, Header header);
 }

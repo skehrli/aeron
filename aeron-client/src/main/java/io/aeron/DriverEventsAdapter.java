@@ -15,6 +15,9 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.command.*;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.collections.LongHashSet;
@@ -49,6 +52,7 @@ class DriverEventsAdapter implements MessageHandler
     private long receivedCorrelationId;
     private boolean isInvalid;
 
+    @SideEffectFree
     DriverEventsAdapter(
         final long clientId,
         final CopyBroadcastReceiver receiver,
@@ -61,6 +65,7 @@ class DriverEventsAdapter implements MessageHandler
         this.asyncCommandIdSet = asyncCommandIdSet;
     }
 
+    @Impure
     int receive(final long activeCorrelationId)
     {
         this.activeCorrelationId = activeCorrelationId;
@@ -77,21 +82,25 @@ class DriverEventsAdapter implements MessageHandler
         }
     }
 
+    @Pure
     long receivedCorrelationId()
     {
         return receivedCorrelationId;
     }
 
+    @Pure
     boolean isInvalid()
     {
         return isInvalid;
     }
 
+    @Pure
     long clientId()
     {
         return clientId;
     }
 
+    @Impure
     @SuppressWarnings("MethodLength")
     public void onMessage(final int msgTypeId, final MutableDirectBuffer buffer, final int index, final int length)
     {

@@ -15,6 +15,7 @@
  */
 package io.aeron.command;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.MutableDirectBuffer;
 
 import static org.agrona.BitUtil.SIZE_OF_LONG;
@@ -50,6 +51,7 @@ public class OperationSucceededFlyweight
      * @param offset at which the message begins.
      * @return this for a fluent API.
      */
+    @Impure
     public final OperationSucceededFlyweight wrap(final MutableDirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
@@ -63,6 +65,7 @@ public class OperationSucceededFlyweight
      *
      * @return correlation id field.
      */
+    @Impure
     public long correlationId()
     {
         return buffer.getLong(offset + CORRELATION_ID_FIELD_OFFSET);
@@ -74,6 +77,7 @@ public class OperationSucceededFlyweight
      * @param correlationId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public OperationSucceededFlyweight correlationId(final long correlationId)
     {
         buffer.putLong(offset + CORRELATION_ID_FIELD_OFFSET, correlationId);

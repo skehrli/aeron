@@ -15,6 +15,8 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.logbuffer.BlockHandler;
 import io.aeron.logbuffer.ControlledFragmentHandler;
 import io.aeron.logbuffer.ControlledFragmentHandler.Action;
@@ -82,6 +84,7 @@ public final class Image
      * @param sourceIdentity     of the source sending the stream of messages.
      * @param correlationId      of the request to the media driver.
      */
+    @Impure
     public Image(
         final Subscription subscription,
         final int sessionId,
@@ -114,6 +117,7 @@ public final class Image
      *
      * @return of bits to right shift a position to get a term count for how far the stream has progressed.
      */
+    @Pure
     public int positionBitsToShift()
     {
         return positionBitsToShift;
@@ -124,6 +128,7 @@ public final class Image
      *
      * @return the length in bytes for each term partition in the log buffer.
      */
+    @Pure
     public int termBufferLength()
     {
         return termLengthMask + 1;
@@ -135,6 +140,7 @@ public final class Image
      *
      * @return the sessionId for the steam of messages.
      */
+    @Pure
     public int sessionId()
     {
         return sessionId;
@@ -145,6 +151,7 @@ public final class Image
      *
      * @return source identity of the sending publisher as an abstract concept appropriate for the media.
      */
+    @Pure
     public String sourceIdentity()
     {
         return sourceIdentity;
@@ -155,6 +162,7 @@ public final class Image
      *
      * @return length in bytes of the MTU (Maximum Transmission Unit) the Sender used for the datagram.
      */
+    @Impure
     public int mtuLength()
     {
         return LogBufferDescriptor.mtuLength(logBuffers.metaDataBuffer());
@@ -165,6 +173,7 @@ public final class Image
      *
      * @return the initial term id.
      */
+    @Pure
     public int initialTermId()
     {
         return initialTermId;
@@ -175,6 +184,7 @@ public final class Image
      *
      * @return the correlationId for identification of the image with the media driver.
      */
+    @Pure
     public long correlationId()
     {
         return correlationId;
@@ -185,6 +195,7 @@ public final class Image
      *
      * @return the {@link Subscription} to which this {@link Image} belongs.
      */
+    @Pure
     public Subscription subscription()
     {
         return subscription;
@@ -195,6 +206,7 @@ public final class Image
      *
      * @return true if it has been closed otherwise false.
      */
+    @Pure
     public boolean isClosed()
     {
         return isClosed;
@@ -205,6 +217,7 @@ public final class Image
      *
      * @return the position the subscriber joined this stream at.
      */
+    @Pure
     public long joinPosition()
     {
         return joinPosition;
@@ -215,6 +228,7 @@ public final class Image
      *
      * @return the position this {@link Image} has been consumed to by the subscriber.
      */
+    @Impure
     public long position()
     {
         if (isClosed)
@@ -230,6 +244,7 @@ public final class Image
      *
      * @param newPosition for the consumption point.
      */
+    @Impure
     public void position(final long newPosition)
     {
         if (!isClosed)
@@ -244,6 +259,7 @@ public final class Image
      *
      * @return the id for the subscriber position counter.
      */
+    @Impure
     public int subscriberPositionId()
     {
         return subscriberPosition.id();
@@ -254,6 +270,7 @@ public final class Image
      *
      * @return true if at the end of the stream or false if not.
      */
+    @Impure
     public boolean isEndOfStream()
     {
         if (isClosed)
@@ -270,6 +287,7 @@ public final class Image
      *
      * @return position the stream reached when EOS was received from the publisher.
      */
+    @Impure
     public long endOfStreamPosition()
     {
         if (isClosed)
@@ -288,6 +306,7 @@ public final class Image
      *
      * @return count of active transports - 0 if Image is closed, no datagrams yet, or IPC.
      */
+    @Impure
     public int activeTransportCount()
     {
         if (isClosed)
@@ -303,6 +322,7 @@ public final class Image
      *
      * @return true if the associated publication was revoked otherwise false.
      */
+    @Impure
     public boolean isPublicationRevoked()
     {
         if (isClosed)
@@ -318,6 +338,8 @@ public final class Image
      *
      * @return the {@link FileChannel} to the raw log of the Image.
      */
+    @Pure
+    @Impure
     public FileChannel fileChannel()
     {
         return logBuffers.fileChannel();
@@ -335,6 +357,7 @@ public final class Image
      * @see FragmentAssembler
      * @see ImageFragmentAssembler
      */
+    @Impure
     public int poll(final FragmentHandler fragmentHandler, final int fragmentLimit)
     {
         if (isClosed)
@@ -401,6 +424,7 @@ public final class Image
      * @see ControlledFragmentAssembler
      * @see ImageControlledFragmentAssembler
      */
+    @Impure
     public int controlledPoll(final ControlledFragmentHandler handler, final int fragmentLimit)
     {
         if (isClosed)
@@ -495,6 +519,7 @@ public final class Image
      * @see FragmentAssembler
      * @see ImageFragmentAssembler
      */
+    @Impure
     public int boundedPoll(final FragmentHandler handler, final long limitPosition, final int fragmentLimit)
     {
         if (isClosed)
@@ -570,6 +595,7 @@ public final class Image
      * @see ControlledFragmentAssembler
      * @see ImageControlledFragmentAssembler
      */
+    @Impure
     public int boundedControlledPoll(
         final ControlledFragmentHandler handler, final long limitPosition, final int fragmentLimit)
     {
@@ -671,6 +697,7 @@ public final class Image
      * @see ControlledFragmentAssembler
      * @see ImageControlledFragmentAssembler
      */
+    @Impure
     public long controlledPeek(
         final long initialPosition, final ControlledFragmentHandler handler, final long limitPosition)
     {
@@ -763,6 +790,7 @@ public final class Image
      * @param blockLengthLimit up to which a block may be in length.
      * @return the number of bytes that have been consumed.
      */
+    @Impure
     public int blockPoll(final BlockHandler handler, final int blockLengthLimit)
     {
         if (isClosed)
@@ -817,6 +845,7 @@ public final class Image
      * @param blockLengthLimit up to which a block may be in length.
      * @return the number of bytes that have been consumed.
      */
+    @Impure
     public int rawPoll(final RawBlockHandler handler, final int blockLengthLimit)
     {
         if (isClosed)
@@ -863,16 +892,20 @@ public final class Image
      *
      * @param reason a String indicating the reason why this image is being rejected.
      */
+    @Impure
     public void reject(final String reason)
     {
         subscription.rejectImage(correlationId, position(), reason);
     }
 
+    @Pure
+    @Impure
     private UnsafeBuffer activeTermBuffer(final long position)
     {
         return termBuffers[LogBufferDescriptor.indexByPosition(position, positionBitsToShift)];
     }
 
+    @Impure
     private void validatePosition(final long position)
     {
         final long currentPosition = subscriberPosition.get();
@@ -889,11 +922,13 @@ public final class Image
         }
     }
 
+    @Pure
     LogBuffers logBuffers()
     {
         return logBuffers;
     }
 
+    @Impure
     void close()
     {
         finalPosition = subscriberPosition.getVolatile();
@@ -906,6 +941,7 @@ public final class Image
     /**
      * {@inheritDoc}
      */
+    @Impure
     public String toString()
     {
         return "Image{" +

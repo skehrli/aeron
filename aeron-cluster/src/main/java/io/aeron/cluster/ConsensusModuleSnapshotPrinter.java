@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.cluster.codecs.CloseReason;
 import org.agrona.DirectBuffer;
 
@@ -27,11 +29,13 @@ class ConsensusModuleSnapshotPrinter implements ConsensusModuleSnapshotListener
 {
     private final PrintStream out;
 
+    @SideEffectFree
     ConsensusModuleSnapshotPrinter(final PrintStream out)
     {
         this.out = out;
     }
 
+    @Impure
     public void onLoadBeginSnapshot(
         final int appVersion, final TimeUnit timeUnit, final DirectBuffer buffer, final int offset, final int length)
     {
@@ -40,6 +44,7 @@ class ConsensusModuleSnapshotPrinter implements ConsensusModuleSnapshotListener
             " timeUnit=" + timeUnit);
     }
 
+    @Impure
     public void onLoadEndSnapshot(final DirectBuffer buffer, final int offset, final int length)
     {
         out.println("End Snapshot, offset=" + offset + ", length=" + length);
@@ -48,6 +53,7 @@ class ConsensusModuleSnapshotPrinter implements ConsensusModuleSnapshotListener
         out.println(formatHexDump(b, 0, length));
     }
 
+    @Impure
     public void onLoadConsensusModuleState(
         final long nextSessionId,
         final long nextServiceSessionId,
@@ -67,6 +73,7 @@ class ConsensusModuleSnapshotPrinter implements ConsensusModuleSnapshotListener
         out.println(formatHexDump(b, 0, length));
     }
 
+    @Impure
     public void onLoadPendingMessage(
         final long clusterSessionId, final DirectBuffer buffer, final int offset, final int length)
     {
@@ -75,6 +82,7 @@ class ConsensusModuleSnapshotPrinter implements ConsensusModuleSnapshotListener
             " clusterSessionId=" + clusterSessionId);
     }
 
+    @Impure
     public void onLoadClusterSession(
         final long clusterSessionId,
         final long correlationId,
@@ -97,6 +105,7 @@ class ConsensusModuleSnapshotPrinter implements ConsensusModuleSnapshotListener
             " responseChannel=" + responseChannel);
     }
 
+    @Impure
     public void onLoadTimer(
         final long correlationId, final long deadline, final DirectBuffer buffer, final int offset, final int length)
     {
@@ -105,6 +114,7 @@ class ConsensusModuleSnapshotPrinter implements ConsensusModuleSnapshotListener
             " deadline=" + deadline);
     }
 
+    @Impure
     public void onLoadPendingMessageTracker(
         final long nextServiceSessionId,
         final long logServiceSessionId,
@@ -121,6 +131,7 @@ class ConsensusModuleSnapshotPrinter implements ConsensusModuleSnapshotListener
             " serviceId=" + serviceId);
     }
 
+    @Impure
     private static String formatHexDump(final byte[] array, final int offset, final int length)
     {
         final int width = 16;

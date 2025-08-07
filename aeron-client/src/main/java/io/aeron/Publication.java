@@ -15,6 +15,9 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.exceptions.AeronException;
 import io.aeron.logbuffer.BufferClaim;
 import io.aeron.logbuffer.FrameDescriptor;
@@ -104,6 +107,7 @@ public abstract class Publication implements AutoCloseable
     final ClientConductor conductor;
     final String channel;
 
+    @Impure
     Publication(
         final ClientConductor clientConductor,
         final String channel,
@@ -148,6 +152,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @return of bits to right shift a position to get a term count for how far the stream has progressed.
      */
+    @Pure
     public int positionBitsToShift()
     {
         return positionBitsToShift;
@@ -158,6 +163,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @return the length in bytes for each term partition in the log buffer.
      */
+    @Pure
     public int termBufferLength()
     {
         return termBufferLength;
@@ -170,6 +176,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @return the maximum possible position this stream can reach due to it term buffer length.
      */
+    @Pure
     public long maxPossiblePosition()
     {
         return maxPossiblePosition;
@@ -180,6 +187,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @return Media address for delivery to the channel.
      */
+    @Pure
     public String channel()
     {
         return channel;
@@ -190,6 +198,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @return Stream identity for scoping within the channel media address.
      */
+    @Pure
     public int streamId()
     {
         return streamId;
@@ -201,6 +210,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @return the session id for this publication.
      */
+    @Pure
     public int sessionId()
     {
         return sessionId;
@@ -212,6 +222,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @return the initial term id.
      */
+    @Pure
     public int initialTermId()
     {
         return initialTermId;
@@ -223,6 +234,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @return maximum message length supported in bytes.
      */
+    @Pure
     public int maxMessageLength()
     {
         return maxMessageLength;
@@ -235,6 +247,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @return maximum message fragment payload length.
      */
+    @Pure
     public int maxPayloadLength()
     {
         return maxPayloadLength;
@@ -245,6 +258,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @return original registration id
      */
+    @Pure
     public long originalRegistrationId()
     {
         return originalRegistrationId;
@@ -256,6 +270,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @return true if this instance is the first added otherwise false.
      */
+    @Pure
     public boolean isOriginal()
     {
         return originalRegistrationId == registrationId;
@@ -268,6 +283,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @return registration id
      */
+    @Pure
     public long registrationId()
     {
         return registrationId;
@@ -278,6 +294,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @return true if this {@link Publication} has recently seen an active subscriber otherwise false.
      */
+    @Impure
     public boolean isConnected()
     {
         return !isClosed && LogBufferDescriptor.isConnected(logMetaDataBuffer);
@@ -288,6 +305,7 @@ public abstract class Publication implements AutoCloseable
      * <p>
      * Publications are reference counted and are only truly closed when the ref count reaches zero.
      */
+    @Impure
     public void close()
     {
         if (!isClosed)
@@ -301,6 +319,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @return true if it has been closed otherwise false.
      */
+    @Pure
     public boolean isClosed()
     {
         return isClosed;
@@ -316,6 +335,7 @@ public abstract class Publication implements AutoCloseable
      * {@link ChannelEndpointStatus#NO_ID_ALLOCATED} if the publication is closed.
      * @see io.aeron.status.ChannelEndpointStatus
      */
+    @Impure
     public long channelStatus()
     {
         if (isClosed)
@@ -331,6 +351,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @return the counter used to represent the channel status for this publication.
      */
+    @Pure
     public int channelStatusId()
     {
         return channelStatusId;
@@ -354,6 +375,7 @@ public abstract class Publication implements AutoCloseable
      * @return local socket addresses for this publication.
      * @see #channelStatus()
      */
+    @Impure
     public List<String> localSocketAddresses()
     {
         return LocalSocketAddressStatus.findAddresses(conductor.countersReader(), channelStatus(), channelStatusId);
@@ -364,6 +386,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @return the current position to which the publication has advanced for this stream or {@link #CLOSED}.
      */
+    @Impure
     public long position()
     {
         if (isClosed)
@@ -384,6 +407,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @return the position limit beyond which this {@link Publication} will be back pressured.
      */
+    @Impure
     public long positionLimit()
     {
         if (isClosed)
@@ -399,6 +423,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @return the counter id for the position limit after which the publication will be back pressured.
      */
+    @Impure
     public int positionLimitId()
     {
         return positionLimit.id();
@@ -410,6 +435,7 @@ public abstract class Publication implements AutoCloseable
      * @return window for offering into a publication before the {@link #positionLimit()} is reached. If
      * the publication is closed then {@link #CLOSED} will be returned.
      */
+    @Impure
     public abstract long availableWindow();
 
     /**
@@ -419,6 +445,7 @@ public abstract class Publication implements AutoCloseable
      * @return The new stream position, otherwise a negative error value of {@link #NOT_CONNECTED},
      * {@link #BACK_PRESSURED}, {@link #ADMIN_ACTION}, {@link #CLOSED}, or {@link #MAX_POSITION_EXCEEDED}.
      */
+    @Impure
     public final long offer(final DirectBuffer buffer)
     {
         return offer(buffer, 0, buffer.capacity());
@@ -433,6 +460,7 @@ public abstract class Publication implements AutoCloseable
      * @return The new stream position, otherwise a negative error value of {@link #NOT_CONNECTED},
      * {@link #BACK_PRESSURED}, {@link #ADMIN_ACTION}, {@link #CLOSED}, or {@link #MAX_POSITION_EXCEEDED}.
      */
+    @Impure
     public final long offer(final DirectBuffer buffer, final int offset, final int length)
     {
         return offer(buffer, offset, length, null);
@@ -448,6 +476,7 @@ public abstract class Publication implements AutoCloseable
      * @return The new stream position, otherwise a negative error value of {@link #NOT_CONNECTED},
      * {@link #BACK_PRESSURED}, {@link #ADMIN_ACTION}, {@link #CLOSED}, or {@link #MAX_POSITION_EXCEEDED}.
      */
+    @Impure
     public abstract long offer(
         DirectBuffer buffer, int offset, int length, ReservedValueSupplier reservedValueSupplier);
 
@@ -463,6 +492,7 @@ public abstract class Publication implements AutoCloseable
      * @return The new stream position, otherwise a negative error value of {@link #NOT_CONNECTED},
      * {@link #BACK_PRESSURED}, {@link #ADMIN_ACTION}, {@link #CLOSED}, or {@link #MAX_POSITION_EXCEEDED}.
      */
+    @Impure
     public final long offer(
         final DirectBuffer bufferOne,
         final int offsetOne,
@@ -487,6 +517,7 @@ public abstract class Publication implements AutoCloseable
      * @return The new stream position, otherwise a negative error value of {@link #NOT_CONNECTED},
      * {@link #BACK_PRESSURED}, {@link #ADMIN_ACTION}, {@link #CLOSED}, or {@link #MAX_POSITION_EXCEEDED}.
      */
+    @Impure
     public abstract long offer(
         DirectBuffer bufferOne,
         int offsetOne,
@@ -503,6 +534,7 @@ public abstract class Publication implements AutoCloseable
      * @return The new stream position, otherwise a negative error value of {@link #NOT_CONNECTED},
      * {@link #BACK_PRESSURED}, {@link #ADMIN_ACTION}, {@link #CLOSED}, or {@link #MAX_POSITION_EXCEEDED}.
      */
+    @Impure
     public final long offer(final DirectBufferVector[] vectors)
     {
         return offer(vectors, null);
@@ -516,6 +548,7 @@ public abstract class Publication implements AutoCloseable
      * @return The new stream position, otherwise a negative error value of {@link #NOT_CONNECTED},
      * {@link #BACK_PRESSURED}, {@link #ADMIN_ACTION}, {@link #CLOSED}, or {@link #MAX_POSITION_EXCEEDED}.
      */
+    @Impure
     public abstract long offer(DirectBufferVector[] vectors, ReservedValueSupplier reservedValueSupplier);
 
     /**
@@ -554,6 +587,7 @@ public abstract class Publication implements AutoCloseable
      * @see BufferClaim#commit()
      * @see BufferClaim#abort()
      */
+    @Impure
     public abstract long tryClaim(int length, BufferClaim bufferClaim);
 
     /**
@@ -561,6 +595,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @param endpointChannel for the destination to add.
      */
+    @Impure
     public void addDestination(final String endpointChannel)
     {
         if (isClosed)
@@ -576,6 +611,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @param endpointChannel for the destination to remove.
      */
+    @Impure
     public void removeDestination(final String endpointChannel)
     {
         if (isClosed)
@@ -591,6 +627,7 @@ public abstract class Publication implements AutoCloseable
      *
      * @param registrationId for the destination to remove.
      */
+    @Impure
     public void removeDestination(final long registrationId)
     {
         if (isClosed)
@@ -610,6 +647,7 @@ public abstract class Publication implements AutoCloseable
      * @param endpointChannel for the destination to add.
      * @return the correlationId for the command.
      */
+    @Impure
     public long asyncAddDestination(final String endpointChannel)
     {
         if (isClosed)
@@ -629,6 +667,7 @@ public abstract class Publication implements AutoCloseable
      * @param endpointChannel for the destination to remove.
      * @return the correlationId for the command.
      */
+    @Impure
     public long asyncRemoveDestination(final String endpointChannel)
     {
         if (isClosed)
@@ -648,6 +687,7 @@ public abstract class Publication implements AutoCloseable
      * @param destinationRegistrationId for the destination to remove.
      * @return the correlationId for the command.
      */
+    @Impure
     public long asyncRemoveDestination(final long destinationRegistrationId)
     {
         if (isClosed)
@@ -658,16 +698,19 @@ public abstract class Publication implements AutoCloseable
         return conductor.asyncRemoveDestination(registrationId, destinationRegistrationId);
     }
 
+    @Impure
     void internalClose()
     {
         isClosed = true;
     }
 
+    @Pure
     LogBuffers logBuffers()
     {
         return logBuffers;
     }
 
+    @Impure
     final long backPressureStatus(final long currentPosition, final int messageLength)
     {
         if ((currentPosition + align(messageLength + HEADER_LENGTH, FRAME_ALIGNMENT)) >= maxPossiblePosition)
@@ -683,6 +726,7 @@ public abstract class Publication implements AutoCloseable
         return NOT_CONNECTED;
     }
 
+    @SideEffectFree
     final void checkPositiveLength(final int length)
     {
         if (length < 0)
@@ -691,6 +735,7 @@ public abstract class Publication implements AutoCloseable
         }
     }
 
+    @SideEffectFree
     final void checkPayloadLength(final int length)
     {
         if (length < 0)
@@ -705,6 +750,7 @@ public abstract class Publication implements AutoCloseable
         }
     }
 
+    @SideEffectFree
     final void checkMaxMessageLength(final int length)
     {
         if (length > maxMessageLength)
@@ -714,6 +760,7 @@ public abstract class Publication implements AutoCloseable
         }
     }
 
+    @Pure
     static int validateAndComputeLength(final int lengthOne, final int lengthTwo)
     {
         if (lengthOne < 0)
@@ -743,6 +790,7 @@ public abstract class Publication implements AutoCloseable
      * @param position position value returned from a call to offer.
      * @return String representation of the error.
      */
+    @Pure
     public static String errorString(final long position)
     {
         if (MAX_POSITION_EXCEEDED <= position && position < 0)
@@ -777,6 +825,7 @@ public abstract class Publication implements AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public String toString()
     {
         return "Publication{" +

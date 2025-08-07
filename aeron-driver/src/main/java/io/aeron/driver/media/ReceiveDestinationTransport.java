@@ -15,6 +15,8 @@
  */
 package io.aeron.driver.media;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.DriverConductorProxy;
 import io.aeron.driver.MediaDriver;
 import io.aeron.status.ChannelEndpointStatus;
@@ -32,6 +34,7 @@ abstract class ReceiveDestinationTransportLhsPadding extends UdpChannelTransport
     byte p032, p033, p034, p035, p036, p037, p038, p039, p040, p041, p042, p043, p044, p045, p046, p047;
     byte p048, p049, p050, p051, p052, p053, p054, p055, p056, p057, p058, p059, p060, p061, p062, p063;
 
+    @Impure
     ReceiveDestinationTransportLhsPadding(
         final UdpChannel udpChannel,
         final InetSocketAddress endPointAddress,
@@ -51,6 +54,7 @@ abstract class ReceiveDestinationTransportHotFields extends ReceiveDestinationTr
 {
     long timeOfLastActivityNs;
 
+    @Impure
     ReceiveDestinationTransportHotFields(
         final UdpChannel udpChannel,
         final InetSocketAddress endPointAddress,
@@ -72,6 +76,7 @@ abstract class ReceiveDestinationTransportRhsPadding extends ReceiveDestinationT
     byte p096, p097, p098, p099, p100, p101, p102, p103, p104, p105, p106, p107, p108, p109, p110, p111;
     byte p112, p113, p114, p115, p116, p117, p118, p119, p120, p121, p122, p123, p124, p125, p126, p127;
 
+    @Impure
     ReceiveDestinationTransportRhsPadding(
         final UdpChannel udpChannel,
         final InetSocketAddress endPointAddress,
@@ -102,6 +107,7 @@ public final class ReceiveDestinationTransport extends ReceiveDestinationTranspo
      * @param localSocketAddressIndicator to indicate status of the transport.
      * @param receiveChannelEndpoint      to which this destination belongs.
      */
+    @Impure
     public ReceiveDestinationTransport(
         final UdpChannel udpChannel,
         final MediaDriver.Context context,
@@ -128,6 +134,7 @@ public final class ReceiveDestinationTransport extends ReceiveDestinationTranspo
      * @param conductorProxy  for sending instructions by to the driver conductor.
      * @param statusIndicator for the channel.
      */
+    @Impure
     public void openChannel(final DriverConductorProxy conductorProxy, final AtomicCounter statusIndicator)
     {
         openDatagramChannel(statusIndicator);
@@ -140,6 +147,7 @@ public final class ReceiveDestinationTransport extends ReceiveDestinationTranspo
     /**
      * Close the networking elements of the ReceiveChannelEndpoint, but leave other components (e.g. counters) in place.
      */
+    @Impure
     public void closeTransport()
     {
         super.close();
@@ -148,6 +156,7 @@ public final class ReceiveDestinationTransport extends ReceiveDestinationTranspo
     /**
      * Close indicator counters associated with the transport.
      */
+    @Impure
     public void closeIndicators()
     {
         CloseHelper.close(localSocketAddressIndicator);
@@ -158,6 +167,8 @@ public final class ReceiveDestinationTransport extends ReceiveDestinationTranspo
      *
      * @return true if the channel has explicit control address.
      */
+    @Pure
+    @Impure
     public boolean hasExplicitControl()
     {
         return udpChannel.hasExplicitControl();
@@ -168,6 +179,8 @@ public final class ReceiveDestinationTransport extends ReceiveDestinationTranspo
      *
      * @return the explicit control address for the channel if set, otherwise null.
      */
+    @Pure
+    @Impure
     public InetSocketAddress explicitControlAddress()
     {
         return udpChannel.hasExplicitControl() ? currentControlAddress : null;
@@ -178,6 +191,7 @@ public final class ReceiveDestinationTransport extends ReceiveDestinationTranspo
      *
      * @param key the {@link SelectionKey} for the registered transport.
      */
+    @Impure
     public void selectionKey(final SelectionKey key)
     {
         selectionKey = key;
@@ -188,6 +202,7 @@ public final class ReceiveDestinationTransport extends ReceiveDestinationTranspo
      *
      * @param nowNs the time of last activity for the destination.
      */
+    @Impure
     public void timeOfLastActivityNs(final long nowNs)
     {
         this.timeOfLastActivityNs = nowNs;
@@ -198,6 +213,7 @@ public final class ReceiveDestinationTransport extends ReceiveDestinationTranspo
      *
      * @return the time of last activity for the destination.
      */
+    @Pure
     public long timeOfLastActivityNs()
     {
         return timeOfLastActivityNs;
@@ -208,6 +224,7 @@ public final class ReceiveDestinationTransport extends ReceiveDestinationTranspo
      *
      * @return the {@link UdpChannel} associated with the destination.
      */
+    @Pure
     public UdpChannel udpChannel()
     {
         return udpChannel;
@@ -218,6 +235,7 @@ public final class ReceiveDestinationTransport extends ReceiveDestinationTranspo
      *
      * @param newAddress control address for the destination.
      */
+    @Impure
     public void currentControlAddress(final InetSocketAddress newAddress)
     {
         this.currentControlAddress = newAddress;
@@ -228,6 +246,7 @@ public final class ReceiveDestinationTransport extends ReceiveDestinationTranspo
      *
      * @return the time current control address for the destination.
      */
+    @Pure
     public InetSocketAddress currentControlAddress()
     {
         return currentControlAddress;
@@ -236,6 +255,7 @@ public final class ReceiveDestinationTransport extends ReceiveDestinationTranspo
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "ReceiveDestinationTransport{" +

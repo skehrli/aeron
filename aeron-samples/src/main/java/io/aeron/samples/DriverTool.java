@@ -15,6 +15,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.CncFileDescriptor;
 import io.aeron.CommonContext;
 import io.aeron.DriverProxy;
@@ -41,6 +42,7 @@ public class DriverTool
      *
      * @param args passed to the process.
      */
+    @Impure
     public static void main(final String[] args)
     {
         boolean printPidOnly = false;
@@ -90,6 +92,7 @@ public class DriverTool
         }
     }
 
+    @Impure
     private static void printDateActivityAndStartTimestamps(final long startTimestamp, final long activityTimestamp)
     {
         System.out.format(
@@ -99,6 +102,7 @@ public class DriverTool
             new Date(activityTimestamp));
     }
 
+    @Impure
     private static void checkForHelp(final String[] args)
     {
         for (final String arg : args)

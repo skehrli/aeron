@@ -15,6 +15,9 @@
  */
 package io.aeron.exceptions;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.ErrorCode;
 
 /**
@@ -35,6 +38,8 @@ public class ControlProtocolException extends AeronException
      * @param code for the type of error.
      * @param msg  providing more detail.
      */
+    @SideEffectFree
+    @Impure
     public ControlProtocolException(final ErrorCode code, final String msg)
     {
         super(msg);
@@ -47,6 +52,8 @@ public class ControlProtocolException extends AeronException
      * @param code      for the type of error.
      * @param rootCause of the error.
      */
+    @SideEffectFree
+    @Impure
     public ControlProtocolException(final ErrorCode code, final Exception rootCause)
     {
         super(rootCause);
@@ -60,6 +67,8 @@ public class ControlProtocolException extends AeronException
      * @param msg       providing more detail.
      * @param rootCause of the error.
      */
+    @SideEffectFree
+    @Impure
     public ControlProtocolException(final ErrorCode code, final String msg, final Exception rootCause)
     {
         super(msg, rootCause);
@@ -71,6 +80,7 @@ public class ControlProtocolException extends AeronException
      *
      * @return {@link ErrorCode} indicating more specific issue experienced by the media driver.
      */
+    @Pure
     public ErrorCode errorCode()
     {
         return code;

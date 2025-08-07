@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -31,6 +33,7 @@ public class DefaultNameResolver implements NameResolver
     /**
      * {@inheritDoc}
      */
+    @Impure
     public InetAddress resolve(final String name, final String uriParamName, final boolean isReResolution)
     {
         InetAddress resolvedAddress = null;
@@ -53,6 +56,7 @@ public class DefaultNameResolver implements NameResolver
      * @param resolvedAddress the resulting address or null if it can't be resolved.
      * @deprecated No longer used for logging.
      */
+    @SideEffectFree
     @Deprecated
     public void resolveHook(final String resolverName, final String hostname, final InetAddress resolvedAddress)
     {

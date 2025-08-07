@@ -15,6 +15,7 @@
  */
 package io.aeron.samples.archive;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.security.Authenticator;
 import io.aeron.security.AuthenticatorSupplier;
 
@@ -26,6 +27,7 @@ public class SampleAuthenticatorSupplier implements AuthenticatorSupplier
     /**
      * {@inheritDoc}
      */
+    @Impure
     public Authenticator get()
     {
         return new SampleAuthenticator();

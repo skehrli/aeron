@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.ExclusivePublication;
 import io.aeron.cluster.codecs.*;
@@ -41,18 +43,22 @@ class ConsensusModuleSnapshotTaker
 
     private final PendingMessageTrackerEncoder pendingMessageTrackerEncoder = new PendingMessageTrackerEncoder();
 
+    @SideEffectFree
+    @Impure
     ConsensusModuleSnapshotTaker(
         final ExclusivePublication publication, final IdleStrategy idleStrategy, final AgentInvoker aeronClientInvoker)
     {
         super(publication, idleStrategy, aeronClientInvoker);
     }
 
+    @Impure
     public boolean onMessage(final MutableDirectBuffer buffer, final int offset, final int length, final int headOffset)
     {
         offer(buffer, offset, length);
         return true;
     }
 
+    @Impure
     void snapshotConsensusModuleState(
         final long nextSessionId,
         final long nextServiceSessionId,
@@ -82,6 +88,7 @@ class ConsensusModuleSnapshotTaker
         }
     }
 
+    @Impure
     void snapshotSession(final ClusterSession session)
     {
         final String responseChannel = session.responseChannel();
@@ -112,6 +119,7 @@ class ConsensusModuleSnapshotTaker
         }
     }
 
+    @Impure
     public void snapshotTimer(final long correlationId, final long deadline)
     {
         idleStrategy.reset();
@@ -132,6 +140,7 @@ class ConsensusModuleSnapshotTaker
         }
     }
 
+    @Impure
     void snapshot(final PendingServiceMessageTracker tracker, final ErrorHandler errorHandler)
     {
         final int length = MessageHeaderEncoder.ENCODED_LENGTH + PendingMessageTrackerEncoder.BLOCK_LENGTH;
@@ -159,6 +168,7 @@ class ConsensusModuleSnapshotTaker
         tracker.pendingMessages().forEach(this, Integer.MAX_VALUE);
     }
 
+    @Impure
     private void encodeSession(
         final ClusterSession session, final String responseChannel, final MutableDirectBuffer buffer, final int offset)
     {
@@ -173,6 +183,7 @@ class ConsensusModuleSnapshotTaker
             .responseChannel(responseChannel);
     }
 
+    @Impure
     private static long correctNextServiceSessionId(
         final PendingServiceMessageTracker tracker,
         final ErrorHandler errorHandler)

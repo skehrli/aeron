@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.CommonContext;
 import io.aeron.driver.media.ReceiveChannelEndpoint;
 import org.agrona.concurrent.status.ReadablePosition;
@@ -40,6 +42,7 @@ public abstract class SubscriptionLink implements DriverManagedResource
     boolean hasSessionId;
     boolean reachedEndOfLife = false;
 
+    @Impure
     SubscriptionLink(
         final long registrationId,
         final int streamId,
@@ -66,6 +69,7 @@ public abstract class SubscriptionLink implements DriverManagedResource
      *
      * @return channel URI the subscription is on.
      */
+    @Pure
     public final String channel()
     {
         return channel;
@@ -76,6 +80,7 @@ public abstract class SubscriptionLink implements DriverManagedResource
      *
      * @return stream id the subscription is on.
      */
+    @Pure
     public final int streamId()
     {
         return streamId;
@@ -86,117 +91,146 @@ public abstract class SubscriptionLink implements DriverManagedResource
      *
      * @return registration id of the subscription.
      */
+    @Pure
     public final long registrationId()
     {
         return registrationId;
     }
 
+    @Pure
     AeronClient aeronClient()
     {
         return aeronClient;
     }
 
+    @Pure
     final int sessionId()
     {
         return sessionId;
     }
 
+    @Impure
     void sessionId(final int sessionId)
     {
         this.hasSessionId = true;
         this.sessionId = sessionId;
     }
 
+    @Pure
     boolean isResponse()
     {
         return isResponse;
     }
 
+    @Pure
     ReceiveChannelEndpoint channelEndpoint()
     {
         return null;
     }
 
+    @Pure
     boolean isReliable()
     {
         return true;
     }
 
+    @Pure
     boolean isRejoin()
     {
         return true;
     }
 
+    @Pure
     boolean isTether()
     {
         return isTether;
     }
 
+    @Pure
     boolean isSparse()
     {
         return isSparse;
     }
 
+    @Pure
     CommonContext.InferableBoolean group()
     {
         return group;
     }
 
+    @Pure
     boolean hasSessionId()
     {
         return hasSessionId;
     }
 
+    @Impure
     boolean matches(final NetworkPublication publication)
     {
         return false;
     }
 
+    @Pure
+    @Impure
     boolean matches(final PublicationImage image)
     {
         return false;
     }
 
+    @Pure
+    @Impure
     boolean matches(final IpcPublication publication)
     {
         return false;
     }
 
+    @Pure
+    @Impure
     boolean matches(final ReceiveChannelEndpoint channelEndpoint, final int streamId, final SubscriptionParams params)
     {
         return false;
     }
 
+    @Pure
+    @Impure
     boolean matches(final ReceiveChannelEndpoint channelEndpoint, final int streamId, final int sessionId)
     {
         return false;
     }
 
+    @Pure
     boolean isLinked(final Subscribable subscribable)
     {
         return positionBySubscribableMap.containsKey(subscribable);
     }
 
+    @Impure
     void link(final Subscribable subscribable, final ReadablePosition position)
     {
         positionBySubscribableMap.put(subscribable, position);
     }
 
+    @Impure
     void unlink(final Subscribable subscribable)
     {
         positionBySubscribableMap.remove(subscribable);
     }
 
+    @Pure
+    @Impure
     boolean isWildcardOrSessionIdMatch(final int sessionId)
     {
         return (!hasSessionId && !isResponse()) || this.sessionId == sessionId;
     }
 
+    @Pure
+    @Impure
     boolean supportsMds()
     {
         return false;
     }
 
+    @Impure
     void notifyUnavailableImages(final DriverConductor conductor)
     {
         for (final Map.Entry<Subscribable, ReadablePosition> entry : positionBySubscribableMap.entrySet())
@@ -209,6 +243,7 @@ public abstract class SubscriptionLink implements DriverManagedResource
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         for (final Map.Entry<Subscribable, ReadablePosition> entry : positionBySubscribableMap.entrySet())
@@ -222,6 +257,7 @@ public abstract class SubscriptionLink implements DriverManagedResource
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onTimeEvent(final long timeNs, final long timeMs, final DriverConductor conductor)
     {
         if (aeronClient.hasTimedOut())
@@ -234,6 +270,7 @@ public abstract class SubscriptionLink implements DriverManagedResource
     /**
      * {@inheritDoc}
      */
+    @Pure
     public boolean hasReachedEndOfLife()
     {
         return reachedEndOfLife;
@@ -242,6 +279,8 @@ public abstract class SubscriptionLink implements DriverManagedResource
     /**
      * {@inheritDoc}
      */
+    @Pure
+    @Impure
     public String toString()
     {
         return this.getClass().getName() + "{" +

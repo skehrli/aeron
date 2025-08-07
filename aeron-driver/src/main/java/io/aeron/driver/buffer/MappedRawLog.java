@@ -15,6 +15,9 @@
  */
 package io.aeron.driver.buffer;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.exceptions.AeronException;
 import org.agrona.BufferUtil;
 import org.agrona.ErrorHandler;
@@ -55,6 +58,7 @@ class MappedRawLog implements RawLog
     private File logFile;
     private MappedByteBuffer[] mappedBuffers;
 
+    @Impure
     MappedRawLog(
         final File location,
         final boolean useSparseFiles,
@@ -131,11 +135,13 @@ class MappedRawLog implements RawLog
         }
     }
 
+    @Pure
     public int termLength()
     {
         return termLength;
     }
 
+    @Impure
     public boolean free()
     {
         final MappedByteBuffer[] mappedBuffers = this.mappedBuffers;
@@ -169,6 +175,7 @@ class MappedRawLog implements RawLog
         return true;
     }
 
+    @Impure
     public void close()
     {
         if (!free())
@@ -177,16 +184,19 @@ class MappedRawLog implements RawLog
         }
     }
 
+    @Pure
     public UnsafeBuffer[] termBuffers()
     {
         return termBuffers;
     }
 
+    @Pure
     public UnsafeBuffer metaData()
     {
         return logMetaDataBuffer;
     }
 
+    @Impure
     public ByteBuffer[] sliceTerms()
     {
         final ByteBuffer[] terms = new ByteBuffer[PARTITION_COUNT];
@@ -211,11 +221,13 @@ class MappedRawLog implements RawLog
         return terms;
     }
 
+    @SideEffectFree
     public String fileName()
     {
         return logFile.getAbsolutePath();
     }
 
+    @Impure
     private static void preTouchPages(final UnsafeBuffer[] buffers, final int length, final int pageSize)
     {
         for (final UnsafeBuffer buffer : buffers)

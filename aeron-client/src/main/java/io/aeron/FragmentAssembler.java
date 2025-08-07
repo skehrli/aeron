@@ -15,6 +15,9 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.logbuffer.FragmentHandler;
 import io.aeron.logbuffer.Header;
 import org.agrona.DirectBuffer;
@@ -50,6 +53,8 @@ public class FragmentAssembler implements FragmentHandler
      *
      * @param delegate onto which whole messages are forwarded.
      */
+    @SideEffectFree
+    @Impure
     public FragmentAssembler(final FragmentHandler delegate)
     {
         this(delegate, 0, false);
@@ -61,6 +66,8 @@ public class FragmentAssembler implements FragmentHandler
      * @param delegate            onto which whole messages are forwarded.
      * @param initialBufferLength to be used for each session.
      */
+    @SideEffectFree
+    @Impure
     public FragmentAssembler(final FragmentHandler delegate, final int initialBufferLength)
     {
         this(delegate, initialBufferLength, false);
@@ -73,6 +80,7 @@ public class FragmentAssembler implements FragmentHandler
      * @param initialBufferLength to be used for each session.
      * @param isDirectByteBuffer  is the underlying buffer to be a direct {@link java.nio.ByteBuffer}?
      */
+    @SideEffectFree
     public FragmentAssembler(
         final FragmentHandler delegate, final int initialBufferLength, final boolean isDirectByteBuffer)
     {
@@ -86,6 +94,7 @@ public class FragmentAssembler implements FragmentHandler
      *
      * @return the delegate unto which assembled messages are delegated.
      */
+    @Pure
     public FragmentHandler delegate()
     {
         return delegate;
@@ -96,6 +105,7 @@ public class FragmentAssembler implements FragmentHandler
      *
      * @return true if the underlying buffer used to assemble fragments is a direct {@link java.nio.ByteBuffer}
      */
+    @Pure
     public boolean isDirectByteBuffer()
     {
         return isDirectByteBuffer;
@@ -109,6 +119,7 @@ public class FragmentAssembler implements FragmentHandler
      * @param length of the data in bytes.
      * @param header representing the metadata for the data.
      */
+    @Impure
     public void onFragment(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {
         final byte flags = header.flags();
@@ -123,6 +134,7 @@ public class FragmentAssembler implements FragmentHandler
         }
     }
 
+    @Impure
     private void handleFragment(
         final DirectBuffer buffer, final int offset, final int length, final Header header, final byte flags)
     {
@@ -169,6 +181,7 @@ public class FragmentAssembler implements FragmentHandler
      * @param sessionId to have its buffer freed
      * @return true if a buffer has been freed otherwise false.
      */
+    @Impure
     public boolean freeSessionBuffer(final int sessionId)
     {
         return null != builderBySessionIdMap.remove(sessionId);
@@ -177,11 +190,13 @@ public class FragmentAssembler implements FragmentHandler
     /**
      * Clear down the cache of buffers by session for reassembling messages.
      */
+    @Impure
     public void clear()
     {
         builderBySessionIdMap.clear();
     }
 
+    @Impure
     private BufferBuilder getBufferBuilder(final int sessionId)
     {
         BufferBuilder bufferBuilder = builderBySessionIdMap.get(sessionId);

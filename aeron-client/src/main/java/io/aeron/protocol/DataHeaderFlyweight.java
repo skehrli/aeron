@@ -15,6 +15,8 @@
  */
 package io.aeron.protocol;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.BufferUtil;
 import org.agrona.concurrent.UnsafeBuffer;
 
@@ -110,6 +112,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
     /**
      * Default constructor which can later be used to wrap a frame.
      */
+    @Impure
     public DataHeaderFlyweight()
     {
     }
@@ -119,6 +122,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      *
      * @param buffer containing the frame.
      */
+    @Impure
     public DataHeaderFlyweight(final UnsafeBuffer buffer)
     {
         super(buffer);
@@ -129,6 +133,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      *
      * @param buffer containing the frame.
      */
+    @Impure
     public DataHeaderFlyweight(final ByteBuffer buffer)
     {
         super(buffer);
@@ -141,6 +146,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      * @param frameOffset in the buffer where the header starts.
      * @return the fragment length field from the header.
      */
+    @Impure
     public static int fragmentLength(final UnsafeBuffer termBuffer, final int frameOffset)
     {
         return termBuffer.getInt(frameOffset + FRAME_LENGTH_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -153,6 +159,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      * @param length of the data frame.
      * @return true if a heartbeat otherwise false.
      */
+    @Impure
     public static boolean isHeartbeat(final UnsafeBuffer packet, final int length)
     {
         return length == HEADER_LENGTH && packet.getInt(0) == 0;
@@ -164,6 +171,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      * @param packet containing the data frame.
      * @return true if the EOS flag is set otherwise false.
      */
+    @Impure
     public static boolean isEndOfStream(final UnsafeBuffer packet)
     {
         return 0 != (packet.getByte(FLAGS_FIELD_OFFSET) & EOS_FLAG);
@@ -175,6 +183,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      * @param packet containing the data frame
      * @return true if the REVOKED flag is set otherwise false.
      */
+    @Impure
     public static boolean isRevoked(final UnsafeBuffer packet)
     {
         return 0 != (packet.getByte(FLAGS_FIELD_OFFSET) & REVOKED_FLAG);
@@ -185,6 +194,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      *
      * @return the session-id field from the header.
      */
+    @Impure
     public int sessionId()
     {
         return getInt(SESSION_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -197,6 +207,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      * @param frameOffset in the buffer where the header starts.
      * @return the session-id field from the header.
      */
+    @Impure
     public static int sessionId(final UnsafeBuffer termBuffer, final int frameOffset)
     {
         return termBuffer.getInt(frameOffset + SESSION_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -208,6 +219,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      * @param sessionId value to set.
      * @return this for a fluent API.
      */
+    @Impure
     public DataHeaderFlyweight sessionId(final int sessionId)
     {
         putInt(SESSION_ID_FIELD_OFFSET, sessionId, LITTLE_ENDIAN);
@@ -220,6 +232,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      *
      * @return the stream-id field from the header.
      */
+    @Impure
     public int streamId()
     {
         return getInt(STREAM_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -232,6 +245,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      * @param frameOffset in the buffer where the header starts.
      * @return the stream-id field from the header.
      */
+    @Impure
     public static int streamId(final UnsafeBuffer termBuffer, final int frameOffset)
     {
         return termBuffer.getInt(frameOffset + STREAM_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -243,6 +257,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      * @param streamId value to set.
      * @return this for a fluent API.
      */
+    @Impure
     public DataHeaderFlyweight streamId(final int streamId)
     {
         putInt(STREAM_ID_FIELD_OFFSET, streamId, LITTLE_ENDIAN);
@@ -255,6 +270,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      *
      * @return the term-id field from the header.
      */
+    @Impure
     public int termId()
     {
         return getInt(TERM_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -267,6 +283,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      * @param frameOffset in the buffer where the header starts.
      * @return the term-id field from the header.
      */
+    @Impure
     public static int termId(final UnsafeBuffer termBuffer, final int frameOffset)
     {
         return termBuffer.getInt(frameOffset + TERM_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -278,6 +295,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      * @param termId value to set.
      * @return this for a fluent API.
      */
+    @Impure
     public DataHeaderFlyweight termId(final int termId)
     {
         putInt(TERM_ID_FIELD_OFFSET, termId, LITTLE_ENDIAN);
@@ -290,6 +308,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      *
      * @return the term-offset field from the header.
      */
+    @Impure
     public int termOffset()
     {
         return getInt(TERM_OFFSET_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -302,6 +321,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      * @param frameOffset in the buffer where the header starts.
      * @return the term-offset field from the header.
      */
+    @Impure
     public static int termOffset(final UnsafeBuffer termBuffer, final int frameOffset)
     {
         return termBuffer.getInt(frameOffset + TERM_OFFSET_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -313,6 +333,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      * @param termOffset value to set.
      * @return this for a fluent API.
      */
+    @Impure
     public DataHeaderFlyweight termOffset(final int termOffset)
     {
         putInt(TERM_OFFSET_FIELD_OFFSET, termOffset, LITTLE_ENDIAN);
@@ -325,6 +346,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      *
      * @return value of the reserved value.
      */
+    @Impure
     public long reservedValue()
     {
         return getLong(RESERVED_VALUE_OFFSET, LITTLE_ENDIAN);
@@ -337,6 +359,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      * @param frameOffset in the buffer where the header starts.
      * @return the reserved value field from the header.
      */
+    @Impure
     public static long reservedValue(final UnsafeBuffer termBuffer, final int frameOffset)
     {
         return termBuffer.getLong(frameOffset + RESERVED_VALUE_OFFSET, LITTLE_ENDIAN);
@@ -348,6 +371,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      * @param reservedValue to be stored
      * @return flyweight
      */
+    @Impure
     public DataHeaderFlyweight reservedValue(final long reservedValue)
     {
         putLong(RESERVED_VALUE_OFFSET, reservedValue, LITTLE_ENDIAN);
@@ -360,6 +384,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      *
      * @return offset of data in the buffer.
      */
+    @Pure
     public int dataOffset()
     {
         return DATA_OFFSET;
@@ -373,6 +398,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
      * @param termId    for the header
      * @return byte array containing the header
      */
+    @Impure
     public static UnsafeBuffer createDefaultHeader(final int sessionId, final int streamId, final int termId)
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(
@@ -392,6 +418,7 @@ public class DataHeaderFlyweight extends HeaderFlyweight
     /**
      * {@inheritDoc}
      */
+    @Impure
     public String toString()
     {
         return "DATA Header{" +

@@ -15,6 +15,7 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Impure;
 import net.bytebuddy.asm.Advice;
 import org.agrona.DirectBuffer;
 
@@ -24,6 +25,7 @@ class ControlInterceptor
 {
     static class ControlRequest
     {
+        @Impure
         @Advice.OnMethodEnter
         static void onFragment(
             @Advice.Argument(0) final DirectBuffer buffer,
@@ -36,6 +38,7 @@ class ControlInterceptor
 
     static class ControlResponse
     {
+        @Impure
         @Advice.OnMethodEnter
         static void logSendResponse(final DirectBuffer buffer, final int offset, final int length)
         {
@@ -45,6 +48,7 @@ class ControlInterceptor
 
     static class RecordingSignal
     {
+        @Impure
         @Advice.OnMethodEnter
         static void logSendSignal(final DirectBuffer buffer, final int offset, final int length)
         {

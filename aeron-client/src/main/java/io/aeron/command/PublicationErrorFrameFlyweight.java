@@ -15,6 +15,7 @@
  */
 package io.aeron.command;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.ErrorCode;
 import org.agrona.BitUtil;
 import org.agrona.MutableDirectBuffer;
@@ -92,6 +93,7 @@ public class PublicationErrorFrameFlyweight
      * @param offset at which the message begins.
      * @return this for a fluent API.
      */
+    @Impure
     public final PublicationErrorFrameFlyweight wrap(final MutableDirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
@@ -105,6 +107,7 @@ public class PublicationErrorFrameFlyweight
      *
      * @return registration ID of the publication.
      */
+    @Impure
     public long registrationId()
     {
         return buffer.getLong(offset + REGISTRATION_ID_OFFSET);
@@ -116,6 +119,7 @@ public class PublicationErrorFrameFlyweight
      * @param registrationId of the publication.
      * @return this for a fluent API.
      */
+    @Impure
     public PublicationErrorFrameFlyweight registrationId(final long registrationId)
     {
         buffer.putLong(offset + REGISTRATION_ID_OFFSET, registrationId);
@@ -128,6 +132,7 @@ public class PublicationErrorFrameFlyweight
      *
      * @return registration ID of the publication or {@link io.aeron.Aeron#NULL_VALUE}.
      */
+    @Impure
     public long destinationRegistrationId()
     {
         return buffer.getLong(offset + DESTINATION_REGISTRATION_ID_OFFSET);
@@ -140,6 +145,7 @@ public class PublicationErrorFrameFlyweight
      * @param registrationId of the destination.
      * @return this for a fluent API.
      */
+    @Impure
     public PublicationErrorFrameFlyweight destinationRegistrationId(final long registrationId)
     {
         buffer.putLong(offset + DESTINATION_REGISTRATION_ID_OFFSET, registrationId);
@@ -151,6 +157,7 @@ public class PublicationErrorFrameFlyweight
      *
      * @return stream id field.
      */
+    @Impure
     public int streamId()
     {
         return buffer.getInt(offset + STREAM_ID_OFFSET);
@@ -162,6 +169,7 @@ public class PublicationErrorFrameFlyweight
      * @param streamId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public PublicationErrorFrameFlyweight streamId(final int streamId)
     {
         buffer.putInt(offset + STREAM_ID_OFFSET, streamId);
@@ -174,6 +182,7 @@ public class PublicationErrorFrameFlyweight
      *
      * @return session id field.
      */
+    @Impure
     public int sessionId()
     {
         return buffer.getInt(offset + SESSION_ID_OFFSET);
@@ -185,6 +194,7 @@ public class PublicationErrorFrameFlyweight
      * @param sessionId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public PublicationErrorFrameFlyweight sessionId(final int sessionId)
     {
         buffer.putInt(offset + SESSION_ID_OFFSET, sessionId);
@@ -197,6 +207,7 @@ public class PublicationErrorFrameFlyweight
      *
      * @return get the receiver id field.
      */
+    @Impure
     public long receiverId()
     {
         return buffer.getLong(offset + RECEIVER_ID_OFFSET);
@@ -208,6 +219,7 @@ public class PublicationErrorFrameFlyweight
      * @param receiverId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public PublicationErrorFrameFlyweight receiverId(final long receiverId)
     {
         buffer.putLong(offset + RECEIVER_ID_OFFSET, receiverId);
@@ -220,6 +232,7 @@ public class PublicationErrorFrameFlyweight
      *
      * @return the group tag field.
      */
+    @Impure
     public long groupTag()
     {
         return buffer.getLong(offset + GROUP_TAG_OFFSET);
@@ -231,6 +244,7 @@ public class PublicationErrorFrameFlyweight
      * @param groupTag the group tag value.
      * @return this for a fluent API.
      */
+    @Impure
     public PublicationErrorFrameFlyweight groupTag(final long groupTag)
     {
         buffer.putLong(offset + GROUP_TAG_OFFSET, groupTag);
@@ -244,6 +258,7 @@ public class PublicationErrorFrameFlyweight
      * @param sourceAddress of the error frame.
      * @return this for a fluent API
      */
+    @Impure
     public PublicationErrorFrameFlyweight sourceAddress(final InetSocketAddress sourceAddress)
     {
         final short sourcePort = (short)(sourceAddress.getPort() & 0xFFFF);
@@ -274,6 +289,7 @@ public class PublicationErrorFrameFlyweight
      *
      * @return source address of the error frame.
      */
+    @Impure
     public InetSocketAddress sourceAddress()
     {
         final short addressType = buffer.getShort(offset + ADDRESS_TYPE_OFFSET);
@@ -310,6 +326,7 @@ public class PublicationErrorFrameFlyweight
      *
      * @return error code for the command.
      */
+    @Impure
     public ErrorCode errorCode()
     {
         return ErrorCode.get(buffer.getInt(offset + ERROR_CODE_OFFSET));
@@ -320,6 +337,7 @@ public class PublicationErrorFrameFlyweight
      *
      * @return error code value for the command.
      */
+    @Impure
     public int errorCodeValue()
     {
         return buffer.getInt(offset + ERROR_CODE_OFFSET);
@@ -331,6 +349,7 @@ public class PublicationErrorFrameFlyweight
      * @param code for the error.
      * @return this for a fluent API.
      */
+    @Impure
     public PublicationErrorFrameFlyweight errorCode(final ErrorCode code)
     {
         buffer.putInt(offset + ERROR_CODE_OFFSET, code.value());
@@ -342,6 +361,7 @@ public class PublicationErrorFrameFlyweight
      *
      * @return error message.
      */
+    @Impure
     public String errorMessage()
     {
         return buffer.getStringAscii(offset + ERROR_MESSAGE_OFFSET);
@@ -353,6 +373,7 @@ public class PublicationErrorFrameFlyweight
      * @param appendable to append error message to.
      * @return number bytes copied.
      */
+    @Impure
     public int appendMessage(final Appendable appendable)
     {
         return buffer.getStringAscii(offset + ERROR_MESSAGE_OFFSET, appendable);
@@ -364,6 +385,7 @@ public class PublicationErrorFrameFlyweight
      * @param message to associate with the error.
      * @return this for a fluent API.
      */
+    @Impure
     public PublicationErrorFrameFlyweight errorMessage(final String message)
     {
         buffer.putStringAscii(offset + ERROR_MESSAGE_OFFSET, message);
@@ -375,6 +397,7 @@ public class PublicationErrorFrameFlyweight
      *
      * @return length of the error response in bytes.
      */
+    @Impure
     public int length()
     {
         return ERROR_MESSAGE_OFFSET + BitUtil.SIZE_OF_INT + buffer.getInt(offset + ERROR_MESSAGE_OFFSET);

@@ -15,6 +15,7 @@
  */
 package io.aeron.logbuffer;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import static io.aeron.logbuffer.LogBufferDescriptor.*;
@@ -33,6 +34,7 @@ public class LogBufferUnblocker
      * @param termLength        of the buffer for each term in the log.
      * @return whether attempt was made to unblock.
      */
+    @Impure
     public static boolean unblock(
         final UnsafeBuffer[] termBuffers,
         final UnsafeBuffer logMetaDataBuffer,

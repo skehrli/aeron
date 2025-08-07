@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import org.agrona.collections.ArrayUtil;
 import org.agrona.collections.Long2ObjectHashMap;
@@ -52,6 +55,7 @@ final class PriorityHeapTimerService implements TimerService
      *
      * @param timerHandler to callback when a timer expires.
      */
+    @SideEffectFree
     PriorityHeapTimerService(final TimerHandler timerHandler)
     {
         this.timerHandler = Objects.requireNonNull(timerHandler, "TimerHandler");
@@ -63,6 +67,7 @@ final class PriorityHeapTimerService implements TimerService
      * @param now current time.
      * @return the number of expired timers
      */
+    @Impure
     public int poll(final long now)
     {
         int expiredTimers = 0;
@@ -102,6 +107,7 @@ final class PriorityHeapTimerService implements TimerService
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void scheduleTimerForCorrelationId(final long correlationId, final long deadline)
     {
         final Timer existingTimer = timerByCorrelationId.get(correlationId);
@@ -144,6 +150,7 @@ final class PriorityHeapTimerService implements TimerService
     /**
      * {@inheritDoc}
      */
+    @Impure
     public boolean cancelTimerByCorrelationId(final long correlationId)
     {
         final Timer removedTimer = timerByCorrelationId.remove(correlationId);
@@ -173,6 +180,7 @@ final class PriorityHeapTimerService implements TimerService
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void snapshot(final TimerSnapshotTaker snapshotTaker)
     {
         final Timer[] timers = this.timers;
@@ -186,10 +194,12 @@ final class PriorityHeapTimerService implements TimerService
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
     public void currentTime(final long now)
     {
     }
 
+    @Impure
     void forEach(final Consumer<PriorityHeapTimerService.Timer> consumer)
     {
         final Timer[] timers = this.timers;
@@ -199,6 +209,7 @@ final class PriorityHeapTimerService implements TimerService
         }
     }
 
+    @Impure
     private static void shiftUp(final Timer[] timers, final int startIndex, final Timer timer)
     {
         int index = startIndex;
@@ -221,6 +232,7 @@ final class PriorityHeapTimerService implements TimerService
         timer.index = index;
     }
 
+    @Impure
     private static void shiftDown(final Timer[] timers, final int size, final int startIndex, final Timer timer)
     {
         final int half = size >>> 1;
@@ -251,6 +263,7 @@ final class PriorityHeapTimerService implements TimerService
         timer.index = index;
     }
 
+    @Impure
     private void ensureCapacity(final int requiredCapacity)
     {
         final int currentCapacity = timers.length;
@@ -281,6 +294,7 @@ final class PriorityHeapTimerService implements TimerService
         }
     }
 
+    @Impure
     private void addToFreeList(final Timer timer)
     {
         timer.reset(Aeron.NULL_VALUE, Aeron.NULL_VALUE, Aeron.NULL_VALUE);
@@ -293,11 +307,13 @@ final class PriorityHeapTimerService implements TimerService
         long deadline;
         int index;
 
+        @Impure
         Timer(final long correlationId, final long deadline, final int index)
         {
             reset(correlationId, deadline, index);
         }
 
+        @Impure
         void reset(final long correlationId, final long deadline, final int index)
         {
             this.correlationId = correlationId;
@@ -305,6 +321,7 @@ final class PriorityHeapTimerService implements TimerService
             this.index = index;
         }
 
+        @Pure
         public String toString()
         {
             return "PriorityHeapTimerService.Timer{" +

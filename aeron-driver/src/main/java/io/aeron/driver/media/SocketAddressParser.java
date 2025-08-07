@@ -15,6 +15,8 @@
  */
 package io.aeron.driver.media;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.NameResolver;
 import org.agrona.AsciiEncoding;
 import org.agrona.Strings;
@@ -47,6 +49,7 @@ class SocketAddressParser
      * @param nameResolver   to be used for resolving hostnames.
      * @return An {@link InetSocketAddress} for the parsed input.
      */
+    @Impure
     static InetSocketAddress parse(
         final String value, final String uriParamName, final boolean isReResolution, final NameResolver nameResolver)
     {
@@ -71,6 +74,7 @@ class SocketAddressParser
         new InetSocketAddress(inetAddress, result.port);
     }
 
+    @Impure
     static boolean isMulticastAddress(final String hostAndPort)
     {
         ParseResult result = tryParseIpV4(hostAndPort);
@@ -117,6 +121,7 @@ class SocketAddressParser
         }
     }
 
+    @Impure
     private static ParseResult tryParseIpV4(final String str)
     {
         IpV4State state = IpV4State.HOST;
@@ -156,6 +161,7 @@ class SocketAddressParser
         throw new IllegalArgumentException("address:port is required for ipv4: " + str);
     }
 
+    @Impure
     private static ParseResult tryParseIpV6(final String str)
     {
         IpV6State state = IpV6State.START_ADDR;
@@ -245,6 +251,7 @@ class SocketAddressParser
         final String host;
         final int port;
 
+        @SideEffectFree
         private ParseResult(final String host, final int port)
         {
             this.host = host;

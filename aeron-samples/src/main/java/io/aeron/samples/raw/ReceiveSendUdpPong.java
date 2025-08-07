@@ -15,6 +15,7 @@
  */
 package io.aeron.samples.raw;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.Configuration;
 import org.agrona.SystemUtil;
 import org.agrona.concurrent.HighResolutionTimer;
@@ -42,6 +43,7 @@ public class ReceiveSendUdpPong
      * @param args passed to the process.
      * @throws IOException if an error occurs with the channel.
      */
+    @Impure
     public static void main(final String[] args) throws IOException
     {
         int numChannels = 1;

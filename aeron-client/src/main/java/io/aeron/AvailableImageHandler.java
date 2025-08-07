@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.aeron;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 
 /**
  * Interface for notification of new {@link Image}s becoming available under a {@link Subscription}.
@@ -29,5 +30,6 @@ public interface AvailableImageHandler
      *
      * @param image that is now available
      */
+    @SideEffectFree
     void onAvailableImage(Image image);
 }

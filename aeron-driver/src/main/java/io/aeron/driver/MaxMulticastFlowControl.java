@@ -15,6 +15,9 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.driver.media.UdpChannel;
 import io.aeron.protocol.ErrorFlyweight;
 import io.aeron.protocol.SetupFlyweight;
@@ -46,6 +49,7 @@ public class MaxMulticastFlowControl implements FlowControl
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void initialize(
         final MediaDriver.Context context,
         final CountersManager countersManager,
@@ -65,6 +69,7 @@ public class MaxMulticastFlowControl implements FlowControl
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
     public void close()
     {
     }
@@ -72,6 +77,7 @@ public class MaxMulticastFlowControl implements FlowControl
     /**
      * {@inheritDoc}
      */
+    @Impure
     public long onStatusMessage(
         final StatusMessageFlyweight flyweight,
         final InetSocketAddress receiverAddress,
@@ -92,6 +98,7 @@ public class MaxMulticastFlowControl implements FlowControl
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
     public void onTriggerSendSetup(
         final StatusMessageFlyweight flyweight,
         final InetSocketAddress receiverAddress,
@@ -102,6 +109,7 @@ public class MaxMulticastFlowControl implements FlowControl
     /**
      * {@inheritDoc}
      */
+    @Pure
     public long onSetup(
         final SetupFlyweight flyweight,
         final long senderLimit,
@@ -115,6 +123,7 @@ public class MaxMulticastFlowControl implements FlowControl
     /**
      * {@inheritDoc}
      */
+    @Pure
     public long onIdle(final long timeNs, final long senderLimit, final long senderPosition, final boolean isEos)
     {
         return senderLimit;
@@ -123,6 +132,7 @@ public class MaxMulticastFlowControl implements FlowControl
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
     public void onError(final ErrorFlyweight errorFlyweight, final InetSocketAddress receiverAddress, final long timeNs)
     {
     }
@@ -130,6 +140,7 @@ public class MaxMulticastFlowControl implements FlowControl
     /**
      * {@inheritDoc}
      */
+    @Pure
     public boolean hasRequiredReceivers()
     {
         return true;
@@ -138,6 +149,8 @@ public class MaxMulticastFlowControl implements FlowControl
     /**
      * {@inheritDoc}
      */
+    @Pure
+    @Impure
     public int maxRetransmissionLength(
         final int termOffset,
         final int resendLength,

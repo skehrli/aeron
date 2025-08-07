@@ -15,6 +15,8 @@
  */
 package io.aeron.driver.status;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.BitUtil;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.concurrent.status.CountersManager;
@@ -84,6 +86,7 @@ public class StreamCounter
      * @param channel         for the stream of messages.
      * @return a new {@link UnsafeBufferPosition} for tracking the stream.
      */
+    @Impure
     public static UnsafeBufferPosition allocate(
         final MutableDirectBuffer tempBuffer,
         final String name,
@@ -113,6 +116,7 @@ public class StreamCounter
      * @param channel         for the stream of messages.
      * @return the id of the allocated counter.
      */
+    @Impure
     public static int allocateCounterId(
         final MutableDirectBuffer tempBuffer,
         final String name,
@@ -167,6 +171,7 @@ public class StreamCounter
      * @param joinPosition    for the label.
      * @return a new {@link UnsafeBufferPosition} for tracking the stream.
      */
+    @Impure
     public static UnsafeBufferPosition allocate(
         final MutableDirectBuffer tempBuffer,
         final String name,
@@ -220,6 +225,7 @@ public class StreamCounter
      * @param typeId of the counter.
      * @return the label name as a String.
      */
+    @Pure
     public static String labelName(final int typeId)
     {
         return switch (typeId)

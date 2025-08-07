@@ -15,6 +15,9 @@
  */
 package io.aeron.samples.stress;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import io.aeron.ControlledFragmentAssembler;
 import io.aeron.Counter;
@@ -62,6 +65,7 @@ public class StressMdcServer implements Agent
      * @param serverAddress local address for the server to listen for requests.
      * @param clientAddress remote address for the server to send responses.
      */
+    @SideEffectFree
     public StressMdcServer(final String serverAddress, final String clientAddress)
     {
         this.serverAddress = serverAddress;
@@ -71,6 +75,7 @@ public class StressMdcServer implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onStart()
     {
         aeron = Aeron.connect(new Aeron.Context());
@@ -95,6 +100,7 @@ public class StressMdcServer implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int doWork()
     {
         if (!mdcSubscription1.isConnected() || !mdcSubscription2.isConnected())
@@ -109,6 +115,7 @@ public class StressMdcServer implements Agent
         return count;
     }
 
+    @Impure
     private int pollUnicast()
     {
         int count = 0;
@@ -119,6 +126,7 @@ public class StressMdcServer implements Agent
         return count;
     }
 
+    @Impure
     private ControlledFragmentHandler.Action mdcReqHandler(
         final DirectBuffer msg,
         final int offset,
@@ -143,6 +151,7 @@ public class StressMdcServer implements Agent
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String roleName()
     {
         return "Stress MDC Server";
@@ -151,6 +160,7 @@ public class StressMdcServer implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onClose()
     {
         CloseHelper.quietCloseAll(mdcSubscription1, mdcSubscription2, mdcPublication, aeron);
@@ -162,6 +172,7 @@ public class StressMdcServer implements Agent
      *
      * @param args command line args.
      */
+    @Impure
     public static void main(final String[] args)
     {
         final StressMdcServer server = new StressMdcServer(serverAddress(), clientAddress());

@@ -15,6 +15,9 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.collections.Object2ObjectHashMap;
@@ -48,6 +51,8 @@ public class ClusterComponentLogger implements ComponentLogger
     /**
      * {@inheritDoc}
      */
+    @Pure
+    @Impure
     public int typeCode()
     {
         return EventCodeType.CLUSTER.getTypeCode();
@@ -56,6 +61,8 @@ public class ClusterComponentLogger implements ComponentLogger
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
+    @Impure
     public void decode(
         final MutableDirectBuffer buffer, final int offset, final int eventCodeId, final StringBuilder builder)
     {
@@ -65,6 +72,7 @@ public class ClusterComponentLogger implements ComponentLogger
     /**
      * {@inheritDoc}
      */
+    @Impure
     public AgentBuilder addInstrumentation(final AgentBuilder agentBuilder, final Map<String, String> configOptions)
     {
         ENABLED_EVENTS.clear();
@@ -137,11 +145,13 @@ public class ClusterComponentLogger implements ComponentLogger
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void reset()
     {
         ENABLED_EVENTS.clear();
     }
 
+    @Impure
     private static EnumSet<ClusterEventCode> getClusterEventCodes(final String enabledEventCodes)
     {
         return parseEventCodes(
@@ -153,6 +163,7 @@ public class ClusterComponentLogger implements ComponentLogger
     }
 
 
+    @Impure
     private static AgentBuilder addClusterConsensusModuleAgentInstrumentation(final AgentBuilder agentBuilder)
     {
         AgentBuilder tempBuilder = agentBuilder;
@@ -250,6 +261,7 @@ public class ClusterComponentLogger implements ComponentLogger
         return tempBuilder;
     }
 
+    @Impure
     private static AgentBuilder addEventInstrumentation(
         final AgentBuilder agentBuilder,
         final ClusterEventCode code,

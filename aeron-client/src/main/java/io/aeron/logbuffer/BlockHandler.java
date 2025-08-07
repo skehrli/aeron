@@ -15,6 +15,7 @@
  */
 package io.aeron.logbuffer;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.agrona.DirectBuffer;
 
 /**
@@ -33,5 +34,6 @@ public interface BlockHandler
      * @param sessionId of the stream containing this block of message fragments.
      * @param termId    of the stream containing this block of message fragments.
      */
+    @SideEffectFree
     void onBlock(DirectBuffer buffer, int offset, int length, int sessionId, int termId);
 }

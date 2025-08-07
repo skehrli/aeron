@@ -15,6 +15,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.Image;
 import io.aeron.ImageFragmentAssembler;
@@ -54,6 +55,7 @@ public class Pong
      *
      * @param args passed to the process.
      */
+    @Impure
     public static void main(final String[] args)
     {
         final MediaDriver driver = EMBEDDED_MEDIA_DRIVER ? MediaDriver.launchEmbedded() : null;
@@ -102,6 +104,7 @@ public class Pong
         CloseHelper.close(driver);
     }
 
+    @Impure
     private static void pingHandler(
         final Publication pongPublication,
         final DirectBuffer buffer,

@@ -15,6 +15,10 @@
  */
 package io.aeron.config.docgen;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.checker.calledmethods.qual.EnsuresCalledMethods;
+import org.checkerframework.checker.mustcall.qual.Owning;
+import org.checkerframework.checker.mustcall.qual.InheritableMustCall;
 import io.aeron.config.ConfigInfo;
 import io.aeron.config.DefaultType;
 
@@ -27,8 +31,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@InheritableMustCall("close")
 final class ConfigDocGenerator implements AutoCloseable
 {
+    @Impure
     static void generate(final List<ConfigInfo> configInfoCollection, final String outputFilename) throws Exception
     {
         try (ConfigDocGenerator generator = new ConfigDocGenerator(outputFilename))
@@ -37,13 +43,17 @@ final class ConfigDocGenerator implements AutoCloseable
         }
     }
 
+    @Owning
     private final FileWriter writer;
 
+    @Impure
     private ConfigDocGenerator(final String outputFile) throws Exception
     {
         writer = new FileWriter(outputFile);
     }
 
+    @EnsuresCalledMethods(value="this.writer", methods="close")
+    @Impure
     @Override
     public void close()
     {
@@ -57,6 +67,7 @@ final class ConfigDocGenerator implements AutoCloseable
         }
     }
 
+    @Impure
     private void generateDoc(final List<ConfigInfo> configInfoCollection) throws Exception
     {
         for (final ConfigInfo configInfo: sort(configInfoCollection))
@@ -113,6 +124,7 @@ final class ConfigDocGenerator implements AutoCloseable
         }
     }
 
+    @Impure
     private List<ConfigInfo> sort(final List<ConfigInfo> config)
     {
         return config
@@ -121,6 +133,7 @@ final class ConfigDocGenerator implements AutoCloseable
             .collect(Collectors.toList());
     }
 
+    @Impure
     private void writeHeader(final String t) throws IOException
     {
         writeRow("", t);
@@ -129,27 +142,32 @@ final class ConfigDocGenerator implements AutoCloseable
         writeLine();
     }
 
+    @Impure
     private void writeCode(final String a, final String b) throws IOException
     {
         write(a, "`" + b + "`");
     }
 
+    @Impure
     private void write(final String a, final String b) throws IOException
     {
         writeRow("**" + a + "**", b.replaceAll("\n", " ").trim());
         writeLine();
     }
 
+    @Impure
     private void writeLine() throws IOException
     {
         writer.write("\n");
     }
 
+    @Impure
     private void writeRow(final String a, final String b) throws IOException
     {
         writer.write("| " + a + " | " + b + " |");
     }
 
+    @Impure
     private String toHeaderString(final String t)
     {
         final StringBuilder builder = new StringBuilder();
@@ -174,6 +192,7 @@ final class ConfigDocGenerator implements AutoCloseable
         return builder.toString();
     }
 
+    @Impure
     private String getDefaultString(
         final String defaultValue,
         final boolean isTimeValue,

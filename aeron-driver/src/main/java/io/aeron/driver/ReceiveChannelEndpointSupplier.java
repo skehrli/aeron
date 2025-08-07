@@ -15,6 +15,7 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.media.ReceiveChannelEndpoint;
 import io.aeron.driver.media.UdpChannel;
 import org.agrona.concurrent.status.AtomicCounter;
@@ -35,6 +36,7 @@ public interface ReceiveChannelEndpointSupplier
      * @param context         for the configuration of the driver.
      * @return new instance of a specialised {@link ReceiveChannelEndpoint}.
      */
+    @Impure
     ReceiveChannelEndpoint newInstance(
         UdpChannel udpChannel,
         DataPacketDispatcher dispatcher,

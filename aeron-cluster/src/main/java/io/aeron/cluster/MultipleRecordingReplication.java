@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.Aeron;
 import io.aeron.archive.client.AeronArchive;
 import io.aeron.archive.client.ReplicationParams;
@@ -39,6 +42,7 @@ final class MultipleRecordingReplication implements AutoCloseable
     private RecordingReplication recordingReplication = null;
     private EventListener eventListener = null;
 
+    @SideEffectFree
     private MultipleRecordingReplication(
         final AeronArchive archive,
         final int srcControlStreamId,
@@ -57,6 +61,8 @@ final class MultipleRecordingReplication implements AutoCloseable
         this.progressIntervalNs = replicationProgressIntervalNs;
     }
 
+    @SideEffectFree
+    @Impure
     static MultipleRecordingReplication newInstance(
         final AeronArchive archive,
         final int srcControlStreamId,
@@ -75,6 +81,8 @@ final class MultipleRecordingReplication implements AutoCloseable
             replicationProgressIntervalNs);
     }
 
+    @SideEffectFree
+    @Impure
     static MultipleRecordingReplication newInstance(
         final AeronArchive archive,
         final int srcControlStreamId,
@@ -94,11 +102,13 @@ final class MultipleRecordingReplication implements AutoCloseable
             replicationProgressIntervalNs);
     }
 
+    @Impure
     void addRecording(final long srcRecordingId, final long dstRecordingId, final long stopPosition)
     {
         recordingsPending.add(new RecordingInfo(srcRecordingId, dstRecordingId, stopPosition));
     }
 
+    @Impure
     int poll(final long nowNs)
     {
         if (isComplete())
@@ -152,11 +162,13 @@ final class MultipleRecordingReplication implements AutoCloseable
         return workDone;
     }
 
+    @Impure
     long completedDstRecordingId(final long srcRecordingId)
     {
         return recordingsCompleted.get(srcRecordingId);
     }
 
+    @Impure
     void onSignal(final long correlationId, final long recordingId, final long position, final RecordingSignal signal)
     {
         if (null != recordingReplication)
@@ -165,6 +177,7 @@ final class MultipleRecordingReplication implements AutoCloseable
         }
     }
 
+    @Pure
     boolean isComplete()
     {
         return recordingCursor >= recordingsPending.size();
@@ -173,12 +186,14 @@ final class MultipleRecordingReplication implements AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         CloseHelper.close(recordingReplication);
         recordingReplication = null;
     }
 
+    @Impure
     private void replicateCurrentSnapshot(final long nowNs)
     {
         final RecordingInfo recordingInfo = recordingsPending.get(recordingCursor);
@@ -206,6 +221,7 @@ final class MultipleRecordingReplication implements AutoCloseable
         private final long dstRecordingId;
         private final long stopPosition;
 
+        @SideEffectFree
         private RecordingInfo(final long srcRecordingId, final long dstRecordingId, final long stopPosition)
         {
             this.srcRecordingId = srcRecordingId;
@@ -214,6 +230,8 @@ final class MultipleRecordingReplication implements AutoCloseable
         }
     }
 
+    @SideEffectFree
+    @Impure
     private void onReplicationEnded(
         final String srcArchiveControlChannel,
         final long srcRecordingId,
@@ -228,6 +246,7 @@ final class MultipleRecordingReplication implements AutoCloseable
         }
     }
 
+    @Impure
     void setEventListener(final EventListener eventListener)
     {
         this.eventListener = eventListener;
@@ -235,6 +254,7 @@ final class MultipleRecordingReplication implements AutoCloseable
 
     interface EventListener
     {
+        @SideEffectFree
         void onReplicationEnded(
             String controlUri,
             long srcRecordingId,

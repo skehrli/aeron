@@ -15,6 +15,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import static org.agrona.BitUtil.SIZE_OF_LONG;
 
 import java.util.concurrent.ExecutorService;
@@ -57,6 +58,7 @@ public class StreamingPublisher
      * @param args passed to the process.
      * @throws InterruptedException if interrupted during linger.
      */
+    @Impure
     public static void main(final String[] args) throws InterruptedException
     {
         if (MESSAGE_LENGTH < SIZE_OF_LONG)
@@ -137,6 +139,7 @@ public class StreamingPublisher
         CloseHelper.close(driver);
     }
 
+    @Impure
     private static void printRate(
         final double messagesPerSec, final double bytesPerSec, final long totalFragments, final long totalBytes)
     {
@@ -148,6 +151,7 @@ public class StreamingPublisher
         }
     }
 
+    @Impure
     private static IntSupplier composeLengthGenerator(final boolean random, final int max)
     {
         if (random)

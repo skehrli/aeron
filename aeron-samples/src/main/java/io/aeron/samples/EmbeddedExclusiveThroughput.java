@@ -15,6 +15,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.*;
 import io.aeron.driver.MediaDriver;
 import org.agrona.BitUtil;
@@ -53,6 +54,7 @@ public class EmbeddedExclusiveThroughput
      * @param args passed to the process.
      * @throws InterruptedException if the thread is interrupted during linger.
      */
+    @Impure
     public static void main(final String[] args) throws InterruptedException
     {
         loadPropertiesFiles(args);
@@ -114,6 +116,7 @@ public class EmbeddedExclusiveThroughput
         }
     }
 
+    @Impure
     private static void printRate(
         final double messagesPerSec, final double bytesPerSec, final long totalFragments, final long totalBytes)
     {

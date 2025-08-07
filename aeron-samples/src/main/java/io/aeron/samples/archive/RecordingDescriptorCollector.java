@@ -15,6 +15,9 @@
  */
 package io.aeron.samples.archive;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.archive.client.RecordingDescriptorConsumer;
 
 import java.util.ArrayDeque;
@@ -70,6 +73,7 @@ public class RecordingDescriptorCollector
     @SuppressWarnings("Convert2Lambda")
     private final RecordingDescriptorConsumer consumer = new RecordingDescriptorConsumer()
     {
+        @Impure
         public void onRecordingDescriptor(
             final long controlSessionId,
             final long correlationId,
@@ -122,6 +126,7 @@ public class RecordingDescriptorCollector
      *
      * @param poolSize size of the descriptor pool
      */
+    @SideEffectFree
     public RecordingDescriptorCollector(final int poolSize)
     {
         this.poolSize = poolSize;
@@ -133,6 +138,7 @@ public class RecordingDescriptorCollector
      *
      * @return the consumer to be passed into the <code>AeronArchives</code>'s list recording methods.
      */
+    @Impure
     public RecordingDescriptorConsumer reset()
     {
         for (int i = descriptors.size(); -1 < --i;)
@@ -153,6 +159,7 @@ public class RecordingDescriptorCollector
      *
      * @return the result list of descriptors.
      */
+    @Pure
     public List<RecordingDescriptor> descriptors()
     {
         return descriptors;
@@ -163,6 +170,7 @@ public class RecordingDescriptorCollector
      *
      * @return number of descriptors that will be pooled.
      */
+    @Pure
     public int poolSize()
     {
         return poolSize;

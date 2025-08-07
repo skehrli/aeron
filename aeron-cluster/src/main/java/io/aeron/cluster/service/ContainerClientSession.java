@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster.service;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.*;
 import io.aeron.cluster.client.ClusterException;
 import io.aeron.exceptions.AeronException;
@@ -35,6 +38,7 @@ final class ContainerClientSession implements ClientSession
     private Publication responsePublication;
     private boolean isClosing;
 
+    @SideEffectFree
     ContainerClientSession(
         final long sessionId,
         final int responseStreamId,
@@ -50,26 +54,31 @@ final class ContainerClientSession implements ClientSession
     }
 
 
+    @Pure
     public long id()
     {
         return id;
     }
 
+    @Pure
     public int responseStreamId()
     {
         return responseStreamId;
     }
 
+    @Pure
     public String responseChannel()
     {
         return responseChannel;
     }
 
+    @Pure
     public byte[] encodedPrincipal()
     {
         return encodedPrincipal;
     }
 
+    @Impure
     public void close()
     {
         if (null != clusteredServiceAgent.getClientSession(id))
@@ -78,26 +87,31 @@ final class ContainerClientSession implements ClientSession
         }
     }
 
+    @Pure
     public boolean isClosing()
     {
         return isClosing;
     }
 
+    @Impure
     public long offer(final DirectBuffer buffer, final int offset, final int length)
     {
         return clusteredServiceAgent.offer(id, responsePublication, buffer, offset, length);
     }
 
+    @Impure
     public long offer(final DirectBufferVector[] vectors)
     {
         return clusteredServiceAgent.offer(id, responsePublication, vectors);
     }
 
+    @Impure
     public long tryClaim(final int length, final BufferClaim bufferClaim)
     {
         return clusteredServiceAgent.tryClaim(id, responsePublication, length, bufferClaim);
     }
 
+    @Impure
     void connect(final Aeron aeron)
     {
         try
@@ -114,16 +128,19 @@ final class ContainerClientSession implements ClientSession
         }
     }
 
+    @Impure
     void markClosing()
     {
         this.isClosing = true;
     }
 
+    @Impure
     void resetClosing()
     {
         isClosing = false;
     }
 
+    @Impure
     void disconnect(final ErrorHandler errorHandler)
     {
         CloseHelper.close(errorHandler, responsePublication);
@@ -133,6 +150,7 @@ final class ContainerClientSession implements ClientSession
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
     public String toString()
     {
         return "ClientSession{" +

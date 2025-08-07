@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.aeron.driver;
+import org.checkerframework.dataflow.qual.Impure;
 
 /**
  * Handler for dealing with detected loss on a message stream.
@@ -28,5 +29,6 @@ public interface LossHandler
      * @param termOffset for the beginning of the gap
      * @param length     of the gap
      */
+    @Impure
     void onGapDetected(int termId, int termOffset, int length);
 }

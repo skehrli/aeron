@@ -15,6 +15,8 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.CloseHelper;
 import org.agrona.LangUtil;
 import org.agrona.MutableDirectBuffer;
@@ -58,6 +60,7 @@ public final class EventLogReaderAgent implements Agent
     private final FileChannel fileChannel;
     private final Int2ObjectHashMap<ComponentLogger> loggers = new Int2ObjectHashMap<>();
 
+    @Impure
     EventLogReaderAgent(final String filename, final List<ComponentLogger> loggers)
     {
         for (final ComponentLogger componentLogger : loggers)
@@ -88,6 +91,7 @@ public final class EventLogReaderAgent implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onStart()
     {
         dissectLogStartMessage(nanoTime(), currentTimeMillis(), systemDefault(), builder);
@@ -107,6 +111,7 @@ public final class EventLogReaderAgent implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onClose()
     {
         CloseHelper.close(fileChannel);
@@ -115,6 +120,7 @@ public final class EventLogReaderAgent implements Agent
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String roleName()
     {
         return "event-log-reader";
@@ -123,6 +129,7 @@ public final class EventLogReaderAgent implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int doWork()
     {
         final int eventsRead = ringBuffer.read(messageHandler, EVENT_READER_FRAME_LIMIT);
@@ -134,6 +141,7 @@ public final class EventLogReaderAgent implements Agent
         return eventsRead;
     }
 
+    @Impure
     private void onMessage(final int msgTypeId, final MutableDirectBuffer buffer, final int index, final int length)
     {
         final int eventCodeTypeId = msgTypeId >> 16;
@@ -153,6 +161,7 @@ public final class EventLogReaderAgent implements Agent
         }
     }
 
+    @Impure
     static void decodeLogEvent(
         final MutableDirectBuffer buffer,
         final int index,
@@ -174,6 +183,7 @@ public final class EventLogReaderAgent implements Agent
         builder.append(lineSeparator());
     }
 
+    @Impure
     private static void appendEvent(final StringBuilder builder, final ByteBuffer buffer, final FileChannel fileChannel)
     {
         final int length = builder.length();
@@ -193,6 +203,7 @@ public final class EventLogReaderAgent implements Agent
         buffer.position(position + length);
     }
 
+    @Impure
     private static void write(final ByteBuffer buffer, final FileChannel fileChannel)
     {
         try

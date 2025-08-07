@@ -15,6 +15,8 @@
  */
 package io.aeron.samples.archive;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.security.AuthorisationService;
 import org.agrona.collections.ObjectHashSet;
 
@@ -33,6 +35,7 @@ public class SampleAuthorisationService implements AuthorisationService
      *
      * @param allowedPrincipals the collection of principals allow to access servivce
      */
+    @Impure
     public SampleAuthorisationService(final Collection<String> allowedPrincipals)
     {
         this.allowedPrincipals.addAll(allowedPrincipals);
@@ -41,6 +44,7 @@ public class SampleAuthorisationService implements AuthorisationService
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
     public boolean isAuthorised(
         final int protocolId,
         final int actionId,

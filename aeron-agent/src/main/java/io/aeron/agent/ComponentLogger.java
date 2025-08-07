@@ -15,6 +15,9 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import org.agrona.MutableDirectBuffer;
 
@@ -30,6 +33,8 @@ public interface ComponentLogger
      *
      * @return the type code for this logger.
      */
+    @Pure
+    @Impure
     int typeCode();
 
     /**
@@ -40,6 +45,8 @@ public interface ComponentLogger
      * @param eventCodeId of the event to be decoded.
      * @param builder     to render the message to.
      */
+    @SideEffectFree
+    @Impure
     void decode(MutableDirectBuffer buffer, int offset, int eventCodeId, StringBuilder builder);
 
     /**
@@ -52,10 +59,12 @@ public interface ComponentLogger
      * @return the updated agent builder after instrumentation has been applied. Return the original
      * {@code agentBuilder} instance to indicate that no instrumentation has been applied.
      */
+    @Impure
     AgentBuilder addInstrumentation(AgentBuilder agentBuilder, Map<String, String> configOptions);
 
     /**
      * Reset the logger and its configuration. Typically called when stopping/disabling logging.
      */
+    @Impure
     void reset();
 }

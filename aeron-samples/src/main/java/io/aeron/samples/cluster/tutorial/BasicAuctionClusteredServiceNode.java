@@ -15,6 +15,8 @@
  */
 package io.aeron.samples.cluster.tutorial;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.ChannelUriStringBuilder;
 import io.aeron.CommonContext;
 import io.aeron.archive.Archive;
@@ -43,6 +45,7 @@ import static java.lang.Integer.parseInt;
 public class BasicAuctionClusteredServiceNode
 // end::new_service[]
 {
+    @Impure
     private static ErrorHandler errorHandler(final String context)
     {
         return
@@ -64,6 +67,7 @@ public class BasicAuctionClusteredServiceNode
     private static final int LOG_CONTROL_PORT_OFFSET = 6;
     private static final int TERM_LENGTH = 64 * 1024;
 
+    @Pure
     static int calculatePort(final int nodeId, final int offset)
     {
         return PORT_BASE + (nodeId * PORTS_PER_NODE) + offset;
@@ -71,6 +75,7 @@ public class BasicAuctionClusteredServiceNode
     // end::ports[]
 
     // tag::udp_channel[]
+    @Impure
     private static String udpChannel(final int nodeId, final String hostname, final int portOffset)
     {
         final int port = calculatePort(nodeId, portOffset);
@@ -82,6 +87,7 @@ public class BasicAuctionClusteredServiceNode
     }
     // end::udp_channel[]
 
+    @Impure
     private static String logControlChannel(final int nodeId, final String hostname, final int portOffset)
     {
         final int port = calculatePort(nodeId, portOffset);
@@ -93,6 +99,7 @@ public class BasicAuctionClusteredServiceNode
             .build();
     }
 
+    @Impure
     private static String logReplicationChannel(final String hostname)
     {
         return new ChannelUriStringBuilder()
@@ -101,6 +108,7 @@ public class BasicAuctionClusteredServiceNode
             .build();
     }
 
+    @Impure
     private static String clusterMembers(final List<String> hostnames)
     {
         final StringBuilder sb = new StringBuilder();
@@ -124,6 +132,7 @@ public class BasicAuctionClusteredServiceNode
      *
      * @param args passed to the process.
      */
+    @Impure
     @SuppressWarnings("try")
     // tag::main[]
     public static void main(final String[] args)

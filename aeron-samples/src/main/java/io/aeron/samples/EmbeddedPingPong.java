@@ -15,6 +15,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -68,6 +69,7 @@ public class EmbeddedPingPong
      * @param args passed to the process.
      * @throws InterruptedException if the thread is interrupted.
      */
+    @Impure
     public static void main(final String[] args) throws InterruptedException
     {
         loadPropertiesFiles(args);
@@ -92,6 +94,7 @@ public class EmbeddedPingPong
         }
     }
 
+    @Impure
     private static void runPing(final Aeron aeron) throws InterruptedException
     {
         System.out.println("Publishing Ping at " + PING_CHANNEL + " on stream id " + PING_STREAM_ID);
@@ -136,6 +139,7 @@ public class EmbeddedPingPong
         }
     }
 
+    @Impure
     private static Thread startPong(final Aeron aeron)
     {
         return new Thread(() ->
@@ -162,6 +166,7 @@ public class EmbeddedPingPong
         });
     }
 
+    @Impure
     private static void roundTripMessages(
         final FragmentHandler fragmentHandler,
         final Publication pingPublication,
@@ -193,6 +198,7 @@ public class EmbeddedPingPong
         }
     }
 
+    @Impure
     private static void pongHandler(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {
         final long pingTimestamp = buffer.getLong(offset);
@@ -201,6 +207,7 @@ public class EmbeddedPingPong
         HISTOGRAM.recordValue(rttNs);
     }
 
+    @Impure
     private static void availablePongImageHandler(final Image image)
     {
         final Subscription subscription = image.subscription();
@@ -210,6 +217,7 @@ public class EmbeddedPingPong
         }
     }
 
+    @Impure
     static void pingHandler(
         final BufferClaim bufferClaim,
         final Publication pongPublication,

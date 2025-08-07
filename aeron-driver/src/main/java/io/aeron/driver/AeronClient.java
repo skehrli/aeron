@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import org.agrona.concurrent.status.AtomicCounter;
 
 import java.util.concurrent.TimeUnit;
@@ -31,6 +33,7 @@ final class AeronClient implements DriverManagedResource
     private final AtomicCounter clientTimeouts;
     private final AtomicCounter heartbeatTimestamp;
 
+    @Impure
     AeronClient(
         final long clientId,
         final long clientLivenessTimeoutNs,
@@ -46,6 +49,7 @@ final class AeronClient implements DriverManagedResource
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         heartbeatTimestamp.close();
@@ -54,6 +58,7 @@ final class AeronClient implements DriverManagedResource
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onTimeEvent(final long timeNs, final long timeMs, final DriverConductor conductor)
     {
         if (timeMs > (heartbeatTimestamp.get() + clientLivenessTimeoutMs))
@@ -73,12 +78,14 @@ final class AeronClient implements DriverManagedResource
     /**
      * {@inheritDoc}
      */
+    @Pure
     public boolean hasReachedEndOfLife()
     {
         return reachedEndOfLife;
     }
 
 
+    @Pure
     public String toString()
     {
         return "AeronClient{" +
@@ -91,21 +98,25 @@ final class AeronClient implements DriverManagedResource
             '}';
     }
 
+    @Pure
     long clientId()
     {
         return clientId;
     }
 
+    @Pure
     boolean hasTimedOut()
     {
         return reachedEndOfLife;
     }
 
+    @Impure
     void timeOfLastKeepaliveMs(final long nowMs)
     {
         heartbeatTimestamp.setRelease(nowMs);
     }
 
+    @Impure
     void onClosedByCommand()
     {
         closedByCommand = true;

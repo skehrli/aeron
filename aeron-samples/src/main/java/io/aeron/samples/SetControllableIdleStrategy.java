@@ -15,6 +15,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.driver.status.StatusUtil;
 import org.agrona.concurrent.status.CountersReader;
@@ -33,6 +34,7 @@ public class SetControllableIdleStrategy
      *
      * @param args passed to the process.
      */
+    @Impure
     public static void main(final String[] args)
     {
         if (args.length != 1)

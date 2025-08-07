@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.aeron.cluster;
+import org.checkerframework.dataflow.qual.Impure;
 
 /**
  * Timer service providing API to schedule timers in the Cluster.
@@ -33,6 +34,7 @@ public interface TimerService
          * @return {@code true} if the timer event was processed or {@code false} otherwise, i.e. the timer should be
          * kept as non-expired.
          */
+        @Impure
         boolean onTimerEvent(long correlationId);
     }
 
@@ -48,6 +50,7 @@ public interface TimerService
          * @param correlationId of the timer.
          * @param deadline      when the timer expires.
          */
+        @Impure
         void snapshotTimer(long correlationId, long deadline);
     }
 
@@ -65,6 +68,7 @@ public interface TimerService
      * @param now current time.
      * @return number of timers expired, never exceeds {@link #POLL_LIMIT}.
      */
+    @Impure
     int poll(long now);
 
     /**
@@ -73,6 +77,7 @@ public interface TimerService
      * @param correlationId to associate with the timer.
      * @param deadline      when the timer expires.
      */
+    @Impure
     void scheduleTimerForCorrelationId(long correlationId, long deadline);
 
     /**
@@ -81,6 +86,7 @@ public interface TimerService
      * @param correlationId of the timer to cancel.
      * @return {@code true} if the timer was cancelled.
      */
+    @Impure
     boolean cancelTimerByCorrelationId(long correlationId);
 
     /**
@@ -88,6 +94,7 @@ public interface TimerService
      *
      * @param snapshotTaker to take a snapshot.
      */
+    @Impure
     void snapshot(TimerSnapshotTaker snapshotTaker);
 
     /**
@@ -95,5 +102,6 @@ public interface TimerService
      *
      * @param now the current time.
      */
+    @Impure
     void currentTime(long now);
 }

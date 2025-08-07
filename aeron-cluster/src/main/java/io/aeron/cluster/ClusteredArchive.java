@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.CommonContext;
 import io.aeron.archive.Archive;
 import io.aeron.driver.MediaDriver;
@@ -30,6 +33,7 @@ public class ClusteredArchive implements AutoCloseable
     private final Archive archive;
     private final ConsensusModule consensusModule;
 
+    @SideEffectFree
     ClusteredArchive(final Archive archive, final ConsensusModule consensusModule)
     {
         this.archive = archive;
@@ -41,6 +45,7 @@ public class ClusteredArchive implements AutoCloseable
      *
      * @param args command line argument which is a list for properties files as URLs or filenames.
      */
+    @Impure
     public static void main(final String[] args)
     {
         loadPropertiesFiles(args);
@@ -57,6 +62,7 @@ public class ClusteredArchive implements AutoCloseable
      *
      * @return a new {@link ClusteredArchive} with default contexts.
      */
+    @Impure
     public static ClusteredArchive launch()
     {
         return launch(CommonContext.getAeronDirectoryName(), new Archive.Context(), new ConsensusModule.Context());
@@ -70,6 +76,7 @@ public class ClusteredArchive implements AutoCloseable
      * @param consensusModuleCtx for the configuration of the {@link ConsensusModule}.
      * @return a new {@link ClusteredArchive} with the provided contexts.
      */
+    @Impure
     public static ClusteredArchive launch(
         final String aeronDirectoryName,
         final Archive.Context archiveCtx,
@@ -97,6 +104,7 @@ public class ClusteredArchive implements AutoCloseable
      *
      * @return the {@link Archive} used in the aggregate.
      */
+    @Pure
     public Archive archive()
     {
         return archive;
@@ -107,6 +115,7 @@ public class ClusteredArchive implements AutoCloseable
      *
      * @return the {@link ConsensusModule} used in the aggregate.
      */
+    @Pure
     public ConsensusModule consensusModule()
     {
         return consensusModule;
@@ -115,6 +124,7 @@ public class ClusteredArchive implements AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         CloseHelper.closeAll(consensusModule, archive);

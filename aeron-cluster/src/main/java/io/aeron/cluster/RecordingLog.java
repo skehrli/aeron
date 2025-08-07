@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import io.aeron.archive.client.AeronArchive;
 import io.aeron.archive.status.RecordingPos;
@@ -169,6 +172,7 @@ public final class RecordingLog implements AutoCloseable
          * @throws ClusterException if <code>entryType == ENTRY_TYPE_STANDBY_SNAPSHOT</code> and <code>endpoint</code>
          *                          is null or empty.
          */
+        @Impure
         public Entry(
             final long recordingId,
             final long leadershipTermId,
@@ -200,6 +204,7 @@ public final class RecordingLog implements AutoCloseable
             }
         }
 
+        @Impure
         Entry(
             final long recordingId,
             final long leadershipTermId,
@@ -231,6 +236,7 @@ public final class RecordingLog implements AutoCloseable
          *
          * @return length of this entry.
          */
+        @Impure
         public int length()
         {
             final int unalignedLength = ENTRY_TYPE_STANDBY_SNAPSHOT == type ?
@@ -239,11 +245,13 @@ public final class RecordingLog implements AutoCloseable
             return align(unalignedLength, RECORD_ALIGNMENT);
         }
 
+        @Impure
         private void position(final long position)
         {
             this.position = position;
         }
 
+        @Impure
         Entry invalidate()
         {
             return new Entry(
@@ -260,6 +268,7 @@ public final class RecordingLog implements AutoCloseable
                 entryIndex);
         }
 
+        @Impure
         Entry logPosition(final long logPosition)
         {
             return new Entry(
@@ -276,6 +285,7 @@ public final class RecordingLog implements AutoCloseable
                 entryIndex);
         }
 
+        @Pure
         long serviceId()
         {
             return serviceId;
@@ -284,6 +294,7 @@ public final class RecordingLog implements AutoCloseable
         /**
          * {@inheritDoc}
          */
+        @Pure
         public boolean equals(final Object o)
         {
             if (this == o)
@@ -312,6 +323,7 @@ public final class RecordingLog implements AutoCloseable
         /**
          * {@inheritDoc}
          */
+        @Pure
         public int hashCode()
         {
             int result = Long.hashCode(recordingId);
@@ -330,6 +342,8 @@ public final class RecordingLog implements AutoCloseable
         /**
          * {@inheritDoc}
          */
+        @Pure
+        @Impure
         public String toString()
         {
             final String archiveEndpointEntry = ENTRY_TYPE_STANDBY_SNAPSHOT == type ?
@@ -395,6 +409,7 @@ public final class RecordingLog implements AutoCloseable
          * @param timestamp           as which the snapshot was taken.
          * @param serviceId           which the snapshot belongs to.
          */
+        @SideEffectFree
         public Snapshot(
             final long recordingId,
             final long leadershipTermId,
@@ -414,6 +429,7 @@ public final class RecordingLog implements AutoCloseable
         /**
          * {@inheritDoc}
          */
+        @Pure
         public String toString()
         {
             return "Snapshot{" +
@@ -496,6 +512,7 @@ public final class RecordingLog implements AutoCloseable
          * @param mtuLength           of the stream captured for the recording.
          * @param sessionId           of the stream captured for the recording.
          */
+        @SideEffectFree
         public Log(
             final long recordingId,
             final long leadershipTermId,
@@ -523,6 +540,7 @@ public final class RecordingLog implements AutoCloseable
         /**
          * {@inheritDoc}
          */
+        @Pure
         public String toString()
         {
             return "Log{" +
@@ -583,6 +601,7 @@ public final class RecordingLog implements AutoCloseable
          * @param snapshots               most recent snapshots for the consensus module and services.
          * @param log                     appended local log details.
          */
+        @SideEffectFree
         public RecoveryPlan(
             final long lastLeadershipTermId,
             final long lastTermBaseLogPosition,
@@ -602,6 +621,7 @@ public final class RecordingLog implements AutoCloseable
         /**
          * {@inheritDoc}
          */
+        @Pure
         public String toString()
         {
             return "RecoveryPlan{" +
@@ -750,6 +770,7 @@ public final class RecordingLog implements AutoCloseable
      * @param parentDir in which the log will be created.
      * @param createNew create a new recording log if one does not exist.
      */
+    @Impure
     public RecordingLog(final File parentDir, final boolean createNew)
     {
         final File logFile = new File(parentDir, RECORDING_LOG_FILE_NAME);
@@ -783,6 +804,7 @@ public final class RecordingLog implements AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         CloseHelper.close(fileChannel);
@@ -793,6 +815,7 @@ public final class RecordingLog implements AutoCloseable
      *
      * @param fileSyncLevel as defined by {@link ConsensusModule.Configuration#FILE_SYNC_LEVEL_PROP_NAME}.
      */
+    @Impure
     public void force(final int fileSyncLevel)
     {
         if (fileSyncLevel > 0)
@@ -813,6 +836,7 @@ public final class RecordingLog implements AutoCloseable
      *
      * @return the list of currently loaded entries.
      */
+    @Pure
     public List<Entry> entries()
     {
         return entriesCache;
@@ -823,6 +847,7 @@ public final class RecordingLog implements AutoCloseable
      *
      * @return the next index to be used when appending an entry to the log.
      */
+    @Pure
     public int nextEntryIndex()
     {
         return nextEntryIndex;
@@ -831,6 +856,7 @@ public final class RecordingLog implements AutoCloseable
     /**
      * Reload the recording log from disk.
      */
+    @Impure
     public void reload()
     {
         entriesCache.clear();
@@ -890,6 +916,8 @@ public final class RecordingLog implements AutoCloseable
      *
      * @return the last leadership term recording id or {@link RecordingPos#NULL_RECORDING_ID} if not found.
      */
+    @Pure
+    @Impure
     public long findLastTermRecordingId()
     {
         final Entry lastTerm = findLastTerm();
@@ -901,6 +929,8 @@ public final class RecordingLog implements AutoCloseable
      *
      * @return the last leadership term in the recording log.
      */
+    @Pure
+    @Impure
     public Entry findLastTerm()
     {
         for (int i = entriesCache.size() - 1; i >= 0; i--)
@@ -921,6 +951,7 @@ public final class RecordingLog implements AutoCloseable
      * @param leadershipTermId to get {@link Entry} for.
      * @return the {@link Entry} if found or throw {@link IllegalArgumentException} if no entry exists for term.
      */
+    @Impure
     public Entry getTermEntry(final long leadershipTermId)
     {
         final int index = (int)cacheIndexByLeadershipTermIdMap.get(leadershipTermId);
@@ -938,6 +969,7 @@ public final class RecordingLog implements AutoCloseable
      * @param leadershipTermId to get {@link Entry} for.
      * @return the {@link Entry} if found or null if not found.
      */
+    @Impure
     public Entry findTermEntry(final long leadershipTermId)
     {
         final int index = (int)cacheIndexByLeadershipTermIdMap.get(leadershipTermId);
@@ -955,6 +987,8 @@ public final class RecordingLog implements AutoCloseable
      * @param serviceId for the snapshot.
      * @return the latest snapshot {@link Entry} in the log or null if no snapshot exists.
      */
+    @Pure
+    @Impure
     public Entry getLatestSnapshot(final int serviceId)
     {
         for (int i = entriesCache.size() - 1; i >= 0; i--)
@@ -987,6 +1021,7 @@ public final class RecordingLog implements AutoCloseable
      *
      * @return true if the latest snapshot was found and marked as invalid, so it will not be reloaded.
      */
+    @Impure
     public boolean invalidateLatestSnapshot()
     {
         final IntArrayList indices = new IntArrayList();
@@ -1053,6 +1088,7 @@ public final class RecordingLog implements AutoCloseable
      * @param leadershipTermId to get {@link Entry#timestamp} for.
      * @return the timestamp or {@link io.aeron.Aeron#NULL_VALUE} if not found.
      */
+    @Impure
     public long getTermTimestamp(final long leadershipTermId)
     {
         final int index = (int)cacheIndexByLeadershipTermIdMap.get(leadershipTermId);
@@ -1073,6 +1109,7 @@ public final class RecordingLog implements AutoCloseable
      * @param replicatedRecordingId leader's recordingId used for replicating
      * @return a new {@link RecoveryPlan} for the cluster.
      */
+    @Impure
     public RecoveryPlan createRecoveryPlan(
         final AeronArchive archive, final int serviceCount, final long replicatedRecordingId)
     {
@@ -1120,6 +1157,8 @@ public final class RecordingLog implements AutoCloseable
      * @param snapshots to construct plan from.
      * @return a new {@link RecoveryPlan} for the cluster.
      */
+    @SideEffectFree
+    @Impure
     public static RecoveryPlan createRecoveryPlan(final ArrayList<RecordingLog.Snapshot> snapshots)
     {
         long lastLeadershipTermId = NULL_VALUE;
@@ -1153,6 +1192,7 @@ public final class RecordingLog implements AutoCloseable
      * @param leadershipTermId to check.
      * @return true if term has not yet been appended otherwise false.
      */
+    @Impure
     public boolean isUnknown(final long leadershipTermId)
     {
         return NULL_VALUE == cacheIndexByLeadershipTermIdMap.get(leadershipTermId);
@@ -1166,6 +1206,7 @@ public final class RecordingLog implements AutoCloseable
      * @param termBaseLogPosition for the beginning of the term.
      * @param timestamp           at the beginning of the appended term.
      */
+    @Impure
     public void appendTerm(
         final long recordingId, final long leadershipTermId, final long termBaseLogPosition, final long timestamp)
     {
@@ -1216,6 +1257,7 @@ public final class RecordingLog implements AutoCloseable
      * @param timestamp           at which the snapshot was taken.
      * @param serviceId           for which the snapshot is recorded.
      */
+    @Impure
     public void appendSnapshot(
         final long recordingId,
         final long leadershipTermId,
@@ -1252,6 +1294,7 @@ public final class RecordingLog implements AutoCloseable
      * @param serviceId           for which the snapshot is recorded.
      * @param archiveEndpoint     endpoint for the archive where
      */
+    @Impure
     public void appendStandbySnapshot(
         final long recordingId,
         final long leadershipTermId,
@@ -1301,6 +1344,7 @@ public final class RecordingLog implements AutoCloseable
      * @param leadershipTermId for committing the term position reached.
      * @param logPosition      reached in the leadership term.
      */
+    @Impure
     public void commitLogPosition(final long leadershipTermId, final long logPosition)
     {
         final int index = (int)cacheIndexByLeadershipTermIdMap.get(leadershipTermId);
@@ -1318,6 +1362,7 @@ public final class RecordingLog implements AutoCloseable
         }
     }
 
+    @Impure
     void invalidateEntry(final int index)
     {
         final Entry invalidEntry = entriesCache.get(index).invalidate();
@@ -1343,6 +1388,7 @@ public final class RecordingLog implements AutoCloseable
      * @param leadershipTermId to match for validation.
      * @param entryIndex       reached in the leadership term.
      */
+    @Impure
     void removeEntry(final long leadershipTermId, final int entryIndex)
     {
         Entry entryToRemove = null;
@@ -1375,6 +1421,7 @@ public final class RecordingLog implements AutoCloseable
      * @param serviceCount to ensure that we have a complete set of snapshots.
      * @return collection of snapshots.
      */
+    @Impure
     public Map<String, List<Entry>> latestStandbySnapshots(final int serviceCount)
     {
         final Map<String, List<Entry>> latestStandbySnapshots = new Object2ObjectHashMap<>();
@@ -1416,6 +1463,7 @@ public final class RecordingLog implements AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "RecordingLog{" +
@@ -1424,6 +1472,7 @@ public final class RecordingLog implements AutoCloseable
             '}';
     }
 
+    @Pure
     static String typeAsString(final int type)
     {
         switch (type)
@@ -1439,6 +1488,7 @@ public final class RecordingLog implements AutoCloseable
         }
     }
 
+    @Impure
     static void addSnapshots(
         final ArrayList<Snapshot> snapshots,
         final ArrayList<Entry> entries,
@@ -1478,6 +1528,7 @@ public final class RecordingLog implements AutoCloseable
         }
     }
 
+    @Impure
     static void writeEntryToBuffer(final Entry entry, final UnsafeBuffer buffer)
     {
         buffer.putLong(RECORDING_ID_OFFSET, entry.recordingId, LITTLE_ENDIAN);
@@ -1493,21 +1544,25 @@ public final class RecordingLog implements AutoCloseable
         }
     }
 
+    @Pure
     static boolean isValidSnapshot(final Entry entry)
     {
         return entry.isValid && ENTRY_TYPE_SNAPSHOT == entry.type;
     }
 
+    @Pure
     static boolean isInvalidSnapshot(final Entry entry)
     {
         return !entry.isValid && ENTRY_TYPE_SNAPSHOT == entry.type;
     }
 
+    @Pure
     static boolean isValidAnySnapshot(final Entry entry)
     {
         return entry.isValid && (ENTRY_TYPE_SNAPSHOT == entry.type || ENTRY_TYPE_STANDBY_SNAPSHOT == entry.type);
     }
 
+    @Impure
     void ensureCoherent(
         final long recordingId,
         final long initialLogLeadershipTermId,
@@ -1575,6 +1630,7 @@ public final class RecordingLog implements AutoCloseable
         force(fileSyncLevel);
     }
 
+    @Impure
     private static void validateRecordingId(final long recordingId)
     {
         if (NULL_VALUE == recordingId)
@@ -1583,6 +1639,7 @@ public final class RecordingLog implements AutoCloseable
         }
     }
 
+    @Impure
     private void validateTermRecordingId(final long recordingId)
     {
         validateRecordingId(recordingId);
@@ -1601,6 +1658,7 @@ public final class RecordingLog implements AutoCloseable
         }
     }
 
+    @Impure
     private boolean restoreInvalidSnapshot(
         final int snapshotEntryType,
         final long recordingId,
@@ -1644,6 +1702,7 @@ public final class RecordingLog implements AutoCloseable
         return false;
     }
 
+    @Impure
     int append(
         final int entryType,
         final long recordingId,
@@ -1729,6 +1788,7 @@ public final class RecordingLog implements AutoCloseable
         return index;
     }
 
+    @Impure
     private void persistToStorage(final long entryPosition, final int offset, final int length)
     {
         byteBuffer.limit(length).position(0);
@@ -1747,6 +1807,7 @@ public final class RecordingLog implements AutoCloseable
         }
     }
 
+    @Impure
     private void persistToStorage(final Entry entry, final DirectBuffer directBuffer)
     {
         final ByteBuffer byteBuffer = directBuffer.byteBuffer();
@@ -1771,6 +1832,7 @@ public final class RecordingLog implements AutoCloseable
         }
     }
 
+    @Impure
     private int captureEntriesFromBuffer(
         final long filePosition, final ByteBuffer byteBuffer, final UnsafeBuffer buffer, final ArrayList<Entry> entries)
     {
@@ -1822,6 +1884,7 @@ public final class RecordingLog implements AutoCloseable
         return consumed;
     }
 
+    @Impure
     private static void syncDirectory(final File dir)
     {
         try (FileChannel fileChannel = FileChannel.open(dir.toPath()))
@@ -1833,6 +1896,7 @@ public final class RecordingLog implements AutoCloseable
         }
     }
 
+    @Impure
     private static void planRecovery(
         final ArrayList<Snapshot> snapshots,
         final MutableReference<Log> logRef,
@@ -1919,11 +1983,13 @@ public final class RecordingLog implements AutoCloseable
         }
     }
 
+    @Pure
     private static boolean isValidTerm(final Entry entry)
     {
         return ENTRY_TYPE_TERM == entry.type && entry.isValid;
     }
 
+    @Pure
     private static boolean matchesEntry(
         final Entry entry,
         final long leadershipTermId,

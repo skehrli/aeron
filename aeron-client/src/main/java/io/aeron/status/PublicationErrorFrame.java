@@ -15,6 +15,9 @@
  */
 package io.aeron.status;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.command.PublicationErrorFrameFlyweight;
 
 import java.net.InetSocketAddress;
@@ -39,6 +42,7 @@ public class PublicationErrorFrame implements Cloneable
      *
      * @return registration id of the publication.
      */
+    @Pure
     public long registrationId()
     {
         return registrationId;
@@ -49,6 +53,7 @@ public class PublicationErrorFrame implements Cloneable
      *
      * @return session id of the publication.
      */
+    @Pure
     public int sessionId()
     {
         return sessionId;
@@ -59,6 +64,7 @@ public class PublicationErrorFrame implements Cloneable
      *
      * @return stream id of the publication.
      */
+    @Pure
     public int streamId()
     {
         return streamId;
@@ -69,6 +75,7 @@ public class PublicationErrorFrame implements Cloneable
      *
      * @return receiver id of the source that send the error frame.
      */
+    @Pure
     public long receiverId()
     {
         return receiverId;
@@ -80,6 +87,7 @@ public class PublicationErrorFrame implements Cloneable
      * @return group tag of the source that sent the error frame or {@link io.aeron.Aeron#NULL_VALUE} if the source did not have a group
      * tag set.
      */
+    @Pure
     public long groupTag()
     {
         return groupTag;
@@ -90,6 +98,7 @@ public class PublicationErrorFrame implements Cloneable
      *
      * @return the error code.
      */
+    @Pure
     public int errorCode()
     {
         return errorCode;
@@ -100,6 +109,7 @@ public class PublicationErrorFrame implements Cloneable
      *
      * @return the error message.
      */
+    @Pure
     public String errorMessage()
     {
         return errorMessage;
@@ -110,6 +120,7 @@ public class PublicationErrorFrame implements Cloneable
      *
      * @return address of the remote source.
      */
+    @Pure
     public InetSocketAddress sourceAddress()
     {
         return sourceAddress;
@@ -121,6 +132,7 @@ public class PublicationErrorFrame implements Cloneable
      *
      * @return registrationId of the destination or {@link io.aeron.Aeron#NULL_VALUE}.
      */
+    @Pure
     public long destinationRegistrationId()
     {
         return destinationRegistrationId;
@@ -132,6 +144,7 @@ public class PublicationErrorFrame implements Cloneable
      * @param frameFlyweight that was received from the client message buffer.
      * @return this for fluent API.
      */
+    @Impure
     public PublicationErrorFrame set(final PublicationErrorFrameFlyweight frameFlyweight)
     {
         registrationId = frameFlyweight.registrationId();
@@ -153,6 +166,7 @@ public class PublicationErrorFrame implements Cloneable
      *
      * @return a copy of this instance's data.
      */
+    @SideEffectFree
     public PublicationErrorFrame clone()
     {
         try
@@ -170,6 +184,8 @@ public class PublicationErrorFrame implements Cloneable
      *
      * @return a String representation of the error frame.
      */
+    @Pure
+    @Impure
     public String toString()
     {
         return "CounterMessageFlyweight{" +

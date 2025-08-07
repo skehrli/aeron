@@ -15,6 +15,8 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.*;
 import io.aeron.logbuffer.Header;
 import org.agrona.DirectBuffer;
@@ -64,6 +66,7 @@ public final class ImageRateSubscriber extends ImageRateSubscriberRhsPadding imp
      * @param running       atomic flag to indicate if it should keep running.
      * @param subscription  to pick up the {@link Image} with.
      */
+    @Impure
     public ImageRateSubscriber(final int fragmentLimit, final AtomicBoolean running, final Subscription subscription)
     {
         this.fragmentLimit = fragmentLimit;
@@ -76,6 +79,7 @@ public final class ImageRateSubscriber extends ImageRateSubscriberRhsPadding imp
      *
      * @return total bytes consumed.
      */
+    @Pure
     public long totalBytes()
     {
         return totalBytes;
@@ -84,6 +88,7 @@ public final class ImageRateSubscriber extends ImageRateSubscriberRhsPadding imp
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void run()
     {
         while (!subscription.isConnected())
@@ -118,6 +123,7 @@ public final class ImageRateSubscriber extends ImageRateSubscriberRhsPadding imp
         System.out.format("Subscriber poll failure ratio: %f%n", failureRatio);
     }
 
+    @Impure
     private void onFragment(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {
         TOTAL_BYTES_UPDATER.lazySet(this, totalBytes + length);

@@ -15,6 +15,7 @@
  */
 package io.aeron.driver.media;
 
+import org.checkerframework.dataflow.qual.Impure;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -23,25 +24,31 @@ import java.util.List;
 
 interface NetworkInterfaceShim
 {
+    @Impure
     Enumeration<NetworkInterface> getNetworkInterfaces() throws SocketException;
 
+    @Impure
     List<InterfaceAddress> getInterfaceAddresses(NetworkInterface ifc);
 
+    @Impure
     boolean isLoopback(NetworkInterface ifc) throws SocketException;
 
     @SuppressWarnings("JavadocVariable")
     NetworkInterfaceShim DEFAULT = new NetworkInterfaceShim()
     {
+        @Impure
         public Enumeration<NetworkInterface> getNetworkInterfaces() throws SocketException
         {
             return NetworkInterface.getNetworkInterfaces();
         }
 
+        @Impure
         public List<InterfaceAddress> getInterfaceAddresses(final NetworkInterface ifc)
         {
             return ifc.getInterfaceAddresses();
         }
 
+        @Impure
         public boolean isLoopback(final NetworkInterface ifc) throws SocketException
         {
             return ifc.isLoopback();

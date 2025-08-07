@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.ExclusivePublication;
 
 /**
@@ -39,6 +41,7 @@ public final class ConsensusControlState
      * @param leadershipTermId      leadership term id.
      * @param leaderLocalLogChannel leader local log channel or null.
      */
+    @SideEffectFree
     ConsensusControlState(
         final ExclusivePublication logPublication,
         final long logRecordingId,
@@ -54,6 +57,7 @@ public final class ConsensusControlState
     /**
      * @return true iff we are the leader (and have the log publication).
      */
+    @Pure
     public boolean isLeader()
     {
         return null != logPublication;
@@ -62,6 +66,7 @@ public final class ConsensusControlState
     /**
      * @return log publication or null if follower.
      */
+    @Pure
     public ExclusivePublication logPublication()
     {
         return logPublication;
@@ -70,6 +75,7 @@ public final class ConsensusControlState
     /**
      * @return log recording id.
      */
+    @Pure
     public long logRecordingId()
     {
         return logRecordingId;
@@ -78,6 +84,7 @@ public final class ConsensusControlState
     /**
      * @return leadership term id.
      */
+    @Pure
     public long leadershipTermId()
     {
         return leadershipTermId;
@@ -86,6 +93,7 @@ public final class ConsensusControlState
     /**
      * @return the local log channel (for services or extension). Only applicable for a leader.
      */
+    @Pure
     public String leaderLocalLogChannel()
     {
         return leaderLocalLogChannel;

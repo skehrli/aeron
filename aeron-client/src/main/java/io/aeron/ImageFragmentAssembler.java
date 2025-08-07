@@ -15,6 +15,8 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.logbuffer.FragmentHandler;
 import io.aeron.logbuffer.Header;
 import org.agrona.DirectBuffer;
@@ -41,6 +43,7 @@ public class ImageFragmentAssembler implements FragmentHandler
      *
      * @param delegate onto which whole messages are forwarded.
      */
+    @Impure
     public ImageFragmentAssembler(final FragmentHandler delegate)
     {
         this(delegate, 0, false);
@@ -52,6 +55,7 @@ public class ImageFragmentAssembler implements FragmentHandler
      * @param delegate            onto which whole messages are forwarded.
      * @param initialBufferLength to be used for the session.
      */
+    @Impure
     public ImageFragmentAssembler(final FragmentHandler delegate, final int initialBufferLength)
     {
         this.delegate = delegate;
@@ -65,6 +69,7 @@ public class ImageFragmentAssembler implements FragmentHandler
      * @param initialBufferLength to be used for the session.
      * @param isDirectByteBuffer  is the underlying buffer to be a direct {@link java.nio.ByteBuffer}?
      */
+    @Impure
     public ImageFragmentAssembler(
         final FragmentHandler delegate, final int initialBufferLength, final boolean isDirectByteBuffer)
     {
@@ -77,6 +82,7 @@ public class ImageFragmentAssembler implements FragmentHandler
      *
      * @return the delegate unto which assembled messages are delegated.
      */
+    @Pure
     public FragmentHandler delegate()
     {
         return delegate;
@@ -87,6 +93,7 @@ public class ImageFragmentAssembler implements FragmentHandler
      *
      * @return the {@link BufferBuilder} for resetting this assembler.
      */
+    @Pure
     public BufferBuilder bufferBuilder()
     {
         return builder;
@@ -100,6 +107,7 @@ public class ImageFragmentAssembler implements FragmentHandler
      * @param length of the data in bytes.
      * @param header representing the metadata for the data.
      */
+    @Impure
     public void onFragment(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {
         final byte flags = header.flags();
@@ -114,6 +122,7 @@ public class ImageFragmentAssembler implements FragmentHandler
         }
     }
 
+    @Impure
     private void handleFragment(
         final DirectBuffer buffer, final int offset, final int length, final Header header, final byte flags)
     {

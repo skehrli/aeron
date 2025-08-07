@@ -15,6 +15,7 @@
  */
 package io.aeron.command;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.BitUtil;
 import org.agrona.MutableDirectBuffer;
 
@@ -74,6 +75,7 @@ public class ImageBuffersReadyFlyweight
      * @param offset at which the message begins.
      * @return this for a fluent API.
      */
+    @Impure
     public final ImageBuffersReadyFlyweight wrap(final MutableDirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
@@ -87,6 +89,7 @@ public class ImageBuffersReadyFlyweight
      *
      * @return correlation id field.
      */
+    @Impure
     public long correlationId()
     {
         return buffer.getLong(offset + CORRELATION_ID_OFFSET);
@@ -98,6 +101,7 @@ public class ImageBuffersReadyFlyweight
      * @param correlationId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public ImageBuffersReadyFlyweight correlationId(final long correlationId)
     {
         buffer.putLong(offset + CORRELATION_ID_OFFSET, correlationId);
@@ -110,6 +114,7 @@ public class ImageBuffersReadyFlyweight
      *
      * @return session id field.
      */
+    @Impure
     public int sessionId()
     {
         return buffer.getInt(offset + SESSION_ID_OFFSET);
@@ -121,6 +126,7 @@ public class ImageBuffersReadyFlyweight
      * @param sessionId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public ImageBuffersReadyFlyweight sessionId(final int sessionId)
     {
         buffer.putInt(offset + SESSION_ID_OFFSET, sessionId);
@@ -133,6 +139,7 @@ public class ImageBuffersReadyFlyweight
      *
      * @return stream id field.
      */
+    @Impure
     public int streamId()
     {
         return buffer.getInt(offset + STREAM_ID_FIELD_OFFSET);
@@ -144,6 +151,7 @@ public class ImageBuffersReadyFlyweight
      * @param streamId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public ImageBuffersReadyFlyweight streamId(final int streamId)
     {
         buffer.putInt(offset + STREAM_ID_FIELD_OFFSET, streamId);
@@ -157,6 +165,7 @@ public class ImageBuffersReadyFlyweight
      * @param id for the subscriber position counter.
      * @return this for a fluent API.
      */
+    @Impure
     public ImageBuffersReadyFlyweight subscriberPositionId(final int id)
     {
         buffer.putInt(offset + SUBSCRIBER_POSITION_ID_OFFSET, id);
@@ -169,6 +178,7 @@ public class ImageBuffersReadyFlyweight
      *
      * @return position counter Id for the subscriber.
      */
+    @Impure
     public int subscriberPositionId()
     {
         return buffer.getInt(offset + SUBSCRIBER_POSITION_ID_OFFSET);
@@ -180,6 +190,7 @@ public class ImageBuffersReadyFlyweight
      * @param id for the Subscription.
      * @return this for a fluent API.
      */
+    @Impure
     public ImageBuffersReadyFlyweight subscriptionRegistrationId(final long id)
     {
         buffer.putLong(offset + SUBSCRIPTION_REGISTRATION_ID_OFFSET, id);
@@ -192,6 +203,7 @@ public class ImageBuffersReadyFlyweight
      *
      * @return registration Id for the Subscription.
      */
+    @Impure
     public long subscriptionRegistrationId()
     {
         return buffer.getLong(offset + SUBSCRIPTION_REGISTRATION_ID_OFFSET);
@@ -202,6 +214,7 @@ public class ImageBuffersReadyFlyweight
      *
      * @return log filename.
      */
+    @Impure
     public String logFileName()
     {
         return buffer.getStringAscii(offset + LOG_FILE_NAME_OFFSET);
@@ -212,6 +225,7 @@ public class ImageBuffersReadyFlyweight
      *
      * @param appendable to append log file name to.
      */
+    @Impure
     public void appendLogFileName(final Appendable appendable)
     {
         buffer.getStringAscii(offset + LOG_FILE_NAME_OFFSET, appendable);
@@ -223,6 +237,7 @@ public class ImageBuffersReadyFlyweight
      * @param logFileName for the image.
      * @return this for a fluent API.
      */
+    @Impure
     public ImageBuffersReadyFlyweight logFileName(final String logFileName)
     {
         buffer.putStringAscii(offset + LOG_FILE_NAME_OFFSET, logFileName);
@@ -234,6 +249,7 @@ public class ImageBuffersReadyFlyweight
      *
      * @return source identity string.
      */
+    @Impure
     public String sourceIdentity()
     {
         return buffer.getStringAscii(offset + sourceIdentityOffset());
@@ -244,6 +260,7 @@ public class ImageBuffersReadyFlyweight
      *
      * @param appendable to append source identity to.
      */
+    @Impure
     public void appendSourceIdentity(final Appendable appendable)
     {
         buffer.getStringAscii(offset + sourceIdentityOffset(), appendable);
@@ -257,6 +274,7 @@ public class ImageBuffersReadyFlyweight
      * @return this for a fluent API.
      * @see #logFileName(String)
      */
+    @Impure
     public ImageBuffersReadyFlyweight sourceIdentity(final String value)
     {
         buffer.putStringAscii(offset + sourceIdentityOffset(), value);
@@ -270,12 +288,14 @@ public class ImageBuffersReadyFlyweight
      *
      * @return the length of the current message.
      */
+    @Impure
     public int length()
     {
         final int sourceIdentityOffset = sourceIdentityOffset();
         return sourceIdentityOffset + buffer.getInt(offset + sourceIdentityOffset) + SIZE_OF_INT;
     }
 
+    @Impure
     private int sourceIdentityOffset()
     {
         final int alignedLength = BitUtil.align(buffer.getInt(offset + LOG_FILE_NAME_OFFSET), SIZE_OF_INT);

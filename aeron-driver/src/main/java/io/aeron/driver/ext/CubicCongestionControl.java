@@ -15,6 +15,8 @@
  */
 package io.aeron.driver.ext;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.Configuration;
 import io.aeron.driver.CongestionControl;
 import io.aeron.driver.MediaDriver;
@@ -100,6 +102,7 @@ public class CubicCongestionControl implements CongestionControl
      * @param context         for configuration options applied in the driver.
      * @param countersManager for the driver.
      */
+    @Impure
     @SuppressWarnings("this-escape")
     public CubicCongestionControl(
         final long registrationId,
@@ -169,6 +172,7 @@ public class CubicCongestionControl implements CongestionControl
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         CloseHelper.close(errorHandler, rttIndicator);
@@ -178,6 +182,7 @@ public class CubicCongestionControl implements CongestionControl
     /**
      * {@inheritDoc}
      */
+    @Pure
     public boolean shouldMeasureRtt(final long nowNs)
     {
         return CubicCongestionControlConfiguration.MEASURE_RTT && ((lastRttTimestampNs + rttTimeoutNs) - nowNs < 0);
@@ -186,6 +191,7 @@ public class CubicCongestionControl implements CongestionControl
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onRttMeasurementSent(final long nowNs)
     {
         lastRttTimestampNs = nowNs;
@@ -194,6 +200,7 @@ public class CubicCongestionControl implements CongestionControl
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onRttMeasurement(final long nowNs, final long rttNs, final InetSocketAddress srcAddress)
     {
         lastRttTimestampNs = nowNs;
@@ -205,6 +212,7 @@ public class CubicCongestionControl implements CongestionControl
     /**
      * {@inheritDoc}
      */
+    @Impure
     public long onTrackRebuild(
         final long nowNs,
         final long newConsumptionPosition,
@@ -269,6 +277,7 @@ public class CubicCongestionControl implements CongestionControl
     /**
      * {@inheritDoc}
      */
+    @Pure
     public int initialWindowLength()
     {
         return initialWindowLength;
@@ -277,11 +286,13 @@ public class CubicCongestionControl implements CongestionControl
     /**
      * {@inheritDoc}
      */
+    @Pure
     public int maxWindowLength()
     {
         return maxWindowLength;
     }
 
+    @Pure
     int maxCongestionWindow()
     {
         return maxCwnd;

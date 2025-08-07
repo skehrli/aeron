@@ -15,6 +15,8 @@
  */
 package io.aeron.agent;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.command.*;
 import io.aeron.logbuffer.FrameDescriptor;
 import io.aeron.protocol.*;
@@ -62,10 +64,12 @@ final class DriverEventDissector
 
     static final String CONTEXT = "DRIVER";
 
+    @SideEffectFree
     private DriverEventDissector()
     {
     }
 
+    @Impure
     static void dissectFrame(
         final DriverEventCode eventCode,
         final MutableDirectBuffer buffer,
@@ -125,6 +129,7 @@ final class DriverEventDissector
         }
     }
 
+    @Impure
     @SuppressWarnings("MethodLength")
     static void dissectCommand(
         final DriverEventCode code, final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
@@ -243,6 +248,7 @@ final class DriverEventDissector
         }
     }
 
+    @Impure
     static void dissectString(
         final DriverEventCode code, final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
@@ -250,6 +256,7 @@ final class DriverEventDissector
         builder.append(": ").append(buffer.getStringAscii(offset + encodedLength, LITTLE_ENDIAN));
     }
 
+    @Impure
     static void dissectRemovePublicationCleanup(
         final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
@@ -266,6 +273,7 @@ final class DriverEventDissector
         buffer.getStringAscii(absoluteOffset, builder);
     }
 
+    @Impure
     static void dissectRemoveSubscriptionCleanup(
         final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
@@ -282,6 +290,7 @@ final class DriverEventDissector
         buffer.getStringAscii(absoluteOffset, builder);
     }
 
+    @Impure
     static void dissectRemoveImageCleanup(
         final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
@@ -301,6 +310,7 @@ final class DriverEventDissector
         buffer.getStringAscii(absoluteOffset, builder);
     }
 
+    @Impure
     static void dissectUntetheredSubscriptionStateChange(
         final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
@@ -321,6 +331,7 @@ final class DriverEventDissector
         buffer.getStringAscii(absoluteOffset, builder);
     }
 
+    @Impure
     static void dissectAddress(
         final DriverEventCode code, final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
@@ -331,6 +342,7 @@ final class DriverEventDissector
         dissectSocketAddress(buffer, absoluteOffset, builder);
     }
 
+    @Impure
     static void dissectFlowControlReceiver(
         final DriverEventCode code, final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
@@ -353,6 +365,7 @@ final class DriverEventDissector
         buffer.getStringAscii(absoluteOffset, builder);
     }
 
+    @Impure
     static void dissectResolve(
         final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
@@ -381,6 +394,7 @@ final class DriverEventDissector
         dissectInetAddress(buffer, absoluteOffset, builder);
     }
 
+    @Impure
     static void dissectLookup(
         final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
@@ -409,6 +423,7 @@ final class DriverEventDissector
         buffer.getStringAscii(absoluteOffset, builder);
     }
 
+    @Impure
     static void dissectHostName(
         final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
@@ -422,6 +437,7 @@ final class DriverEventDissector
         buffer.getStringAscii(absoluteOffset, builder);
     }
 
+    @Impure
     static void dissectNak(
         final DriverEventCode eventCode,
         final MutableDirectBuffer buffer,
@@ -447,6 +463,7 @@ final class DriverEventDissector
         buffer.getStringAscii(absoluteOffset, builder);
     }
 
+    @Impure
     static void dissectResend(final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
         int absoluteOffset = offset;
@@ -465,6 +482,7 @@ final class DriverEventDissector
         buffer.getStringAscii(absoluteOffset, builder);
     }
 
+    @Impure
     static void dissectPublicationRevoke(
         final MutableDirectBuffer buffer,
         final int offset,
@@ -482,6 +500,7 @@ final class DriverEventDissector
         buffer.getStringAscii(absoluteOffset, builder);
     }
 
+    @Impure
     static void dissectPublicationImageRevoke(
         final MutableDirectBuffer buffer,
         final int offset,
@@ -499,11 +518,13 @@ final class DriverEventDissector
         buffer.getStringAscii(absoluteOffset, builder);
     }
 
+    @Impure
     static int frameType(final MutableDirectBuffer buffer, final int termOffset)
     {
         return buffer.getShort(FrameDescriptor.typeOffset(termOffset), LITTLE_ENDIAN) & 0xFFFF;
     }
 
+    @Impure
     private static void dissectDataFrame(final StringBuilder builder)
     {
         builder
@@ -526,6 +547,7 @@ final class DriverEventDissector
             .append(DATA_HEADER.termOffset());
     }
 
+    @Impure
     private static void dissectStatusFrame(final StringBuilder builder)
     {
         builder.append("type=SM flags=");
@@ -548,6 +570,7 @@ final class DriverEventDissector
             .append(SM_HEADER.receiverId());
     }
 
+    @Impure
     private static void dissectNakFrame(final StringBuilder builder)
     {
         builder.append("type=NAK flags=");
@@ -568,6 +591,7 @@ final class DriverEventDissector
             .append(NAK_HEADER.length());
     }
 
+    @Impure
     private static void dissectSetupFrame(final StringBuilder builder)
     {
         builder.append("type=SETUP flags=");
@@ -594,6 +618,7 @@ final class DriverEventDissector
             .append(SETUP_HEADER.ttl());
     }
 
+    @Impure
     private static void dissectRttFrame(final StringBuilder builder)
     {
         builder.append("type=RTT flags=");
@@ -614,6 +639,7 @@ final class DriverEventDissector
             .append(RTT_MEASUREMENT.receiverId());
     }
 
+    @Impure
     private static void dissectResFrame(
         final MutableDirectBuffer buffer, final int offset, final StringBuilder builder)
     {
@@ -646,6 +672,7 @@ final class DriverEventDissector
         }
     }
 
+    @Impure
     private static void dissectRspSetupFrame(final StringBuilder builder)
     {
         builder.append("type=RSP_SETUP flags=");
@@ -662,6 +689,7 @@ final class DriverEventDissector
             .append(RSP_SETUP.responseSessionId());
     }
 
+    @Impure
     private static void dissectResEntry(final StringBuilder builder)
     {
         builder
@@ -685,6 +713,7 @@ final class DriverEventDissector
         builder.append(']');
     }
 
+    @Impure
     private static void dissectPublication(final StringBuilder builder)
     {
         builder
@@ -696,6 +725,7 @@ final class DriverEventDissector
         PUB_MSG.appendChannel(builder);
     }
 
+    @Impure
     private static void dissectSubscription(final StringBuilder builder)
     {
         builder
@@ -708,6 +738,7 @@ final class DriverEventDissector
         SUB_MSG.appendChannel(builder);
     }
 
+    @Impure
     private static void dissectPublicationReady(final StringBuilder builder)
     {
         builder
@@ -722,6 +753,7 @@ final class DriverEventDissector
         PUB_READY.appendLogFileName(builder);
     }
 
+    @Impure
     private static void dissectImageReady(final StringBuilder builder)
     {
         builder
@@ -737,6 +769,7 @@ final class DriverEventDissector
         IMAGE_READY.appendLogFileName(builder);
     }
 
+    @Impure
     private static void dissectCorrelationEvent(final StringBuilder builder)
     {
         builder
@@ -744,6 +777,7 @@ final class DriverEventDissector
             .append(" correlationId=").append(CORRELATED_MSG.correlationId());
     }
 
+    @Impure
     private static void dissectImage(final StringBuilder builder)
     {
         builder
@@ -756,6 +790,7 @@ final class DriverEventDissector
         IMAGE_MSG.appendChannel(builder);
     }
 
+    @Impure
     private static void dissectRemoveCounterEvent(final StringBuilder builder)
     {
         builder
@@ -764,6 +799,7 @@ final class DriverEventDissector
             .append(" correlationId=").append(REMOVE_COUNTER.correlationId());
     }
 
+    @Impure
     private static void dissectRemovePublicationEvent(final StringBuilder builder, final int captureLength)
     {
         builder
@@ -777,6 +813,7 @@ final class DriverEventDissector
         }
     }
 
+    @Impure
     private static void dissectRemoveSubscriptionEvent(final StringBuilder builder)
     {
         builder
@@ -785,6 +822,7 @@ final class DriverEventDissector
             .append(" correlationId=").append(REMOVE_SUBSCRIPTION.correlationId());
     }
 
+    @Impure
     private static void dissectDestination(final StringBuilder builder)
     {
         builder
@@ -796,6 +834,7 @@ final class DriverEventDissector
         DESTINATION_MSG.appendChannel(builder);
     }
 
+    @Impure
     private static void dissectError(final StringBuilder builder)
     {
         builder
@@ -806,6 +845,7 @@ final class DriverEventDissector
         ERROR_MSG.appendMessage(builder);
     }
 
+    @Impure
     private static void dissectCounter(final StringBuilder builder)
     {
         builder
@@ -818,6 +858,7 @@ final class DriverEventDissector
             .append(" correlationId=").append(COUNTER_MSG.correlationId());
     }
 
+    @Impure
     private static void dissectCounterUpdate(final StringBuilder builder)
     {
         builder
@@ -825,11 +866,13 @@ final class DriverEventDissector
             .append(" counterId=").append(COUNTER_UPDATE.counterId());
     }
 
+    @Impure
     private static void dissectOperationSuccess(final StringBuilder builder)
     {
         builder.append("correlationId=").append(OPERATION_SUCCEEDED.correlationId());
     }
 
+    @Impure
     private static void dissectSubscriptionReady(final StringBuilder builder)
     {
         builder
@@ -837,11 +880,13 @@ final class DriverEventDissector
             .append(" channelStatusCounterId=").append(SUBSCRIPTION_READY.channelStatusCounterId());
     }
 
+    @Impure
     private static void dissectClientTimeout(final StringBuilder builder)
     {
         builder.append("clientId=").append(CLIENT_TIMEOUT.clientId());
     }
 
+    @Impure
     private static void dissectTerminateDriver(final StringBuilder builder)
     {
         builder
@@ -849,6 +894,7 @@ final class DriverEventDissector
             .append(" tokenBufferLength=").append(TERMINATE_DRIVER.tokenBufferLength());
     }
 
+    @Impure
     private static void dissectDestinationById(final StringBuilder builder)
     {
         builder
@@ -856,6 +902,7 @@ final class DriverEventDissector
             .append(" destinationRegistrationId=").append(DESTINATION_BY_ID.destinationRegistrationId());
     }
 
+    @Impure
     private static void dissectRejectImage(final StringBuilder builder)
     {
         builder

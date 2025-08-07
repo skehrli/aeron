@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.Publication;
 
 /**
@@ -29,6 +31,7 @@ public interface ClusterClientSession
      *
      * @return cluster session identifier.
      */
+    @Pure
     long id();
 
     /**
@@ -36,6 +39,7 @@ public interface ClusterClientSession
      *
      * @return true of the session is open otherwise false.
      */
+    @Pure
     boolean isOpen();
 
     /**
@@ -43,6 +47,7 @@ public interface ClusterClientSession
      *
      * @return authenticated principal for a session encoded in byte form.
      */
+    @Pure
     byte[] encodedPrincipal();
 
     /**
@@ -50,6 +55,7 @@ public interface ClusterClientSession
      *
      * @return response {@link Publication} to be used for sending responses privately to a client.
      */
+    @Pure
     Publication responsePublication();
 
     /**
@@ -57,6 +63,7 @@ public interface ClusterClientSession
      *
      * @return time last activity has been recorded for a session to determine if it is active.
      */
+    @Pure
     long timeOfLastActivityNs();
 
     /**
@@ -65,5 +72,6 @@ public interface ClusterClientSession
      *
      * @param timeNs of last activity recorded for a session to determine if it is active.
      */
+    @Impure
     void timeOfLastActivityNs(long timeNs);
 }

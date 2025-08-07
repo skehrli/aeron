@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster.service;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.DirectBufferVector;
 import io.aeron.ExclusivePublication;
@@ -69,6 +71,7 @@ public interface Cluster
 
         private final int code;
 
+        @Impure
         Role(final int code)
         {
             if (code != ordinal())
@@ -84,6 +87,7 @@ public interface Cluster
          *
          * @return the code which matches the role in the cluster.
          */
+        @Pure
         public final int code()
         {
             return code;
@@ -95,6 +99,7 @@ public interface Cluster
          * @param code for the {@link Role}.
          * @return the {@link Role} of the cluster node.
          */
+        @Pure
         public static Role get(final long code)
         {
             if (code < 0 || code > (ROLES.length - 1))
@@ -111,6 +116,7 @@ public interface Cluster
          * @param counter containing the value of the role.
          * @return the role for the cluster member.
          */
+        @Impure
         public static Role get(final AtomicCounter counter)
         {
             if (counter.isClosed())
@@ -127,6 +133,7 @@ public interface Cluster
      *
      * @return unique id for the hosting member of the cluster.
      */
+    @Pure
     int memberId();
 
     /**
@@ -134,6 +141,7 @@ public interface Cluster
      *
      * @return the role the cluster node is playing.
      */
+    @Pure
     Role role();
 
     /**
@@ -141,6 +149,7 @@ public interface Cluster
      *
      * @return position the log has reached in bytes as of the current message.
      */
+    @Pure
     long logPosition();
 
     /**
@@ -148,6 +157,7 @@ public interface Cluster
      *
      * @return the {@link Aeron} client used by the cluster.
      */
+    @Pure
     Aeron aeron();
 
     /**
@@ -155,6 +165,7 @@ public interface Cluster
      *
      * @return the {@link ClusteredServiceContainer.Context} under which the container is running.
      */
+    @Pure
     ClusteredServiceContainer.Context context();
 
     /**
@@ -163,6 +174,7 @@ public interface Cluster
      * @param clusterSessionId to be looked up.
      * @return the {@link ClientSession} that matches the clusterSessionId.
      */
+    @Impure
     ClientSession getClientSession(long clusterSessionId);
 
     /**
@@ -173,6 +185,7 @@ public interface Cluster
      *
      * @return the current collection of cluster client sessions.
      */
+    @Pure
     Collection<ClientSession> clientSessions();
 
     /**
@@ -180,6 +193,7 @@ public interface Cluster
      *
      * @param action to be taken for each {@link ClientSession} in turn.
      */
+    @Impure
     void forEachClientSession(Consumer<? super ClientSession> action);
 
     /**
@@ -189,6 +203,7 @@ public interface Cluster
      * @return true if the event to close a session was sent or false if back pressure was applied.
      * @throws ClusterException if the clusterSessionId is not recognised.
      */
+    @Impure
     boolean closeClientSession(long clusterSessionId);
 
     /**
@@ -196,6 +211,7 @@ public interface Cluster
      *
      * @return time as {@link #timeUnit()}s since 1 Jan 1970 UTC.
      */
+    @Pure
     long time();
 
     /**
@@ -203,6 +219,7 @@ public interface Cluster
      *
      * @return the unit of time applied when timestamping and {@link #time()} operations.
      */
+    @Pure
     TimeUnit timeUnit();
 
     /**
@@ -243,6 +260,7 @@ public interface Cluster
      * @throws ClusterException if request fails with an error.
      * @see #cancelTimer(long)
      */
+    @Impure
     boolean scheduleTimer(long correlationId, long deadline);
 
     /**
@@ -274,6 +292,7 @@ public interface Cluster
      * @throws ClusterException if request fails with an error.
      * @see #scheduleTimer(long, long)
      */
+    @Impure
     boolean cancelTimer(long correlationId);
 
     /**
@@ -313,6 +332,7 @@ public interface Cluster
      * @return positive value if successful.
      * @see io.aeron.Publication#offer(DirectBuffer, int, int)
      */
+    @Impure
     long offer(DirectBuffer buffer, int offset, int length);
 
     /**
@@ -329,6 +349,7 @@ public interface Cluster
      * @return positive value if successful.
      * @see io.aeron.Publication#offer(DirectBufferVector[])
      */
+    @Impure
     long offer(DirectBufferVector[] vectors);
 
     /**
@@ -376,6 +397,7 @@ public interface Cluster
      * @see BufferClaim#commit()
      * @see BufferClaim#abort()
      */
+    @Impure
     long tryClaim(int length, BufferClaim bufferClaim);
 
     /**
@@ -384,5 +406,6 @@ public interface Cluster
      *
      * @return the {@link IdleStrategy} which should be used by the service when it experiences back-pressure.
      */
+    @Pure
     IdleStrategy idleStrategy();
 }

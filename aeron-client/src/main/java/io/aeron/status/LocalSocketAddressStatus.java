@@ -15,6 +15,7 @@
  */
 package io.aeron.status;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.AeronCounters;
 import org.agrona.BitUtil;
 import org.agrona.DirectBuffer;
@@ -68,6 +69,7 @@ public class LocalSocketAddressStatus
      * @param typeId          to categorise the counter.
      * @return the allocated counter.
      */
+    @Impure
     public static AtomicCounter allocate(
         final MutableDirectBuffer tempBuffer,
         final CountersManager countersManager,
@@ -102,6 +104,7 @@ public class LocalSocketAddressStatus
      * @param bindAddressAndPort     in string representation.
      * @param countersMetadataBuffer to be updated for the bound address.
      */
+    @Impure
     public static void updateBindAddress(
         final AtomicCounter counter, final String bindAddressAndPort, final UnsafeBuffer countersMetadataBuffer)
     {
@@ -128,6 +131,7 @@ public class LocalSocketAddressStatus
      * @param channelStatusId identity of the counter for the channel which aggregates the transports.
      * @return the list of active bound local socket addresses.
      */
+    @Impure
     public static List<String> findAddresses(
         final CountersReader countersReader, final long channelStatus, final int channelStatusId)
     {
@@ -179,6 +183,7 @@ public class LocalSocketAddressStatus
      * @param channelStatusId identity of the counter for the channel which aggregates the transports.
      * @return the endpoint representing the bound socket address or null if not found.
      */
+    @Impure
     public static String findAddress(
         final CountersReader countersReader, final long channelStatus, final int channelStatusId)
     {
@@ -229,6 +234,7 @@ public class LocalSocketAddressStatus
      * @param registrationId for the subscription.
      * @return number of local socket addresses in use.
      */
+    @Impure
     public static int findNumberOfAddressesByRegistrationId(
         final CountersReader countersReader, final long registrationId)
     {
@@ -259,6 +265,7 @@ public class LocalSocketAddressStatus
      * @param channelStatusId identity of the counter for the channel.
      * @return true if the counter is active otherwise false.
      */
+    @Impure
     public static boolean isActive(final CountersReader countersReader, final int channelStatusId)
     {
         final DirectBuffer buffer = countersReader.metaDataBuffer();

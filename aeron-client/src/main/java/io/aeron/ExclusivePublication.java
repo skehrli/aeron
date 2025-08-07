@@ -15,6 +15,9 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.logbuffer.BufferClaim;
 import io.aeron.logbuffer.LogBufferDescriptor;
 import org.agrona.DirectBuffer;
@@ -37,6 +40,7 @@ abstract class ExclusivePublicationLhsPadding extends Publication
     byte p032, p033, p034, p035, p036, p037, p038, p039, p040, p041, p042, p043, p044, p045, p046, p047;
     byte p048, p049, p050, p051, p052, p053, p054, p055, p056, p057, p058, p059, p060, p061, p062, p063;
 
+    @Impure
     ExclusivePublicationLhsPadding(
         final ClientConductor clientConductor,
         final String channel,
@@ -68,6 +72,7 @@ abstract class ExclusivePublicationValues extends ExclusivePublicationLhsPadding
     int activePartitionIndex;
     long termBeginPosition;
 
+    @Impure
     ExclusivePublicationValues(
         final ClientConductor clientConductor,
         final String channel,
@@ -116,6 +121,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
     byte p096, p097, p098, p099, p100, p101, p102, p103, p104, p105, p106, p107, p108, p109, p110, p111;
     byte p112, p113, p114, p115, p116, p117, p118, p119, p120, p121, p122, p123, p124, p125, p126, p127;
 
+    @Impure
     ExclusivePublication(
         final ClientConductor clientConductor,
         final String channel,
@@ -152,6 +158,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
     /**
      * Mark the publication to be revoked when {@link #close()} is called.  See  {@link #revoke()}
      */
+    @Impure
     public void revokeOnClose()
     {
         revokeOnClose = true;
@@ -165,6 +172,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
      * Hence, it should be used only when it's known that all subscribers have received all the data,
      * or if it doesn't matter if they have.
      */
+    @Impure
     public void revoke()
     {
         if (!isClosed)
@@ -177,6 +185,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
     /**
      * {@inheritDoc}
      */
+    @Pure
     public long position()
     {
         if (isClosed)
@@ -190,6 +199,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
     /**
      * {@inheritDoc}
      */
+    @Impure
     public long availableWindow()
     {
         if (isClosed)
@@ -205,6 +215,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
      *
      * @return the current term-id of the publication.
      */
+    @Pure
     public int termId()
     {
         return termId;
@@ -215,6 +226,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
      *
      * @return the current term-offset of the publication.
      */
+    @Pure
     public int termOffset()
     {
         return termOffset;
@@ -230,6 +242,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
      * @return The new stream position, otherwise a negative error value of {@link #NOT_CONNECTED},
      * {@link #BACK_PRESSURED}, {@link #ADMIN_ACTION}, {@link #CLOSED}, or {@link #MAX_POSITION_EXCEEDED}.
      */
+    @Impure
     public long offer(
         final DirectBuffer buffer,
         final int offset,
@@ -285,6 +298,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
      * @return The new stream position, otherwise a negative error value of {@link #NOT_CONNECTED},
      * {@link #BACK_PRESSURED}, {@link #ADMIN_ACTION}, {@link #CLOSED}, or {@link #MAX_POSITION_EXCEEDED}.
      */
+    @Impure
     public long offer(
         final DirectBuffer bufferOne,
         final int offsetOne,
@@ -348,6 +362,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
      * @return The new stream position, otherwise a negative error value of {@link #NOT_CONNECTED},
      * {@link #BACK_PRESSURED}, {@link #ADMIN_ACTION}, {@link #CLOSED}, or {@link #MAX_POSITION_EXCEEDED}.
      */
+    @Impure
     public long offer(final DirectBufferVector[] vectors, final ReservedValueSupplier reservedValueSupplier)
     {
         final int length = DirectBufferVector.validateAndComputeLength(vectors);
@@ -422,6 +437,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
      * @see BufferClaim#commit()
      * @see BufferClaim#abort()
      */
+    @Impure
     public long tryClaim(final int length, final BufferClaim bufferClaim)
     {
         checkPayloadLength(length);
@@ -457,6 +473,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
      * {@link #BACK_PRESSURED}, {@link #ADMIN_ACTION}, {@link #CLOSED}, or {@link #MAX_POSITION_EXCEEDED}.
      * @throws IllegalArgumentException if the length is greater than {@link #maxMessageLength() framed}.
      */
+    @Impure
     public long appendPadding(final int length)
     {
         if (length > maxFramedLength)
@@ -504,6 +521,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
      *                                  {@link #sessionId()} method or if the frame type is not equal to the
      *                                  {@link io.aeron.protocol.HeaderFlyweight#HDR_TYPE_DATA}.
      */
+    @Impure
     public long offerBlock(final MutableDirectBuffer buffer, final int offset, final int length)
     {
         if (isClosed)
@@ -536,6 +554,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
         }
     }
 
+    @SideEffectFree
     private void checkBlockLength(final int length)
     {
         final int remaining = termBufferLength - termOffset;
@@ -546,6 +565,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
         }
     }
 
+    @Impure
     private void checkFirstFrame(final MutableDirectBuffer buffer, final int offset)
     {
         final int frameType = HDR_TYPE_DATA;
@@ -570,6 +590,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
         }
     }
 
+    @Impure
     private long newPosition(final int resultingOffset)
     {
         if (resultingOffset > 0)
@@ -588,6 +609,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
         return ADMIN_ACTION;
     }
 
+    @Impure
     private void rotateTerm()
     {
         final int nextIndex = nextPartitionIndex(activePartitionIndex);
@@ -604,6 +626,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
         activeTermCountOrdered(logMetaDataBuffer, termCount);
     }
 
+    @Impure
     private int handleEndOfLog(final UnsafeBuffer termBuffer, final int termLength)
     {
         if (termOffset < termLength)
@@ -618,6 +641,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
         return -1;
     }
 
+    @Impure
     private int appendUnfragmentedMessage(
         final int tailCounterOffset,
         final UnsafeBuffer termBuffer,
@@ -654,6 +678,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
         return resultingOffset;
     }
 
+    @Impure
     private int appendFragmentedMessage(
         final UnsafeBuffer termBuffer,
         final int tailCounterOffset,
@@ -715,6 +740,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
         return resultingOffset;
     }
 
+    @Impure
     private int appendUnfragmentedMessage(
         final UnsafeBuffer termBuffer,
         final int tailCounterOffset,
@@ -755,6 +781,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
         return resultingOffset;
     }
 
+    @Impure
     private int appendFragmentedMessage(
         final UnsafeBuffer termBuffer,
         final int tailCounterOffset,
@@ -845,6 +872,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
         return resultingOffset;
     }
 
+    @Impure
     private int appendUnfragmentedMessage(
         final UnsafeBuffer termBuffer,
         final int tailCounterOffset,
@@ -886,6 +914,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
         return resultingOffset;
     }
 
+    @Impure
     private int appendFragmentedMessage(
         final UnsafeBuffer termBuffer,
         final int tailCounterOffset,
@@ -966,6 +995,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
         return resultingOffset;
     }
 
+    @Impure
     int claim(
         final UnsafeBuffer termBuffer,
         final int tailCounterOffset,
@@ -992,6 +1022,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
         return resultingOffset;
     }
 
+    @Impure
     private int appendPadding(
         final UnsafeBuffer termBuffer,
         final int tailCounterOffset,
@@ -1018,6 +1049,7 @@ public final class ExclusivePublication extends ExclusivePublicationValues
         return resultingOffset;
     }
 
+    @Impure
     private int appendBlock(
         final UnsafeBuffer termBuffer,
         final int tailCounterOffset,

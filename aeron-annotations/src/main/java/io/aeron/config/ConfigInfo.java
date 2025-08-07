@@ -15,6 +15,7 @@
  */
 package io.aeron.config;
 
+import org.checkerframework.dataflow.qual.Impure;
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
@@ -121,6 +122,7 @@ public class ConfigInfo implements Serializable
     /**
      * @param id the unique identifier for this block o' config information.
      */
+    @Impure
     public ConfigInfo(final String id)
     {
         this.id = id;

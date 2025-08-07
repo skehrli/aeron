@@ -15,6 +15,7 @@
  */
 package io.aeron.status;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.AeronCounters;
 import org.agrona.BitUtil;
 import org.agrona.DirectBuffer;
@@ -52,6 +53,7 @@ public class HeartbeatTimestamp
      * @param registrationId  to be associated with the counter.
      * @return a new {@link AtomicCounter} for tracking the last heartbeat.
      */
+    @Impure
     public static AtomicCounter allocate(
         final MutableDirectBuffer tempBuffer,
         final String name,
@@ -75,6 +77,7 @@ public class HeartbeatTimestamp
      * @param registrationId  to be associated with the counter.
      * @return the counter id to be used.
      */
+    @Impure
     public static int allocateCounterId(
         final MutableDirectBuffer tempBuffer,
         final String name,
@@ -109,6 +112,7 @@ public class HeartbeatTimestamp
      * @param registrationId for the active client.
      * @return the counter id if found otherwise {@link CountersReader#NULL_COUNTER_ID}.
      */
+    @Impure
     public static int findCounterIdByRegistrationId(
         final CountersReader countersReader, final int counterTypeId, final long registrationId)
     {
@@ -143,6 +147,7 @@ public class HeartbeatTimestamp
      * @param registrationId for the entity.
      * @return true if still valid otherwise false.
      */
+    @Impure
     public static boolean isActive(
         final CountersReader countersReader, final int counterId, final int counterTypeId, final long registrationId)
     {

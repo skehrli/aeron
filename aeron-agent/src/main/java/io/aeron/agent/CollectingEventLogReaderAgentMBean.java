@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package io.aeron.agent;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 
 /**
  * MBean interface for a logging agent that stores events in memory and allows them to be periodically written
@@ -26,6 +28,7 @@ public interface CollectingEventLogReaderAgentMBean
      *
      * @param isCollecting whether logs should be collected or not.
      */
+    @Impure
     void setCollecting(boolean isCollecting);
 
     /**
@@ -33,12 +36,14 @@ public interface CollectingEventLogReaderAgentMBean
      *
      * @return true to indicate logs are being collected in memory.
      */
+    @Pure
     boolean isCollecting();
 
     /**
      * Reset the internal positions within the collector discarding all previous logs. Should be called periodically,
      * so to avoid consuming all available memory.
      */
+    @Impure
     void reset();
 
     /**
@@ -46,6 +51,7 @@ public interface CollectingEventLogReaderAgentMBean
      *
      * @param name Value to included as a message in the log to delinate events.
      */
+    @Impure
     void startCollecting(String name);
 
     /**
@@ -54,5 +60,6 @@ public interface CollectingEventLogReaderAgentMBean
      * @param filename of file to write to.
      *
      */
+    @Impure
     void writeToFile(String filename);
 }

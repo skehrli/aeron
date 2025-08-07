@@ -15,6 +15,7 @@
  */
 package io.aeron.samples;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Aeron;
 import io.aeron.Subscription;
 import io.aeron.driver.MediaDriver;
@@ -48,6 +49,7 @@ public class BasicSubscriber
      *
      * @param args passed to the process.
      */
+    @Impure
     public static void main(final String[] args)
     {
         System.out.println("Subscribing to " + CHANNEL + " on stream id " + STREAM_ID);

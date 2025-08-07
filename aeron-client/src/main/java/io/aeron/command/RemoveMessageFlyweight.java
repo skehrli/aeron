@@ -15,6 +15,9 @@
  */
 package io.aeron.command;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.exceptions.ControlProtocolException;
 import org.agrona.MutableDirectBuffer;
 
@@ -50,6 +53,7 @@ public abstract class RemoveMessageFlyweight extends CorrelatedMessageFlyweight
      * @param offset at which the message begins.
      * @return this for a fluent API.
      */
+    @Impure
     public RemoveMessageFlyweight wrap(final MutableDirectBuffer buffer, final int offset)
     {
         super.wrap(buffer, offset);
@@ -62,6 +66,7 @@ public abstract class RemoveMessageFlyweight extends CorrelatedMessageFlyweight
      *
      * @return registration id field.
      */
+    @Impure
     public long registrationId()
     {
         return buffer.getLong(offset + REGISTRATION_ID_FIELD_OFFSET);
@@ -73,6 +78,7 @@ public abstract class RemoveMessageFlyweight extends CorrelatedMessageFlyweight
      * @param registrationId field value.
      * @return this for a fluent API.
      */
+    @Impure
     public RemoveMessageFlyweight registrationId(final long registrationId)
     {
         buffer.putLong(offset + REGISTRATION_ID_FIELD_OFFSET, registrationId);
@@ -85,6 +91,7 @@ public abstract class RemoveMessageFlyweight extends CorrelatedMessageFlyweight
      *
      * @return length of the message in bytes.
      */
+    @Pure
     public static int length()
     {
         return LENGTH + SIZE_OF_LONG;
@@ -96,6 +103,8 @@ public abstract class RemoveMessageFlyweight extends CorrelatedMessageFlyweight
      * @param msgTypeId type of message.
      * @param length of message in bytes to validate.
      */
+    @SideEffectFree
+    @Impure
     public void validateLength(final int msgTypeId, final int length)
     {
         if (length < MINIMUM_LENGTH)

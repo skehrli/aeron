@@ -15,6 +15,8 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.AeronCounters;
 import io.aeron.driver.media.UdpChannel;
 import io.aeron.driver.media.UdpNameResolutionTransport;
@@ -92,6 +94,7 @@ final class DriverNameResolver implements AutoCloseable, UdpNameResolutionTransp
     private long selfResolutionDeadlineMs;
     private long neighborResolutionDeadlineMs;
 
+    @Impure
     DriverNameResolver(final MediaDriver.Context ctx)
     {
         mtuLength = ctx.mtuLength();
@@ -146,6 +149,7 @@ final class DriverNameResolver implements AutoCloseable, UdpNameResolutionTransp
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         CloseHelper.closeAll(transport, cache);
@@ -154,6 +158,7 @@ final class DriverNameResolver implements AutoCloseable, UdpNameResolutionTransp
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int doWork(final long nowMs)
     {
         int workCount = 0;
@@ -182,6 +187,7 @@ final class DriverNameResolver implements AutoCloseable, UdpNameResolutionTransp
     /**
      * {@inheritDoc}
      */
+    @Impure
     public InetAddress resolve(final String name, final String uriParamName, final boolean isReResolution)
     {
         DriverNameResolverCache.CacheEntry entry;
@@ -224,6 +230,7 @@ final class DriverNameResolver implements AutoCloseable, UdpNameResolutionTransp
     /**
      * {@inheritDoc}
      */
+    @Impure
     public String lookup(final String name, final String uriParamName, final boolean isReLookup)
     {
         // here we would look up advertised endpoints/control IP:port pairs by name. Currently, we just return delegate.
@@ -233,6 +240,7 @@ final class DriverNameResolver implements AutoCloseable, UdpNameResolutionTransp
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int onFrame(
         final UnsafeBuffer unsafeBuffer, final int length, final InetSocketAddress srcAddress, final long nowMs)
     {
@@ -261,6 +269,7 @@ final class DriverNameResolver implements AutoCloseable, UdpNameResolutionTransp
         return 0;
     }
 
+    @Impure
     static String getHostName()
     {
         try
@@ -273,6 +282,7 @@ final class DriverNameResolver implements AutoCloseable, UdpNameResolutionTransp
         }
     }
 
+    @Impure
     private void openDatagramChannel()
     {
         transport.openDatagramChannel(null);
@@ -287,6 +297,7 @@ final class DriverNameResolver implements AutoCloseable, UdpNameResolutionTransp
         }
     }
 
+    @Impure
     private String buildNeighborsCounterLabel(final String prefix)
     {
         final StringBuilder builder = new StringBuilder(prefix);
@@ -301,6 +312,7 @@ final class DriverNameResolver implements AutoCloseable, UdpNameResolutionTransp
         return builder.toString();
     }
 
+    @Impure
     private int timeoutNeighbors(final long nowMs)
     {
         int workCount = 0;
@@ -327,6 +339,7 @@ final class DriverNameResolver implements AutoCloseable, UdpNameResolutionTransp
         return workCount;
     }
 
+    @Impure
     private void sendSelfResolutions(final long nowMs)
     {
         byteBuffer.clear();
@@ -397,6 +410,7 @@ final class DriverNameResolver implements AutoCloseable, UdpNameResolutionTransp
         selfResolutionDeadlineMs = nowMs + selfResolutionIntervalMs;
     }
 
+    @Impure
     private void sendResolutionFrameTo(final ByteBuffer buffer, final InetSocketAddress remoteAddress)
     {
         buffer.position(0);
@@ -410,6 +424,7 @@ final class DriverNameResolver implements AutoCloseable, UdpNameResolutionTransp
         }
     }
 
+    @Impure
     private void onResolutionEntry(
         final ResolutionEntryFlyweight resolutionEntry, final InetSocketAddress srcAddress, final long nowMs)
     {
@@ -460,6 +475,7 @@ final class DriverNameResolver implements AutoCloseable, UdpNameResolutionTransp
         }
     }
 
+    @Impure
     private int findNeighborByAddress(final byte[] address, final int addressLength, final int port)
     {
         for (int i = 0, size = neighborList.size(); i < size; i++)
@@ -476,6 +492,7 @@ final class DriverNameResolver implements AutoCloseable, UdpNameResolutionTransp
         return -1;
     }
 
+    @Impure
     private void sendNeighborResolutions(final long nowMs)
     {
         for (final DriverNameResolverCache.Iterator iter = cache.resetIterator(); iter.hasNext(); )
@@ -524,6 +541,7 @@ final class DriverNameResolver implements AutoCloseable, UdpNameResolutionTransp
         neighborResolutionDeadlineMs = nowMs + neighborResolutionIntervalMs;
     }
 
+    @Impure
     private InetSocketAddress resolveBootstrapNeighbor()
     {
         Exception t = null;
@@ -559,17 +577,20 @@ final class DriverNameResolver implements AutoCloseable, UdpNameResolutionTransp
         final InetSocketAddress socketAddress;
         long timeOfLastActivityMs;
 
+        @SideEffectFree
         Neighbor(final InetSocketAddress socketAddress, final long nowMs)
         {
             this.socketAddress = socketAddress;
             this.timeOfLastActivityMs = nowMs;
         }
 
+        @SideEffectFree
         static void neighborAdded(final long nowMs, final InetSocketAddress address)
         {
 //            System.out.println(nowMs + " neighbor added: " + address);
         }
 
+        @SideEffectFree
         static void neighborRemoved(final long nowMs, final InetSocketAddress address)
         {
 //            System.out.println(nowMs + " neighbor removed: " + address);

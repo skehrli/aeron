@@ -15,6 +15,7 @@
  */
 package io.aeron.protocol;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import java.nio.ByteBuffer;
@@ -68,6 +69,7 @@ public class RttMeasurementFlyweight extends HeaderFlyweight
     /**
      * Default constructor which can later be used to wrap a frame.
      */
+    @Impure
     public RttMeasurementFlyweight()
     {
     }
@@ -77,6 +79,7 @@ public class RttMeasurementFlyweight extends HeaderFlyweight
      *
      * @param buffer containing the frame.
      */
+    @Impure
     public RttMeasurementFlyweight(final ByteBuffer buffer)
     {
         super(buffer);
@@ -87,6 +90,7 @@ public class RttMeasurementFlyweight extends HeaderFlyweight
      *
      * @param buffer containing the frame.
      */
+    @Impure
     public RttMeasurementFlyweight(final UnsafeBuffer buffer)
     {
         super(buffer);
@@ -97,6 +101,7 @@ public class RttMeasurementFlyweight extends HeaderFlyweight
      *
      * @return session-id for the stream.
      */
+    @Impure
     public int sessionId()
     {
         return getInt(SESSION_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -108,6 +113,7 @@ public class RttMeasurementFlyweight extends HeaderFlyweight
      * @param sessionId session-id for the stream.
      * @return this for a fluent API.
      */
+    @Impure
     public RttMeasurementFlyweight sessionId(final int sessionId)
     {
         putInt(SESSION_ID_FIELD_OFFSET, sessionId, LITTLE_ENDIAN);
@@ -120,6 +126,7 @@ public class RttMeasurementFlyweight extends HeaderFlyweight
      *
      * @return stream-id for the stream.
      */
+    @Impure
     public int streamId()
     {
         return getInt(STREAM_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -131,6 +138,7 @@ public class RttMeasurementFlyweight extends HeaderFlyweight
      * @param streamId stream-id for the stream.
      * @return this for a fluent API.
      */
+    @Impure
     public RttMeasurementFlyweight streamId(final int streamId)
     {
         putInt(STREAM_ID_FIELD_OFFSET, streamId, LITTLE_ENDIAN);
@@ -143,6 +151,7 @@ public class RttMeasurementFlyweight extends HeaderFlyweight
      *
      * @return timestamp to echo in a reply or the timestamp in the original RTT Measurement.
      */
+    @Impure
     public long echoTimestampNs()
     {
         return getLong(ECHO_TIMESTAMP_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -154,6 +163,7 @@ public class RttMeasurementFlyweight extends HeaderFlyweight
      * @param timestampNs to echo in a reply or the timestamp in the original RTT Measurement.
      * @return this for a fluent API.
      */
+    @Impure
     public RttMeasurementFlyweight echoTimestampNs(final long timestampNs)
     {
         putLong(ECHO_TIMESTAMP_FIELD_OFFSET, timestampNs, LITTLE_ENDIAN);
@@ -166,6 +176,7 @@ public class RttMeasurementFlyweight extends HeaderFlyweight
      *
      * @return time in nanoseconds between receiving original RTT Measurement and sending Reply RTT Measurement.
      */
+    @Impure
     public long receptionDelta()
     {
         return getLong(RECEPTION_DELTA_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -177,6 +188,7 @@ public class RttMeasurementFlyweight extends HeaderFlyweight
      * @param deltaNs in nanoseconds between receiving original RTT Measurement and sending Reply RTT Measurement.
      * @return this for a fluent API.
      */
+    @Impure
     public RttMeasurementFlyweight receptionDelta(final long deltaNs)
     {
         putLong(RECEPTION_DELTA_FIELD_OFFSET, deltaNs, LITTLE_ENDIAN);
@@ -189,6 +201,7 @@ public class RttMeasurementFlyweight extends HeaderFlyweight
      *
      * @return receiver-id which uniquely identifies a receiver of a stream.
      */
+    @Impure
     public long receiverId()
     {
         return getLong(RECEIVER_ID_FIELD_OFFSET, LITTLE_ENDIAN);
@@ -200,6 +213,7 @@ public class RttMeasurementFlyweight extends HeaderFlyweight
      * @param id for the receiver of the stream.
      * @return this for a fluent API.
      */
+    @Impure
     public RttMeasurementFlyweight receiverId(final long id)
     {
         putLong(RECEIVER_ID_FIELD_OFFSET, id, LITTLE_ENDIAN);
@@ -210,6 +224,7 @@ public class RttMeasurementFlyweight extends HeaderFlyweight
     /**
      * {@inheritDoc}
      */
+    @Impure
     public String toString()
     {
         return "RTTM{" +

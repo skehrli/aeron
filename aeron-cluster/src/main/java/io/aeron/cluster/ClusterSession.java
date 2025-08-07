@@ -15,6 +15,9 @@
  */
 package io.aeron.cluster;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.*;
 import io.aeron.archive.client.AeronArchive;
 import io.aeron.cluster.client.ClusterEvent;
@@ -69,6 +72,7 @@ final class ClusterSession implements ClusterClientSession
     private Action action = Action.CLIENT;
     private Object requestInput = null;
 
+    @Impure
     ClusterSession(final long sessionId, final int responseStreamId, final String responseChannel)
     {
         this.id = sessionId;
@@ -77,6 +81,7 @@ final class ClusterSession implements ClusterClientSession
         state(State.INIT);
     }
 
+    @Impure
     public void close(final Aeron aeron, final ErrorHandler errorHandler)
     {
         if (null == responsePublication)
@@ -92,36 +97,43 @@ final class ClusterSession implements ClusterClientSession
         state(State.CLOSED);
     }
 
+    @Pure
     public long id()
     {
         return id;
     }
 
+    @Pure
     public byte[] encodedPrincipal()
     {
         return encodedPrincipal;
     }
 
+    @Pure
     public boolean isOpen()
     {
         return State.OPEN == state;
     }
 
+    @Pure
     public Publication responsePublication()
     {
         return responsePublication;
     }
 
+    @Pure
     public long timeOfLastActivityNs()
     {
         return timeOfLastActivityNs;
     }
 
+    @Impure
     public void timeOfLastActivityNs(final long timeNs)
     {
         timeOfLastActivityNs = timeNs;
     }
 
+    @Impure
     void loadSnapshotState(
         final long correlationId,
         final long openedLogPosition,
@@ -143,16 +155,19 @@ final class ClusterSession implements ClusterClientSession
         }
     }
 
+    @Pure
     int responseStreamId()
     {
         return responseStreamId;
     }
 
+    @Pure
     String responseChannel()
     {
         return responseChannel;
     }
 
+    @Impure
     void closing(final CloseReason closeReason)
     {
         this.closeReason = closeReason;
@@ -162,22 +177,26 @@ final class ClusterSession implements ClusterClientSession
         state(State.CLOSING);
     }
 
+    @Pure
     CloseReason closeReason()
     {
         return closeReason;
     }
 
+    @Impure
     void resetCloseReason()
     {
         closedLogPosition = AeronArchive.NULL_POSITION;
         closeReason = CloseReason.NULL_VAL;
     }
 
+    @Impure
     void asyncConnect(final Aeron aeron)
     {
         responsePublicationId = aeron.asyncAddPublication(responseChannel, responseStreamId);
     }
 
+    @Impure
     void connect(final ErrorHandler errorHandler, final Aeron aeron)
     {
         if (null != responsePublication)
@@ -196,6 +215,7 @@ final class ClusterSession implements ClusterClientSession
         }
     }
 
+    @Impure
     void disconnect(final Aeron aeron, final ErrorHandler errorHandler)
     {
         if (null == responsePublication)
@@ -209,6 +229,7 @@ final class ClusterSession implements ClusterClientSession
         }
     }
 
+    @Impure
     boolean isResponsePublicationConnected(final Aeron aeron, final long nowNs)
     {
         if (null == responsePublication)
@@ -233,6 +254,7 @@ final class ClusterSession implements ClusterClientSession
         return null != responsePublication && responsePublication.isConnected();
     }
 
+    @Impure
     long tryClaim(final int length, final BufferClaim bufferClaim)
     {
         if (null == responsePublication)
@@ -245,6 +267,7 @@ final class ClusterSession implements ClusterClientSession
         }
     }
 
+    @Impure
     long offer(final DirectBuffer buffer, final int offset, final int length)
     {
         if (null == responsePublication)
@@ -257,17 +280,20 @@ final class ClusterSession implements ClusterClientSession
         }
     }
 
+    @Pure
     State state()
     {
         return state;
     }
 
+    @Impure
     void state(final State newState)
     {
         //System.out.println("ClusterSession " + id + " " + state + " -> " + newState);
         this.state = newState;
     }
 
+    @Impure
     void authenticate(final byte[] encodedPrincipal)
     {
         if (encodedPrincipal != null)
@@ -278,12 +304,14 @@ final class ClusterSession implements ClusterClientSession
         state(State.AUTHENTICATED);
     }
 
+    @Impure
     void open(final long openedLogPosition)
     {
         this.openedLogPosition = openedLogPosition;
         state(State.OPEN);
     }
 
+    @Impure
     boolean appendSessionToLogAndSendOpen(
         final LogPublisher logPublisher,
         final EgressPublisher egressPublisher,
@@ -307,6 +335,7 @@ final class ClusterSession implements ClusterClientSession
         return false;
     }
 
+    @Impure
     int sendSessionOpenEvent(
         final EgressPublisher egressPublisher,
         final long leadershipTermId,
@@ -321,12 +350,14 @@ final class ClusterSession implements ClusterClientSession
         return 0;
     }
 
+    @Impure
     void lastActivityNs(final long timeNs, final long correlationId)
     {
         timeOfLastActivityNs = timeNs;
         this.correlationId = correlationId;
     }
 
+    @Impure
     void reject(
         final EventCode code,
         final String responseDetail,
@@ -344,81 +375,97 @@ final class ClusterSession implements ClusterClientSession
         }
     }
 
+    @Impure
     void reject(final EventCode code, final String responseDetail)
     {
         reject(code, responseDetail, null, Aeron.NULL_VALUE);
     }
 
+    @Pure
     EventCode eventCode()
     {
         return eventCode;
     }
 
+    @Pure
     String responseDetail()
     {
         return responseDetail;
     }
 
+    @Pure
     long correlationId()
     {
         return correlationId;
     }
 
+    @Pure
     long openedLogPosition()
     {
         return openedLogPosition;
     }
 
+    @Impure
     void closedLogPosition(final long closedLogPosition)
     {
         this.closedLogPosition = closedLogPosition;
     }
 
+    @Pure
     long closedLogPosition()
     {
         return closedLogPosition;
     }
 
+    @Impure
     void hasNewLeaderEventPending(final boolean flag)
     {
         hasNewLeaderEventPending = flag;
     }
 
+    @Pure
     boolean hasNewLeaderEventPending()
     {
         return hasNewLeaderEventPending;
     }
 
+    @Pure
     boolean hasOpenEventPending()
     {
         return hasOpenEventPending;
     }
 
+    @Impure
     void clearOpenEventPending()
     {
         hasOpenEventPending = false;
     }
 
+    @Pure
     Action action()
     {
         return action;
     }
 
+    @Impure
     void action(final Action action)
     {
         this.action = action;
     }
 
+    @Impure
     void requestInput(final Object requestInput)
     {
         this.requestInput = requestInput;
     }
 
+    @Pure
     Object requestInput()
     {
         return requestInput;
     }
 
+    @Impure
     void linkIngressImage(final Header header)
     {
         if (Aeron.NULL_VALUE == ingressImageCorrelationId)
@@ -427,16 +474,19 @@ final class ClusterSession implements ClusterClientSession
         }
     }
 
+    @Impure
     void unlinkIngressImage()
     {
         ingressImageCorrelationId = Aeron.NULL_VALUE;
     }
 
+    @Pure
     long ingressImageCorrelationId()
     {
         return ingressImageCorrelationId;
     }
 
+    @Impure
     static void checkEncodedPrincipalLength(final byte[] encodedPrincipal)
     {
         if (null != encodedPrincipal && encodedPrincipal.length > MAX_ENCODED_PRINCIPAL_LENGTH)
@@ -447,6 +497,7 @@ final class ClusterSession implements ClusterClientSession
         }
     }
 
+    @SideEffectFree
     public String toString()
     {
         return "ClusterSession{" +

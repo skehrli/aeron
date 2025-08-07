@@ -15,6 +15,9 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import io.aeron.ChannelUri;
 import io.aeron.driver.MediaDriver.Context;
@@ -139,6 +142,7 @@ public final class DriverConductor implements Agent
     private boolean asyncClientCommandInFlight;
     private TimeTrackingNameResolver nameResolver;
 
+    @Impure
     DriverConductor(final MediaDriver.Context ctx)
     {
         this.ctx = ctx;
@@ -177,6 +181,7 @@ public final class DriverConductor implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onStart()
     {
         final long nowNs = nanoClock.nanoTime();
@@ -202,6 +207,7 @@ public final class DriverConductor implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onClose()
     {
         if (asyncTaskExecutor instanceof ExecutorService)
@@ -235,6 +241,7 @@ public final class DriverConductor implements Agent
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String roleName()
     {
         return "driver-conductor";
@@ -243,6 +250,7 @@ public final class DriverConductor implements Agent
     /**
      * {@inheritDoc}
      */
+    @Impure
     public int doWork()
     {
         final long nowNs = nanoClock.nanoTime();
@@ -262,11 +270,13 @@ public final class DriverConductor implements Agent
         return workCount;
     }
 
+    @Impure
     boolean notAcceptingClientCommands()
     {
         return senderProxy.isApplyingBackpressure() || receiverProxy.isApplyingBackpressure();
     }
 
+    @Impure
     @SuppressWarnings("MethodLength")
     void onCreatePublicationImage(
         final int sessionId,
@@ -398,6 +408,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void onPublicationError(
         final long registrationId,
         final long destinationRegistrationId,
@@ -432,6 +443,7 @@ public final class DriverConductor implements Agent
             errorMessage);
     }
 
+    @Impure
     void onReResolveEndpoint(
         final String endpoint, final SendChannelEndpoint channelEndpoint, final InetSocketAddress address)
     {
@@ -458,6 +470,7 @@ public final class DriverConductor implements Agent
             });
     }
 
+    @Impure
     void onReResolveControl(
         final String control,
         final UdpChannel udpChannel,
@@ -487,11 +500,15 @@ public final class DriverConductor implements Agent
             });
     }
 
+    @Pure
+    @Impure
     IpcPublication getSharedIpcPublication(final long streamId, final long responseCorrelationId)
     {
         return findSharedIpcPublication(ipcPublications, streamId, responseCorrelationId);
     }
 
+    @Pure
+    @Impure
     IpcPublication getIpcPublication(final long registrationId)
     {
         for (int i = 0, size = ipcPublications.size(); i < size; i++)
@@ -506,6 +523,8 @@ public final class DriverConductor implements Agent
         return null;
     }
 
+    @Pure
+    @Impure
     NetworkPublication findNetworkPublicationByTag(final long tag)
     {
         for (int i = 0, size = networkPublications.size(); i < size; i++)
@@ -521,6 +540,8 @@ public final class DriverConductor implements Agent
         return null;
     }
 
+    @Pure
+    @Impure
     IpcPublication findIpcPublicationByTag(final long tag)
     {
         for (int i = 0, size = ipcPublications.size(); i < size; i++)
@@ -536,6 +557,7 @@ public final class DriverConductor implements Agent
         return null;
     }
 
+    @Impure
     void onAddNetworkPublication(
         final String channel,
         final int streamId,
@@ -617,6 +639,8 @@ public final class DriverConductor implements Agent
             });
     }
 
+    @Pure
+    @Impure
     private PublicationImage findResponsePublicationImage(final PublicationParams params)
     {
         if (!params.isResponse)
@@ -649,6 +673,8 @@ public final class DriverConductor implements Agent
         throw new IllegalArgumentException("image.correlationId=" + params.responseCorrelationId + " not found");
     }
 
+    @Pure
+    @Impure
     private PublicationImage findPublicationImage(final long correlationId)
     {
         for (final PublicationImage publicationImage : publicationImages)
@@ -662,6 +688,7 @@ public final class DriverConductor implements Agent
         return null;
     }
 
+    @Impure
     void responseSetup(final long responseCorrelationId, final int responseSessionId)
     {
         for (int i = 0, subscriptionLinksSize = subscriptionLinks.size(); i < subscriptionLinksSize; i++)
@@ -687,6 +714,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void responseConnected(final long responseCorrelationId)
     {
         for (final PublicationImage publicationImage : publicationImages)
@@ -701,6 +729,8 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @SideEffectFree
+    @Impure
     private void validateResponseSubscription(final PublicationParams params)
     {
         if (!params.isResponse && Aeron.NULL_VALUE != params.responseCorrelationId)
@@ -718,6 +748,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void cleanupSpies(final NetworkPublication publication)
     {
         for (int i = 0, size = subscriptionLinks.size(); i < size; i++)
@@ -731,11 +762,13 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void notifyUnavailableImageLink(final long resourceId, final SubscriptionLink link)
     {
         clientProxy.onUnavailableImage(resourceId, link.registrationId(), link.streamId(), link.channel());
     }
 
+    @Impure
     void notifyAvailableImageLink(
         final long resourceId,
         final int sessionId,
@@ -752,6 +785,7 @@ public final class DriverConductor implements Agent
             resourceId, streamId, sessionId, link.registrationId(), positionCounterId, logFileName, sourceIdentity);
     }
 
+    @Impure
     void cleanupPublication(final NetworkPublication publication)
     {
         senderProxy.removeNetworkPublication(publication);
@@ -768,6 +802,7 @@ public final class DriverConductor implements Agent
         activeSessionSet.remove(new SessionKey(publication.sessionId(), publication.streamId(), channel));
     }
 
+    @Impure
     void cleanupSubscriptionLink(final SubscriptionLink subscription)
     {
         final ReceiveChannelEndpoint channelEndpoint = subscription.channelEndpoint();
@@ -797,6 +832,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void transitionToLinger(final PublicationImage image)
     {
         boolean rejoin = true;
@@ -817,6 +853,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void transitionToLinger(final IpcPublication publication)
     {
         activeSessionSet.remove(new SessionKey(publication.sessionId(), publication.streamId(), IPC_MEDIA));
@@ -831,6 +868,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void cleanupImage(final PublicationImage image)
     {
         for (int i = 0, size = subscriptionLinks.size(); i < size; i++)
@@ -839,6 +877,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void cleanupIpcPublication(final IpcPublication publication)
     {
         for (int i = 0, size = subscriptionLinks.size(); i < size; i++)
@@ -847,6 +886,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void unlinkIpcSubscriptions(final IpcPublication publication)
     {
         for (int i = 0, size = subscriptionLinks.size(); i < size; i++)
@@ -860,6 +900,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void tryCloseReceiveChannelEndpoint(final ReceiveChannelEndpoint channelEndpoint)
     {
         if (channelEndpoint.shouldBeClosed())
@@ -870,16 +911,19 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void clientTimeout(final long clientId)
     {
         clientProxy.onClientTimeout(clientId);
     }
 
+    @Impure
     void unavailableCounter(final long registrationId, final int counterId)
     {
         clientProxy.onUnavailableCounter(registrationId, counterId);
     }
 
+    @Impure
     void onAddIpcPublication(
         final String channel,
         final int streamId,
@@ -934,6 +978,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void onRemovePublication(final long registrationId, final long correlationId, final boolean revoke)
     {
         PublicationLink publicationLink = null;
@@ -962,6 +1007,7 @@ public final class DriverConductor implements Agent
         clientProxy.operationSucceeded(correlationId);
     }
 
+    @Impure
     void onAddSendDestination(final long registrationId, final String destinationChannel, final long correlationId)
     {
         final ChannelUri channelUri = parseUri(destinationChannel);
@@ -993,6 +1039,7 @@ public final class DriverConductor implements Agent
         clientProxy.operationSucceeded(correlationId);
     }
 
+    @Impure
     void onRemoveSendDestination(final long registrationId, final String destinationChannel, final long correlationId)
     {
         SendChannelEndpoint sendChannelEndpoint = null;
@@ -1021,6 +1068,7 @@ public final class DriverConductor implements Agent
         clientProxy.operationSucceeded(correlationId);
     }
 
+    @Impure
     void onRemoveSendDestination(
         final long publicationRegistrationId, final long destinationRegistrationId, final long correlationId)
     {
@@ -1049,6 +1097,7 @@ public final class DriverConductor implements Agent
         clientProxy.operationSucceeded(correlationId);
     }
 
+    @Impure
     void onAddNetworkSubscription(
         final String channel, final int streamId, final long registrationId, final long clientId)
     {
@@ -1090,6 +1139,7 @@ public final class DriverConductor implements Agent
             });
     }
 
+    @Impure
     private void addNetworkSubscriptionToReceiver(final NetworkSubscriptionLink subscription)
     {
         final ReceiveChannelEndpoint channelEndpoint = subscription.channelEndpoint();
@@ -1110,6 +1160,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void onAddIpcSubscription(final String channel, final int streamId, final long registrationId, final long clientId)
     {
         final SubscriptionParams params = SubscriptionParams.getSubscriptionParams(parseUri(channel), ctx, 0);
@@ -1136,6 +1187,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void onAddSpySubscription(final String channel, final int streamId, final long registrationId, final long clientId)
     {
         executeAsyncClientTask(
@@ -1170,6 +1222,7 @@ public final class DriverConductor implements Agent
             });
     }
 
+    @Impure
     void onRemoveSubscription(final long registrationId, final long correlationId)
     {
         boolean isAnySubscriptionFound = false;
@@ -1194,6 +1247,7 @@ public final class DriverConductor implements Agent
         clientProxy.operationSucceeded(correlationId);
     }
 
+    @Impure
     void onClientKeepalive(final long clientId)
     {
         final AeronClient client = findClient(clients, clientId);
@@ -1203,6 +1257,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void onAddCounter(
         final int typeId,
         final DirectBuffer keyBuffer,
@@ -1224,6 +1279,7 @@ public final class DriverConductor implements Agent
         clientProxy.onCounterReady(correlationId, counter.id());
     }
 
+    @Impure
     void onAddStaticCounter(
         final int typeId,
         final DirectBuffer keyBuffer,
@@ -1263,6 +1319,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void onRemoveCounter(final long registrationId, final long correlationId)
     {
         CounterLink counterLink = null;
@@ -1288,6 +1345,7 @@ public final class DriverConductor implements Agent
         counterLink.close();
     }
 
+    @Impure
     void onClientClose(final long clientId)
     {
         final AeronClient client = findClient(clients, clientId);
@@ -1297,6 +1355,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void onAddRcvDestination(final long registrationId, final String destinationChannel, final long correlationId)
     {
         if (destinationChannel.startsWith(IPC_CHANNEL))
@@ -1313,6 +1372,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void onAddRcvIpcDestination(final long registrationId, final String destinationChannel, final long correlationId)
     {
         final SubscriptionParams params =
@@ -1351,6 +1411,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void onAddRcvSpyDestination(final long registrationId, final String destinationChannel, final long correlationId)
     {
         executeAsyncClientTask(
@@ -1397,6 +1458,7 @@ public final class DriverConductor implements Agent
             });
     }
 
+    @Impure
     void onAddRcvNetworkDestination(
         final long registrationId, final String destinationChannel, final long correlationId)
     {
@@ -1445,6 +1507,7 @@ public final class DriverConductor implements Agent
             });
     }
 
+    @Impure
     void onRemoveRcvDestination(final long registrationId, final String destinationChannel, final long correlationId)
     {
         if (destinationChannel.startsWith(IPC_CHANNEL) || destinationChannel.startsWith(SPY_QUALIFIER))
@@ -1457,6 +1520,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void onRemoveRcvIpcOrSpyDestination(
         final long registrationId, final String destinationChannel, final long correlationId)
     {
@@ -1474,6 +1538,7 @@ public final class DriverConductor implements Agent
         subscription.notifyUnavailableImages(this);
     }
 
+    @Impure
     void onRemoveRcvNetworkDestination(
         final long registrationId, final String destinationChannel, final long correlationId)
     {
@@ -1507,11 +1572,13 @@ public final class DriverConductor implements Agent
             });
     }
 
+    @Impure
     void closeReceiveDestinationIndicators(final ReceiveDestinationTransport destinationTransport)
     {
         destinationTransport.closeIndicators();
     }
 
+    @Impure
     void onTerminateDriver(final DirectBuffer tokenBuffer, final int tokenOffset, final int tokenLength)
     {
         if (ctx.terminationValidator().allowTermination(ctx.aeronDirectory(), tokenBuffer, tokenOffset, tokenLength))
@@ -1520,6 +1587,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void onRejectImage(
         final long correlationId,
         final long imageCorrelationId,
@@ -1556,6 +1624,7 @@ public final class DriverConductor implements Agent
         clientProxy.operationSucceeded(correlationId);
     }
 
+    @Impure
     void onNextAvailableSessionId(final long correlationId, final int streamId)
     {
         outer: while (true)
@@ -1575,6 +1644,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     int nextAvailableSessionId(final int streamId, final String channel)
     {
         final SessionKey sessionKey = new SessionKey(streamId, channel);
@@ -1590,6 +1660,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private int advanceSessionId()
     {
         int sessionId = nextSessionId++;
@@ -1603,6 +1674,7 @@ public final class DriverConductor implements Agent
         return sessionId;
     }
 
+    @Impure
     private void heartbeatAndCheckTimers(final long nowNs)
     {
         final long nowMs = cachedEpochClock.time();
@@ -1617,6 +1689,7 @@ public final class DriverConductor implements Agent
         checkManagedResources(counterLinks, nowNs, nowMs);
     }
 
+    @Impure
     private void checkForBlockedToDriverCommands(final long nowNs)
     {
         final long consumerPosition = toDriverCommands.consumerPosition();
@@ -1638,6 +1711,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private static ChannelUri parseUri(final String channel)
     {
         try
@@ -1650,6 +1724,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private ArrayList<SubscriberPosition> createSubscriberPositions(
         final int sessionId, final int streamId, final ReceiveChannelEndpoint channelEndpoint, final long joinPosition)
     {
@@ -1678,6 +1753,7 @@ public final class DriverConductor implements Agent
         return subscriberPositions;
     }
 
+    @Impure
     private void executeAsyncClientTask(
         final long correlationId,
         final Supplier<UdpChannel> asyncTask,
@@ -1712,6 +1788,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private <T> void executeAsyncTask(final Supplier<T> supplier, final Consumer<Supplier<T>> command)
     {
         if (asyncExecutionDisabled)
@@ -1728,6 +1805,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private void addToCommandQueue(final Runnable cmd)
     {
         if (!driverCmdQueue.offer(cmd))
@@ -1737,6 +1815,8 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Pure
+    @Impure
     private static NetworkPublication findPublication(
         final ArrayList<NetworkPublication> publications,
         final int streamId,
@@ -1760,6 +1840,7 @@ public final class DriverConductor implements Agent
         return null;
     }
 
+    @Impure
     private NetworkPublication newNetworkPublication(
         final long registrationId,
         final long clientId,
@@ -1869,6 +1950,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private RawLog newNetworkPublicationLog(
         final int sessionId,
         final int streamId,
@@ -1917,6 +1999,7 @@ public final class DriverConductor implements Agent
         return rawLog;
     }
 
+    @Impure
     private RawLog newIpcPublicationLog(
         final int sessionId,
         final int streamId,
@@ -1966,6 +2049,7 @@ public final class DriverConductor implements Agent
         return rawLog;
     }
 
+    @Impure
     private void initLogMetadata(
         final int sessionId,
         final int streamId,
@@ -2042,6 +2126,7 @@ public final class DriverConductor implements Agent
     }
 
 
+    @Impure
     private static void initialisePositionCounters(
         final int initialTermId, final PublicationParams params, final UnsafeBuffer logMetaData)
     {
@@ -2072,6 +2157,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private RawLog newPublicationImageLog(
         final int sessionId,
         final int streamId,
@@ -2126,6 +2212,7 @@ public final class DriverConductor implements Agent
         return rawLog;
     }
 
+    @Impure
     private SendChannelEndpoint getOrCreateSendChannelEndpoint(
         final PublicationParams params, final UdpChannel udpChannel, final long registrationId)
     {
@@ -2189,6 +2276,7 @@ public final class DriverConductor implements Agent
         return channelEndpoint;
     }
 
+    @Impure
     private void validateChannelSendTimestampOffset(
         final UdpChannel udpChannel, final SendChannelEndpoint channelEndpoint)
     {
@@ -2202,6 +2290,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private void validateReceiveTimestampOffset(
         final UdpChannel udpChannel, final ReceiveChannelEndpoint channelEndpoint)
     {
@@ -2216,6 +2305,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private SendChannelEndpoint findExistingSendChannelEndpoint(final UdpChannel udpChannel)
     {
         if (udpChannel.hasTag())
@@ -2247,6 +2337,7 @@ public final class DriverConductor implements Agent
         return endpoint;
     }
 
+    @Impure
     private void checkForClashingSubscription(
         final SubscriptionParams params, final UdpChannel udpChannel, final int streamId)
     {
@@ -2290,6 +2381,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private void linkMatchingImages(final SubscriptionLink subscriptionLink)
     {
         for (int i = 0, size = publicationImages.size(); i < size; i++)
@@ -2329,6 +2421,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     void linkIpcSubscriptions(final IpcPublication publication)
     {
         for (int i = 0, size = subscriptionLinks.size(); i < size; i++)
@@ -2350,6 +2443,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private Position linkIpcSubscription(final IpcPublication publication, final SubscriptionLink subscription)
     {
         final long joinPosition = publication.joinPosition();
@@ -2371,6 +2465,7 @@ public final class DriverConductor implements Agent
         return position;
     }
 
+    @Impure
     private Position linkSpy(final NetworkPublication publication, final SubscriptionLink subscription)
     {
         final long joinPosition = publication.consumerPosition();
@@ -2392,6 +2487,7 @@ public final class DriverConductor implements Agent
         return position;
     }
 
+    @Impure
     private ReceiveChannelEndpoint getOrCreateReceiveChannelEndpoint(
         final SubscriptionParams params, final UdpChannel udpChannel, final long registrationId)
     {
@@ -2457,6 +2553,7 @@ public final class DriverConductor implements Agent
         return channelEndpoint;
     }
 
+    @Impure
     private ReceiveChannelEndpoint findExistingReceiveChannelEndpoint(final UdpChannel udpChannel)
     {
         if (udpChannel.hasTag())
@@ -2479,6 +2576,7 @@ public final class DriverConductor implements Agent
         return endpoint;
     }
 
+    @Impure
     private AeronClient getOrAddClient(final long clientId)
     {
         AeronClient client = findClient(clients, clientId);
@@ -2504,6 +2602,7 @@ public final class DriverConductor implements Agent
         return client;
     }
 
+    @Impure
     private IpcPublication addIpcPublication(
         final long registrationId,
         final long clientId,
@@ -2564,6 +2663,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private void findAndUpdateResponseIpcSubscription(final PublicationParams params, final IpcPublication publication)
     {
         if (Aeron.NULL_VALUE != params.responseCorrelationId)
@@ -2589,6 +2689,8 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Pure
+    @Impure
     private static AeronClient findClient(final ArrayList<AeronClient> clients, final long clientId)
     {
         AeronClient aeronClient = null;
@@ -2606,6 +2708,8 @@ public final class DriverConductor implements Agent
         return aeronClient;
     }
 
+    @Pure
+    @Impure
     private static SubscriptionLink findMdsSubscriptionLink(
         final ArrayList<SubscriptionLink> subscriptionLinks, final long registrationId)
     {
@@ -2624,6 +2728,7 @@ public final class DriverConductor implements Agent
         return subscriptionLink;
     }
 
+    @Impure
     private static SubscriptionLink removeSubscriptionLink(
         final ArrayList<SubscriptionLink> subscriptionLinks, final long registrationId, final String channel)
     {
@@ -2643,6 +2748,8 @@ public final class DriverConductor implements Agent
         return subscriptionLink;
     }
 
+    @Pure
+    @Impure
     private static IpcPublication findSharedIpcPublication(
         final ArrayList<IpcPublication> ipcPublications,
         final long streamId,
@@ -2666,6 +2773,7 @@ public final class DriverConductor implements Agent
         return ipcPublication;
     }
 
+    @Impure
     private void checkForSessionClash(
         final int sessionId, final int streamId, final String channel, final String originalChannel)
     {
@@ -2676,6 +2784,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private <T extends DriverManagedResource> void checkManagedResources(
         final ArrayList<T> list, final long nowNs, final long nowMs)
     {
@@ -2694,6 +2803,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private int freeEndOfLifeResources(final int freeLimit)
     {
         int workCount = 0;
@@ -2720,6 +2830,7 @@ public final class DriverConductor implements Agent
         return workCount;
     }
 
+    @Impure
     private void linkSpies(final ArrayList<SubscriptionLink> links, final NetworkPublication publication)
     {
         for (int i = 0, size = links.size(); i < size; i++)
@@ -2739,6 +2850,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private void trackTime(final long nowNs)
     {
         cachedNanoClock.update(nowNs);
@@ -2751,6 +2863,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private int processTimers(final long nowNs)
     {
         int workCount = 0;
@@ -2766,6 +2879,8 @@ public final class DriverConductor implements Agent
         return workCount;
     }
 
+    @Pure
+    @Impure
     private static boolean isOldestSubscriptionSparse(final ArrayList<SubscriberPosition> subscriberPositions)
     {
         final SubscriberPosition subscriberPosition = subscriberPositions.get(0);
@@ -2785,6 +2900,7 @@ public final class DriverConductor implements Agent
         return isSparse;
     }
 
+    @Impure
     private int trackStreamPositions(final int existingWorkCount, final long nowNs)
     {
         int workCount = existingWorkCount;
@@ -2810,6 +2926,7 @@ public final class DriverConductor implements Agent
         return workCount;
     }
 
+    @Impure
     private int drainCommandQueue()
     {
         int workCount = 0;
@@ -2829,6 +2946,7 @@ public final class DriverConductor implements Agent
         return workCount;
     }
 
+    @Impure
     private static void validateChannelBufferLength(
         final String paramName,
         final int newLength,
@@ -2845,6 +2963,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private static void validateEndpointForPublication(final UdpChannel udpChannel)
     {
         if (!udpChannel.isMultiDestination() && udpChannel.hasExplicitEndpoint() &&
@@ -2855,6 +2974,8 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @SideEffectFree
+    @Impure
     private static void validateControlForPublication(final UdpChannel udpChannel)
     {
         if (udpChannel.isDynamicControlMode() && !udpChannel.hasExplicitControl())
@@ -2873,6 +2994,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private static void validateControlForSubscription(final UdpChannel udpChannel)
     {
         if (udpChannel.hasExplicitControl() &&
@@ -2883,6 +3005,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private static void validateTimestampConfiguration(final UdpChannel udpChannel)
     {
         if (null != udpChannel.channelUri().get(MEDIA_RCV_TIMESTAMP_OFFSET_PARAM_NAME))
@@ -2893,6 +3016,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private static void validateDestinationUri(final ChannelUri uri, final String destinationUri)
     {
         if (SPY_QUALIFIER.equals(uri.prefix()))
@@ -2917,6 +3041,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private static void validateSendDestinationUri(final ChannelUri uri, final String destinationUri)
     {
         final String endpoint = uri.get(ENDPOINT_PARAM_NAME);
@@ -2928,6 +3053,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @SideEffectFree
     @SuppressWarnings({ "unused", "UnnecessaryReturnStatement" })
     private static void validateExperimentalFeatures(final boolean enableExperimentalFeatures, final UdpChannel channel)
     {
@@ -2941,6 +3067,7 @@ public final class DriverConductor implements Agent
          */
     }
 
+    @Impure
     private static FeedbackDelayGenerator resolveDelayGenerator(
         final Context ctx,
         final UdpChannel channel,
@@ -2963,6 +3090,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     static FeedbackDelayGenerator resolveDelayGenerator(
         final Context ctx,
         final UdpChannel channel,
@@ -2972,6 +3100,8 @@ public final class DriverConductor implements Agent
         return resolveDelayGenerator(ctx, channel, isMulticastSemantics(channel, receiverGroupConsideration, flags));
     }
 
+    @Pure
+    @Impure
     static boolean isMulticastSemantics(
         final UdpChannel channel,
         final InferableBoolean receiverGroupConsideration,
@@ -2986,8 +3116,10 @@ public final class DriverConductor implements Agent
 
     private interface AsyncResult<T> extends Supplier<T>
     {
+        @Pure
         T get();
 
+        @Impure
         static <T> AsyncResult<T> of(final Supplier<T> supplier)
         {
             try
@@ -3006,6 +3138,7 @@ public final class DriverConductor implements Agent
         }
     }
 
+    @Impure
     private void recordError(final Exception ex)
     {
         ctx.errorHandler().onError(ex);

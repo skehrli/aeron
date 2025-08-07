@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster.service;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.DirectBufferVector;
 import io.aeron.Publication;
 import io.aeron.cluster.client.AeronCluster;
@@ -45,6 +47,7 @@ public final class ConsensusModuleProxy implements AutoCloseable
      *
      * @param publication for sending messages to the consensus module.
      */
+    @SideEffectFree
     public ConsensusModuleProxy(final Publication publication)
     {
         this.publication = publication;
@@ -53,11 +56,13 @@ public final class ConsensusModuleProxy implements AutoCloseable
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         CloseHelper.close(publication);
     }
 
+    @Impure
     boolean scheduleTimer(final long correlationId, final long deadline)
     {
         final int length = MessageHeaderEncoder.ENCODED_LENGTH + ScheduleTimerEncoder.BLOCK_LENGTH;
@@ -79,6 +84,7 @@ public final class ConsensusModuleProxy implements AutoCloseable
         return false;
     }
 
+    @Impure
     boolean cancelTimer(final long correlationId)
     {
         final int length = MessageHeaderEncoder.ENCODED_LENGTH + CancelTimerEncoder.BLOCK_LENGTH;
@@ -99,6 +105,7 @@ public final class ConsensusModuleProxy implements AutoCloseable
         return false;
     }
 
+    @Impure
     long offer(
         final DirectBuffer headerBuffer,
         final int headerOffset,
@@ -117,6 +124,7 @@ public final class ConsensusModuleProxy implements AutoCloseable
         return position;
     }
 
+    @Impure
     long offer(final DirectBufferVector[] vectors)
     {
         final long position = publication.offer(vectors, null);
@@ -128,6 +136,7 @@ public final class ConsensusModuleProxy implements AutoCloseable
         return position;
     }
 
+    @Impure
     long tryClaim(final int length, final BufferClaim bufferClaim, final DirectBuffer sessionHeader)
     {
         final long position = publication.tryClaim(length, bufferClaim);
@@ -143,6 +152,7 @@ public final class ConsensusModuleProxy implements AutoCloseable
         return position;
     }
 
+    @Impure
     boolean ack(
         final long logPosition, final long timestamp, final long ackId, final long relevantId, final int serviceId)
     {
@@ -168,6 +178,7 @@ public final class ConsensusModuleProxy implements AutoCloseable
         return false;
     }
 
+    @Impure
     boolean closeSession(final long clusterSessionId)
     {
         final int length = MessageHeaderEncoder.ENCODED_LENGTH + CloseSessionEncoder.BLOCK_LENGTH;
@@ -194,6 +205,7 @@ public final class ConsensusModuleProxy implements AutoCloseable
      * @param correlationId for the request.
      * @return true of the request was successfully sent, otherwise false.
      */
+    @Impure
     public boolean clusterMembersQuery(final long correlationId)
     {
         final int length = MessageHeaderEncoder.ENCODED_LENGTH + ClusterMembersQueryEncoder.BLOCK_LENGTH;
@@ -215,6 +227,7 @@ public final class ConsensusModuleProxy implements AutoCloseable
         return false;
     }
 
+    @Impure
     private static void checkResult(final long position, final Publication publication)
     {
         if (Publication.NOT_CONNECTED == position)

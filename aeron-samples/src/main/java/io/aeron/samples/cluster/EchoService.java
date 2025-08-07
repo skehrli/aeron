@@ -15,6 +15,8 @@
  */
 package io.aeron.samples.cluster;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.ExclusivePublication;
 import io.aeron.Image;
 import io.aeron.cluster.codecs.CloseReason;
@@ -31,20 +33,24 @@ class EchoService implements ClusteredService
     protected Cluster cluster;
     protected IdleStrategy idleStrategy;
 
+    @Impure
     public void onStart(final Cluster cluster, final Image snapshotImage)
     {
         this.cluster = cluster;
         this.idleStrategy = cluster.idleStrategy();
     }
 
+    @SideEffectFree
     public void onSessionOpen(final ClientSession session, final long timestamp)
     {
     }
 
+    @SideEffectFree
     public void onSessionClose(final ClientSession session, final long timestamp, final CloseReason closeReason)
     {
     }
 
+    @Impure
     public void onSessionMessage(
         final ClientSession session,
         final long timestamp,
@@ -67,18 +73,22 @@ class EchoService implements ClusteredService
         while (--attempts > 0);
     }
 
+    @SideEffectFree
     public void onTimerEvent(final long correlationId, final long timestamp)
     {
     }
 
+    @SideEffectFree
     public void onTakeSnapshot(final ExclusivePublication snapshotPublication)
     {
     }
 
+    @SideEffectFree
     public void onRoleChange(final Cluster.Role newRole)
     {
     }
 
+    @SideEffectFree
     public void onTerminate(final Cluster cluster)
     {
     }

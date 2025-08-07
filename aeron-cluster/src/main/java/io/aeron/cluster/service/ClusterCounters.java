@@ -15,6 +15,8 @@
  */
 package io.aeron.cluster.service;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import io.aeron.AeronCounters;
 import io.aeron.Counter;
@@ -31,6 +33,7 @@ import static org.agrona.concurrent.status.CountersReader.*;
  */
 public final class ClusterCounters
 {
+    @SideEffectFree
     private ClusterCounters()
     {
     }
@@ -45,6 +48,7 @@ public final class ClusterCounters
      * @param clusterId  to which the allocated counter belongs.
      * @return the new {@link Counter}.
      */
+    @Impure
     public static Counter allocate(
         final Aeron aeron,
         final MutableDirectBuffer tempBuffer,
@@ -76,6 +80,7 @@ public final class ClusterCounters
      * @param commitHashCode Git commit SHA of the component.
      * @return the new {@link Counter}.
      */
+    @Impure
     public static Counter allocateVersioned(
         final Aeron aeron,
         final MutableDirectBuffer tempBuffer,
@@ -106,6 +111,7 @@ public final class ClusterCounters
      * @param clusterId to which the allocated counter belongs.
      * @return the matching counter id or {@link Aeron#NULL_VALUE} if not found.
      */
+    @Impure
     public static int find(final CountersReader counters, final int typeId, final int clusterId)
     {
         final AtomicBuffer buffer = counters.metaDataBuffer();
@@ -142,6 +148,7 @@ public final class ClusterCounters
      * @param serviceId  to which the allocated counter belongs.
      * @return the {@link Counter} for the commit position.
      */
+    @Impure
     public static Counter allocateServiceCounter(
         final Aeron aeron,
         final MutableDirectBuffer tempBuffer,
@@ -166,6 +173,7 @@ public final class ClusterCounters
         return aeron.addCounter(typeId, tempBuffer, 0, keyLength, tempBuffer, keyLength, index - keyLength);
     }
 
+    @Impure
     static Counter allocateServiceErrorCounter(
         final Aeron aeron,
         final MutableDirectBuffer tempBuffer,

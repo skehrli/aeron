@@ -15,6 +15,8 @@
  */
 package io.aeron.logbuffer;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import static io.aeron.logbuffer.FrameDescriptor.FRAME_ALIGNMENT;
@@ -39,6 +41,7 @@ public final class TermScanner
      * @return resulting status of the scan which packs the available bytes and padding into a long. The available bytes
      * can be negative which indicates that there was data to send.
      */
+    @Impure
     public static long scanForAvailability(
         final UnsafeBuffer termBuffer, final int offset, final int maxLength)
     {
@@ -83,6 +86,7 @@ public final class TermScanner
      * @param available value to be packed.
      * @return a long with both ints packed into it.
      */
+    @Pure
     public static long pack(final int padding, final int available)
     {
         return ((long)padding << 32) | available;
@@ -94,6 +98,7 @@ public final class TermScanner
      * @param result into which the padding value has been packed.
      * @return the count of bytes that are available to be read.
      */
+    @Pure
     public static int available(final long result)
     {
         return (int)result;
@@ -105,6 +110,7 @@ public final class TermScanner
      * @param result into which the padding value has been packed.
      * @return the count of bytes that should be added for padding to the position on top of what is available.
      */
+    @Pure
     public static int padding(final long result)
     {
         return (int)(result >>> 32);

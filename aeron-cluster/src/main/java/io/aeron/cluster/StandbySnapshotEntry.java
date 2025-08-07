@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package io.aeron.cluster;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 
 class StandbySnapshotEntry
 {
@@ -25,6 +27,7 @@ class StandbySnapshotEntry
     private final int serviceId;
     private final String archiveEndpoint;
 
+    @SideEffectFree
     StandbySnapshotEntry(
         final long recordingId,
         final long leadershipTermId,
@@ -43,36 +46,43 @@ class StandbySnapshotEntry
         this.archiveEndpoint = archiveEndpoint;
     }
 
+    @Pure
     public long recordingId()
     {
         return recordingId;
     }
 
+    @Pure
     public long leadershipTermId()
     {
         return leadershipTermId;
     }
 
+    @Pure
     public long termBaseLogPosition()
     {
         return termBaseLogPosition;
     }
 
+    @Pure
     public long logPosition()
     {
         return logPosition;
     }
 
+    @Pure
     public long timestamp()
     {
         return timestamp;
     }
 
+    @Pure
     public int serviceId()
     {
         return serviceId;
     }
 
+    @Pure
     public String archiveEndpoint()
     {
         return archiveEndpoint;

@@ -15,6 +15,9 @@
  */
 package io.aeron;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.command.PublicationErrorFrameFlyweight;
 import io.aeron.exceptions.AeronException;
 import io.aeron.exceptions.ChannelEndpointException;
@@ -112,6 +115,7 @@ final class ClientConductor implements Agent
     private AtomicCounter heartbeatTimestamp;
     private long lastResponseValue;
 
+    @Impure
     ClientConductor(final Aeron.Context ctx, final Aeron aeron)
     {
         this.ctx = ctx;
@@ -168,6 +172,7 @@ final class ClientConductor implements Agent
         timeOfLastServiceNs = nowNs;
     }
 
+    @Impure
     public void onClose()
     {
         boolean isInterrupted = false;
@@ -219,6 +224,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     public int doWork()
     {
         int workCount = 0;
@@ -243,21 +249,25 @@ final class ClientConductor implements Agent
         return workCount;
     }
 
+    @Pure
     public String roleName()
     {
         return "aeron-client-conductor";
     }
 
+    @Pure
     boolean isClosed()
     {
         return isClosed;
     }
 
+    @Pure
     boolean isTerminating()
     {
         return isTerminating;
     }
 
+    @Impure
     void onError(final long correlationId, final int codeValue, final ErrorCode errorCode, final String message)
     {
         driverException = new RegistrationException(correlationId, codeValue, errorCode, message);
@@ -271,6 +281,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     void onAsyncError(final long correlationId, final int codeValue, final ErrorCode errorCode, final String message)
     {
         stashedChannelByRegistrationId.remove(correlationId);
@@ -278,6 +289,7 @@ final class ClientConductor implements Agent
         asyncExceptionByRegIdMap.put(correlationId, ex);
     }
 
+    @Impure
     void onChannelEndpointError(final long correlationId, final String message)
     {
         final int statusIndicatorId = (int)correlationId;
@@ -308,6 +320,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     void onPublicationError(final PublicationErrorFrameFlyweight errorFrameFlyweight)
     {
         for (final Object resource : resourceByRegIdMap.values())
@@ -324,6 +337,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     void onNewPublication(
         final long correlationId,
         final long registrationId,
@@ -348,6 +362,7 @@ final class ClientConductor implements Agent
         resourceByRegIdMap.put(correlationId, publication);
     }
 
+    @Impure
     void onNewExclusivePublication(
         final long correlationId,
         final long registrationId,
@@ -378,6 +393,7 @@ final class ClientConductor implements Agent
         resourceByRegIdMap.put(correlationId, publication);
     }
 
+    @Impure
     void onNewSubscription(final long correlationId, final int statusIndicatorId)
     {
         final Object resource = resourceByRegIdMap.get(correlationId);
@@ -395,6 +411,7 @@ final class ClientConductor implements Agent
         subscription.channelStatusId(statusIndicatorId);
     }
 
+    @Impure
     void onAvailableImage(
         final long correlationId,
         final int sessionId,
@@ -437,6 +454,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     void onUnavailableImage(final long correlationId, final long subscriptionRegistrationId)
     {
         final Subscription subscription = (Subscription)resourceByRegIdMap.get(subscriptionRegistrationId);
@@ -454,12 +472,14 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     void onNewCounter(final long correlationId, final int counterId)
     {
         resourceByRegIdMap.put(correlationId, new Counter(correlationId, this, counterValuesBuffer, counterId));
         onAvailableCounter(correlationId, counterId);
     }
 
+    @Impure
     void onAvailableCounter(final long registrationId, final int counterId)
     {
         for (final AvailableCounterHandler handler : availableCounterHandlerById.values())
@@ -468,11 +488,13 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     void onUnavailableCounter(final long registrationId, final int counterId)
     {
         notifyUnavailableCounterHandlers(registrationId, counterId);
     }
 
+    @Impure
     void onClientTimeout()
     {
         if (!isClosed)
@@ -482,11 +504,13 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Pure
     CountersReader countersReader()
     {
         return countersReader;
     }
 
+    @Impure
     void handleError(final Throwable ex)
     {
         if (!isClosed)
@@ -495,6 +519,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     int nextSessionId(final int streamId)
     {
         if (controlProtocolVersion >= CONTROL_PROTOCOL_VERSION_WITH_NEXT_AVAILABLE_SESSION_ID_COMMAND)
@@ -522,6 +547,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     ConcurrentPublication addPublication(final String channel, final int streamId)
     {
         clientLock.lock();
@@ -542,6 +568,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     ExclusivePublication addExclusivePublication(final String channel, final int streamId)
     {
         clientLock.lock();
@@ -562,6 +589,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     long asyncAddPublication(final String channel, final int streamId)
     {
         clientLock.lock();
@@ -582,6 +610,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     long asyncAddExclusivePublication(final String channel, final int streamId)
     {
         clientLock.lock();
@@ -602,6 +631,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     ConcurrentPublication getPublication(final long registrationId)
     {
         clientLock.lock();
@@ -623,6 +653,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     ExclusivePublication getExclusivePublication(final long registrationId)
     {
         clientLock.lock();
@@ -644,6 +675,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     void removePublication(final Publication publication)
     {
         clientLock.lock();
@@ -674,6 +706,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     void removePublication(final long publicationRegistrationId)
     {
         clientLock.lock();
@@ -717,11 +750,13 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     Subscription addSubscription(final String channel, final int streamId)
     {
         return addSubscription(channel, streamId, defaultAvailableImageHandler, defaultUnavailableImageHandler);
     }
 
+    @Impure
     Subscription addSubscription(
         final String channel,
         final int streamId,
@@ -754,11 +789,13 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     long asyncAddSubscription(final String channel, final int streamId)
     {
         return asyncAddSubscription(channel, streamId, defaultAvailableImageHandler, defaultUnavailableImageHandler);
     }
 
+    @Impure
     long asyncAddSubscription(
         final String channel,
         final int streamId,
@@ -791,6 +828,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     Subscription getSubscription(final long registrationId)
     {
         clientLock.lock();
@@ -812,6 +850,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     void removeSubscription(final Subscription subscription)
     {
         clientLock.lock();
@@ -840,6 +879,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     void removeSubscription(final long subscriptionRegistrationId)
     {
         clientLock.lock();
@@ -878,6 +918,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     void addDestination(final long registrationId, final String endpointChannel)
     {
         clientLock.lock();
@@ -894,6 +935,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     long addDestinationWithId(final long registrationId, final String endpointChannel)
     {
         clientLock.lock();
@@ -912,6 +954,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     void removeDestination(final long registrationId, final String endpointChannel)
     {
         clientLock.lock();
@@ -928,6 +971,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     void removeDestination(final long publicationRegistrationId, final long destinationRegistrationId)
     {
         clientLock.lock();
@@ -944,6 +988,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     void addRcvDestination(final long registrationId, final String endpointChannel)
     {
         clientLock.lock();
@@ -960,6 +1005,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     void removeRcvDestination(final long registrationId, final String endpointChannel)
     {
         clientLock.lock();
@@ -976,6 +1022,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     long asyncAddDestination(final long registrationId, final String endpointChannel)
     {
         clientLock.lock();
@@ -994,6 +1041,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     long asyncRemoveDestination(final long registrationId, final String endpointChannel)
     {
         clientLock.lock();
@@ -1012,6 +1060,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     long asyncRemoveDestination(final long registrationId, final long destinationRegistrationId)
     {
         clientLock.lock();
@@ -1030,6 +1079,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     long asyncAddRcvDestination(final long registrationId, final String endpointChannel)
     {
         clientLock.lock();
@@ -1048,6 +1098,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     long asyncRemoveRcvDestination(final long registrationId, final String endpointChannel)
     {
         clientLock.lock();
@@ -1066,6 +1117,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     boolean isCommandActive(final long correlationId)
     {
         clientLock.lock();
@@ -1091,6 +1143,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     boolean hasActiveCommands()
     {
         clientLock.lock();
@@ -1111,6 +1164,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     Counter addCounter(
         final int typeId,
         final DirectBuffer keyBuffer,
@@ -1149,6 +1203,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     Counter addCounter(final int typeId, final String label)
     {
         clientLock.lock();
@@ -1173,6 +1228,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     Counter addStaticCounter(
         final int typeId,
         final DirectBuffer keyBuffer,
@@ -1212,6 +1268,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     Counter addStaticCounter(final int typeId, final String label, final long registrationId)
     {
         clientLock.lock();
@@ -1236,6 +1293,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     long asyncAddCounter(final int typeId, final String label)
     {
         clientLock.lock();
@@ -1259,6 +1317,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     long asyncAddCounter(
         final int typeId,
         final DirectBuffer keyBuffer,
@@ -1295,6 +1354,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     long asyncAddStaticCounter(final int typeId, final String label, final long registrationId)
     {
         clientLock.lock();
@@ -1318,6 +1378,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     long asyncAddStaticCounter(
         final int typeId,
         final DirectBuffer keyBuffer,
@@ -1355,6 +1416,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     Counter getCounter(final long registrationId)
     {
         clientLock.lock();
@@ -1376,6 +1438,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     long addAvailableCounterHandler(final AvailableCounterHandler handler)
     {
         clientLock.lock();
@@ -1394,6 +1457,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     boolean removeAvailableCounterHandler(final long registrationId)
     {
         clientLock.lock();
@@ -1407,6 +1471,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     boolean removeAvailableCounterHandler(final AvailableCounterHandler handler)
     {
         clientLock.lock();
@@ -1438,6 +1503,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     long addUnavailableCounterHandler(final UnavailableCounterHandler handler)
     {
         clientLock.lock();
@@ -1456,6 +1522,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     boolean removeUnavailableCounterHandler(final long registrationId)
     {
         clientLock.lock();
@@ -1469,6 +1536,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     boolean removeUnavailableCounterHandler(final UnavailableCounterHandler handler)
     {
         clientLock.lock();
@@ -1500,6 +1568,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     long addCloseHandler(final Runnable handler)
     {
         clientLock.lock();
@@ -1518,6 +1587,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     boolean removeCloseHandler(final long registrationId)
     {
         clientLock.lock();
@@ -1531,6 +1601,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     boolean removeCloseHandler(final Runnable handler)
     {
         clientLock.lock();
@@ -1561,6 +1632,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     void releaseCounter(final Counter counter)
     {
         clientLock.lock();
@@ -1585,6 +1657,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     void releaseLogBuffers(
         final LogBuffers logBuffers, final long registrationId, final long lingerDurationNs)
     {
@@ -1598,11 +1671,13 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Pure
     DriverEventsAdapter driverListenerAdapter()
     {
         return driverEventsAdapter;
     }
 
+    @Impure
     long channelStatus(final int channelStatusId)
     {
         switch (channelStatusId)
@@ -1618,6 +1693,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     void closeImages(final Image[] images, final UnavailableImageHandler unavailableImageHandler, final long lingerNs)
     {
         for (final Image image : images)
@@ -1639,6 +1715,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     void onStaticCounter(final long correlationId, final int counterId)
     {
         final CountersReader countersReader = aeron.countersReader();
@@ -1647,6 +1724,7 @@ final class ClientConductor implements Agent
             new Counter(countersReader, countersReader.getCounterRegistrationId(counterId), counterId));
     }
 
+    @Impure
     void rejectImage(final long correlationId, final long position, final String reason)
     {
         clientLock.lock();
@@ -1664,11 +1742,14 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     void onNextAvailableSessionId(final int nextSessionId)
     {
         lastResponseValue = nextSessionId;
     }
 
+    @SideEffectFree
+    @Impure
     private void ensureActive()
     {
         if (isClosed)
@@ -1682,6 +1763,8 @@ final class ClientConductor implements Agent
         }
     }
 
+    @SideEffectFree
+    @Impure
     private void ensureNotReentrant()
     {
         if (isInCallback)
@@ -1690,6 +1773,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     private LogBuffers logBuffers(final long registrationId, final String logFileName, final String channel)
     {
         LogBuffers logBuffers = logBuffersByIdMap.get(registrationId);
@@ -1710,6 +1794,7 @@ final class ClientConductor implements Agent
         return logBuffers;
     }
 
+    @Impure
     private int service(final long correlationId)
     {
         int workCount = 0;
@@ -1751,12 +1836,14 @@ final class ClientConductor implements Agent
         return workCount;
     }
 
+    @Impure
     private void terminateConductor()
     {
         isTerminating = true;
         forceCloseResources();
     }
 
+    @Impure
     private void awaitResponse(final long correlationId)
     {
         final long nowNs = nanoClock.nanoTime();
@@ -1801,6 +1888,7 @@ final class ClientConductor implements Agent
         throw new DriverTimeoutException("no response from MediaDriver within " + driverTimeoutNs + "ns");
     }
 
+    @Impure
     private int checkTimeouts(final long nowNs)
     {
         int workCount = 0;
@@ -1817,6 +1905,7 @@ final class ClientConductor implements Agent
         return workCount;
     }
 
+    @Impure
     private void checkServiceInterval(final long nowNs)
     {
         if ((timeOfLastServiceNs + interServiceTimeoutNs) - nowNs < 0)
@@ -1829,6 +1918,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     private int checkLiveness(final long nowNs)
     {
         if ((timeOfLastKeepAliveNs + keepAliveIntervalNs) - nowNs < 0)
@@ -1895,6 +1985,7 @@ final class ClientConductor implements Agent
         return 0;
     }
 
+    @Impure
     private int checkLingeringResources(final long nowNs)
     {
         int workCount = 0;
@@ -1914,6 +2005,7 @@ final class ClientConductor implements Agent
         return workCount;
     }
 
+    @Impure
     private void forceCloseResources()
     {
         for (final Object resource : resourceByRegIdMap.values())
@@ -1937,6 +2029,7 @@ final class ClientConductor implements Agent
         resourceByRegIdMap.clear();
     }
 
+    @Impure
     private void notifyUnavailableCounterHandlers(final long registrationId, final int counterId)
     {
         for (final UnavailableCounterHandler handler : unavailableCounterHandlerById.values())
@@ -1965,6 +2058,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     private void notifyImageUnavailable(final UnavailableImageHandler handler, final Image image)
     {
         isInCallback = true;
@@ -1990,6 +2084,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     private void notifyCounterAvailable(
         final long registrationId, final int counterId, final AvailableCounterHandler handler)
     {
@@ -2012,6 +2107,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     private void notifyCloseHandlers()
     {
         for (final Runnable closeHandler : closeHandlerByIdMap.values())
@@ -2032,6 +2128,7 @@ final class ClientConductor implements Agent
         }
     }
 
+    @Impure
     private <T> T resourceOrThrow(final long registrationId, final Class<T> resourceClass)
     {
         final Object resource = resourceByRegIdMap.get(registrationId);
@@ -2049,6 +2146,7 @@ final class ClientConductor implements Agent
         return null;
     }
 
+    @Pure
     private static boolean isClientApiCall(final long correlationId)
     {
         return correlationId != NO_CORRELATION_ID;
@@ -2058,6 +2156,7 @@ final class ClientConductor implements Agent
     {
         final Subscription subscription;
 
+        @SideEffectFree
         private PendingSubscription(final Subscription subscription)
         {
             this.subscription = subscription;

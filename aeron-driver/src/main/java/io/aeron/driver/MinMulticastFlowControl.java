@@ -15,6 +15,7 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.protocol.ErrorFlyweight;
 import io.aeron.protocol.StatusMessageFlyweight;
 
@@ -31,6 +32,7 @@ public class MinMulticastFlowControl extends AbstractMinMulticastFlowControl
      */
     public static final String FC_PARAM_VALUE = "min";
 
+    @Impure
     MinMulticastFlowControl()
     {
         super(false);
@@ -39,6 +41,7 @@ public class MinMulticastFlowControl extends AbstractMinMulticastFlowControl
     /**
      * {@inheritDoc}
      */
+    @Impure
     public long onStatusMessage(
         final StatusMessageFlyweight flyweight,
         final InetSocketAddress receiverAddress,
@@ -53,6 +56,7 @@ public class MinMulticastFlowControl extends AbstractMinMulticastFlowControl
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onTriggerSendSetup(
         final StatusMessageFlyweight flyweight,
         final InetSocketAddress receiverAddress,
@@ -64,6 +68,7 @@ public class MinMulticastFlowControl extends AbstractMinMulticastFlowControl
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void onError(final ErrorFlyweight errorFlyweight, final InetSocketAddress receiverAddress, final long timeNs)
     {
         processError(errorFlyweight, receiverAddress, timeNs, true);

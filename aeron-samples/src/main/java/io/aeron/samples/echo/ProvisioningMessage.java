@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.aeron.samples.echo;
+import org.checkerframework.dataflow.qual.Impure;
 
 /**
  * Message to provision a new echo pair.
@@ -28,6 +29,7 @@ public class ProvisioningMessage
      *
      * @throws InterruptedException if the thread is interrupted while waiting for the response.
      */
+    @Impure
     public void await() throws InterruptedException
     {
         synchronized (mutex)
@@ -49,6 +51,7 @@ public class ProvisioningMessage
      *
      * @param value to be returned to the caller.
      */
+    @Impure
     public void complete(final Object value)
     {
         synchronized (mutex)

@@ -15,6 +15,7 @@
  */
 package io.aeron.driver.exceptions;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.exceptions.AeronException;
 
 /**
@@ -29,6 +30,7 @@ public class ActiveDriverException extends AeronException
      *
      * @param message to detail the exception.
      */
+    @Impure
     public ActiveDriverException(final String message)
     {
         super(message);

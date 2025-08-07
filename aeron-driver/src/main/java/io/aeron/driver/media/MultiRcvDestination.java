@@ -15,6 +15,9 @@
  */
 package io.aeron.driver.media;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.CommonContext;
 import io.aeron.driver.DriverConductorProxy;
 import org.agrona.collections.ArrayUtil;
@@ -34,6 +37,7 @@ final class MultiRcvDestination
 
     private ReceiveDestinationTransport[] transports = EMPTY_TRANSPORTS;
 
+    @Impure
     void closeTransports(final ReceiveChannelEndpoint endpoint, final DataTransportPoller poller)
     {
         for (final ReceiveDestinationTransport transport : transports)
@@ -47,6 +51,7 @@ final class MultiRcvDestination
         }
     }
 
+    @Impure
     void closeIndicators(final DriverConductorProxy conductorProxy)
     {
         for (final ReceiveDestinationTransport transport : transports)
@@ -58,6 +63,7 @@ final class MultiRcvDestination
         }
     }
 
+    @Impure
     int addDestination(final ReceiveDestinationTransport transport)
     {
         int index = transports.length;
@@ -77,21 +83,26 @@ final class MultiRcvDestination
         return index;
     }
 
+    @Impure
     void removeDestination(final int transportIndex)
     {
         transports[transportIndex] = null;
     }
 
+    @Pure
     boolean hasDestination(final int transportIndex)
     {
         return transports.length > transportIndex && null != transports[transportIndex];
     }
 
+    @Pure
     ReceiveDestinationTransport transport(final int transportIndex)
     {
         return transports[transportIndex];
     }
 
+    @Pure
+    @Impure
     int transport(final UdpChannel udpChannel)
     {
         final ReceiveDestinationTransport[] transports = this.transports;
@@ -111,6 +122,7 @@ final class MultiRcvDestination
         return index;
     }
 
+    @Impure
     void checkForReResolution(
         final ReceiveChannelEndpoint channelEndpoint, final long nowNs, final DriverConductorProxy conductorProxy)
     {
@@ -134,6 +146,7 @@ final class MultiRcvDestination
         }
     }
 
+    @Impure
     void updateControlAddress(final int transportIndex, final InetSocketAddress newAddress)
     {
         if (ArrayUtil.UNKNOWN_INDEX != transportIndex)
@@ -147,6 +160,7 @@ final class MultiRcvDestination
         }
     }
 
+    @Impure
     int sendToAll(
         final ImageConnection[] imageConnections, final ByteBuffer buffer, final int bytesToSend, final long nowNs)
     {
@@ -171,6 +185,7 @@ final class MultiRcvDestination
         return minBytesSent;
     }
 
+    @Impure
     static int sendTo(
         final UdpChannelTransport transport, final ByteBuffer buffer, final InetSocketAddress remoteAddress)
     {
@@ -197,6 +212,7 @@ final class MultiRcvDestination
     /**
      * {@inheritDoc}
      */
+    @SideEffectFree
     public String toString()
     {
         return "MultiRcvDestination{" +

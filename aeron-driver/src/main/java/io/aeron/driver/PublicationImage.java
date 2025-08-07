@@ -15,6 +15,9 @@
  */
 package io.aeron.driver;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.driver.buffer.RawLog;
 import io.aeron.driver.media.ImageConnection;
 import io.aeron.driver.media.ReceiveChannelEndpoint;
@@ -200,6 +203,7 @@ public final class PublicationImage
     private final NanoClock nanoClock;
     private final RawLog rawLog;
 
+    @Impure
     PublicationImage(
         final long correlationId,
         final MediaDriver.Context ctx,
@@ -289,6 +293,7 @@ public final class PublicationImage
     /**
      * {@inheritDoc}
      */
+    @Impure
     public boolean free()
     {
         return rawLog.free();
@@ -297,6 +302,7 @@ public final class PublicationImage
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void close()
     {
         CloseHelper.close(errorHandler, hwmPosition);
@@ -321,6 +327,7 @@ public final class PublicationImage
      *
      * @return the correlation id assigned by the driver when created.
      */
+    @Pure
     public long correlationId()
     {
         return correlationId;
@@ -331,6 +338,7 @@ public final class PublicationImage
      *
      * @return session id of the channel from a publisher.
      */
+    @Pure
     public int sessionId()
     {
         return sessionId;
@@ -341,6 +349,7 @@ public final class PublicationImage
      *
      * @return stream id of this image within a channel.
      */
+    @Pure
     public int streamId()
     {
         return streamId;
@@ -351,6 +360,8 @@ public final class PublicationImage
      *
      * @return the string representation of the channel URI.
      */
+    @Pure
+    @Impure
     public String channel()
     {
         return channelEndpoint.originalUriString();
@@ -359,6 +370,7 @@ public final class PublicationImage
     /**
      * {@inheritDoc}
      */
+    @Pure
     public long subscribableRegistrationId()
     {
         return correlationId;
@@ -367,6 +379,7 @@ public final class PublicationImage
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void addSubscriber(
         final SubscriptionLink subscriptionLink, final ReadablePosition subscriberPosition, final long nowNs)
     {
@@ -380,6 +393,7 @@ public final class PublicationImage
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void removeSubscriber(final SubscriptionLink subscriptionLink, final ReadablePosition subscriberPosition)
     {
         subscriberPositions = ArrayUtil.remove(subscriberPositions, subscriberPosition);
@@ -408,6 +422,7 @@ public final class PublicationImage
      * <p>
      * {@inheritDoc}
      */
+    @Impure
     public void onGapDetected(final int termId, final int termOffset, final int length)
     {
         final long changeNumber = (long)BEGIN_LOSS_CHANGE_VH.get(this) + 1;
@@ -439,6 +454,7 @@ public final class PublicationImage
      * @return source identity for a source address.
      * @see Configuration#sourceIdentity(InetSocketAddress)
      */
+    @Pure
     String sourceIdentity()
     {
         return sourceIdentity;
@@ -449,6 +465,7 @@ public final class PublicationImage
      *
      * @return {@link ReceiveChannelEndpoint} that the image is attached to.
      */
+    @Pure
     ReceiveChannelEndpoint channelEndpoint()
     {
         return channelEndpoint;
@@ -458,6 +475,7 @@ public final class PublicationImage
      * Remove this image from the {@link DataPacketDispatcher} so it will process no further packets from the network.
      * Called from the {@link Receiver} thread.
      */
+    @Impure
     void removeFromDispatcher()
     {
         channelEndpoint.dispatcher().removePublicationImage(this);
@@ -468,6 +486,7 @@ public final class PublicationImage
      *
      * @return the {@link RawLog} the back this image.
      */
+    @Pure
     RawLog rawLog()
     {
         return rawLog;
@@ -476,6 +495,7 @@ public final class PublicationImage
     /**
      * Activate this image from the {@link Receiver}.
      */
+    @Impure
     void activate()
     {
         timeOfLastStateChangeNs = cachedNanoClock.nanoTime();
@@ -486,6 +506,7 @@ public final class PublicationImage
      * Deactivate image by setting state to {@link State#DRAINING} if currently {@link State#ACTIVE} from the
      * {@link Receiver}.
      */
+    @Impure
     void deactivate()
     {
         if (State.ACTIVE == state)
@@ -509,11 +530,13 @@ public final class PublicationImage
         }
     }
 
+    @Impure
     void receiverRelease()
     {
         hasReceiverReleased = true;
     }
 
+    @Impure
     void addDestination(final int transportIndex, final ReceiveDestinationTransport transport)
     {
         imageConnections = ArrayUtil.ensureCapacity(imageConnections, transportIndex + 1);
@@ -530,17 +553,20 @@ public final class PublicationImage
         }
     }
 
+    @Impure
     void removeDestination(final int transportIndex)
     {
         imageConnections[transportIndex] = null;
         updateActiveTransportCount();
     }
 
+    @Impure
     void addDestinationConnectionIfUnknown(final int transportIndex, final InetSocketAddress remoteAddress)
     {
         trackConnection(transportIndex, remoteAddress, cachedNanoClock.nanoTime());
     }
 
+    @Impure
     int trackRebuild(final long nowNs)
     {
         int workCount = 0;
@@ -608,6 +634,7 @@ public final class PublicationImage
      * @param srcAddress     from which the packet came.
      * @return number of bytes applied as a result of this insertion.
      */
+    @Impure
     int insertPacket(
         final int termId,
         final int termOffset,
@@ -688,6 +715,7 @@ public final class PublicationImage
         return length;
     }
 
+    @SideEffectFree
     private static void logRevoke(
         final long revokedPos,
         final int sessionId,
@@ -702,6 +730,8 @@ public final class PublicationImage
      * @param nowNs current time to check against for activity.
      * @return true if the image should be retained otherwise false.
      */
+    @Pure
+    @Impure
     boolean isConnected(final long nowNs)
     {
         return ((timeOfLastPacketNs + imageLivenessTimeoutNs) - nowNs >= 0) &&
@@ -709,6 +739,7 @@ public final class PublicationImage
             (!isEndOfStream || !isReceiverReleaseTriggered);
     }
 
+    @Pure
     boolean isEndOfStream()
     {
         return isEndOfStream;
@@ -719,6 +750,7 @@ public final class PublicationImage
      *
      * @param nowNs current time of use.
      */
+    @Impure
     void checkEosForDrainTransition(final long nowNs)
     {
         if (!isSendingEosSm)
@@ -741,6 +773,7 @@ public final class PublicationImage
      * @param nowNs current time.
      * @return number of work items processed.
      */
+    @Impure
     int sendPendingStatusMessage(final long nowNs)
     {
         int workCount = 0;
@@ -805,6 +838,7 @@ public final class PublicationImage
      *
      * @return number of work items processed.
      */
+    @Impure
     int processPendingLoss()
     {
         if (isPublicationRevoked(rawLog.metaData()))
@@ -856,6 +890,7 @@ public final class PublicationImage
      * @param nowNs in nanoseconds
      * @return number of work items processed.
      */
+    @Impure
     int initiateAnyRttMeasurements(final long nowNs)
     {
         int workCount = 0;
@@ -880,6 +915,7 @@ public final class PublicationImage
      * @param transportIndex that the RTT Measurement came in on.
      * @param srcAddress     from the sender requesting the measurement
      */
+    @Impure
     void onRttMeasurement(
         final RttMeasurementFlyweight header, final int transportIndex, final InetSocketAddress srcAddress)
     {
@@ -889,6 +925,7 @@ public final class PublicationImage
         congestionControl.onRttMeasurement(nowNs, rttInNs, srcAddress);
     }
 
+    @Impure
     boolean isAcceptingSubscriptions()
     {
         if (subscriberPositions.length > 0)
@@ -899,6 +936,7 @@ public final class PublicationImage
         return false;
     }
 
+    @Impure
     long joinPosition()
     {
         long position = rebuildPosition.get();
@@ -911,11 +949,13 @@ public final class PublicationImage
         return position;
     }
 
+    @Pure
     boolean hasSendResponseSetup()
     {
         return 0 != (SEND_RESPONSE_SETUP_FLAG & flags);
     }
 
+    @Impure
     void responseSessionId(final Integer responseSessionId)
     {
         this.responseSessionId = responseSessionId;
@@ -924,6 +964,7 @@ public final class PublicationImage
     /**
      * {@inheritDoc}
      */
+    @Impure
     @SuppressWarnings("fallthrough")
     public void onTimeEvent(final long timeNs, final long timesMs, final DriverConductor conductor)
     {
@@ -981,16 +1022,19 @@ public final class PublicationImage
     /**
      * {@inheritDoc}
      */
+    @Pure
     public boolean hasReachedEndOfLife()
     {
         return hasReceiverReleased && State.DONE == state;
     }
 
+    @Impure
     void reject(final String reason)
     {
         rejectionReason = reason;
     }
 
+    @Impure
     void stopStatusMessagesIfNotActive()
     {
         if (State.ACTIVE != state)
@@ -999,6 +1043,7 @@ public final class PublicationImage
         }
     }
 
+    @Impure
     private void reportLoss(final int termId, final int termOffset, final int length, final int bytesLost)
     {
         if (null != reportEntry)
@@ -1021,11 +1066,13 @@ public final class PublicationImage
         lossReportLength = length;
     }
 
+    @Impure
     private void state(final State state)
     {
         this.state = state;
     }
 
+    @Impure
     private boolean isDrained()
     {
         final long rebuildPosition = this.rebuildPosition.get();
@@ -1041,11 +1088,13 @@ public final class PublicationImage
         return true;
     }
 
+    @Pure
     private boolean hasNoSubscribers()
     {
         return subscriberPositions.length == 0;
     }
 
+    @Impure
     private boolean isFlowControlUnderRun(final long packetPosition)
     {
         final boolean isFlowControlUnderRun = packetPosition < lastSmPosition;
@@ -1058,6 +1107,7 @@ public final class PublicationImage
         return isFlowControlUnderRun;
     }
 
+    @Impure
     private boolean isFlowControlOverRun(final long proposedPosition)
     {
         final boolean isFlowControlOverRun = proposedPosition > lastOverrunThreshold;
@@ -1070,6 +1120,7 @@ public final class PublicationImage
         return isFlowControlOverRun;
     }
 
+    @Impure
     private void cleanBufferTo(final long position)
     {
         final long cleanPosition = this.cleanPosition;
@@ -1086,6 +1137,7 @@ public final class PublicationImage
         }
     }
 
+    @Impure
     private ImageConnection trackConnection(
         final int transportIndex, final InetSocketAddress srcAddress, final long nowNs)
     {
@@ -1103,6 +1155,8 @@ public final class PublicationImage
         return imageConnection;
     }
 
+    @Pure
+    @Impure
     private boolean isAllConnectedEos()
     {
         for (int i = 0, length = imageConnections.length; i < length; i++)
@@ -1122,6 +1176,7 @@ public final class PublicationImage
         return true;
     }
 
+    @Pure
     private long findEosPosition()
     {
         long eosPosition = 0;
@@ -1137,6 +1192,7 @@ public final class PublicationImage
         return eosPosition;
     }
 
+    @Impure
     private void scheduleStatusMessage(final long smPosition, final int receiverWindowLength)
     {
         final long changeNumber = (long)BEGIN_SM_CHANGE_VH.get(this) + 1;
@@ -1150,6 +1206,7 @@ public final class PublicationImage
         END_SM_CHANGE_VH.setRelease(this, changeNumber);
     }
 
+    @Impure
     private void checkUntetheredSubscriptions(final long nowNs, final DriverConductor conductor)
     {
         final ArrayList<UntetheredSubscription> untetheredSubscriptions = this.untetheredSubscriptions;
@@ -1202,6 +1259,7 @@ public final class PublicationImage
         }
     }
 
+    @Impure
     private long untetheredWindowLimit()
     {
         long maxConsumerPosition = 0;
@@ -1220,6 +1278,7 @@ public final class PublicationImage
         return (maxConsumerPosition - windowLength) + (windowLength >> 2);
     }
 
+    @Impure
     private void updateActiveTransportCount()
     {
         final long nowNs = cachedNanoClock.nanoTime();
@@ -1240,6 +1299,7 @@ public final class PublicationImage
         }
     }
 
+    @Impure
     private ReadablePosition[] positionArray(final ArrayList<SubscriberPosition> subscriberPositions, final long nowNs)
     {
         final int size = subscriberPositions.size();
@@ -1263,6 +1323,7 @@ public final class PublicationImage
     /**
      * {@inheritDoc}
      */
+    @Pure
     public String toString()
     {
         return "PublicationImage{" +

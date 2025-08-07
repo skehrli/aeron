@@ -15,6 +15,7 @@
  */
 package io.aeron.samples.echo;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.samples.echo.api.EchoMonitorMBean;
 import io.aeron.samples.echo.api.ProvisioningConstants;
 import io.aeron.samples.echo.api.ProvisioningMBean;
@@ -40,6 +41,7 @@ public class ProvisioningClientMain
      * @throws IOException if an I/O exception occurs.
      * @throws MalformedObjectNameException if any of the JMX names are invalid.
      */
+    @Impure
     public static void main(final String[] args) throws IOException, MalformedObjectNameException
     {
         final JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:10000/jmxrmi");
