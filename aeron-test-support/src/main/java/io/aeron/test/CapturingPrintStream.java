@@ -15,6 +15,8 @@
  */
 package io.aeron.test;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.checker.mustcall.qual.NotOwning;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
@@ -25,12 +27,15 @@ public class CapturingPrintStream
     private final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     private final PrintStream printStream = new PrintStream(byteArrayOutputStream);
 
+    @NotOwning
+    @Impure
     public PrintStream resetAndGetPrintStream()
     {
         byteArrayOutputStream.reset();
         return printStream;
     }
 
+    @Impure
     public String flushAndGetContent()
     {
         printStream.flush();

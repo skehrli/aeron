@@ -15,6 +15,9 @@
  */
 package io.aeron.test;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.logbuffer.FragmentHandler;
 import io.aeron.logbuffer.Header;
 import org.agrona.DirectBuffer;
@@ -25,22 +28,26 @@ public final class CountingFragmentHandler implements FragmentHandler
     private int lastCheckedTargetValue = 0;
     private int received = 0;
 
+    @SideEffectFree
     public CountingFragmentHandler(final String name)
     {
         this.name = name;
     }
 
+    @Impure
     public boolean notDone(final int targetValue)
     {
         lastCheckedTargetValue = targetValue;
         return targetValue != received;
     }
 
+    @Impure
     public void onFragment(final DirectBuffer buffer, final int offset, final int length, final Header header)
     {
         received++;
     }
 
+    @Pure
     public String toString()
     {
         return "CountingFragmentHandler{" +

@@ -15,19 +15,23 @@
  */
 package io.aeron.test.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
 import java.io.File;
 import java.util.Map;
 
 public interface DriverOutputConsumer
 {
+    @Impure
     default void outputFiles(String aeronDirectoryName, File stdoutFile, File stderrFile)
     {
     }
 
+    @Impure
     default void exitCode(String aeronDirectoryName, int exitValue, String exitMessage)
     {
     }
 
+    @Impure
     default void environmentVariables(String aeronDirectoryName, Map<String, String> environment)
     {
     }

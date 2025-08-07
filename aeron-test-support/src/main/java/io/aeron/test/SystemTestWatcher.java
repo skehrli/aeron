@@ -15,6 +15,9 @@
  */
 package io.aeron.test;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.CommonContext;
 import io.aeron.archive.ArchiveMarkFile;
 import io.aeron.cluster.service.ClusterMarkFile;
@@ -103,6 +106,7 @@ public class SystemTestWatcher implements
     private final ArrayList<AutoCloseable> closeables = new ArrayList<>();
     private long startTimeNs;
 
+    @Impure
     public SystemTestWatcher()
     {
         addDissectorInternal(new ArchiveMarkFileDissector());
@@ -110,23 +114,27 @@ public class SystemTestWatcher implements
         addDissectorInternal(new ClusteredServiceMarkFileDissector());
     }
 
+    @Impure
     public SystemTestWatcher cluster(final TestCluster testCluster)
     {
         this.dataCollector = testCluster.dataCollector();
         return addClosable(testCluster);
     }
 
+    @Impure
     public SystemTestWatcher addClosable(final AutoCloseable closeable)
     {
         closeables.add(Objects.requireNonNull(closeable));
         return this;
     }
 
+    @Impure
     private void addDissectorInternal(final MarkFileDissector markFileDissector)
     {
         errorDissectors.put(markFileDissector.filename(), markFileDissector);
     }
 
+    @Impure
     @SuppressWarnings("unused")
     public SystemTestWatcher addDissector(final MarkFileDissector markFileDissector)
     {
@@ -134,11 +142,13 @@ public class SystemTestWatcher implements
         return this;
     }
 
+    @Pure
     public DataCollector dataCollector()
     {
         return dataCollector;
     }
 
+    @Impure
     public void outputFiles(final String aeronDirectoryName, final File stdoutFile, final File stderrFile)
     {
         mediaDriverTestUtil.outputFiles(aeronDirectoryName, stdoutFile, stderrFile);
@@ -146,16 +156,19 @@ public class SystemTestWatcher implements
         dataCollector.add(stderrFile);
     }
 
+    @Impure
     public void exitCode(final String aeronDirectoryName, final int exitValue, final String exitMessage)
     {
         mediaDriverTestUtil.exitCode(aeronDirectoryName, exitValue, exitMessage);
     }
 
+    @Impure
     public void environmentVariables(final String aeronDirectoryName, final Map<String, String> environment)
     {
         mediaDriverTestUtil.environmentVariables(aeronDirectoryName, environment);
     }
 
+    @Impure
     @SuppressWarnings("UnusedReturnValue")
     public SystemTestWatcher ignoreErrorsMatching(final Predicate<String> logFilter)
     {
@@ -166,18 +179,21 @@ public class SystemTestWatcher implements
     /**
      * Useful when debugging tests to get them to fail on warnings as well as errors.
      */
+    @Impure
     @SuppressWarnings("unused")
     public void showAllErrors()
     {
         this.logFilter = (s) -> true;
     }
 
+    @Impure
     public void beforeEach(final ExtensionContext context)
     {
         Thread.interrupted(); // clean the interrupted flag so that it does not affect the next test
         startTimeNs = System.nanoTime();
     }
 
+    @Impure
     @SuppressWarnings("MethodLength")
     public void afterTestExecution(final ExtensionContext context)
     {
@@ -292,11 +308,13 @@ public class SystemTestWatcher implements
         }
     }
 
+    @Impure
     public void afterEach(final ExtensionContext context)
     {
         deleteAllLocations();
     }
 
+    @Impure
     private void setTerminationExpected()
     {
         for (final AutoCloseable closeable : closeables)
@@ -308,6 +326,7 @@ public class SystemTestWatcher implements
         }
     }
 
+    @Impure
     private void filterErrors(final MutableInteger count, final StringBuilder errors) throws IOException
     {
         filterCncFileErrors(dataCollector.cncFiles(), count, errors);
@@ -318,6 +337,7 @@ public class SystemTestWatcher implements
         }
     }
 
+    @Impure
     private void filterErrors(
         final MarkFileDissector markFileDissector,
         final MutableInteger count,
@@ -327,6 +347,7 @@ public class SystemTestWatcher implements
         markFileDissector.filterErrors(paths, count, errors, logFilter);
     }
 
+    @Impure
     private void filterCncFileErrors(final List<Path> paths, final MutableInteger count, final StringBuilder errors)
     {
         for (final Path path : paths)
@@ -352,6 +373,7 @@ public class SystemTestWatcher implements
         }
     }
 
+    @Impure
     public static void readErrors(
         final Path path,
         final AtomicBuffer buffer,
@@ -371,6 +393,7 @@ public class SystemTestWatcher implements
             });
     }
 
+    @Impure
     private static void appendError(final StringBuilder errors, final Path path, final String encodedException)
     {
         final String errorMessage;
@@ -388,6 +411,7 @@ public class SystemTestWatcher implements
         errors.append(path).append(": ").append(errorMessage).append('\n');
     }
 
+    @Impure
     private static ClusterMarkFile openClusterMarkFile(final Path path)
     {
         try
@@ -401,12 +425,14 @@ public class SystemTestWatcher implements
         }
     }
 
+    @Impure
     private static ArchiveMarkFile openArchiveMarkFile(final Path path)
     {
         return new ArchiveMarkFile(
             path.getParent().toFile(), path.getFileName().toString(), SystemEpochClock.INSTANCE, 0, (s) -> {});
     }
 
+    @Impure
     private void printObservationCallback(
         final int observationCount,
         final long firstObservationTimestamp,
@@ -423,6 +449,7 @@ public class SystemTestWatcher implements
             encodedException);
     }
 
+    @Impure
     private Throwable reportAndTerminate(final String directoryName)
     {
         final MutableReference<Throwable> error = new MutableReference<>();
@@ -457,6 +484,7 @@ public class SystemTestWatcher implements
         return error.get();
     }
 
+    @Impure
     private static void setOrUpdateError(final MutableReference<Throwable> existingError, final Throwable newError)
     {
         if (null == existingError.get())
@@ -469,6 +497,7 @@ public class SystemTestWatcher implements
         }
     }
 
+    @Impure
     private Throwable printCncInfo(final List<Path> paths)
     {
         Throwable error = null;
@@ -549,6 +578,7 @@ public class SystemTestWatcher implements
         return error;
     }
 
+    @Impure
     private void deleteAllLocations()
     {
         for (final Path path : dataCollector.cleanupLocations())
@@ -566,28 +596,35 @@ public class SystemTestWatcher implements
 
     public interface MarkFileDissector
     {
+        @Pure
         String filename();
 
+        @Impure
         Throwable printErrors(List<Path> paths, ErrorConsumer errorConsumer);
 
+        @SideEffectFree
         boolean isRelevantFile(File file);
 
+        @Impure
         void filterErrors(List<Path> paths, MutableInteger count, StringBuilder errors, Predicate<String> logFilter)
             throws IOException;
     }
 
     private static final class ArchiveMarkFileDissector implements MarkFileDissector
     {
+        @Pure
         public String filename()
         {
             return ArchiveMarkFile.FILENAME;
         }
 
+        @SideEffectFree
         public boolean isRelevantFile(final File file)
         {
             return ArchiveMarkFile.FILENAME.equals(file.getName());
         }
 
+        @Impure
         public Throwable printErrors(final List<Path> paths, final ErrorConsumer errorConsumer)
         {
             Throwable error = null;
@@ -613,6 +650,7 @@ public class SystemTestWatcher implements
             return error;
         }
 
+        @Impure
         public void filterErrors(
             final List<Path> paths,
             final MutableInteger count,
@@ -635,6 +673,7 @@ public class SystemTestWatcher implements
 
     private abstract static class ClusterMarkFileDissector implements MarkFileDissector
     {
+        @Impure
         public Throwable printErrors(final List<Path> paths, final ErrorConsumer errorConsumer)
         {
             Throwable error = null;
@@ -659,6 +698,7 @@ public class SystemTestWatcher implements
             return error;
         }
 
+        @Impure
         public void filterErrors(
             final List<Path> paths,
             final MutableInteger count,
@@ -678,21 +718,25 @@ public class SystemTestWatcher implements
             }
         }
 
+        @Pure
         protected abstract String fileDescription();
     }
 
     private static final class ConsensusModuleMarkFileDissector extends ClusterMarkFileDissector
     {
+        @Pure
         public String filename()
         {
             return ClusterMarkFile.FILENAME;
         }
 
+        @SideEffectFree
         public boolean isRelevantFile(final File file)
         {
             return ClusterMarkFile.FILENAME.equals(file.getName());
         }
 
+        @Pure
         protected String fileDescription()
         {
             return "Consensus Module";
@@ -701,11 +745,13 @@ public class SystemTestWatcher implements
 
     private static final class ClusteredServiceMarkFileDissector extends ClusterMarkFileDissector
     {
+        @Pure
         public String filename()
         {
             return ClusterMarkFile.SERVICE_FILENAME_PREFIX + "X" + ClusterMarkFile.FILE_EXTENSION;
         }
 
+        @SideEffectFree
         public boolean isRelevantFile(final File file)
         {
             final String name = file.getName();
@@ -713,6 +759,7 @@ public class SystemTestWatcher implements
                 name.endsWith(ClusterMarkFile.FILE_EXTENSION);
         }
 
+        @Pure
         protected String fileDescription()
         {
             return "Clustered Service";

@@ -15,6 +15,7 @@
  */
 package io.aeron.test;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -29,6 +30,7 @@ public class EventLogExtension implements BeforeEachCallback, AfterEachCallback
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void beforeEach(final ExtensionContext context)
     {
         final String className = context.getTestClass().map(Class::getSimpleName).orElse("<UNKNOWN>");
@@ -40,6 +42,7 @@ public class EventLogExtension implements BeforeEachCallback, AfterEachCallback
     /**
      * {@inheritDoc}
      */
+    @Impure
     public void afterEach(final ExtensionContext context)
     {
         Tests.resetLogCollecting();

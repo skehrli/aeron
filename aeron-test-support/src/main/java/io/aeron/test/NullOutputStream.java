@@ -15,10 +15,12 @@
  */
 package io.aeron.test;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import java.io.OutputStream;
 
 public class NullOutputStream extends OutputStream
 {
+    @SideEffectFree
     public void write(final int ignore)
     {
     }

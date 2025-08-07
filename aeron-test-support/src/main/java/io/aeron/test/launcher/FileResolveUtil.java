@@ -15,11 +15,14 @@
  */
 package io.aeron.test.launcher;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import java.io.File;
 import java.util.Arrays;
 
 public class FileResolveUtil
 {
+    @SideEffectFree
     public static File resolveProjectRoot()
     {
         final File workingDir = new File(System.getProperty("user.dir"));
@@ -40,16 +43,22 @@ public class FileResolveUtil
         throw new RuntimeException("unable to find project root directory from: " + workingDir);
     }
 
+    @SideEffectFree
+    @Impure
     public static File resolveAeronAllJar()
     {
         return resolveAeronJar("aeron-all", false);
     }
 
+    @SideEffectFree
+    @Impure
     public static File resolveAeronAgentJar()
     {
         return resolveAeronJar("aeron-agent", true);
     }
 
+    @SideEffectFree
+    @Impure
     private static File resolveAeronJar(final String moduleName, final boolean allowMultipleFiles)
     {
         final File projectRoot = resolveProjectRoot();
@@ -81,6 +90,7 @@ public class FileResolveUtil
         return aeronAllJarFiles[0];
     }
 
+    @SideEffectFree
     public static File resolveJavaBinary()
     {
         final File javaHome = new File(System.getProperty("java.home"));
@@ -98,6 +108,8 @@ public class FileResolveUtil
         return javaBinary;
     }
 
+    @SideEffectFree
+    @Impure
     public static File resolveClusterScriptDir()
     {
         return new File(resolveProjectRoot(), "aeron-samples/scripts/cluster");

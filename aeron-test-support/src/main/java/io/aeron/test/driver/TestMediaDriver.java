@@ -15,6 +15,7 @@
  */
 package io.aeron.test.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.MediaDriver;
 import org.agrona.concurrent.AgentInvoker;
 import org.agrona.concurrent.status.CountersReader;
@@ -30,27 +31,32 @@ public interface TestMediaDriver extends AutoCloseable
     String ATS_LIBRARY_CONF_FILE_PROP_NAME = "aeron.test.system.ats.conf.file";
     String DRIVER_AGENT_PATH_PROP_NAME = "aeron.test.system.driver.agent.path";
 
+    @Impure
     static boolean shouldRunCMediaDriver()
     {
         return !isEmpty(System.getProperty(AERONMD_PATH_PROP_NAME));
     }
 
+    @Impure
     static boolean shouldRunJavaMediaDriver()
     {
         return !shouldRunCMediaDriver();
     }
 
+    @Impure
     static void notSupportedOnCMediaDriver(final String reason)
     {
         assumeFalse(shouldRunCMediaDriver(), () -> "not support by C Media Driver: " + reason);
     }
 
+    @Impure
     static TestMediaDriver launch(final MediaDriver.Context context, final DriverOutputConsumer driverOutputConsumer)
     {
         return shouldRunCMediaDriver() ?
             CTestMediaDriver.launch(context, true, driverOutputConsumer) : JavaTestMediaDriver.launch(context);
     }
 
+    @Impure
     static void enableRandomLoss(
         final MediaDriver.Context context,
         final double rate,
@@ -69,6 +75,7 @@ public interface TestMediaDriver extends AutoCloseable
         }
     }
 
+    @Impure
     static void enableFixedLoss(
         final MediaDriver.Context context,
         final int termId,
@@ -85,6 +92,7 @@ public interface TestMediaDriver extends AutoCloseable
         }
     }
 
+    @Impure
     static void enableMultiGapLoss(
         final MediaDriver.Context context,
         final int termId,
@@ -102,6 +110,7 @@ public interface TestMediaDriver extends AutoCloseable
         }
     }
 
+    @Impure
     static void dontCoalesceNaksOnReceiverByDefault(final MediaDriver.Context context)
     {
         if (shouldRunCMediaDriver())
@@ -114,15 +123,21 @@ public interface TestMediaDriver extends AutoCloseable
         }
     }
 
+    @Impure
     MediaDriver.Context context();
 
+    @Impure
     String aeronDirectoryName();
 
+    @Impure
     void close();
 
+    @Impure
     void cleanup();
 
+    @Impure
     AgentInvoker sharedAgentInvoker();
 
+    @Impure
     CountersReader counters();
 }

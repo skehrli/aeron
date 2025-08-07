@@ -15,6 +15,7 @@
  */
 package io.aeron.test;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
@@ -30,6 +31,7 @@ public class ThreadNamingTestCallback
         oldThreadName.set("UNKNOWN");
     }
 
+    @Impure
     public void beforeTestExecution(final ExtensionContext context) throws Exception
     {
         final String className = context.getTestClass().map(Class::getSimpleName).orElse("UNKNOWN");
@@ -41,12 +43,14 @@ public class ThreadNamingTestCallback
         thread.setName(testThreadName);
     }
 
+    @Impure
     public void afterEach(final ExtensionContext context) throws Exception
     {
         Thread.currentThread().setName(oldThreadName.get());
         oldThreadName.remove();
     }
 
+    @Impure
     public void afterTestExecution(final ExtensionContext context) throws Exception
     {
         final Thread thread = Thread.currentThread();

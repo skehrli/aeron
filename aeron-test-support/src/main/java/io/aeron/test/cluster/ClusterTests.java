@@ -15,6 +15,8 @@
  */
 package io.aeron.test.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.cluster.client.AeronCluster;
 import io.aeron.cluster.service.ClusterTerminationException;
 import io.aeron.exceptions.AeronException;
@@ -59,6 +61,7 @@ public class ClusterTests
 
     public static final Runnable NOOP_TERMINATION_HOOK = () -> {};
 
+    @Impure
     public static Runnable terminationHook(final AtomicBoolean isTerminationExpected, final AtomicBoolean hasTerminated)
     {
         return
@@ -74,6 +77,7 @@ public class ClusterTests
             };
     }
 
+    @Impure
     public static ErrorHandler errorHandler(final int memberId)
     {
         return
@@ -97,6 +101,7 @@ public class ClusterTests
             };
     }
 
+    @Impure
     private static void printMessageAndStackTrace(final String message, final Throwable ex)
     {
         final StringWriter out = new StringWriter();
@@ -106,6 +111,7 @@ public class ClusterTests
         System.err.println(out);
     }
 
+    @Impure
     public static void addError(final Throwable ex)
     {
         final Throwable error = ERROR.get();
@@ -119,6 +125,7 @@ public class ClusterTests
         }
     }
 
+    @Impure
     public static void addWarning(final Throwable ex)
     {
         final Throwable warning = WARNING.get();
@@ -132,6 +139,7 @@ public class ClusterTests
         }
     }
 
+    @Impure
     public static void printWarning()
     {
         final Throwable warning = WARNING.get();
@@ -142,6 +150,7 @@ public class ClusterTests
         }
     }
 
+    @Impure
     public static void failOnClusterError()
     {
         Throwable error = ERROR.getAndSet(null);
@@ -171,12 +180,14 @@ public class ClusterTests
         }
     }
 
+    @Impure
     public static void resetClusterError()
     {
         ERROR.set(null);
         WARNING.set(null);
     }
 
+    @Pure
     private static boolean shouldDownScaleToWarning(final Throwable error)
     {
         int depthLimit = 10;
@@ -194,6 +205,7 @@ public class ClusterTests
         return false;
     }
 
+    @Impure
     public static Thread startPublisherThread(final TestCluster testCluster, final MutableInteger messageCounter)
     {
         final Thread thread = new Thread(

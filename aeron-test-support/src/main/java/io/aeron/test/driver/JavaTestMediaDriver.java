@@ -15,6 +15,8 @@
  */
 package io.aeron.test.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.driver.MediaDriver;
 import io.aeron.driver.ReceiveChannelEndpointSupplier;
 import io.aeron.driver.StaticDelayGenerator;
@@ -26,46 +28,55 @@ public final class JavaTestMediaDriver implements TestMediaDriver
 {
     private final MediaDriver mediaDriver;
 
+    @SideEffectFree
     private JavaTestMediaDriver(final MediaDriver mediaDriver)
     {
         this.mediaDriver = mediaDriver;
     }
 
+    @Impure
     public void close()
     {
         mediaDriver.close();
     }
 
+    @SideEffectFree
     public void cleanup()
     {
     }
 
+    @Impure
     public static JavaTestMediaDriver launch(final MediaDriver.Context context)
     {
         final MediaDriver mediaDriver = MediaDriver.launch(context);
         return new JavaTestMediaDriver(mediaDriver);
     }
 
+    @Impure
     public MediaDriver.Context context()
     {
         return mediaDriver.context();
     }
 
+    @Impure
     public String aeronDirectoryName()
     {
         return mediaDriver.aeronDirectoryName();
     }
 
+    @Impure
     public AgentInvoker sharedAgentInvoker()
     {
         return mediaDriver.sharedAgentInvoker();
     }
 
+    @Impure
     public CountersManager counters()
     {
         return mediaDriver.context().countersManager();
     }
 
+    @Impure
     private static void enableLossOnReceive(
         final MediaDriver.Context context,
         final LossGenerator dataLossGenerator,
@@ -83,6 +94,7 @@ public final class JavaTestMediaDriver implements TestMediaDriver
         context.receiveChannelEndpointSupplier(endpointSupplier);
     }
 
+    @Impure
     public static void enableRandomLossOnReceive(
         final MediaDriver.Context context,
         final double rate,
@@ -96,6 +108,7 @@ public final class JavaTestMediaDriver implements TestMediaDriver
             loseControlMessages ? DebugChannelEndpointConfiguration.lossGeneratorSupplier(rate, seed) : null);
     }
 
+    @Impure
     public static void enableFixedLossOnReceive(
         final MediaDriver.Context context,
         final int termId,
@@ -105,6 +118,7 @@ public final class JavaTestMediaDriver implements TestMediaDriver
         enableLossOnReceive(context, new FixedLossGenerator(termId, termOffset, length), null);
     }
 
+    @Impure
     public static void enableMultiGapLossOnReceive(
         final MediaDriver.Context context,
         final int termId,
@@ -115,6 +129,7 @@ public final class JavaTestMediaDriver implements TestMediaDriver
         enableLossOnReceive(context, new MultiGapLossGenerator(termId, gapRadix, gapLength, totalGaps), null);
     }
 
+    @Impure
     public static void dontCoalesceNaksOnReceiverByDefault(final MediaDriver.Context context)
     {
         context.unicastFeedbackDelayGenerator(new StaticDelayGenerator(0, 0));

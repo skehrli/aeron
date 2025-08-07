@@ -15,6 +15,7 @@
  */
 package io.aeron.test;
 
+import org.checkerframework.dataflow.qual.Impure;
 import java.util.logging.LogManager;
 
 /**
@@ -23,6 +24,7 @@ import java.util.logging.LogManager;
  */
 public class DisableJavaUtilLogging extends LogManager
 {
+    @Impure
     @SuppressWarnings("this-escape")
     public DisableJavaUtilLogging()
     {

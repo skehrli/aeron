@@ -15,6 +15,9 @@
  */
 package io.aeron.test.cluster;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.Aeron;
 import io.aeron.ChannelUri;
 import io.aeron.ChannelUriStringBuilder;
@@ -172,6 +175,7 @@ public final class TestCluster implements AutoCloseable
     private String clusterBaseDir;
     private ClusterBackup.Configuration.ReplayStart replayStart;
 
+    @Impure
     private TestCluster(
         final int staticMemberCount,
         final int appointedLeaderId,
@@ -200,11 +204,13 @@ public final class TestCluster implements AutoCloseable
 
     }
 
+    @Impure
     public static void awaitElectionClosed(final TestNode follower)
     {
         awaitElectionState(follower, ElectionState.CLOSED);
     }
 
+    @Impure
     public static void awaitElectionState(final TestNode node, final ElectionState electionState)
     {
         final Supplier<String> msg = () -> "index=" + node.index() + " role=" + node.role() + " electionState=" +
@@ -215,18 +221,21 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     private static void await(final int delayMs)
     {
         Tests.sleep(delayMs);
         ClusterTests.failOnClusterError();
     }
 
+    @Impure
     private static void await(final int delayMs, final Supplier<String> message)
     {
         Tests.sleep(delayMs, message);
         ClusterTests.failOnClusterError();
     }
 
+    @Impure
     public static ClusterMembership awaitMembershipSize(final TestNode node, final int size)
     {
         while (true)
@@ -240,6 +249,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public static void awaitActiveMember(final TestNode node)
     {
         while (true)
@@ -253,6 +263,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void close()
     {
         final boolean isInterrupted = Thread.interrupted();
@@ -275,11 +286,13 @@ public final class TestCluster implements AutoCloseable
         ClusterTests.failOnClusterError();
     }
 
+    @Impure
     public TestNode startStaticNode(final int index, final boolean cleanStart)
     {
         return startStaticNode(index, cleanStart, serviceSupplier);
     }
 
+    @Impure
     public TestNode startStaticNode(
         final int index, final boolean cleanStart, final IntFunction<TestNode.TestService[]> serviceSupplier)
     {
@@ -347,16 +360,19 @@ public final class TestCluster implements AutoCloseable
         return nodes[index];
     }
 
+    @Impure
     public TestBackupNode startClusterBackupNode(final boolean cleanStart)
     {
         return startClusterBackupNode(cleanStart, new NullCredentialsSupplier());
     }
 
+    @Impure
     public TestBackupNode startClusterBackupNode(final boolean cleanStart, final ClusterBackup.SourceType sourceType)
     {
         return startClusterBackupNode(cleanStart, new NullCredentialsSupplier(), sourceType);
     }
 
+    @Impure
     public TestBackupNode startClusterBackupNode(
         final boolean cleanStart,
         final CredentialsSupplier credentialsSupplier)
@@ -364,6 +380,7 @@ public final class TestCluster implements AutoCloseable
         return startClusterBackupNode(cleanStart, credentialsSupplier, ClusterBackup.SourceType.FOLLOWER);
     }
 
+    @Impure
     public TestBackupNode startClusterBackupNode(
         final boolean cleanStart,
         final CredentialsSupplier credentialsSupplier,
@@ -372,6 +389,7 @@ public final class TestCluster implements AutoCloseable
         return startClusterBackupNode(cleanStart, credentialsSupplier, sourceType, 0);
     }
 
+    @Impure
     public TestBackupNode startClusterBackupNode(
         final boolean cleanStart,
         final CredentialsSupplier credentialsSupplier,
@@ -442,11 +460,13 @@ public final class TestCluster implements AutoCloseable
         return backupNode;
     }
 
+    @Impure
     public TestNode startStaticNodeFromBackup()
     {
         return startStaticNodeFromBackup(serviceSupplier);
     }
 
+    @Impure
     public TestNode startStaticNodeFromBackup(final IntFunction<TestNode.TestService[]> serviceSupplier)
     {
         final String baseDirName = clusterBaseDir + "-" + backupNodeIndex;
@@ -509,22 +529,26 @@ public final class TestCluster implements AutoCloseable
         return nodes[backupNodeIndex];
     }
 
+    @Impure
     public void stopNode(final TestNode testNode)
     {
         testNode.close();
     }
 
+    @Impure
     public void stopAllNodes()
     {
         CloseHelper.close(backupNode);
         CloseHelper.closeAll(nodes);
     }
 
+    @Impure
     public void stopClient()
     {
         CloseHelper.closeAll(client, clientMediaDriver);
     }
 
+    @Impure
     public void restartAllNodes(final boolean cleanStart)
     {
         for (int i = 0; i < staticMemberCount; i++)
@@ -533,92 +557,110 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void shouldErrorOnClientClose(final boolean shouldErrorOnClose)
     {
         defaultEgressListener.shouldErrorOnClientClose = shouldErrorOnClose;
     }
 
+    @Impure
     public void logChannel(final String logChannel)
     {
         this.logChannel = logChannel;
     }
 
+    @Impure
     public void ingressChannel(final String ingressChannel)
     {
         this.ingressChannel = ingressChannel;
     }
 
+    @Impure
     public void egressChannel(final String egressChannel)
     {
         this.egressChannel = egressChannel;
     }
 
+    @Impure
     public void egressListener(final EgressListener egressListener)
     {
         this.egressListener = egressListener;
     }
 
+    @Impure
     public void controlledEgressListener(final ControlledEgressListener controlledEgressListener)
     {
         this.controlledEgressListener = controlledEgressListener;
     }
 
+    @Impure
     public void authorisationServiceSupplier(final AuthorisationServiceSupplier authorisationServiceSupplier)
     {
         this.authorisationServiceSupplier = authorisationServiceSupplier;
     }
 
+    @Impure
     public void timerServiceSupplier(final TimerServiceSupplier timerServiceSupplier)
     {
         this.timerServiceSupplier = timerServiceSupplier;
     }
 
+    @Impure
     public void authenticationSupplier(final AuthenticatorSupplier authenticationSupplier)
     {
         this.authenticationSupplier = authenticationSupplier;
     }
 
+    @Impure
     public void imageLivenessTimeoutNs(final long imageLivenessTimeoutNs)
     {
         this.imageLivenessTimeoutNs = imageLivenessTimeoutNs;
     }
 
+    @Impure
     public void sessionTimeoutNs(final long sessionTimeoutNs)
     {
         this.sessionTimeoutNs = sessionTimeoutNs;
     }
 
+    @Impure
     private void segmentFileLength(final int archiveSegmentFileLength)
     {
         this.archiveSegmentFileLength = archiveSegmentFileLength;
     }
 
+    @Impure
     public void clientSendChannelEndpointSupplier(final SendChannelEndpointSupplier clientSendChannelEndpointSupplier)
     {
         this.clientSendChannelEndpointSupplier = clientSendChannelEndpointSupplier;
     }
 
+    @Impure
     public void clientReceiveChannelEndpointSupplier(
         final ReceiveChannelEndpointSupplier clientReceiveChannelEndpointSupplier)
     {
         this.clientReceiveChannelEndpointSupplier = clientReceiveChannelEndpointSupplier;
     }
 
+    @Impure
     public void clientImageLivenessTimeoutNs(final long clientImageLivenessTimeoutNs)
     {
         this.clientImageLivenessTimeoutNs = clientImageLivenessTimeoutNs;
     }
 
+    @Pure
     public AeronCluster client()
     {
         return client;
     }
 
+    @Pure
     public ExpandableArrayBuffer msgBuffer()
     {
         return msgBuffer;
     }
 
+    @Impure
     public AeronCluster reconnectClient()
     {
         if (null == client)
@@ -629,21 +671,25 @@ public final class TestCluster implements AutoCloseable
         return connectClient();
     }
 
+    @Impure
     public AeronCluster.Context clientCtx()
     {
         return new AeronCluster.Context().ingressChannel(ingressChannel).egressChannel(egressChannel);
     }
 
+    @Impure
     public AeronCluster connectClient()
     {
         return connectClient(clientCtx());
     }
 
+    @Impure
     public AeronCluster connectClient(final CredentialsSupplier credentialsSupplier)
     {
         return connectClient(clientCtx().credentialsSupplier(credentialsSupplier));
     }
 
+    @Impure
     public AeronCluster connectClient(final AeronCluster.Context clientCtx)
     {
         if (null == clientMediaDriver)
@@ -690,6 +736,7 @@ public final class TestCluster implements AutoCloseable
         return client;
     }
 
+    @Impure
     public AeronCluster asyncConnectClient()
     {
         final AeronCluster.Context clientCtx = clientCtx();
@@ -762,6 +809,7 @@ public final class TestCluster implements AutoCloseable
         return client;
     }
 
+    @Impure
     private void setIngressEndpoints(final AeronCluster.Context clientCtx)
     {
         final ChannelUri ingressChannelUri = ChannelUri.parse(ingressChannel);
@@ -771,6 +819,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public AeronCluster connectIpcClient(final AeronCluster.Context clientCtx, final String aeronDirName)
     {
         clientCtx
@@ -796,11 +845,13 @@ public final class TestCluster implements AutoCloseable
         return client;
     }
 
+    @Impure
     public void closeClient()
     {
         CloseHelper.close(client);
     }
 
+    @Impure
     public void sendMessages(final int messageCount)
     {
         for (int i = 0; i < messageCount; i++)
@@ -818,6 +869,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void sendLargeMessages(final int messageCount)
     {
         final int messageLength = msgBuffer.putStringWithoutLengthAscii(0, LARGE_MSG);
@@ -836,6 +888,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void sendMessageToSlowDownService(final int index, final long durationNs)
     {
         final String pause = PAUSE + "|" + index + "|" + durationNs;
@@ -852,6 +905,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void sendUnexpectedMessages(final int messageCount)
     {
         final int messageLength = msgBuffer.putStringWithoutLengthAscii(0, ClusterTests.UNEXPECTED_MSG);
@@ -870,6 +924,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void sendErrorGeneratingMessages(final int messageCount)
     {
         final int messageLength = msgBuffer.putStringWithoutLengthAscii(0, ClusterTests.ERROR_MSG);
@@ -888,6 +943,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void sendTerminateMessage()
     {
         final int messageLength = msgBuffer.putStringWithoutLengthAscii(0, ClusterTests.TERMINATE_MSG);
@@ -902,11 +958,13 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void sendAndAwaitMessages(final int messageCount)
     {
         sendAndAwaitMessages(messageCount, messageCount);
     }
 
+    @Impure
     public void sendAndAwaitMessages(final int sendCount, final int awaitCount)
     {
         sendMessages(sendCount);
@@ -914,6 +972,7 @@ public final class TestCluster implements AutoCloseable
         awaitServicesMessageCount(awaitCount);
     }
 
+    @Impure
     public void pollUntilMessageSent(final int messageLength)
     {
         while (true)
@@ -940,6 +999,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitResponseMessageCount(final int messageCount)
     {
         clientKeepAlive.init();
@@ -966,6 +1026,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitNewLeadershipEvent(final int count)
     {
         while (defaultEgressListener.newLeaderEvent() < count || !client.ingressPublication().isConnected())
@@ -975,6 +1036,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitLossOfLeadership(final TestNode.TestService leaderService)
     {
         if (null != client)
@@ -992,6 +1054,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     private int pollClient()
     {
         invokeSharedAgentInvoker();
@@ -1005,6 +1068,7 @@ public final class TestCluster implements AutoCloseable
         return client.pollEgress();
     }
 
+    @Impure
     private void invokeSharedAgentInvoker()
     {
         if (clientMediaDriver instanceof JavaTestMediaDriver &&
@@ -1014,6 +1078,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitCommitPosition(final TestNode node, final long logPosition)
     {
         while (node.commitPosition() < logPosition)
@@ -1022,6 +1087,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitActiveSessionCount(final TestNode node, final int count)
     {
         final Supplier<String> message =
@@ -1034,6 +1100,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitActiveSessionCount(final int count)
     {
         for (final TestNode node : nodes)
@@ -1045,6 +1112,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public TestNode findLeader(final int skipIndex)
     {
         for (int i = 0; i < nodes.length; i++)
@@ -1064,11 +1132,13 @@ public final class TestCluster implements AutoCloseable
         return null;
     }
 
+    @Impure
     public TestNode findLeader()
     {
         return findLeader(NULL_VALUE);
     }
 
+    @Impure
     public TestNode awaitLeader(final int skipIndex)
     {
         final Supplier<String> message = () -> Arrays.stream(nodes)
@@ -1084,11 +1154,13 @@ public final class TestCluster implements AutoCloseable
         return leaderNode;
     }
 
+    @Impure
     public TestNode awaitLeader()
     {
         return awaitLeader(NULL_VALUE);
     }
 
+    @Impure
     public TestNode awaitLeaderAndClosedElection(final int nodeId)
     {
         final TestNode leader = awaitLeader(nodeId);
@@ -1104,16 +1176,19 @@ public final class TestCluster implements AutoCloseable
         return leader;
     }
 
+    @Impure
     public TestNode awaitLeaderAndClosedElection()
     {
         return awaitLeaderAndClosedElection(NULL_VALUE);
     }
 
+    @Impure
     public List<TestNode> followers()
     {
         return followers(0);
     }
 
+    @Impure
     public ArrayList<TestNode> followers(final int expectedMinimumFollowerCount)
     {
         final ArrayList<TestNode> followers = new ArrayList<>();
@@ -1151,6 +1226,7 @@ public final class TestCluster implements AutoCloseable
         return followers;
     }
 
+    @Impure
     public void awaitBackupState(final ClusterBackup.State targetState)
     {
         if (null == backupNode)
@@ -1177,6 +1253,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitBackupLiveLogPosition(final long position)
     {
         if (null == backupNode)
@@ -1201,6 +1278,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitBackupSnapshotRetrievedCount(final long snapshotCount)
     {
         if (null == backupNode)
@@ -1219,41 +1297,48 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Pure
     public TestNode node(final int index)
     {
         return nodes[index];
     }
 
+    @Impure
     public void takeSnapshot(final TestNode leaderNode)
     {
         final AtomicCounter controlToggle = getClusterControlToggle(leaderNode);
         assertTrue(ClusterControl.ToggleState.SNAPSHOT.toggle(controlToggle));
     }
 
+    @Impure
     public void takeStandbySnapshot(final TestNode leaderNode)
     {
         final AtomicCounter controlToggle = getClusterControlToggle(leaderNode);
         assertTrue(ClusterControl.ToggleState.STANDBY_SNAPSHOT.toggle(controlToggle));
     }
 
+    @Impure
     public void shutdownCluster(final TestNode leaderNode)
     {
         final AtomicCounter controlToggle = getClusterControlToggle(leaderNode);
         assertTrue(ClusterControl.ToggleState.SHUTDOWN.toggle(controlToggle));
     }
 
+    @Impure
     public void abortCluster(final TestNode leaderNode)
     {
         final AtomicCounter controlToggle = getClusterControlToggle(leaderNode);
         assertTrue(ClusterControl.ToggleState.ABORT.toggle(controlToggle));
     }
 
+    @Impure
     public void suspendCluster(final TestNode leaderNode)
     {
         final AtomicCounter controlToggle = getClusterControlToggle(leaderNode);
         assertTrue(ClusterControl.ToggleState.SUSPEND.toggle(controlToggle));
     }
 
+    @Impure
     public void awaitSnapshotCount(final long value)
     {
         for (final TestNode node : nodes)
@@ -1265,12 +1350,14 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitSnapshotCount(final TestNode node, final long value)
     {
         clientKeepAlive.init();
         awaitCounter(node, value, node.consensusModule().context().snapshotCounter(), clientKeepAlive);
     }
 
+    @Impure
     public long getSnapshotCount(final TestNode node)
     {
         final Counter snapshotCounter = node.consensusModule().context().snapshotCounter();
@@ -1283,6 +1370,7 @@ public final class TestCluster implements AutoCloseable
         return snapshotCounter.get();
     }
 
+    @Impure
     public void awaitStandbySnapshotCount(final long value)
     {
         for (final TestNode node : nodes)
@@ -1294,6 +1382,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitStandbySnapshotCount(final TestNode node, final long value)
     {
         clientKeepAlive.init();
@@ -1304,6 +1393,7 @@ public final class TestCluster implements AutoCloseable
             clientKeepAlive);
     }
 
+    @Impure
     public long getStandbySnapshotCount(final TestNode node)
     {
         final Counter snapshotCounter = requireNonNull(
@@ -1317,6 +1407,7 @@ public final class TestCluster implements AutoCloseable
         return snapshotCounter.get();
     }
 
+    @Impure
     private static void awaitCounter(
         final TestNode node, final long value, final Counter snapshotCounter, final Runnable keepAlive)
     {
@@ -1343,12 +1434,14 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public long logPosition()
     {
         final TestNode leader = findLeader();
         return leader.consensusModule().context().commitPositionCounter().get();
     }
 
+    @Impure
     public void awaitNodeTermination(final TestNode node)
     {
         final Supplier<String> msg =
@@ -1362,6 +1455,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitNodeTerminations()
     {
         for (final TestNode node : nodes)
@@ -1373,6 +1467,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitServicesMessageCount(final int messageCount)
     {
         for (final TestNode node : nodes)
@@ -1384,6 +1479,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitTimerEventCount(final int expectedTimerEventsCount)
     {
         for (final TestNode node : nodes)
@@ -1395,6 +1491,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void terminationsExpected(final boolean isExpected)
     {
         for (final TestNode node : nodes)
@@ -1406,12 +1503,14 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitServiceMessageCount(final TestNode node, final int messageCount)
     {
         final TestNode.TestService[] services = node.services();
         awaitServiceMessageCount(node, services, messageCount);
     }
 
+    @Impure
     public void awaitServiceMessagePredicate(final TestNode node, final IntPredicate countPredicate)
     {
         final TestNode.TestService service = node.service();
@@ -1420,6 +1519,7 @@ public final class TestCluster implements AutoCloseable
 
     private final KeepAlive clientKeepAlive = new KeepAlive();
 
+    @Impure
     public void awaitServiceMessageCount(
         final TestNode node, final TestNode.TestService service, final int messageCount)
     {
@@ -1427,6 +1527,7 @@ public final class TestCluster implements AutoCloseable
         service.awaitServiceMessageCount(messageCount, clientKeepAlive, node);
     }
 
+    @Impure
     public void awaitServiceMessageCount(
         final TestNode node, final TestNode.TestService[] services, final int messageCount)
     {
@@ -1437,12 +1538,14 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitServiceMessagePredicate(
         final TestNode node, final TestNode.TestService service, final IntPredicate countPredicate)
     {
         service.awaitServiceMessagePredicate(countPredicate, clientKeepAlive, node);
     }
 
+    @Impure
     public void awaitLiveAndSnapshotMessageCount(
         final TestNode node,
         final TestNode.TestService service,
@@ -1453,6 +1556,7 @@ public final class TestCluster implements AutoCloseable
         service.awaitLiveAndSnapshotMessageCount(liveCountPredicate, snapshotCountPredicate, clientKeepAlive, node);
     }
 
+    @Impure
     public void awaitLiveAndSnapshotMessageCount(
         final TestNode node, final IntPredicate liveCountPredicate, final IntPredicate snapshotCountPredicate)
     {
@@ -1460,12 +1564,14 @@ public final class TestCluster implements AutoCloseable
         awaitLiveAndSnapshotMessageCount(node, service, liveCountPredicate, snapshotCountPredicate);
     }
 
+    @Impure
     public void awaitTimerEventCount(final TestNode node, final int expectedTimerEventsCount)
     {
         final TestNode.TestService service = node.service();
         awaitTimerEventCount(node, service, expectedTimerEventsCount);
     }
 
+    @Impure
     public void awaitTimerEventCount(
         final TestNode node, final TestNode.TestService service, final int expectedTimerEventsCount)
     {
@@ -1490,6 +1596,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitNodeState(final TestNode node, final Predicate<TestNode> predicate)
     {
         clientKeepAlive.init();
@@ -1506,6 +1613,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitSnapshotsLoaded()
     {
         for (final TestNode node : nodes)
@@ -1517,6 +1625,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitSnapshotLoadedForService(final TestNode node)
     {
         while (!node.allSnapshotsLoaded())
@@ -1525,6 +1634,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitNeutralControlToggle(final TestNode leaderNode)
     {
         final AtomicCounter controlToggle = getClusterControlToggle(leaderNode);
@@ -1534,6 +1644,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public AtomicCounter getClusterControlToggle(final TestNode leaderNode)
     {
         final CountersReader counters = leaderNode.countersReader();
@@ -1544,6 +1655,7 @@ public final class TestCluster implements AutoCloseable
         return controlToggle;
     }
 
+    @Impure
     public void awaitNeutralNodeControlToggle()
     {
         for (final TestNode node : nodes)
@@ -1555,6 +1667,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitNeutralNodeControlToggle(final TestNode node)
     {
         final AtomicCounter controlToggle = getNodeControlToggle(node);
@@ -1564,6 +1677,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public AtomicCounter getNodeControlToggle(final TestNode node)
     {
         final CountersReader counters = node.countersReader();
@@ -1574,16 +1688,19 @@ public final class TestCluster implements AutoCloseable
         return controlToggle;
     }
 
+    @Impure
     public static String clusterMembers(final int clusterId, final int memberCount)
     {
         return clusterMembers(clusterId, 0, memberCount, false);
     }
 
+    @Impure
     public static String clusterMembers(final int clusterId, final int memberCount, final boolean useResponseChannels)
     {
         return clusterMembers(clusterId, 0, memberCount, useResponseChannels);
     }
 
+    @Impure
     public static String clusterMembers(
         final int clusterId, final int initialMemberId, final int memberCount, final boolean useResponseChannels)
     {
@@ -1612,6 +1729,8 @@ public final class TestCluster implements AutoCloseable
         return builder.toString();
     }
 
+    @Pure
+    @Impure
     public static String singleNodeClusterMember(final int clusterId, final int i)
     {
         final String hostname = hostname(i);
@@ -1624,11 +1743,13 @@ public final class TestCluster implements AutoCloseable
             hostname + ":801" + i;
     }
 
+    @Impure
     public static String ingressEndpoints(final int clusterId, final int memberCount)
     {
         return ingressEndpoints(clusterId, 0, memberCount);
     }
 
+    @Impure
     public static String ingressEndpoints(final int clusterId, final int initialMemberId, final int memberCount)
     {
         final StringBuilder builder = new StringBuilder();
@@ -1651,6 +1772,7 @@ public final class TestCluster implements AutoCloseable
         return builder.toString();
     }
 
+    @Impure
     public void purgeLogToLastSnapshot()
     {
         for (final TestNode testNode : nodes)
@@ -1659,6 +1781,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void purgeLogToLastSnapshot(final TestNode node)
     {
         if (null == node || node.isClosed())
@@ -1724,6 +1847,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     static String[] clusterMembersEndpoints(final int clusterId, final int maxMemberCount)
     {
         final String[] clusterMembersEndpoints = new String[maxMemberCount];
@@ -1741,6 +1865,7 @@ public final class TestCluster implements AutoCloseable
         return clusterMembersEndpoints;
     }
 
+    @Impure
     static String clusterConsensusEndpoints(final int clusterId, final int beginIndex, final int endIndex)
     {
         final StringBuilder builder = new StringBuilder();
@@ -1755,6 +1880,7 @@ public final class TestCluster implements AutoCloseable
         return builder.toString();
     }
 
+    @Impure
     static String[] senderWildcardPortRanges(final int clusterId, final int maxMemberCount)
     {
         final String[] ranges = new String[maxMemberCount + 1];
@@ -1767,6 +1893,7 @@ public final class TestCluster implements AutoCloseable
         return ranges;
     }
 
+    @Impure
     static String[] receiverWildcardPortRanges(final int clusterId, final int maxMemberCount)
     {
         final String[] ranges = new String[maxMemberCount + 1];
@@ -1779,56 +1906,76 @@ public final class TestCluster implements AutoCloseable
         return ranges;
     }
 
+    @Pure
     static String hostname(final int memberId)
     {
         return memberId < 3 ? "node" + memberId : "localhost";
     }
 
+    @Pure
+    @Impure
     static String clusterBackupStatusEndpoint(final int clusterId, final int maxMemberCount)
     {
         return hostname(maxMemberCount) + ":2" + clusterId + "22" + maxMemberCount;
     }
 
+    @Pure
+    @Impure
     static String archiveControlRequestChannel(final int memberId)
     {
         return "aeron:udp?endpoint=" + archiveControlRequestEndpoint(memberId);
     }
 
+    @Pure
+    @Impure
     static String archiveControlRequestEndpoint(final int memberId)
     {
         return hostname(memberId) + ":801" + memberId;
     }
 
+    @Pure
+    @Impure
     static String archiveControlResponseChannel(final int memberId)
     {
         return "aeron:udp?endpoint=" + archiveControlResponseEndpoint(memberId);
     }
 
+    @Pure
+    @Impure
     static String archiveControlResponseEndpoint(final int memberId)
     {
         return hostname(memberId) + ":0";
     }
 
+    @Pure
+    @Impure
     static String archiveReplicationChannel(final int memberId)
     {
         return "aeron:udp?endpoint=" + archiveReplicationEndpoint(memberId);
     }
 
+    @Pure
+    @Impure
     static String archiveReplicationEndpoint(final int memberId)
     {
         return hostname(memberId) + ":802" + memberId;
     }
 
+    @Pure
+    @Impure
     static String clusterReplicationChannel(final int clusterId, final int memberId)
     {
         return "aeron:udp?endpoint=" + clusterReplicationEndpoint(clusterId, memberId) + "|linger=5000000000";
     }
 
+    @Pure
+    @Impure
     static String clusterReplicationEndpoint(final int clusterId, final int memberId)
     {
         return hostname(memberId) + ":2" + clusterId + "55" + memberId;
     }
 
+    @Impure
     public void invalidateLatestSnapshot()
     {
         for (final TestNode node : nodes)
@@ -1843,22 +1990,26 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void disableNameResolution(final String hostname)
     {
         toggleNameResolution(hostname, RedirectingNameResolver.DISABLE_RESOLUTION);
     }
 
+    @Impure
     public void enableNameResolution(final String hostname)
     {
         toggleNameResolution(hostname, RedirectingNameResolver.USE_INITIAL_RESOLUTION_HOST);
     }
 
+    @Impure
     public void restoreNameResolution(final int nodeId)
     {
         byHostInvalidInitialResolutions.remove(nodeId);
         toggleNameResolution(hostname(nodeId), RedirectingNameResolver.USE_RE_RESOLUTION_HOST);
     }
 
+    @Impure
     public void restoreByMemberNameResolution(final int memberId)
     {
         byMemberInvalidInitialResolutions.remove(memberId);
@@ -1873,6 +2024,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     private void toggleNameResolution(final String hostname, final int disableValue)
     {
         for (final TestNode node : nodes)
@@ -1885,16 +2037,19 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     private String nodeNameMappings()
     {
         return nodeNameMappings(byHostInvalidInitialResolutions);
     }
 
+    @Impure
     private String nodeNameMappings(final int memberId)
     {
         return nodeNameMappings(byHostInvalidInitialResolutions, byMemberInvalidInitialResolutions, memberId);
     }
 
+    @Impure
     private static String nodeNameMappings(final IntHashSet invalidInitialResolutions)
     {
         return
@@ -1903,6 +2058,7 @@ public final class TestCluster implements AutoCloseable
             "node2," + (invalidInitialResolutions.contains(2) ? "bad.invalid" : "localhost") + ",localhost|";
     }
 
+    @Impure
     private static String nodeNameMappings(
         final IntHashSet byHostInvalidInitialResolutions,
         final IntHashSet byMemberInvalidInitialResolutions,
@@ -1920,11 +2076,13 @@ public final class TestCluster implements AutoCloseable
             "node2," + host2 + ",localhost|";
     }
 
+    @Pure
     public DataCollector dataCollector()
     {
         return dataCollector;
     }
 
+    @Impure
     public void assertRecordingLogsEqual()
     {
         List<RecordingLog.Entry> firstEntries = null;
@@ -1962,6 +2120,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void validateRecordingLogWithReplay(final int nodeId)
     {
         final TestNode node = node(nodeId);
@@ -2027,6 +2186,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void seedRecordingsFromLatestSnapshot()
     {
         for (final TestNode node : nodes)
@@ -2038,11 +2198,13 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public static Builder aCluster()
     {
         return new Builder();
     }
 
+    @Impure
     public void awaitBackupNodeErrors()
     {
         final TestBackupNode testBackupNode = requireNonNull(backupNode);
@@ -2052,6 +2214,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     private long countAllServiceErrors(final TestNode node)
     {
         final TestNode.TestService[] services = node.services();
@@ -2065,6 +2228,7 @@ public final class TestCluster implements AutoCloseable
         return errorCount;
     }
 
+    @Impure
     public void awaitServiceErrors(final TestNode node, final long count)
     {
         while (count < countAllServiceErrors(node))
@@ -2073,6 +2237,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void awaitServiceErrors(final long count)
     {
         for (final TestNode node : nodes)
@@ -2084,6 +2249,7 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     public void failNextSnapshot(final boolean failNextSnapshot)
     {
         for (final TestNode node : nodes)
@@ -2119,18 +2285,21 @@ public final class TestCluster implements AutoCloseable
             CLUSTER_BASE_DIR_PROP_NAME, CommonContext.generateRandomDirName());
         private boolean useResponseChannels = false;
 
+        @Impure
         public Builder withStaticNodes(final int nodeCount)
         {
             this.nodeCount = nodeCount;
             return this;
         }
 
+        @Impure
         public Builder withAppointedLeader(final int appointedLeaderId)
         {
             this.appointedLeaderId = appointedLeaderId;
             return this;
         }
 
+        @Impure
         public Builder withInvalidNameResolution(final int nodeId)
         {
             if (2 < nodeId)
@@ -2142,107 +2311,125 @@ public final class TestCluster implements AutoCloseable
             return this;
         }
 
+        @Impure
         public Builder withMemberSpecificInvalidNameResolution(final int memberId)
         {
             byMemberInvalidInitialResolutions.add(memberId);
             return this;
         }
 
+        @Impure
         public Builder withLogChannel(final String logChannel)
         {
             this.logChannel = logChannel;
             return this;
         }
 
+        @Impure
         public Builder withIngressChannel(final String ingressChannel)
         {
             this.ingressChannel = ingressChannel;
             return this;
         }
 
+        @Impure
         public Builder withEgressChannel(final String egressChannel)
         {
             this.egressChannel = egressChannel;
             return this;
         }
 
+        @Impure
         public Builder withServiceSupplier(final IntFunction<TestNode.TestService[]> serviceSupplier)
         {
             this.serviceSupplier = serviceSupplier;
             return this;
         }
 
+        @Impure
         public Builder withAuthorisationServiceSupplier(final AuthorisationServiceSupplier authorisationServiceSupplier)
         {
             this.authorisationServiceSupplier = authorisationServiceSupplier;
             return this;
         }
 
+        @Impure
         public Builder withAuthenticationSupplier(final AuthenticatorSupplier authenticatorSupplier)
         {
             this.authenticationSupplier = authenticatorSupplier;
             return this;
         }
 
+        @Impure
         public Builder withTimerServiceSupplier(final TimerServiceSupplier timerServiceSupplier)
         {
             this.timerServiceSupplier = timerServiceSupplier;
             return this;
         }
 
+        @Impure
         public Builder withStandbySnapshots(final boolean acceptStandbySnapshots)
         {
             this.acceptStandbySnapshots = acceptStandbySnapshots;
             return this;
         }
 
+        @Impure
         public Builder withImageLivenessTimeoutNs(final long imageLivenessTimeoutNs)
         {
             this.imageLivenessTimeoutNs = imageLivenessTimeoutNs;
             return this;
         }
 
+        @Impure
         public Builder withSessionTimeoutNs(final long sessionTimeoutNs)
         {
             this.sessionTimeoutNs = sessionTimeoutNs;
             return this;
         }
 
+        @Impure
         public Builder withSegmentFileLength(final int archiveSegmentFileLength)
         {
             this.archiveSegmentFileLength = archiveSegmentFileLength;
             return this;
         }
 
+        @Impure
         public Builder withClusterBaseDir(final String clusterBaseDir)
         {
             this.clusterBaseDir = clusterBaseDir;
             return this;
         }
 
+        @Impure
         public Builder markFileBaseDir(final File markFileBaseDir)
         {
             this.markFileBaseDir = markFileBaseDir;
             return this;
         }
 
+        @Impure
         public Builder replayStart(final ClusterBackup.Configuration.ReplayStart replayStart)
         {
             this.replayStart = replayStart;
             return this;
         }
 
+        @Impure
         public Builder useResponseChannels(final boolean enabled)
         {
             this.useResponseChannels = enabled;
             return this;
         }
 
+        @Impure
         public TestCluster start()
         {
             return start(nodeCount);
         }
 
+        @Impure
         public TestCluster start(final int toStart)
         {
             if (toStart > nodeCount)
@@ -2299,21 +2486,25 @@ public final class TestCluster implements AutoCloseable
         }
     }
 
+    @Impure
     private void replyStart(final ClusterBackup.Configuration.ReplayStart replayStart)
     {
         this.replayStart = replayStart;
     }
 
+    @Impure
     private void clusterBaseDir(final String clusterBaseDir)
     {
         this.clusterBaseDir = clusterBaseDir;
     }
 
+    @Impure
     private void markFileBaseDir(final File markFileBaseDir)
     {
         this.markFileBaseDir = markFileBaseDir;
     }
 
+    @Impure
     private void invalidInitialResolutions(
         final IntHashSet byHostInvalidInitialResolutions,
         final IntHashSet byMemberInvalidInitialResolutions)
@@ -2322,11 +2513,13 @@ public final class TestCluster implements AutoCloseable
         this.byMemberInvalidInitialResolutions = byMemberInvalidInitialResolutions;
     }
 
+    @Impure
     private void acceptStandbySnapshots(final boolean acceptStandbySnapshots)
     {
         this.acceptStandbySnapshots = acceptStandbySnapshots;
     }
 
+    @Impure
     public static DriverOutputConsumer clientDriverOutputConsumer(final DataCollector dataCollector)
     {
         if (TestMediaDriver.shouldRunJavaMediaDriver())
@@ -2336,6 +2529,7 @@ public final class TestCluster implements AutoCloseable
 
         return new DriverOutputConsumer()
         {
+            @Impure
             public void outputFiles(final String aeronDirectoryName, final File stdoutFile, final File stderrFile)
             {
                 dataCollector.add(stdoutFile.toPath());
@@ -2346,11 +2540,13 @@ public final class TestCluster implements AutoCloseable
 
     public static final CredentialsSupplier SIMPLE_CREDENTIALS_SUPPLIER = new CredentialsSupplier()
     {
+        @SideEffectFree
         public byte[] encodedCredentials()
         {
             return "admin:admin".getBytes(StandardCharsets.US_ASCII);
         }
 
+        @Pure
         public byte[] onChallenge(final byte[] encodedChallenge)
         {
             return ArrayUtil.EMPTY_BYTE_ARRAY;
@@ -2359,11 +2555,13 @@ public final class TestCluster implements AutoCloseable
 
     public static final CredentialsSupplier CHALLENGE_RESPONSE_CREDENTIALS_SUPPLIER = new CredentialsSupplier()
     {
+        @SideEffectFree
         public byte[] encodedCredentials()
         {
             return "admin:adminC".getBytes(StandardCharsets.US_ASCII);
         }
 
+        @SideEffectFree
         public byte[] onChallenge(final byte[] encodedChallenge)
         {
             return "admin:CSadmin".getBytes(StandardCharsets.US_ASCII);
@@ -2372,11 +2570,13 @@ public final class TestCluster implements AutoCloseable
 
     public static final CredentialsSupplier INVALID_SIMPLE_CREDENTIALS_SUPPLIER = new CredentialsSupplier()
     {
+        @SideEffectFree
         public byte[] encodedCredentials()
         {
             return "admin:invalid".getBytes(StandardCharsets.US_ASCII);
         }
 
+        @Pure
         public byte[] onChallenge(final byte[] encodedChallenge)
         {
             return ArrayUtil.EMPTY_BYTE_ARRAY;
@@ -2385,11 +2585,13 @@ public final class TestCluster implements AutoCloseable
 
     public static final CredentialsSupplier INVALID_CHALLENGE_RESPONSE_CREDENTIALS_SUPPLIER = new CredentialsSupplier()
     {
+        @SideEffectFree
         public byte[] encodedCredentials()
         {
             return "admin:adminC".getBytes(StandardCharsets.US_ASCII);
         }
 
+        @SideEffectFree
         public byte[] onChallenge(final byte[] encodedChallenge)
         {
             return "admin:invalid".getBytes(StandardCharsets.US_ASCII);
@@ -2401,6 +2603,7 @@ public final class TestCluster implements AutoCloseable
         private long keepAliveDeadlineMs;
         private EpochClock epochClock;
 
+        @Impure
         private void init()
         {
             this.epochClock = requireNonNull(client, "client is not connected")
@@ -2409,6 +2612,7 @@ public final class TestCluster implements AutoCloseable
             keepAliveDeadlineMs = nowMs + TimeUnit.SECONDS.toMillis(1);
         }
 
+        @Impure
         public void run()
         {
             final long nowMs = requireNonNull(epochClock, "did you call init() first?").time();
@@ -2427,6 +2631,7 @@ public final class TestCluster implements AutoCloseable
         private final MutableInteger newLeaderEvent = new MutableInteger();
         private boolean shouldErrorOnClientClose = true;
 
+        @Impure
         public void onMessage(
             final long clusterSessionId,
             final long timestamp,
@@ -2438,6 +2643,7 @@ public final class TestCluster implements AutoCloseable
             responseCount.increment();
         }
 
+        @Impure
         public void onSessionEvent(
             final long correlationId,
             final long clusterSessionId,
@@ -2457,6 +2663,7 @@ public final class TestCluster implements AutoCloseable
             }
         }
 
+        @Impure
         public void onNewLeader(
             final long clusterSessionId,
             final long leadershipTermId,
@@ -2466,11 +2673,13 @@ public final class TestCluster implements AutoCloseable
             newLeaderEvent.increment();
         }
 
+        @Impure
         long responseCount()
         {
             return responseCount.get();
         }
 
+        @Impure
         int newLeaderEvent()
         {
             return newLeaderEvent.get();
@@ -2479,14 +2688,17 @@ public final class TestCluster implements AutoCloseable
 
     private static final class BackupListener implements ClusterBackupEventsListener
     {
+        @SideEffectFree
         public void onBackupQuery()
         {
         }
 
+        @SideEffectFree
         public void onPossibleFailure(final Exception ex)
         {
         }
 
+        @SideEffectFree
         public void onBackupResponse(
             final ClusterMember[] clusterMembers,
             final ClusterMember logSourceMember,
@@ -2503,11 +2715,13 @@ public final class TestCluster implements AutoCloseable
             throw new RuntimeException("No member has isLeader flag set");
         }
 
+        @SideEffectFree
         public void onUpdatedRecordingLog(
             final RecordingLog recordingLog, final List<RecordingLog.Snapshot> snapshotsRetrieved)
         {
         }
 
+        @SideEffectFree
         public void onLiveLogProgress(final long recordingId, final long recordingPosCounterId, final long logPosition)
         {
         }

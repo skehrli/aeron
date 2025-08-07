@@ -15,6 +15,7 @@
  */
 package io.aeron.test;
 
+import org.checkerframework.dataflow.qual.Impure;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 
@@ -26,6 +27,7 @@ public class NetworkTestingUtil
      * @param address The address to attempt to bind to.
      * @return null if successful, error message otherwise.
      */
+    @Impure
     @SuppressWarnings("try")
     public static String isBindAddressAvailable(final String address)
     {

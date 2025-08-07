@@ -15,6 +15,8 @@
  */
 package io.aeron.test.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.Counter;
 import io.aeron.archive.Archive;
 import io.aeron.archive.client.AeronArchive;
@@ -42,6 +44,7 @@ public class TestBackupNode implements AutoCloseable
     private final Context context;
     private boolean isClosed = false;
 
+    @Impure
     TestBackupNode(final int index, final Context context, final DataCollector dataCollector)
     {
         this.index = index;
@@ -74,6 +77,7 @@ public class TestBackupNode implements AutoCloseable
         }
     }
 
+    @Impure
     public void close()
     {
         if (!isClosed)
@@ -83,16 +87,19 @@ public class TestBackupNode implements AutoCloseable
         }
     }
 
+    @Pure
     boolean isClosed()
     {
         return isClosed;
     }
 
+    @Impure
     ClusterBackup.State backupState()
     {
         return ClusterBackup.State.get(context.clusterBackupContext.stateCounter());
     }
 
+    @Impure
     long liveLogPosition()
     {
         final Counter counter = context.clusterBackupContext.liveLogPositionCounter();
@@ -104,21 +111,25 @@ public class TestBackupNode implements AutoCloseable
         return counter.get();
     }
 
+    @Impure
     public long snapshotRetrieveCount()
     {
         return context.clusterBackupContext.snapshotRetrieveCounter().get();
     }
 
+    @Impure
     public EpochClock epochClock()
     {
         return context.clusterBackupContext.epochClock();
     }
 
+    @Impure
     public long nextBackupQueryDeadlineMs()
     {
         return ClusterTool.nextBackupQueryDeadlineMs(context.clusterBackupContext.clusterDir());
     }
 
+    @Impure
     public boolean nextBackupQueryDeadlineMs(final long delayMs)
     {
         final long nowMs = epochClock().time();
@@ -126,26 +137,31 @@ public class TestBackupNode implements AutoCloseable
         return ClusterTool.nextBackupQueryDeadlineMs(context.clusterBackupContext.clusterDir(), nowMs + delayMs);
     }
 
+    @Impure
     public AtomicBuffer clusterBackupErrorLog()
     {
         return clusterBackup.context().clusterMarkFile().errorBuffer();
     }
 
+    @Impure
     long clusterBackupErrorCount()
     {
         return clusterBackup.context().errorCounter().get();
     }
 
+    @Pure
     int index()
     {
         return index;
     }
 
+    @Pure
     TestMediaDriver mediaDriver()
     {
         return mediaDriver;
     }
 
+    @Impure
     public long recordingLogStartPosition()
     {
         try (RecordingLog recordingLog = new RecordingLog(context.clusterBackupContext.clusterDir(), false))

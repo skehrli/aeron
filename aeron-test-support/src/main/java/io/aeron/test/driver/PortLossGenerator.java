@@ -15,6 +15,7 @@
  */
 package io.aeron.test.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.ext.LossGenerator;
 import org.agrona.concurrent.UnsafeBuffer;
 
@@ -26,6 +27,7 @@ public class PortLossGenerator implements LossGenerator
     private long dropUntil;
     private volatile boolean drop;
 
+    @Impure
     public void startDropping(final int port, final long durationNs)
     {
         this.port = port;
@@ -33,6 +35,7 @@ public class PortLossGenerator implements LossGenerator
         drop = true;
     }
 
+    @Impure
     public boolean shouldDropFrame(final InetSocketAddress address, final UnsafeBuffer buffer, final int length)
     {
         if (drop && port == address.getPort())

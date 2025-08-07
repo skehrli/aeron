@@ -15,6 +15,12 @@
  */
 package io.aeron.test.launcher;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.checker.calledmethods.qual.EnsuresCalledMethods;
+import org.checkerframework.checker.mustcall.qual.NotOwning;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.checker.mustcall.qual.Owning;
+import org.checkerframework.checker.mustcall.qual.InheritableMustCall;
 import io.aeron.driver.Configuration;
 
 import java.io.ByteArrayOutputStream;
@@ -26,18 +32,22 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SocketChannel;
 
+@InheritableMustCall("close")
 public final class RemoteLaunchClient implements AutoCloseable
 {
     private final String host;
     private final int port;
+    @Owning
     private SocketChannel clientChannel;
 
+    @SideEffectFree
     private RemoteLaunchClient(final String host, final int port)
     {
         this.host = host;
         this.port = port;
     }
 
+    @Impure
     public static RemoteLaunchClient connect(final String host, final int port) throws IOException
     {
         final RemoteLaunchClient remoteLaunchClient = new RemoteLaunchClient(host, port);
@@ -46,17 +56,21 @@ public final class RemoteLaunchClient implements AutoCloseable
         return remoteLaunchClient;
     }
 
+    @Impure
     private void init() throws IOException
     {
         clientChannel = SocketChannel.open();
         clientChannel.socket().connect(new InetSocketAddress(host, port), 5_000);
     }
 
+    @Impure
     public ReadableByteChannel execute(final String... command) throws IOException
     {
         return execute(true, command);
     }
 
+    @NotOwning
+    @Impure
     public SocketChannel execute(final boolean usingBlockingIo, final String... command) throws IOException
     {
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -75,6 +89,7 @@ public final class RemoteLaunchClient implements AutoCloseable
         return clientChannel;
     }
 
+    @Impure
     public void executeBlocking(final OutputStream out, final String... command) throws IOException
     {
         try (ReadableByteChannel commandResponse = execute(command))
@@ -96,6 +111,8 @@ public final class RemoteLaunchClient implements AutoCloseable
         }
     }
 
+    @EnsuresCalledMethods(value="this.clientChannel", methods="close")
+    @Impure
     public void close() throws IOException
     {
         clientChannel.close();

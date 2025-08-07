@@ -15,6 +15,7 @@
  */
 package io.aeron.test;
 
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.archive.Archive;
 import io.aeron.archive.client.AeronArchive;
 import io.aeron.cluster.ConsensusModule;
@@ -29,6 +30,7 @@ public class TestContexts
     public static final String LOCALHOST_SINGLE_HOST_CLUSTER_MEMBERS =
         "0,localhost:20000,localhost:20001,localhost:20002,localhost:0,localhost:8010";
 
+    @Impure
     public static Archive.Context localhostArchive()
     {
         return new Archive.Context()
@@ -36,6 +38,7 @@ public class TestContexts
             .replicationChannel(LOCALHOST_REPLICATION_CHANNEL);
     }
 
+    @Impure
     public static AeronArchive.Context localhostAeronArchive()
     {
         return new AeronArchive.Context()
@@ -43,6 +46,7 @@ public class TestContexts
             .controlResponseChannel(LOCALHOST_CONTROL_RESPONSE_CHANNEL);
     }
 
+    @Impure
     public static AeronArchive.Context ipcAeronArchive()
     {
         return new AeronArchive.Context()
@@ -50,6 +54,7 @@ public class TestContexts
             .controlResponseChannel(IPC_CHANNEL);
     }
 
+    @Impure
     public static ConsensusModule.Context localhostConsensusModule()
     {
         return new ConsensusModule.Context()

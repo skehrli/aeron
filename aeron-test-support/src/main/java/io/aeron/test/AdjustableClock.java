@@ -15,6 +15,7 @@
  */
 package io.aeron.test;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.concurrent.EpochClock;
 import org.agrona.concurrent.NanoClock;
 import org.agrona.concurrent.SystemEpochClock;
@@ -31,33 +32,39 @@ public class AdjustableClock implements NanoClock, EpochClock
     private final NanoClock baseNanoClock = SystemNanoClock.INSTANCE;
     private final AtomicLong offsetNs = new AtomicLong(0);
 
+    @Impure
     public long time()
     {
         return baseEpochClock.time() + TimeUnit.NANOSECONDS.toMillis(offsetNs.get());
     }
 
+    @Impure
     public long nanoTime()
     {
         nanoCallCount.incrementAndGet();
         return baseNanoClock.nanoTime() + offsetNs.get();
     }
 
+    @Impure
     public void incrementOffsetNs(final long incrementNs)
     {
         epochCallCount.incrementAndGet();
         offsetNs.addAndGet(incrementNs);
     }
 
+    @Impure
     public long epochCallCount()
     {
         return epochCallCount.get();
     }
 
+    @Impure
     public long nanoCallCount()
     {
         return nanoCallCount.get();
     }
 
+    @Impure
     public void slewTimeDelta(final long timeoutNs, final long incrementNs)
     {
         final long nowMs = time();

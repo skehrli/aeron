@@ -16,6 +16,9 @@
 
 package io.aeron.test;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Aeron;
 import io.aeron.Counter;
 import io.aeron.Publication;
@@ -76,6 +79,7 @@ public class Tests
      * @param fieldName to be set.
      * @param value     to be set on the field.
      */
+    @Impure
     public static void setField(final Object instance, final String fieldName, final Object value)
     {
         try
@@ -96,6 +100,7 @@ public class Tests
      *
      * @param ex to be handled.
      */
+    @Impure
     public static void onError(final Throwable ex)
     {
         if (ex instanceof AeronException && ((AeronException)ex).category() == AeronException.Category.WARN)
@@ -113,6 +118,7 @@ public class Tests
      * This is useful for terminating tests stuck in a loop on timeout otherwise JUnit will proceed to the next test
      * and leave the thread spinning and consuming CPU resource.
      */
+    @Impure
     public static void checkInterruptStatus()
     {
         if (Thread.currentThread().isInterrupted())
@@ -129,6 +135,7 @@ public class Tests
      *
      * @param messageSupplier additional context information to include in the failure message
      */
+    @Impure
     public static void checkInterruptStatus(final Supplier<String> messageSupplier)
     {
         if (Thread.currentThread().isInterrupted())
@@ -147,6 +154,7 @@ public class Tests
      *               failure message
      * @param args   arguments to the format string
      */
+    @Impure
     public static void checkInterruptStatus(final String format, final Object... args)
     {
         if (Thread.currentThread().isInterrupted())
@@ -163,6 +171,7 @@ public class Tests
      *
      * @param message to provide additional context on unexpected interrupt.
      */
+    @Impure
     public static void checkInterruptStatus(final String message)
     {
         if (Thread.currentThread().isInterrupted())
@@ -176,6 +185,7 @@ public class Tests
      *
      * @param message to provide additional context on unexpected interrupt.
      */
+    @Impure
     public static void unexpectedInterruptStackTrace(final String message)
     {
         final StringBuilder sb = new StringBuilder();
@@ -195,6 +205,7 @@ public class Tests
      * @param sb to append the stack trace to.
      * @return the builder for a fluent API.
      */
+    @Impure
     public static StringBuilder appendStackTrace(final StringBuilder sb)
     {
         return appendStackTrace(sb, Thread.currentThread().getStackTrace());
@@ -207,6 +218,7 @@ public class Tests
      * @param stackTraceElements to be appended.
      * @return the builder for a fluent API.
      */
+    @Impure
     public static StringBuilder appendStackTrace(final StringBuilder sb, final StackTraceElement[] stackTraceElements)
     {
         sb.append(System.lineSeparator());
@@ -224,6 +236,7 @@ public class Tests
      *
      * @param durationMs to sleep.
      */
+    @Impure
     public static void sleep(final long durationMs)
     {
         LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(durationMs));
@@ -236,6 +249,7 @@ public class Tests
      * @param durationMs      to sleep.
      * @param messageSupplier of message to be reported on interrupt.
      */
+    @Impure
     public static void sleep(final long durationMs, final Supplier<String> messageSupplier)
     {
         LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(durationMs));
@@ -249,6 +263,7 @@ public class Tests
      * @param format     of the message.
      * @param params     to be formatted.
      */
+    @Impure
     public static void sleep(final long durationMs, final String format, final Object... params)
     {
         LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(durationMs));
@@ -260,6 +275,7 @@ public class Tests
      *
      * @see #checkInterruptStatus()
      */
+    @Impure
     public static void yield()
     {
         Thread.yield();
@@ -273,6 +289,7 @@ public class Tests
      * @param exception exception to be thrown
      * @throws Exception to make compiler happy
      */
+    @Impure
     public static void throwOnClose(final AutoCloseable mock, final Throwable exception) throws Exception
     {
         doAnswer(
@@ -289,6 +306,7 @@ public class Tests
      * @param idleStrategy    to be used for the idle operation.
      * @param messageSupplier to be used in the event of interrupt.
      */
+    @Impure
     public static void idle(final IdleStrategy idleStrategy, final Supplier<String> messageSupplier)
     {
         idleStrategy.idle();
@@ -302,6 +320,7 @@ public class Tests
      * @param format       of the message to be used in the event of interrupt.
      * @param params       to be substituted into the message format.
      */
+    @Impure
     public static void idle(final IdleStrategy idleStrategy, final String format, final Object... params)
     {
         idleStrategy.idle();
@@ -314,6 +333,7 @@ public class Tests
      * @param idleStrategy to be used for the idle operation.
      * @param message      to be used in the event of interrupt.
      */
+    @Impure
     public static void idle(final IdleStrategy idleStrategy, final String message)
     {
         idleStrategy.idle();
@@ -325,6 +345,7 @@ public class Tests
      *
      * @param messageSupplier to be used in the event of interrupt.
      */
+    @Impure
     public static void yieldingIdle(final Supplier<String> messageSupplier)
     {
         idle(YieldingIdleStrategy.INSTANCE, messageSupplier);
@@ -336,6 +357,7 @@ public class Tests
      * @param format of the message to be used in the event of interrupt.
      * @param params to be substituted into the message format.
      */
+    @Impure
     public static void yieldingIdle(final String format, final Object... params)
     {
         idle(YieldingIdleStrategy.INSTANCE, format, params);
@@ -346,6 +368,7 @@ public class Tests
      *
      * @param message to be used in the event of interrupt.
      */
+    @Impure
     public static void yieldingIdle(final String message)
     {
         idle(YieldingIdleStrategy.INSTANCE, message);
@@ -359,6 +382,7 @@ public class Tests
      * @param maxIterations     to be executed.
      * @param timeoutNs         to stay within.
      */
+    @Impure
     public static void executeUntil(
         final BooleanSupplier condition,
         final IntConsumer iterationConsumer,
@@ -384,6 +408,7 @@ public class Tests
      * @param conditionSupplier for the condition to be awaited.
      * @param timeoutNs         to await.
      */
+    @Impure
     public static void await(final BooleanSupplier conditionSupplier, final long timeoutNs)
     {
         await(conditionSupplier, timeoutNs, () -> "");
@@ -396,6 +421,7 @@ public class Tests
      * @param timeoutNs             to await.
      * @param errorMessageSupplier  supplier of error message if timeout reached
      */
+    @Impure
     public static void await(
         final BooleanSupplier conditionSupplier,
         final long timeoutNs,
@@ -419,6 +445,7 @@ public class Tests
      * @param conditionSupplier     for the condition to be awaited.
      * @param errorMessageSupplier  supplier of error message if interrupt signalled
      */
+    @Impure
     public static void await(final BooleanSupplier conditionSupplier, final Supplier<String> errorMessageSupplier)
     {
         while (!conditionSupplier.getAsBoolean())
@@ -436,6 +463,7 @@ public class Tests
      * @param errorMessageCreator     supplier of error message if timeout reached
      * @param <T>                     type of argument to condition + message
      */
+    @Impure
     public static <T> void await(
         final Supplier<T> argSupplier,
         final Predicate<T> conditionsPredicate,
@@ -464,6 +492,7 @@ public class Tests
      * @param errorMessageCreator     supplier of error message if timeout reached
      * @param <T>                     type of argument to condition + message
      */
+    @Impure
     public static <T> void await(
         final Supplier<T> argSupplier,
         final Predicate<T> conditionsPredicate,
@@ -481,6 +510,7 @@ public class Tests
      *
      * @param conditionSupplier for the condition to be awaited.
      */
+    @Impure
     public static void await(final BooleanSupplier conditionSupplier)
     {
         while (!conditionSupplier.getAsBoolean())
@@ -499,6 +529,7 @@ public class Tests
      * @param counter to be evaluated.
      * @param value   as threshold to awaited.
      */
+    @Impure
     public static void awaitValue(final AtomicLong counter, final long value)
     {
         long counterValue;
@@ -518,6 +549,7 @@ public class Tests
      * @param counter to be evaluated.
      * @param value   as threshold to awaited.
      */
+    @Impure
     public static void awaitValue(final AtomicCounter counter, final long value)
     {
         long counterValue;
@@ -543,6 +575,7 @@ public class Tests
      * @param counterId of the specific counter to be read.
      * @param delta     increase to await from initial value.
      */
+    @Impure
     public static void awaitCounterDelta(final CountersReader counters, final int counterId, final long delta)
     {
         awaitCounterDelta(counters, counterId, counters.getCounterValue(counterId), delta);
@@ -556,6 +589,7 @@ public class Tests
      * @param initialValue from which the delta will be tracked.
      * @param delta        increase to await from initial value.
      */
+    @Impure
     public static void awaitCounterDelta(
         final CountersReader counters, final int counterId, final long initialValue, final long delta)
     {
@@ -578,6 +612,7 @@ public class Tests
      * @param streamId for the subscription.
      * @return the added subscription.
      */
+    @Impure
     public static Subscription reAddSubscription(final Aeron aeron, final String channel, final int streamId)
     {
         while (true)
@@ -603,6 +638,7 @@ public class Tests
      *
      * @param publication to await being connected.
      */
+    @Impure
     public static void awaitConnected(final Publication publication)
     {
         while (!publication.isConnected())
@@ -611,6 +647,7 @@ public class Tests
         }
     }
 
+    @Impure
     public static void await(final String message, final BooleanSupplier... elements)
     {
         for (final BooleanSupplier element : elements)
@@ -627,6 +664,7 @@ public class Tests
      *
      * @param publication to await having an available window.
      */
+    @Impure
     public static void awaitAvailableWindow(final Publication publication)
     {
         while (publication.availableWindow() <= 0)
@@ -640,6 +678,7 @@ public class Tests
      *
      * @param subscription to await being connected.
      */
+    @Impure
     public static void awaitConnected(final Subscription subscription)
     {
         while (!subscription.isConnected())
@@ -654,6 +693,7 @@ public class Tests
      * @param subscription    to await being connected.
      * @param connectionCount to await.
      */
+    @Impure
     public static void awaitConnections(final Subscription subscription, final int connectionCount)
     {
         while (subscription.imageCount() < connectionCount)
@@ -670,6 +710,7 @@ public class Tests
      * @param suffixRepeatCount for number of times the suffix is appended.
      * @return the generated string.
      */
+    @Impure
     public static String generateStringWithSuffix(final String prefix, final String suffix, final int suffixRepeatCount)
     {
         final StringBuilder builder = new StringBuilder(prefix.length() + (suffix.length() * suffixRepeatCount));
@@ -689,6 +730,7 @@ public class Tests
      *
      * @param displayName for the test the log is being collected for.
      */
+    @Impure
     public static void startLogCollecting(final String displayName)
     {
         try
@@ -715,6 +757,7 @@ public class Tests
     /**
      * Reset the collecting of logs for a new test run.
      */
+    @Impure
     public static void resetLogCollecting()
     {
         try
@@ -742,6 +785,7 @@ public class Tests
      *
      * @param filename to dump the log of events to.
      */
+    @Impure
     public static void dumpCollectedLogs(final String filename)
     {
         try
@@ -765,10 +809,12 @@ public class Tests
         }
     }
 
+    @Impure
     public static TestWatcher seedWatcher(final long seed)
     {
         return new TestWatcher()
         {
+            @Impure
             public void testFailed(final ExtensionContext context, final Throwable cause)
             {
                 System.err.println(context.getDisplayName() + " failed with random seed: " + seed);
@@ -776,6 +822,7 @@ public class Tests
         };
     }
 
+    @Impure
     public static int awaitRecordingCounterId(final CountersReader counters, final int sessionId, final long archiveId)
     {
         int counterId;
@@ -787,6 +834,7 @@ public class Tests
         return counterId;
     }
 
+    @Impure
     public static void awaitPosition(final CountersReader counters, final int counterId, final long position)
     {
         while (counters.getCounterValue(counterId) < position)
@@ -800,11 +848,13 @@ public class Tests
         }
     }
 
+    @Impure
     public static void printDirectoryContents(final String directoryName, final PrintStream out) throws IOException
     {
         printDirectoryContents(Paths.get(directoryName), out);
     }
 
+    @Impure
     public static void printDirectoryContents(
         final Path path,
         final PrintStream out) throws IOException
@@ -812,6 +862,7 @@ public class Tests
         Files.walkFileTree(path, new PrintingFileVisitor(out));
     }
 
+    @Impure
     public static CountersManager newCountersManager(final int dataLength)
     {
         return new CountersManager(
@@ -819,6 +870,7 @@ public class Tests
             new UnsafeBuffer(ByteBuffer.allocateDirect(dataLength)));
     }
 
+    @Impure
     public static Answer<Counter> addCounterAnswer(
         final CountersManager countersManager,
         final LongSupplier registrationId)
@@ -840,6 +892,7 @@ public class Tests
         };
     }
 
+    @Impure
     public static Throwable setOrUpdateError(final Throwable existingError, final Throwable newError)
     {
         if (null == existingError)
@@ -855,6 +908,7 @@ public class Tests
         return existingError;
     }
 
+    @Impure
     private static void pad(final int indent, final PrintStream out)
     {
         if (0 != indent)
@@ -868,11 +922,13 @@ public class Tests
         private final PrintStream out;
         private int indent = 0;
 
+        @SideEffectFree
         PrintingFileVisitor(final PrintStream out)
         {
             this.out = out;
         }
 
+        @Impure
         public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs)
         {
             pad(indent, out);
@@ -889,6 +945,7 @@ public class Tests
             }
         }
 
+        @Impure
         public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException
         {
             if (Files.isSymbolicLink(file))
@@ -907,11 +964,13 @@ public class Tests
             }
         }
 
+        @Pure
         public FileVisitResult visitFileFailed(final Path file, final IOException exc)
         {
             return FileVisitResult.CONTINUE;
         }
 
+        @Impure
         public FileVisitResult postVisitDirectory(final Path dir, final IOException exc)
         {
             indent -= 2;

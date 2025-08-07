@@ -15,6 +15,8 @@
  */
 package io.aeron.test.cluster;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.Counter;
 import io.aeron.ExclusivePublication;
 import io.aeron.FragmentAssembler;
@@ -80,6 +82,7 @@ public final class TestNode implements AutoCloseable
     private final TestMediaDriver mediaDriver;
     private boolean isClosed = false;
 
+    @Impure
     TestNode(final Context context, final DataCollector dataCollector)
     {
         this.context = context;
@@ -147,6 +150,7 @@ public final class TestNode implements AutoCloseable
         }
     }
 
+    @Impure
     public void stopServiceContainers()
     {
         CloseHelper.closeAll(containers);
@@ -156,21 +160,26 @@ public final class TestNode implements AutoCloseable
         }
     }
 
+    @Pure
     public TestMediaDriver mediaDriver()
     {
         return mediaDriver;
     }
 
+    @Pure
     public Archive archive()
     {
         return archive;
     }
 
+    @Pure
     public ConsensusModule consensusModule()
     {
         return consensusModule;
     }
 
+    @Pure
+    @Impure
     public ClusteredServiceContainer container()
     {
         if (1 != containers.length)
@@ -181,11 +190,13 @@ public final class TestNode implements AutoCloseable
         return container(0);
     }
 
+    @Pure
     public ClusteredServiceContainer container(final int index)
     {
         return containers[index];
     }
 
+    @Pure
     public TestService service()
     {
         if (1 != services.length)
@@ -196,11 +207,13 @@ public final class TestNode implements AutoCloseable
         return services[0];
     }
 
+    @Pure
     public TestService[] services()
     {
         return services;
     }
 
+    @Impure
     public void close()
     {
         if (!isClosed)
@@ -210,16 +223,19 @@ public final class TestNode implements AutoCloseable
         }
     }
 
+    @Pure
     public boolean isClosed()
     {
         return isClosed;
     }
 
+    @Impure
     public void gracefulClose()
     {
         CloseHelper.closeAll(consensusModule, () -> CloseHelper.closeAll(containers));
     }
 
+    @Impure
     public Cluster.Role role()
     {
         final Counter roleCounter = consensusModule.context().clusterNodeRoleCounter();
@@ -230,6 +246,7 @@ public final class TestNode implements AutoCloseable
         return Cluster.Role.FOLLOWER;
     }
 
+    @Impure
     public void awaitElectionState(final ElectionState electionState)
     {
         while (electionState() != electionState)
@@ -238,16 +255,19 @@ public final class TestNode implements AutoCloseable
         }
     }
 
+    @Impure
     public ElectionState electionState()
     {
         return ElectionState.get(consensusModule.context().electionStateCounter());
     }
 
+    @Impure
     ConsensusModule.State moduleState()
     {
         return ConsensusModule.State.get(consensusModule.context().moduleStateCounter());
     }
 
+    @Impure
     public long commitPosition()
     {
         final Counter counter = consensusModule.context().commitPositionCounter();
@@ -259,6 +279,7 @@ public final class TestNode implements AutoCloseable
         return counter.get();
     }
 
+    @Impure
     public long appendPosition()
     {
         final long recordingId = consensusModule().context().recordingLog().findLastTermRecordingId();
@@ -279,21 +300,25 @@ public final class TestNode implements AutoCloseable
         return countersReader.getCounterValue(counterId);
     }
 
+    @Impure
     boolean isLeader()
     {
         return role() == Cluster.Role.LEADER && moduleState() != ConsensusModule.State.CLOSED;
     }
 
+    @Impure
     boolean isFollower()
     {
         return role() == Cluster.Role.FOLLOWER;
     }
 
+    @Impure
     public void isTerminationExpected(final boolean isTerminationExpected)
     {
         context.isTerminationExpected.set(isTerminationExpected);
     }
 
+    @Impure
     boolean hasServiceTerminated()
     {
         if (1 != services.length)
@@ -304,21 +329,26 @@ public final class TestNode implements AutoCloseable
         return context.hasServiceTerminated[0].get();
     }
 
+    @Impure
     public boolean hasMemberTerminated()
     {
         return context.hasMemberTerminated.get();
     }
 
+    @Pure
+    @Impure
     public int index()
     {
         return services[0].index();
     }
 
+    @Impure
     CountersReader countersReader()
     {
         return mediaDriver.counters();
     }
 
+    @Impure
     public ClusterMembership clusterMembership()
     {
         final ClusterMembership clusterMembership = new ClusterMembership();
@@ -332,11 +362,15 @@ public final class TestNode implements AutoCloseable
         return clusterMembership;
     }
 
+    @Pure
+    @Impure
     public String hostname()
     {
         return TestCluster.hostname(index());
     }
 
+    @Pure
+    @Impure
     public boolean allSnapshotsLoaded()
     {
         for (final TestService service : services)
@@ -368,62 +402,74 @@ public final class TestNode implements AutoCloseable
         final AtomicInteger snapshotMessageCount = new AtomicInteger();
         final AtomicInteger timerCount = new AtomicInteger();
 
+        @Impure
         public TestService index(final int index)
         {
             this.index = index;
             return this;
         }
 
+        @Pure
         int index()
         {
             return index;
         }
 
+        @Impure
         int activeSessionCount()
         {
             return activeSessionCount.get();
         }
 
+        @Impure
         public int messageCount()
         {
             return messageCount.get();
         }
 
+        @Impure
         public int timerCount()
         {
             return timerCount.get();
         }
 
+        @Pure
         public boolean wasSnapshotTaken()
         {
             return wasSnapshotTaken;
         }
 
+        @Impure
         public void resetSnapshotTaken()
         {
             wasSnapshotTaken = false;
         }
 
+        @Pure
         public boolean wasSnapshotLoaded()
         {
             return wasSnapshotLoaded;
         }
 
+        @Pure
         public Cluster.Role roleChangedTo()
         {
             return roleChangedTo;
         }
 
+        @Pure
         public Cluster cluster()
         {
             return cluster;
         }
 
+        @Pure
         boolean hasReceivedUnexpectedMessage()
         {
             return hasReceivedUnexpectedMessage;
         }
 
+        @Impure
         public void onStart(final Cluster cluster, final Image snapshotImage)
         {
             super.onStart(cluster, snapshotImage);
@@ -464,6 +510,7 @@ public final class TestNode implements AutoCloseable
             }
         }
 
+        @Impure
         public void onSessionMessage(
             final ClientSession session,
             final long timestamp,
@@ -538,6 +585,7 @@ public final class TestNode implements AutoCloseable
             liveMessageCount.incrementAndGet();
         }
 
+        @Impure
         private void simulateBuggyApplicationCodeThatSkipsServiceMessageOnFollower(
             final ClientSession session,
             final DirectBuffer buffer,
@@ -550,6 +598,7 @@ public final class TestNode implements AutoCloseable
             }
         }
 
+        @Impure
         private void sendServiceIpcMessage(
             final ClientSession session,
             final DirectBuffer buffer,
@@ -573,11 +622,13 @@ public final class TestNode implements AutoCloseable
             }
         }
 
+        @Impure
         public void onTimerEvent(final long correlationId, final long timestamp)
         {
             timerCount.incrementAndGet();
         }
 
+        @Impure
         public void onTakeSnapshot(final ExclusivePublication snapshotPublication)
         {
             if (failNextSnapshot)
@@ -602,28 +653,33 @@ public final class TestNode implements AutoCloseable
             wasSnapshotTaken = true;
         }
 
+        @Impure
         public void onSessionOpen(final ClientSession session, final long timestamp)
         {
             super.onSessionOpen(session, timestamp);
             activeSessionCount.incrementAndGet();
         }
 
+        @Impure
         public void onSessionClose(final ClientSession session, final long timestamp, final CloseReason closeReason)
         {
             super.onSessionClose(session, timestamp, closeReason);
             activeSessionCount.decrementAndGet();
         }
 
+        @Impure
         public void onRoleChange(final Cluster.Role newRole)
         {
             roleChangedTo = newRole;
         }
 
+        @Impure
         public void awaitServiceMessageCount(final int messageCount, final Runnable keepAlive, final Object node)
         {
             awaitServiceMessagePredicate(atLeast(messageCount), keepAlive, node);
         }
 
+        @Impure
         public void awaitServiceMessagePredicate(
             final IntPredicate predicate,
             final Runnable keepAlive,
@@ -652,6 +708,7 @@ public final class TestNode implements AutoCloseable
             }
         }
 
+        @Impure
         public void awaitLiveAndSnapshotMessageCount(
             final IntPredicate livePredicate,
             final IntPredicate snapshotPredicate,
@@ -684,11 +741,13 @@ public final class TestNode implements AutoCloseable
             }
         }
 
+        @Impure
         public void failNextSnapshot(final boolean failNextSnapshot)
         {
             this.failNextSnapshot = failNextSnapshot;
         }
 
+        @Impure
         public String toString()
         {
             return "TestService{" +
@@ -711,12 +770,14 @@ public final class TestNode implements AutoCloseable
     {
         long snapshotDelayMs = 0;
 
+        @Impure
         public TestService snapshotDelayMs(final long snapshotDelayMs)
         {
             this.snapshotDelayMs = snapshotDelayMs;
             return this;
         }
 
+        @Impure
         public void onTakeSnapshot(final ExclusivePublication snapshotPublication)
         {
             super.onTakeSnapshot(snapshotPublication);
@@ -734,11 +795,13 @@ public final class TestNode implements AutoCloseable
         private final CRC32 crc32 = new CRC32();
         private long checksum;
 
+        @Pure
         public long checksum()
         {
             return checksum;
         }
 
+        @Impure
         public void onStart(final Cluster cluster, final Image snapshotImage)
         {
             checksum = 0;
@@ -765,6 +828,7 @@ public final class TestNode implements AutoCloseable
             }
         }
 
+        @Impure
         public void onTakeSnapshot(final ExclusivePublication snapshotPublication)
         {
             idleStrategy.reset();
@@ -781,6 +845,7 @@ public final class TestNode implements AutoCloseable
             wasSnapshotTaken = true;
         }
 
+        @Impure
         public void onSessionMessage(
             final ClientSession session,
             final long timestamp,
@@ -821,11 +886,13 @@ public final class TestNode implements AutoCloseable
         private int nextServiceMessageNumber;
         private long nextTimerCorrelationId;
 
+        @Impure
         public static void delaySessionMessageProcessing(final boolean shouldDelay)
         {
             delaySessionMessageProcessing = shouldDelay;
         }
 
+        @Impure
         @SuppressWarnings("this-escape")
         public MessageTrackingService(final int serviceId, final int index)
         {
@@ -833,21 +900,25 @@ public final class TestNode implements AutoCloseable
             index(index);
         }
 
+        @Impure
         public IntArrayList clientMessages()
         {
             return copy(clientMessages);
         }
 
+        @Impure
         public IntArrayList serviceMessages()
         {
             return copy(serviceMessages);
         }
 
+        @Impure
         public LongArrayList timers()
         {
             return copy(timers);
         }
 
+        @Impure
         public void onStart(final Cluster cluster, final Image snapshotImage)
         {
             nextServiceMessageNumber = 1_000_000 * serviceId;
@@ -916,6 +987,7 @@ public final class TestNode implements AutoCloseable
             }
         }
 
+        @Impure
         public void onTakeSnapshot(final ExclusivePublication snapshotPublication)
         {
             wasSnapshotTaken = false;
@@ -947,6 +1019,7 @@ public final class TestNode implements AutoCloseable
             wasSnapshotTaken = true;
         }
 
+        @Impure
         public void onSessionMessage(
             final ClientSession session,
             final long timestamp,
@@ -1003,12 +1076,14 @@ public final class TestNode implements AutoCloseable
             messageCount.incrementAndGet(); // count all messages
         }
 
+        @Impure
         public void onTimerEvent(final long correlationId, final long timestamp)
         {
             timers.add(correlationId);
             super.onTimerEvent(correlationId, timestamp);
         }
 
+        @Impure
         public String toString()
         {
             return "MessageTrackingService{" +
@@ -1020,6 +1095,7 @@ public final class TestNode implements AutoCloseable
                 '}';
         }
 
+        @Impure
         private void snapshotMessages(
             final ExclusivePublication snapshotPublication, final byte snapshotType, final IntArrayList messages)
         {
@@ -1043,6 +1119,7 @@ public final class TestNode implements AutoCloseable
             }
         }
 
+        @Impure
         private void snapshotTimers(final ExclusivePublication snapshotPublication)
         {
             final MutableInteger offset = new MutableInteger();
@@ -1065,6 +1142,7 @@ public final class TestNode implements AutoCloseable
             }
         }
 
+        @Impure
         private void restoreMessages(final DirectBuffer buffer, final int offset, final IntArrayList messages)
         {
             int absoluteOffset = offset;
@@ -1078,6 +1156,7 @@ public final class TestNode implements AutoCloseable
             }
         }
 
+        @Impure
         private void restoreTimers(final DirectBuffer buffer, final int offset)
         {
             int absoluteOffset = offset;
@@ -1091,11 +1170,13 @@ public final class TestNode implements AutoCloseable
             }
         }
 
+        @Impure
         private static IntArrayList copy(final IntArrayList values)
         {
             return new IntArrayList(values.toIntArray(), values.size(), values.nullValue());
         }
 
+        @Impure
         private static LongArrayList copy(final LongArrayList values)
         {
             return new LongArrayList(values.toLongArray(), values.size(), values.nullValue());
@@ -1114,6 +1195,7 @@ public final class TestNode implements AutoCloseable
         final AtomicBoolean[] hasServiceTerminated;
         final TestService[] services;
 
+        @Impure
         Context(final TestService[] services, final String nodeMappings)
         {
             mediaDriverContext.nameResolver(new RedirectingNameResolver(nodeMappings));
@@ -1127,6 +1209,7 @@ public final class TestNode implements AutoCloseable
         }
     }
 
+    @Impure
     public String toString()
     {
         return "TestNode{" +
@@ -1136,15 +1219,18 @@ public final class TestNode implements AutoCloseable
             '}';
     }
 
+    @Impure
     public static IntPredicate atLeast(final int count)
     {
         return new IntPredicate()
         {
+            @Pure
             public boolean test(final int value)
             {
                 return count <= value;
             }
 
+            @Pure
             public String toString()
             {
                 return "atLeast(" + count + ")";
@@ -1152,15 +1238,18 @@ public final class TestNode implements AutoCloseable
         };
     }
 
+    @Impure
     public static IntPredicate atMost(final int count)
     {
         return new IntPredicate()
         {
+            @Pure
             public boolean test(final int value)
             {
                 return value <= count;
             }
 
+            @Pure
             public String toString()
             {
                 return "atMost(" + count + ")";

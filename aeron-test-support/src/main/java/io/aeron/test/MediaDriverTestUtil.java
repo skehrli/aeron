@@ -15,6 +15,8 @@
  */
 package io.aeron.test;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.test.driver.TestMediaDriver;
 import org.agrona.IoUtil;
 import org.junit.jupiter.api.Assertions;
@@ -31,11 +33,13 @@ class MediaDriverTestUtil
 {
     private final Map<String, ProcessDetails> outputFilesByAeronDirectoryName = new LinkedHashMap<>();
 
+    @Impure
     public void testFailed()
     {
         dumpMediaDriverDiagnostics();
     }
 
+    @Impure
     private void dumpMediaDriverDiagnostics()
     {
         if (TestMediaDriver.shouldRunCMediaDriver())
@@ -72,6 +76,7 @@ class MediaDriverTestUtil
         }
     }
 
+    @Impure
     private void printEnvironment(final Map<String, String> environment, final PrintStream out)
     {
         environment.forEach(
@@ -84,6 +89,7 @@ class MediaDriverTestUtil
             });
     }
 
+    @Impure
     public void testSuccessful()
     {
         if (TestMediaDriver.shouldRunCMediaDriver())
@@ -92,6 +98,7 @@ class MediaDriverTestUtil
         }
     }
 
+    @Impure
     public void afterTestExecution(final ExtensionContext context)
     {
         if (null == context.getRequiredTestMethod().getAnnotation(IgnoreStdErr.class))
@@ -100,6 +107,7 @@ class MediaDriverTestUtil
         }
     }
 
+    @Impure
     private void deleteFiles()
     {
         outputFilesByAeronDirectoryName.forEach(
@@ -110,21 +118,25 @@ class MediaDriverTestUtil
             });
     }
 
+    @Impure
     public void outputFiles(final String aeronDirectoryName, final File stdoutFile, final File stderrFile)
     {
         outputFilesByAeronDirectoryName.put(aeronDirectoryName, new ProcessDetails(stdoutFile, stderrFile));
     }
 
+    @Impure
     public void exitCode(final String aeronDirectoryName, final int exitValue, final String exitMessage)
     {
         outputFilesByAeronDirectoryName.get(aeronDirectoryName).exitValue(exitValue, exitMessage);
     }
 
+    @Impure
     public void environmentVariables(final String aeronDirectoryName, final Map<String, String> environment)
     {
         outputFilesByAeronDirectoryName.get(aeronDirectoryName).environment(environment);
     }
 
+    @Impure
     public void verifyNoStdError()
     {
         outputFilesByAeronDirectoryName.values().forEach(
@@ -139,18 +151,21 @@ class MediaDriverTestUtil
         private String exitMessage;
         private Map<String, String> environment;
 
+        @SideEffectFree
         ProcessDetails(final File stdout, final File stderr)
         {
             this.stderr = stderr;
             this.stdout = stdout;
         }
 
+        @Impure
         public void exitValue(final int exitValue, final String exitMessage)
         {
             this.exitValue = exitValue;
             this.exitMessage = exitMessage;
         }
 
+        @Impure
         public void environment(final Map<String, String> environment)
         {
             this.environment = environment;

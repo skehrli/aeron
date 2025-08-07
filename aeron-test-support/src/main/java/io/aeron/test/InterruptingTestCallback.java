@@ -15,6 +15,7 @@
  */
 package io.aeron.test;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -44,6 +45,7 @@ public class InterruptingTestCallback implements BeforeEachCallback, AfterEachCa
 
     private ScheduledFuture<?> timer = null;
 
+    @Impure
     public void afterEach(final ExtensionContext context)
     {
         if (null != timer)
@@ -64,6 +66,7 @@ public class InterruptingTestCallback implements BeforeEachCallback, AfterEachCa
         }
     }
 
+    @Impure
     public void beforeEach(final ExtensionContext context)
     {
         timer = null;

@@ -3,6 +3,8 @@
  */
 package io.aeron.test;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Impure;
 import org.agrona.concurrent.IdleStrategy;
 
 public class TestIdleStrategy implements IdleStrategy
@@ -12,6 +14,7 @@ public class TestIdleStrategy implements IdleStrategy
      */
     public static final TestIdleStrategy INSTANCE = new TestIdleStrategy();
 
+    @Impure
     public void idle(final int i)
     {
         if (i == 0)
@@ -20,11 +23,13 @@ public class TestIdleStrategy implements IdleStrategy
         }
     }
 
+    @Impure
     public void idle()
     {
         Tests.yield();
     }
 
+    @SideEffectFree
     public void reset()
     {
 

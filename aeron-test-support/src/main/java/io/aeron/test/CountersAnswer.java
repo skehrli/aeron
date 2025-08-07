@@ -15,6 +15,8 @@
  */
 package io.aeron.test;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.Counter;
 import org.agrona.DirectBuffer;
 import org.agrona.concurrent.status.CountersManager;
@@ -28,6 +30,7 @@ public final class CountersAnswer implements Answer<Counter>
 {
     private final CountersManager countersManager;
 
+    @SideEffectFree
     private CountersAnswer(final CountersManager countersManager)
     {
         this.countersManager = countersManager;
@@ -36,6 +39,7 @@ public final class CountersAnswer implements Answer<Counter>
     /**
      * {@inheritDoc}
      */
+    @Impure
     public Counter answer(final InvocationOnMock invocation)
     {
         final int counterId;
@@ -73,6 +77,8 @@ public final class CountersAnswer implements Answer<Counter>
      * @param countersManager delegate to pass addCounter requests to.
      * @return an Answer that will use the supplied {@link CountersManager}.
      */
+    @SideEffectFree
+    @Impure
     public static CountersAnswer mapTo(final CountersManager countersManager)
     {
         return new CountersAnswer(countersManager);

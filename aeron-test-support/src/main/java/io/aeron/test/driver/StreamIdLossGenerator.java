@@ -15,6 +15,8 @@
  */
 package io.aeron.test.driver;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import io.aeron.driver.ext.LossGenerator;
 import org.agrona.concurrent.UnsafeBuffer;
 
@@ -26,6 +28,7 @@ public class StreamIdLossGenerator implements LossGenerator
     private long dropUntil;
     private volatile boolean drop;
 
+    @Impure
     public void startDropping(final int streamId, final long durationNs)
     {
         this.streamId = streamId;
@@ -33,6 +36,7 @@ public class StreamIdLossGenerator implements LossGenerator
         drop = true;
     }
 
+    @Impure
     public boolean shouldDropFrame(
         final InetSocketAddress address,
         final UnsafeBuffer buffer,
@@ -57,6 +61,7 @@ public class StreamIdLossGenerator implements LossGenerator
         return false;
     }
 
+    @Pure
     public boolean shouldDropFrame(final InetSocketAddress address, final UnsafeBuffer buffer, final int length)
     {
         return false;

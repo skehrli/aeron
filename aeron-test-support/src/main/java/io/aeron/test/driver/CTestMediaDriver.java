@@ -15,6 +15,9 @@
  */
 package io.aeron.test.driver;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.Pure;
 import io.aeron.Aeron;
 import io.aeron.AeronCounters;
 import io.aeron.CommonContext;
@@ -73,6 +76,7 @@ public final class CTestMediaDriver implements TestMediaDriver
     private CountersReader countersReader;
     private boolean isClosed = false;
 
+    @SideEffectFree
     private CTestMediaDriver(
         final Process aeronMediaDriverProcess,
         final MediaDriver.Context context,
@@ -87,6 +91,7 @@ public final class CTestMediaDriver implements TestMediaDriver
         this.stderrFile = stderrFile;
     }
 
+    @Impure
     public void close()
     {
         if (isClosed)
@@ -138,6 +143,7 @@ public final class CTestMediaDriver implements TestMediaDriver
         }
     }
 
+    @Impure
     private void awaitSendersAndReceiversClosed()
     {
         if (!SystemTestConfig.DRIVER_AWAIT_COUNTER_CLOSE)
@@ -167,6 +173,7 @@ public final class CTestMediaDriver implements TestMediaDriver
         while (0 != counterCount.get() && System.currentTimeMillis() < deadlineMs);
     }
 
+    @Impure
     public void cleanup()
     {
         if (NULL_FILE != stdoutFile)
@@ -180,6 +187,7 @@ public final class CTestMediaDriver implements TestMediaDriver
         }
     }
 
+    @Impure
     public CountersReader counters()
     {
         if (null == countersReader)
@@ -195,6 +203,7 @@ public final class CTestMediaDriver implements TestMediaDriver
         return countersReader;
     }
 
+    @Impure
     @SuppressWarnings("methodlength")
     public static CTestMediaDriver launch(
         final MediaDriver.Context context,
@@ -330,21 +339,25 @@ public final class CTestMediaDriver implements TestMediaDriver
         }
     }
 
+    @Pure
     public MediaDriver.Context context()
     {
         return context;
     }
 
+    @Pure
     public String aeronDirectoryName()
     {
         return context.aeronDirectoryName();
     }
 
+    @Pure
     public AgentInvoker sharedAgentInvoker()
     {
         throw new UnsupportedOperationException("Not supported in C media driver");
     }
 
+    @Impure
     public static void enableRandomLossOnReceive(
         final MediaDriver.Context context,
         final double rate,
@@ -371,6 +384,7 @@ public final class CTestMediaDriver implements TestMediaDriver
         getAdditionalEnvVarsMap(context).putAll(lossTransportEnv);
     }
 
+    @Impure
     public static void enableFixedLossOnReceive(
         final MediaDriver.Context context,
         final int termId,
@@ -390,6 +404,7 @@ public final class CTestMediaDriver implements TestMediaDriver
         getAdditionalEnvVarsMap(context).putAll(fixedLossTransportEnv);
     }
 
+    @Impure
     public static void enableMultiGapLossOnReceive(
         final MediaDriver.Context context,
         final int termId,
@@ -411,16 +426,19 @@ public final class CTestMediaDriver implements TestMediaDriver
         getAdditionalEnvVarsMap(context).putAll(multiGapLossTransportEnv);
     }
 
+    @Impure
     public static void dontCoalesceNaksOnReceiverByDefault(final MediaDriver.Context context)
     {
         getAdditionalEnvVarsMap(context).put("AERON_NAK_UNICAST_DELAY", "0");
     }
 
+    @Impure
     public static Map<String, String> getAdditionalEnvVarsMap(final MediaDriver.Context context)
     {
         return C_DRIVER_ADDITIONAL_ENV_VARS.get().computeIfAbsent(context, c -> new IdentityHashMap<>());
     }
 
+    @Impure
     private static void setLogging(final Map<String, String> environment)
     {
         environment.put("AERON_EVENT_LOG", System.getProperty(
@@ -442,6 +460,7 @@ public final class CTestMediaDriver implements TestMediaDriver
         }
     }
 
+    @Impure
     private static void setTransportSecurity(final HashMap<String, String> environment)
     {
         final String atsLibPath = (String)System.getProperties().get(ATS_LIBRARY_PATH_PROP_NAME);
@@ -468,6 +487,7 @@ public final class CTestMediaDriver implements TestMediaDriver
         }
     }
 
+    @Impure
     private static void setAdditionalEnvVars(
         final HashMap<String, String> environment,
         final Map<String, String> additionalEnvVars)
@@ -491,6 +511,7 @@ public final class CTestMediaDriver implements TestMediaDriver
             });
     }
 
+    @Impure
     private static void setFlowControlStrategy(final Map<String, String> environment, final MediaDriver.Context context)
     {
         final FlowControlSupplier multicastFlowControlSupplier = context.multicastFlowControlSupplier();
@@ -518,6 +539,7 @@ public final class CTestMediaDriver implements TestMediaDriver
         }
     }
 
+    @Pure
     private static String getFlowControlStrategyName(final FlowControlSupplier flowControlSupplier)
     {
         return null == flowControlSupplier ?
@@ -529,6 +551,7 @@ public final class CTestMediaDriver implements TestMediaDriver
         private final int exitCode;
         private final String exitMessage;
 
+        @SideEffectFree
         private ExitStatus(final int exitCode, final String exitMessage)
         {
             this.exitCode = exitCode;
@@ -536,6 +559,7 @@ public final class CTestMediaDriver implements TestMediaDriver
         }
     }
 
+    @Impure
     private ExitStatus terminateDriver()
     {
         boolean isInterrupted = false;
@@ -593,6 +617,7 @@ public final class CTestMediaDriver implements TestMediaDriver
         }
     }
 
+    @Impure
     private boolean requestDriverTermination()
     {
         try

@@ -15,6 +15,12 @@
  */
 package io.aeron.test.launcher;
 
+import org.checkerframework.checker.mustcall.qual.MustCallAlias;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.checker.calledmethods.qual.EnsuresCalledMethods;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.checker.mustcall.qual.Owning;
+import org.checkerframework.checker.mustcall.qual.InheritableMustCall;
 import io.aeron.test.NullOutputStream;
 import org.agrona.CloseHelper;
 
@@ -29,11 +35,14 @@ import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicReference;
 
+@InheritableMustCall("close")
 public class RemoteLaunchServer
 {
+    @Owning
     private final ServerSocketChannel serverChannel;
     private final Collection<Connection> connections = new ConcurrentLinkedDeque<>();
 
+    @Impure
     public static void main(final String[] args) throws IOException
     {
         final String host = System.getProperty("aeron.test.launch.host", "0.0.0.0");
@@ -45,6 +54,7 @@ public class RemoteLaunchServer
         server.run();
     }
 
+    @Impure
     public RemoteLaunchServer(final String host, final int port) throws IOException
     {
         serverChannel = ServerSocketChannel.open();
@@ -52,6 +62,7 @@ public class RemoteLaunchServer
         serverChannel.bind(local);
     }
 
+    @Impure
     public void run()
     {
         Thread.setDefaultUncaughtExceptionHandler(
@@ -81,6 +92,8 @@ public class RemoteLaunchServer
         }
     }
 
+    @EnsuresCalledMethods(value="this.serverChannel", methods="close")
+    @Impure
     public void close()
     {
         try
@@ -95,8 +108,10 @@ public class RemoteLaunchServer
         connections.forEach(Connection::stop);
     }
 
+    @InheritableMustCall("stop")
     static class Connection
     {
+        @Owning
         private final SocketChannel connectionChannel;
         private final AtomicReference<State> currentState = new AtomicReference<>(State.CREATED);
         private volatile ProcessResponseReader responseReader;
@@ -111,11 +126,14 @@ public class RemoteLaunchServer
             CLOSING
         }
 
-        Connection(final SocketChannel connectionChannel)
+        @MustCallAlias
+        @SideEffectFree
+        Connection(final @MustCallAlias SocketChannel connectionChannel)
         {
             this.connectionChannel = connectionChannel;
         }
 
+        @Impure
         public void start()
         {
             final Thread requestThread = new Thread(this::runRequests);
@@ -125,6 +143,8 @@ public class RemoteLaunchServer
             }
         }
 
+        @EnsuresCalledMethods(value="this.connectionChannel", methods="close")
+        @Impure
         public void stop()
         {
             final State state = this.currentState.get();
@@ -181,6 +201,7 @@ public class RemoteLaunchServer
             while (true);
         }
 
+        @Impure
         private void runRequests()
         {
             try
@@ -265,11 +286,13 @@ public class RemoteLaunchServer
             }
         }
 
+        @Impure
         private long pid()
         {
             return ProcessHandle.current().pid();
         }
 
+        @Impure
         private State startProcess(final String[] command) throws IOException
         {
             try
@@ -325,6 +348,7 @@ public class RemoteLaunchServer
             }
         }
 
+        @Impure
         private PrintStream parseBaseDirectory(final String[] command)
         {
             final String baseDirPrefix = "-Daeron.cluster.tutorial.baseDir=";
@@ -351,13 +375,16 @@ public class RemoteLaunchServer
 
     private static final class ProcessResponseReader
     {
+        @Owning
         private final SocketChannel connectionChannel;
         private final long pid;
         private final PrintStream stdOutputStream;
         private volatile boolean isClosed = false;
 
+        @MustCallAlias
+        @SideEffectFree
         private ProcessResponseReader(
-            final SocketChannel connectionChannel,
+            final @MustCallAlias SocketChannel connectionChannel,
             final long pid,
             final PrintStream stdOutputStream)
         {
@@ -366,6 +393,8 @@ public class RemoteLaunchServer
             this.stdOutputStream = stdOutputStream;
         }
 
+        @EnsuresCalledMethods(value="this.connectionChannel", methods="close")
+        @Impure
         private void runResponses(final InputStream processOutput)
         {
             final ByteBuffer data = ByteBuffer.allocate(1024);
@@ -404,6 +433,7 @@ public class RemoteLaunchServer
             }
         }
 
+        @Impure
         public void markClosed()
         {
             isClosed = true;

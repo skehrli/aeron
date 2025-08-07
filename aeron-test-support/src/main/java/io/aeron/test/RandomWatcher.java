@@ -15,6 +15,8 @@
  */
 package io.aeron.test;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestWatcher;
 
@@ -25,22 +27,26 @@ public class RandomWatcher implements TestWatcher
     private final Random random;
     private final long seed;
 
+    @Impure
     public RandomWatcher(final long seed)
     {
         this.seed = seed;
         random = new Random(seed);
     }
 
+    @Impure
     public RandomWatcher()
     {
         this(System.nanoTime());
     }
 
+    @Impure
     public void testFailed(final ExtensionContext context, final Throwable cause)
     {
         System.err.println(context.getDisplayName() + " failed with random seed: " + seed);
     }
 
+    @Pure
     public Random random()
     {
         return random;

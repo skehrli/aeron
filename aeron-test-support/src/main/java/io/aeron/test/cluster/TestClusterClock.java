@@ -15,6 +15,9 @@
  */
 package io.aeron.test.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.cluster.service.ClusterClock;
 import org.agrona.concurrent.EpochClock;
 import org.agrona.concurrent.NanoClock;
@@ -27,61 +30,74 @@ public class TestClusterClock implements ClusterClock, EpochClock, NanoClock
     private final AtomicLong tick = new AtomicLong();
     private final TimeUnit timeUnit;
 
+    @SideEffectFree
+    @Impure
     public TestClusterClock()
     {
         this(TimeUnit.MILLISECONDS);
     }
 
+    @SideEffectFree
     public TestClusterClock(final TimeUnit timeUnit)
     {
         this.timeUnit = timeUnit;
     }
 
+    @Pure
     public TimeUnit timeUnit()
     {
         return timeUnit;
     }
 
+    @Impure
     public long time()
     {
         return timeUnit.toMillis(tick.get());
     }
 
+    @Impure
     public long nanoTime()
     {
         return timeUnit.toNanos(tick.get());
     }
 
+    @Impure
     public long timeMillis()
     {
         return timeUnit.toMillis(tick.get());
     }
 
+    @Impure
     public long timeMicros()
     {
         return timeUnit.toMicros(tick.get());
     }
 
+    @Impure
     public long timeNanos()
     {
         return timeUnit.toNanos(tick.get());
     }
 
+    @Impure
     public long convertToNanos(final long time)
     {
         return timeUnit.toNanos(time);
     }
 
+    @Impure
     public void update(final long tick, final TimeUnit tickTimeUnit)
     {
         this.tick.set(tickTimeUnit.convert(tick, tickTimeUnit));
     }
 
+    @Impure
     public long increment(final long tick, final TimeUnit tickTimeUnit)
     {
         return this.tick.addAndGet(tickTimeUnit.convert(tick, tickTimeUnit));
     }
 
+    @Impure
     public long increment(final long tick)
     {
         return increment(tick, timeUnit());

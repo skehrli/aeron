@@ -15,6 +15,7 @@
  */
 package io.aeron.test;
 
+import org.checkerframework.dataflow.qual.Impure;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -26,6 +27,7 @@ public class HideStdErrExtension implements BeforeEachCallback, AfterEachCallbac
     private final PrintStream nullPrintStream = new PrintStream(new NullOutputStream());
     private PrintStream originalStream = null;
 
+    @Impure
     public void beforeEach(final ExtensionContext context)
     {
         if (context.getTestMethod().isPresent() &&
@@ -36,6 +38,7 @@ public class HideStdErrExtension implements BeforeEachCallback, AfterEachCallbac
         }
     }
 
+    @Impure
     public void afterEach(final ExtensionContext context)
     {
         if (null != originalStream)

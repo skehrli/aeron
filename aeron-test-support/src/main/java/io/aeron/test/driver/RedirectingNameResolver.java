@@ -15,6 +15,9 @@
  */
 package io.aeron.test.driver;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.CounterProvider;
 import io.aeron.driver.DefaultNameResolver;
 import io.aeron.driver.NameResolver;
@@ -43,6 +46,7 @@ public class RedirectingNameResolver implements NameResolver
     private final Map<String, NameEntry> nameToEntryMap = new Object2ObjectHashMap<>();
     private final String csvConfiguration;
 
+    @Impure
     public RedirectingNameResolver(final String csvConfiguration)
     {
         this.csvConfiguration = csvConfiguration;
@@ -60,6 +64,7 @@ public class RedirectingNameResolver implements NameResolver
         }
     }
 
+    @Impure
     public void init(final CountersReader countersReader, final CounterProvider counterProvider)
     {
         countersReader.forEach((counterId, typeId, keyBuffer, label) ->
@@ -96,11 +101,13 @@ public class RedirectingNameResolver implements NameResolver
         }
     }
 
+    @SideEffectFree
     public String lookup(final String name, final String uriParamName, final boolean isReLookup)
     {
         return name.endsWith(":X") ? name.substring(0, name.length() - 2) : name;
     }
 
+    @Impure
     public InetAddress resolve(final String name, final String uriParamName, final boolean isReResolution)
     {
         final NameEntry nameEntry = nameToEntryMap.get(name);
@@ -115,11 +122,13 @@ public class RedirectingNameResolver implements NameResolver
         return resolvedAddress;
     }
 
+    @Pure
     public String csvConfiguration()
     {
         return csvConfiguration;
     }
 
+    @Impure
     public static boolean updateNameResolutionStatus(
         final CountersReader counters,
         final String hostname,
@@ -152,6 +161,7 @@ public class RedirectingNameResolver implements NameResolver
         private final String reResolutionHost;
         private AtomicCounter counter;
 
+        @SideEffectFree
         NameEntry(final String name, final String initialResolutionHost, final String reResolutionHost)
         {
             this.name = name;
@@ -159,11 +169,13 @@ public class RedirectingNameResolver implements NameResolver
             this.reResolutionHost = reResolutionHost;
         }
 
+        @Impure
         void counter(final AtomicCounter counter)
         {
             this.counter = counter;
         }
 
+        @Impure
         String redirectHost(final String name)
         {
             final long operation = null != counter ? counter.get() : USE_INITIAL_RESOLUTION_HOST;
@@ -185,6 +197,7 @@ public class RedirectingNameResolver implements NameResolver
             }
         }
 
+        @Pure
         public String toString()
         {
             return "NameEntry{" +

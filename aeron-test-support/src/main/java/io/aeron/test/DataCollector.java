@@ -15,6 +15,9 @@
  */
 package io.aeron.test;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.CncFileDescriptor;
 import org.agrona.LangUtil;
 import org.agrona.SystemUtil;
@@ -53,11 +56,13 @@ public final class DataCollector
     private final Set<Path> cleanupLocations = new LinkedHashSet<>();
     private Predicate<Path> fileFilter = DATA_COLLECTED_DEFAULT_FILE_FILTER;
 
+    @Impure
     public DataCollector()
     {
         this(Paths.get("build/test-output"));
     }
 
+    @Impure
     public DataCollector(final Path rootDir)
     {
         requireNonNull(rootDir);
@@ -74,6 +79,7 @@ public final class DataCollector
      * @param location file or directory to preserve.
      * @see #dumpData(String, byte[])
      */
+    @Impure
     public void add(final Path location)
     {
         locations.add(requireNonNull(location));
@@ -85,6 +91,7 @@ public final class DataCollector
      * @param location file or directory to preserve.
      * @see #dumpData(String, byte[])
      */
+    @Impure
     public void add(final File location)
     {
         if (null != location)
@@ -98,6 +105,7 @@ public final class DataCollector
      *
      * @param location to be added to the list of cleanup locations.
      */
+    @Impure
     public void addForCleanup(final File location)
     {
         if (null != location)
@@ -111,6 +119,7 @@ public final class DataCollector
      *
      * @param location to be added to the list of cleanup locations.
      */
+    @Impure
     public void addForCleanup(final Path location)
     {
         cleanupLocations.add(Objects.requireNonNull(location));
@@ -136,6 +145,7 @@ public final class DataCollector
      *                       {@link SystemUtil#threadDump()}.
      * @return {@code null} if no data was copied or an actual destination directory used.
      */
+    @Impure
     Path dumpData(final String destinationDir, final byte[] threadDump)
     {
         if (isEmpty(destinationDir))
@@ -152,6 +162,7 @@ public final class DataCollector
      *
      * @return list of paths to collected driver cnc files.
      */
+    @Impure
     public List<Path> cncFiles()
     {
         return findMatchingFiles(file -> CncFileDescriptor.CNC_FILE.equals(file.getName()));
@@ -163,6 +174,7 @@ public final class DataCollector
      * @param dissector to use as a filter.
      * @return list of paths to the associated mark files.
      */
+    @Impure
     public List<Path> markFiles(final SystemTestWatcher.MarkFileDissector dissector)
     {
         return findMatchingFiles(dissector::isRelevantFile);
@@ -173,6 +185,7 @@ public final class DataCollector
      *
      * @return list of all locations.
      */
+    @Pure
     public Collection<Path> allLocations()
     {
         return locations;
@@ -184,6 +197,7 @@ public final class DataCollector
      *
      * @return collection of locations that need to be removed.
      */
+    @Impure
     public Collection<Path> cleanupLocations()
     {
         final ArrayList<Path> cleanupLocations = new ArrayList<>();
@@ -192,6 +206,7 @@ public final class DataCollector
         return Collections.unmodifiableList(cleanupLocations);
     }
 
+    @Impure
     private List<Path> findMatchingFiles(final FileFilter filter)
     {
         final List<Path> found = new ArrayList<>();
@@ -202,6 +217,7 @@ public final class DataCollector
         return found;
     }
 
+    @Impure
     private static void find(final List<Path> found, final File file, final FileFilter filter)
     {
         if (existsAndIsNotSymbolicLink(file))
@@ -227,6 +243,7 @@ public final class DataCollector
         }
     }
 
+    @Impure
     private static boolean existsAndIsNotSymbolicLink(final File file)
     {
         try
@@ -241,6 +258,7 @@ public final class DataCollector
         }
     }
 
+    @Pure
     public String toString()
     {
         return "DataCollector{" +
@@ -252,6 +270,7 @@ public final class DataCollector
     /**
      * Reset the capture filter so all files are captured.
      */
+    @Impure
     public void captureAllFiles()
     {
         fileFilter = (file) -> true;
@@ -262,11 +281,13 @@ public final class DataCollector
      *
      * @param fileExclusion predicate that returns true of a specific file should not be captured.
      */
+    @Impure
     public void addFileExclusion(final Predicate<Path> fileExclusion)
     {
         fileFilter = fileFilter.and(fileExclusion.negate());
     }
 
+    @Impure
     private Path copyData(final String destinationDir, final byte[] threadDump)
     {
         final boolean isInterrupted = Thread.interrupted();
@@ -310,6 +331,7 @@ public final class DataCollector
         return null;
     }
 
+    @Impure
     private Path createUniqueDirectory(final String name) throws IOException
     {
         Path path;
@@ -330,6 +352,7 @@ public final class DataCollector
         return Files.createDirectories(path);
     }
 
+    @Impure
     private Map<Path, Set<Path>> groupByParent(final List<Path> locations)
     {
         final LinkedHashMap<Path, Set<Path>> map = new LinkedHashMap<>();
@@ -343,6 +366,7 @@ public final class DataCollector
         return groupByParent(map);
     }
 
+    @Impure
     private void removeNestedPaths(final List<Path> locations, final LinkedHashMap<Path, Set<Path>> map)
     {
         for (final Path p : locations)
@@ -360,6 +384,7 @@ public final class DataCollector
         }
     }
 
+    @Impure
     private LinkedHashMap<Path, Set<Path>> groupByParent(final LinkedHashMap<Path, Set<Path>> locations)
     {
         if (1 == locations.size())
@@ -409,6 +434,7 @@ public final class DataCollector
         return locations;
     }
 
+    @SideEffectFree
     private Path adjustParentToEnsureUniqueContext(final Path destination, final Set<Path> files, final Path root)
     {
         Path parent = root;
@@ -428,6 +454,7 @@ public final class DataCollector
         return parent;
     }
 
+    @Impure
     private void copyFiles(final Path src, final Path dst) throws IOException
     {
         if (Files.isRegularFile(src))
@@ -445,6 +472,7 @@ public final class DataCollector
                 src,
                 new SimpleFileVisitor<>()
                 {
+                    @Impure
                     public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs)
                     {
                         try
@@ -461,6 +489,7 @@ public final class DataCollector
                         return FileVisitResult.CONTINUE;
                     }
 
+                    @Impure
                     public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs)
                     {
                         try
@@ -478,6 +507,7 @@ public final class DataCollector
                         return FileVisitResult.CONTINUE;
                     }
 
+                    @Pure
                     public FileVisitResult visitFileFailed(final Path file, final IOException exc)
                     {
                         // Ignore failure visiting file.
@@ -487,6 +517,7 @@ public final class DataCollector
         }
     }
 
+    @Impure
     private void ensurePathExists(final Path dst) throws IOException
     {
         if (!Files.exists(dst.getParent()))

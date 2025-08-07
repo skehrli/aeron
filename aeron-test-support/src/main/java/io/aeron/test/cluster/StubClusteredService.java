@@ -15,6 +15,8 @@
  */
 package io.aeron.test.cluster;
 
+import org.checkerframework.dataflow.qual.Impure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import io.aeron.ExclusivePublication;
 import io.aeron.Image;
 import io.aeron.cluster.codecs.CloseReason;
@@ -31,20 +33,24 @@ public class StubClusteredService implements ClusteredService
     protected Cluster cluster;
     protected IdleStrategy idleStrategy;
 
+    @Impure
     public void onStart(final Cluster cluster, final Image snapshotImage)
     {
         this.cluster = cluster;
         this.idleStrategy = cluster.idleStrategy();
     }
 
+    @Impure
     public void onSessionOpen(final ClientSession session, final long timestamp)
     {
     }
 
+    @Impure
     public void onSessionClose(final ClientSession session, final long timestamp, final CloseReason closeReason)
     {
     }
 
+    @Impure
     public void onSessionMessage(
         final ClientSession session,
         final long timestamp,
@@ -55,27 +61,33 @@ public class StubClusteredService implements ClusteredService
     {
     }
 
+    @Impure
     public void onTimerEvent(final long correlationId, final long timestamp)
     {
     }
 
+    @Impure
     public void onTakeSnapshot(final ExclusivePublication snapshotPublication)
     {
     }
 
+    @Impure
     public void onRoleChange(final Cluster.Role newRole)
     {
     }
 
+    @SideEffectFree
     public void onTerminate(final Cluster cluster)
     {
     }
 
+    @Impure
     protected long serviceCorrelationId(final int correlationId)
     {
         return ((long)cluster.context().serviceId()) << 56 | correlationId;
     }
 
+    @Impure
     protected final void echoMessage(
         final ClientSession session, final DirectBuffer buffer, final int offset, final int length)
     {
